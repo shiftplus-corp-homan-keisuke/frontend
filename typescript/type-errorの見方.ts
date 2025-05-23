@@ -62,7 +62,7 @@ interface AppConfig {
   version: string;
   port: number;
   isProduction: boolean;
-  logLevel: "debug" | "info" | "warn" | "error";
+  // logLevel: "debug" | "info" | "warn" | "error";
   apiKey: string;
   apiSecret: string;
   databaseUrl: string;
@@ -83,7 +83,7 @@ interface AppConfig {
   uiSettings: {
     showHeader: boolean;
     showFooter: boolean;
-    sidebarMode: "fixed" | "collapsible";
+    // sidebarMode: "fixed" | "collapsible";
     fontSize: number;
     fontFamily: string;
     darkMode: boolean;
@@ -128,9 +128,9 @@ const config = {
   // 基本設定 (いくつか欠落、型間違い)
   appName: "My Awesome App",
   version: "1.0.0",
-  port: "3000", // Error: string instead of number
+  port: 3000, // Error: string instead of number
   isProduction: false,
-  // logLevel: 'info', // Error: Missing
+  // logLevel: "info", // Error: Missing
   apiKey: "my-api-key",
   apiSecret: "my-api-secret",
   databaseUrl: "postgres://localhost/mydb",
@@ -144,34 +144,34 @@ const config = {
   defaultLanguage: "en",
   themeColor: "#FFFFFF",
   itemsPerPage: 20,
-  // sessionSecret: 'supersecret', // Error: Missing
+  sessionSecret: "supersecret", // Error: Missing
   analyticsId: "UA-12345-1",
 
   // UI設定 (いくつか欠落、型間違い)
   uiSettings: {
     showHeader: true,
     showFooter: false,
-    sidebarMode: "static", // Error: 'static' is not in 'fixed' | 'collapsible'
+    // sidebarMode: 'fixed', // Error: 'static' is not in 'fixed' | 'collapsible'
     fontSize: 16,
     fontFamily: "Arial",
     darkMode: true,
     showNotifications: true,
     notificationPosition: "top-right",
-    // resultsPerPage: 10, // Error: Missing
-    enableAnimations: "yes", // Error: string instead of boolean
+    resultsPerPage: 10, // Error: Missing
+    enableAnimations: true, // Error: string instead of boolean
   },
 
   // 外部サービス連携 (いくつか欠落、型間違い)
   externalServices: {
     paymentGateway: {
       apiKey: "pg_key",
-      isEnabled: "true", // Error: string instead of boolean
+      isEnabled: true, // Error: string instead of boolean
       serviceUrl: "https://payment.example.com",
     },
     emailService: {
       provider: "sendgrid",
       apiKey: "sg_key",
-      // senderAddress: 'noreply@example.com', // Error: Missing
+      senderAddress: "noreply@example.com", // Error: Missing
     },
     // cdnProvider はオプショナルなので省略してもOK
     serviceX: true,
@@ -182,7 +182,7 @@ const config = {
   miscSetting1: "misc1",
   miscSetting2: 123,
   miscSetting3: true,
-  miscSetting4: ["a", "b", 123], // Error: number in string[]
+  miscSetting4: ["a", "b", "123"], // Error: number in string[]
   miscSetting5: { nested: "value" },
 };
 

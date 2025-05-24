@@ -438,6 +438,7 @@ function createUser(name, age, email) {
     createdAt: new Date()
   };
 }
+```
 
 <details>
 <summary>💡 解答例を表示</summary>
@@ -472,7 +473,6 @@ function createUser(name: string, age: number, email: string): {
 ```
 
 </details>
-```
 
 ### 演習 1-2: 配列とオブジェクトの型注釈 🔶
 
@@ -484,6 +484,7 @@ function createUser(name: string, age: number, email: string): {
 // - 学生は名前、年齢、成績（数値の配列）を持つ
 // - 学生の平均点を計算する関数
 // - 学生のリストから特定の条件で検索する関数
+```
 
 <details>
 <summary>💡 解答例を表示</summary>
@@ -529,7 +530,6 @@ console.log("トップ学生:", getTopStudent(students));
 ```
 
 </details>
-```
 
 ### 演習 1-3: 実用的なアプリケーション作成 🔥
 
@@ -539,6 +539,7 @@ console.log("トップ学生:", getTopStudent(students));
 // 1. タスクの追加、完了、削除機能
 // 2. タスクの一覧表示
 // 3. 完了済みタスクのフィルタリング
+```
 
 <details>
 <summary>💡 解答例を表示</summary>
@@ -621,7 +622,6 @@ console.log("未完了:", taskManager.getPendingTasks());
 ```
 
 </details>
-```
 
 ## 📊 Week 1 評価基準
 

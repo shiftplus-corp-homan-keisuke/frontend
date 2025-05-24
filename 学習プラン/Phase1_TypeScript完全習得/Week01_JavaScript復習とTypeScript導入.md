@@ -1,26 +1,26 @@
-# Week 1: JavaScript復習とTypeScript導入
+# Week 1: JavaScript 復習と TypeScript 導入
 
-> 💡 **補足資料**: 専門用語や設定ファイルの詳細解説は [Week01_補足資料.md](./Week01_補足資料.md) をご参照ください
+> 💡 **補足資料**: 専門用語や設定ファイルの詳細解説は [Week01\_補足資料.md](./Week01_補足資料.md) をご参照ください
 
 ## 📅 学習期間・目標
 
-**期間**: Week 1（7日間）
-**総学習時間**: 12時間（平日1.5時間、週末3時間）
-**学習スタイル**: 理論20% + 実践コード50% + 演習30%
+**期間**: Week 1（7 日間）
+**総学習時間**: 12 時間（平日 1.5 時間、週末 3 時間）
+**学習スタイル**: 理論 20% + 実践コード 50% + 演習 30%
 
 ### 🎯 Week 1 到達目標
-drizzle prisma typeorm
-- [ ] JavaScript基礎の復習と確認
-- [ ] TypeScript開発環境の構築
+
+- [ ] JavaScript 基礎の復習と確認
+- [ ] TypeScript 開発環境の構築
 - [ ] 基本的な型注釈の理解と実践
-- [ ] 簡単なTypeScriptアプリケーションの作成
-- [ ] 他言語との比較によるTypeScript特徴の理解
+- [ ] 簡単な TypeScript アプリケーションの作成
+- [ ] 他言語との比較による TypeScript 特徴の理解
 
 ## 📚 理論学習内容
 
-### Day 1-2: JavaScript基礎復習
+### Day 1-2: JavaScript 基礎復習
 
-#### 🔍 多言語経験者向けJavaScript特徴
+#### 🔍 多言語経験者向け JavaScript 特徴
 
 ```javascript
 // 1. 動的型付けの特徴（他言語との比較）
@@ -28,10 +28,10 @@ drizzle prisma typeorm
 // Python: 実行時型チェック
 // JavaScript: 型チェックなし
 
-let value = 42;        // number
-value = "hello";       // string (型変更可能)
-value = true;          // boolean (型変更可能)
-value = [1, 2, 3];     // array (型変更可能)
+let value = 42; // number
+value = "hello"; // string (型変更可能)
+value = true; // boolean (型変更可能)
+value = [1, 2, 3]; // array (型変更可能)
 
 // 2. プロトタイプベースオブジェクト指向
 // Java/C#: クラスベース
@@ -41,7 +41,7 @@ value = [1, 2, 3];     // array (型変更可能)
 function Person(name) {
   this.name = name;
 }
-Person.prototype.greet = function() {
+Person.prototype.greet = function () {
   return `Hello, I'm ${this.name}`;
 };
 
@@ -54,8 +54,8 @@ console.log(person.greet()); // "Hello, I'm Alice"
 // 💡 詳細解説: クロージャ → Week01_補足資料.md#クロージャ
 // 💡 詳細解説: イミュータブル操作 → Week01_補足資料.md#イミュータブル操作
 const numbers = [1, 2, 3, 4, 5];
-const doubled = numbers.map(n => n * 2);
-const evens = numbers.filter(n => n % 2 === 0);
+const doubled = numbers.map((n) => n * 2);
+const evens = numbers.filter((n) => n % 2 === 0);
 const sum = numbers.reduce((acc, n) => acc + n, 0);
 
 // 4. 非同期プログラミング
@@ -68,7 +68,7 @@ async function fetchData(url) {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Error:', error);
+    console.error("Error:", error);
     throw error;
   }
 }
@@ -84,20 +84,20 @@ const newUser = { ...user, age: 31 };
 const message = `User ${name} is ${age} years old`;
 ```
 
-#### 🚨 JavaScriptの型関連の問題点
+#### 🚨 JavaScript の型関連の問題点
 
 ```javascript
 // 1. 暗黙的型変換による予期しない動作
-console.log("5" + 3);     // "53" (文字列結合)
-console.log("5" - 3);     // 2 (数値減算)
-console.log(true + 1);    // 2
-console.log([] + []);     // "" (空文字列)
-console.log({} + []);     // "[object Object]"
+console.log("5" + 3); // "53" (文字列結合)
+console.log("5" - 3); // 2 (数値減算)
+console.log(true + 1); // 2
+console.log([] + []); // "" (空文字列)
+console.log({} + []); // "[object Object]"
 
 // 2. undefined/nullの混在
 let data;
-console.log(data);        // undefined
-console.log(data.name);   // TypeError: Cannot read property 'name' of undefined
+console.log(data); // undefined
+console.log(data.name); // TypeError: Cannot read property 'name' of undefined
 
 function getUser(id) {
   if (id > 0) {
@@ -108,25 +108,25 @@ function getUser(id) {
 
 // 3. 関数パラメータの型不明
 function calculateArea(width, height) {
-  return width * height;  // width, heightが数値である保証がない
+  return width * height; // width, heightが数値である保証がない
 }
 
-calculateArea("10", "20");  // "1020" (文字列結合)
-calculateArea(10);          // NaN (heightがundefined)
+calculateArea("10", "20"); // "1020" (文字列結合)
+calculateArea(10); // NaN (heightがundefined)
 
 // 4. オブジェクトプロパティの存在不明
 function processUser(user) {
-  return user.profile.avatar.url;  // 各プロパティの存在が不明
+  return user.profile.avatar.url; // 各プロパティの存在が不明
 }
 
 // 5. 配列要素の型不統一
 const mixedArray = [1, "hello", true, { name: "test" }, null];
-mixedArray.forEach(item => {
-  console.log(item.toUpperCase());  // 文字列以外でエラー
+mixedArray.forEach((item) => {
+  console.log(item.toUpperCase()); // 文字列以外でエラー
 });
 ```
 
-### Day 3-4: TypeScript導入と環境構築
+### Day 3-4: TypeScript 導入と環境構築
 
 #### 🛠️ 開発環境構築
 
@@ -153,49 +153,44 @@ npm install -D prettier
 npm install -D nodemon
 ```
 
-#### 📝 tsconfig.json設定（初心者向け）
+#### 📝 tsconfig.json 設定（初心者向け）
 
-> 💡 **詳細解説**: tsconfig.jsonの各オプションの詳細は [Week01_補足資料.md#tsconfigjson設定詳細](./Week01_補足資料.md#tsconfigjson設定詳細) をご参照ください
+> 💡 **詳細解説**: tsconfig.json の各オプションの詳細は [Week01\_補足資料.md#tsconfigjson 設定詳細](./Week01_補足資料.md#tsconfigjson設定詳細) をご参照ください
 
 ```json
 {
   "compilerOptions": {
     // 基本設定
-    "target": "ES2020",                    // 出力するJavaScriptのバージョン
-    "module": "commonjs",                  // モジュールシステム
-    "lib": ["ES2020", "DOM"],             // 使用可能なライブラリ
-    "outDir": "./dist",                   // 出力ディレクトリ
-    "rootDir": "./src",                   // ソースディレクトリ
-    
+    "target": "ES2020", // 出力するJavaScriptのバージョン
+    "module": "commonjs", // モジュールシステム
+    "lib": ["ES2020", "DOM"], // 使用可能なライブラリ
+    "outDir": "./dist", // 出力ディレクトリ
+    "rootDir": "./src", // ソースディレクトリ
+
     // 型チェック設定（段階的に厳しく）
-    "strict": false,                      // Week1は緩い設定から開始
-    "noImplicitAny": true,               // any型の暗黙的使用を禁止
-    "strictNullChecks": false,           // Week2で有効化予定
-    "strictFunctionTypes": false,        // Week3で有効化予定
-    
+    "strict": false, // Week1は緩い設定から開始
+    "noImplicitAny": true, // any型の暗黙的使用を禁止
+    "strictNullChecks": false, // Week2で有効化予定
+    "strictFunctionTypes": false, // Week3で有効化予定
+
     // モジュール解決
     "moduleResolution": "node",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    
+
     // 開発支援
-    "sourceMap": true,                   // デバッグ用ソースマップ
-    "declaration": true,                 // 型定義ファイル生成
-    "removeComments": false,             // コメント保持
-    "skipLibCheck": true                 // ライブラリの型チェックスキップ
+    "sourceMap": true, // デバッグ用ソースマップ
+    "declaration": true, // 型定義ファイル生成
+    "removeComments": false, // コメント保持
+    "skipLibCheck": true // ライブラリの型チェックスキップ
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
 ```
 
-#### 🎯 TypeScriptの基本概念
+#### 🎯 TypeScript の基本概念
 
 ```typescript
 // 1. 型注釈の基本
@@ -207,9 +202,9 @@ let message: string = "Hello World";
 
 // 2. 型推論の活用
 // 💡 詳細解説: 型推論 → Week01_補足資料.md#型推論type-inference
-let inferredString = "Hello";        // string型として推論
-let inferredNumber = 42;             // number型として推論
-let inferredBoolean = true;          // boolean型として推論
+let inferredString = "Hello"; // string型として推論
+let inferredNumber = 42; // number型として推論
+let inferredBoolean = true; // boolean型として推論
 
 // 3. 基本的な型
 let userName: string = "Alice";
@@ -234,7 +229,7 @@ let user: {
 } = {
   name: "Alice",
   age: 30,
-  email: "alice@example.com"
+  email: "alice@example.com",
 };
 
 // 6. 関数の型注釈
@@ -255,7 +250,7 @@ const multiply = (a: number, b: number): number => a * b;
 const isEven = (num: number): boolean => num % 2 === 0;
 ```
 
-### Day 5-7: 実践的なTypeScript活用
+### Day 5-7: 実践的な TypeScript 活用
 
 #### 🔧 他言語との比較学習
 
@@ -284,16 +279,16 @@ const user2: IUser = { name: "Bob", age: 25 };
 class User {
   private name: string;
   private age: number;
-  
+
   constructor(name: string, age: number) {
     this.name = name;
     this.age = age;
   }
-  
+
   public getName(): string {
     return this.name;
   }
-  
+
   public getAge(): number {
     return this.age;
   }
@@ -350,11 +345,14 @@ function getUser(id: number): User | null {
   if (id > 0) {
     return new User("User", 25);
   }
-  return null;  // Goのnilに相当
+  return null; // Goのnilに相当
 }
 
 // より明示的なエラーハンドリング（Goスタイルに近い）
-function getUserWithError(id: number): { user: User | null; error: string | null } {
+function getUserWithError(id: number): {
+  user: User | null;
+  error: string | null;
+} {
   if (id <= 0) {
     return { user: null, error: "invalid id" };
   }
@@ -386,7 +384,7 @@ if (result.error) {
 
 // TypeScript: Union型でRustのResult型を模倣
 type Result<T, E> =
-  | { success: true; data: T }    // Rustの Ok(T) に相当
+  | { success: true; data: T } // Rustの Ok(T) に相当
   | { success: false; error: E }; // Rustの Err(E) に相当
 
 function divide(a: number, b: number): Result<number, string> {
@@ -399,7 +397,7 @@ function divide(a: number, b: number): Result<number, string> {
 // Rustスタイルの使用（パターンマッチング風）
 const divisionResult = divide(10, 2);
 if (divisionResult.success) {
-  console.log(`結果: ${divisionResult.data}`);  // 型安全にアクセス
+  console.log(`結果: ${divisionResult.data}`); // 型安全にアクセス
 } else {
   console.error(`エラー: ${divisionResult.error}`);
 }
@@ -435,7 +433,7 @@ function createUser(name, age, email) {
     name: name,
     age: age,
     email: email,
-    createdAt: new Date()
+    createdAt: new Date(),
   };
 }
 ```
@@ -457,7 +455,11 @@ function getGrade(score: number): string {
   return "F";
 }
 
-function createUser(name: string, age: number, email: string): {
+function createUser(
+  name: string,
+  age: number,
+  email: string
+): {
   name: string;
   age: number;
   email: string;
@@ -467,7 +469,7 @@ function createUser(name: string, age: number, email: string): {
     name: name,
     age: age,
     email: email,
-    createdAt: new Date()
+    createdAt: new Date(),
   };
 }
 ```
@@ -504,12 +506,12 @@ function calculateAverage(grades: number[]): number {
 }
 
 function findStudentsByMinAge(students: Student[], minAge: number): Student[] {
-  return students.filter(student => student.age >= minAge);
+  return students.filter((student) => student.age >= minAge);
 }
 
 function getTopStudent(students: Student[]): Student | null {
   if (students.length === 0) return null;
-  
+
   return students.reduce((topStudent, currentStudent) => {
     const currentAvg = calculateAverage(currentStudent.grades);
     const topAvg = calculateAverage(topStudent.grades);
@@ -521,7 +523,7 @@ function getTopStudent(students: Student[]): Student | null {
 const students: Student[] = [
   { name: "Alice", age: 20, grades: [85, 92, 78, 96] },
   { name: "Bob", age: 19, grades: [76, 84, 88, 92] },
-  { name: "Charlie", age: 21, grades: [94, 89, 91, 87] }
+  { name: "Charlie", age: 21, grades: [94, 89, 91, 87] },
 ];
 
 console.log("平均点:", calculateAverage(students[0].grades));
@@ -564,15 +566,15 @@ class TaskManager {
       title: title,
       description: description,
       completed: false,
-      createdAt: new Date()
+      createdAt: new Date(),
     };
-    
+
     this.tasks.push(newTask);
     return newTask;
   }
 
   completeTask(id: number): boolean {
-    const task = this.tasks.find(t => t.id === id);
+    const task = this.tasks.find((t) => t.id === id);
     if (task) {
       task.completed = true;
       return true;
@@ -581,7 +583,7 @@ class TaskManager {
   }
 
   deleteTask(id: number): boolean {
-    const index = this.tasks.findIndex(t => t.id === id);
+    const index = this.tasks.findIndex((t) => t.id === id);
     if (index !== -1) {
       this.tasks.splice(index, 1);
       return true;
@@ -594,15 +596,15 @@ class TaskManager {
   }
 
   getCompletedTasks(): Task[] {
-    return this.tasks.filter(task => task.completed);
+    return this.tasks.filter((task) => task.completed);
   }
 
   getPendingTasks(): Task[] {
-    return this.tasks.filter(task => !task.completed);
+    return this.tasks.filter((task) => !task.completed);
   }
 
   getTaskById(id: number): Task | null {
-    return this.tasks.find(task => task.id === id) || null;
+    return this.tasks.find((task) => task.id === id) || null;
   }
 }
 
@@ -627,25 +629,29 @@ console.log("未完了:", taskManager.getPendingTasks());
 
 ### 理解度チェックリスト
 
-#### JavaScript復習 (25%)
+#### JavaScript 復習 (25%)
+
 - [ ] ES6+のモダン構文を理解している
 - [ ] 非同期プログラミング（Promise/async-await）を理解している
 - [ ] 関数型プログラミングの基本を理解している
-- [ ] JavaScriptの型関連の問題点を説明できる
+- [ ] JavaScript の型関連の問題点を説明できる
 
-#### TypeScript基礎 (35%)
+#### TypeScript 基礎 (35%)
+
 - [ ] 基本的な型注釈を正しく書ける
 - [ ] 型推論の仕組みを理解している
 - [ ] 関数の型注釈を適切に設定できる
 - [ ] 配列とオブジェクトの型を定義できる
 
 #### 開発環境 (20%)
-- [ ] TypeScript開発環境を構築できる
-- [ ] tsconfig.jsonの基本設定を理解している
-- [ ] TypeScriptコンパイルを実行できる
+
+- [ ] TypeScript 開発環境を構築できる
+- [ ] tsconfig.json の基本設定を理解している
+- [ ] TypeScript コンパイルを実行できる
 - [ ] 基本的なデバッグができる
 
 #### 実践応用 (20%)
+
 - [ ] 簡単なクラスを型安全に実装できる
 - [ ] 実用的な関数を型注釈付きで作成できる
 - [ ] 基本的なアプリケーションを作成できる
@@ -653,9 +659,9 @@ console.log("未完了:", taskManager.getPendingTasks());
 
 ### 成果物チェックリスト
 
-- [ ] **開発環境**: TypeScript開発環境の完全構築
+- [ ] **開発環境**: TypeScript 開発環境の完全構築
 - [ ] **基本アプリ**: タスク管理アプリケーション
-- [ ] **型注釈練習集**: 20個以上の関数に型注釈
+- [ ] **型注釈練習集**: 20 個以上の関数に型注釈
 - [ ] **比較ドキュメント**: 他言語との比較まとめ
 
 ## 🔄 Week 2 への準備
@@ -667,13 +673,13 @@ console.log("未完了:", taskManager.getPendingTasks());
 // 以下のコードを読んで理解しておくこと
 
 // 1. より詳細な型システム
-let value: string | number = "hello";  // Union型
-value = 42;  // OK
+let value: string | number = "hello"; // Union型
+value = 42; // OK
 
 // 2. オプショナルプロパティ
 interface User {
   name: string;
-  age?: number;  // オプショナル
+  age?: number; // オプショナル
 }
 
 // 3. 型エイリアス
@@ -690,9 +696,9 @@ function format(value: string | number): string {
 
 ### 環境準備
 
-- [ ] VS Code TypeScript拡張機能の設定
-- [ ] ESLint設定の確認
-- [ ] Prettier設定の確認
+- [ ] VS Code TypeScript 拡張機能の設定
+- [ ] ESLint 設定の確認
+- [ ] Prettier 設定の確認
 - [ ] Git リポジトリの初期化
 
 ### 学習継続のコツ
@@ -704,6 +710,6 @@ function format(value: string | number): string {
 
 ---
 
-**📌 重要**: Week 1はTypeScriptの基礎固めの重要な期間です。JavaScript経験を活かしながら、TypeScriptの型システムの恩恵を実感できるようになります。焦らず確実に基礎を身につけましょう。
+**📌 重要**: Week 1 は TypeScript の基礎固めの重要な期間です。JavaScript 経験を活かしながら、TypeScript の型システムの恩恵を実感できるようになります。焦らず確実に基礎を身につけましょう。
 
 **🌟 次週は、より詳細な型システムと実践的な型注釈について学習します！**

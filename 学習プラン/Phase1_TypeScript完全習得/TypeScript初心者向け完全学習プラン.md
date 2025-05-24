@@ -31,10 +31,10 @@ graph TD
     C --> C1[実践プロジェクト<br/>ライブラリ統合<br/>エラーハンドリング]
     D --> D1[高度な型機能<br/>ツール開発<br/>ポートフォリオ]
     
-    style A fill:#ccffcc
-    style B fill:#ffffcc
-    style C fill:#ffcccc
-    style D fill:#ccccff
+    style A fill:#003300
+    style B fill:#333300
+    style C fill:#330000
+    style D fill:#000033
 ```
 
 ## 📅 週次学習スケジュール

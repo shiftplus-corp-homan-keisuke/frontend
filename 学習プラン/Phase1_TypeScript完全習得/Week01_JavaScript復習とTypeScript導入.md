@@ -1,5 +1,7 @@
 # Week 1: JavaScript復習とTypeScript導入
 
+> 💡 **補足資料**: 専門用語や設定ファイルの詳細解説は [Week01_補足資料.md](./Week01_補足資料.md) をご参照ください
+
 ## 📅 学習期間・目標
 
 **期間**: Week 1（7日間）
@@ -7,7 +9,7 @@
 **学習スタイル**: 理論20% + 実践コード50% + 演習30%
 
 ### 🎯 Week 1 到達目標
-
+drizzle prisma typeorm
 - [ ] JavaScript基礎の復習と確認
 - [ ] TypeScript開発環境の構築
 - [ ] 基本的な型注釈の理解と実践
@@ -34,6 +36,7 @@ value = [1, 2, 3];     // array (型変更可能)
 // 2. プロトタイプベースオブジェクト指向
 // Java/C#: クラスベース
 // JavaScript: プロトタイプベース
+// 💡 詳細解説: プロトタイプベースオブジェクト指向 → Week01_補足資料.md#プロトタイプベースオブジェクト指向
 
 function Person(name) {
   this.name = name;
@@ -47,6 +50,9 @@ console.log(person.greet()); // "Hello, I'm Alice"
 
 // 3. 関数型プログラミング要素
 // 高階関数、クロージャ、イミュータブル操作
+// 💡 詳細解説: 高階関数 → Week01_補足資料.md#高階関数
+// 💡 詳細解説: クロージャ → Week01_補足資料.md#クロージャ
+// 💡 詳細解説: イミュータブル操作 → Week01_補足資料.md#イミュータブル操作
 const numbers = [1, 2, 3, 4, 5];
 const doubled = numbers.map(n => n * 2);
 const evens = numbers.filter(n => n % 2 === 0);
@@ -54,6 +60,8 @@ const sum = numbers.reduce((acc, n) => acc + n, 0);
 
 // 4. 非同期プログラミング
 // Promise、async/await
+// 💡 詳細解説: Promise → Week01_補足資料.md#promise
+// 💡 詳細解説: async/await → Week01_補足資料.md#asyncawait
 async function fetchData(url) {
   try {
     const response = await fetch(url);
@@ -67,6 +75,9 @@ async function fetchData(url) {
 
 // 5. ES6+モダン構文
 // 分割代入、スプレッド演算子、テンプレートリテラル
+// 💡 詳細解説: 分割代入 → Week01_補足資料.md#分割代入destructuring
+// 💡 詳細解説: スプレッド演算子 → Week01_補足資料.md#スプレッド演算子spread-operator
+// 💡 詳細解説: テンプレートリテラル → Week01_補足資料.md#テンプレートリテラルtemplate-literals
 const user = { name: "Bob", age: 30, email: "bob@example.com" };
 const { name, age } = user;
 const newUser = { ...user, age: 31 };
@@ -144,6 +155,8 @@ npm install -D nodemon
 
 #### 📝 tsconfig.json設定（初心者向け）
 
+> 💡 **詳細解説**: tsconfig.jsonの各オプションの詳細は [Week01_補足資料.md#tsconfigjson設定詳細](./Week01_補足資料.md#tsconfigjson設定詳細) をご参照ください
+
 ```json
 {
   "compilerOptions": {
@@ -193,6 +206,7 @@ let message = "Hello World";
 let message: string = "Hello World";
 
 // 2. 型推論の活用
+// 💡 詳細解説: 型推論 → Week01_補足資料.md#型推論type-inference
 let inferredString = "Hello";        // string型として推論
 let inferredNumber = 42;             // number型として推論
 let inferredBoolean = true;          // boolean型として推論
@@ -247,9 +261,26 @@ const isEven = (num: number): boolean => num % 2 === 0;
 
 ```typescript
 // Java/C#との比較
-// Java: public class User { private String name; }
-// TypeScript: より柔軟な型システム
+// Java: 厳密なクラス定義が必要
+// public class User {
+//   private String name;
+//   private int age;
+//   public User(String name, int age) { ... }
+//   public String getName() { return name; }
+// }
 
+// TypeScript: より柔軟な型システム
+// 1. オブジェクトリテラル型でも表現可能
+const user1: { name: string; age: number } = { name: "Alice", age: 30 };
+
+// 2. インターフェースでも表現可能
+interface IUser {
+  name: string;
+  age: number;
+}
+const user2: IUser = { name: "Bob", age: 25 };
+
+// 3. クラスでも表現可能（Java/C#と同様）
 class User {
   private name: string;
   private age: number;
@@ -268,32 +299,95 @@ class User {
   }
 }
 
-// Python との比較
-// Python: def process_data(data: List[int]) -> int:
-// TypeScript: より厳密な型チェック
+// 4. 型エイリアスでも表現可能
+type UserType = {
+  name: string;
+  age: number;
+};
+const user3: UserType = { name: "Charlie", age: 35 };
 
+// Java/C#では必ずクラス定義が必要だが、
+// TypeScriptは用途に応じて最適な型定義方法を選択できる
+
+// Python との比較
+// Python: 実行時型チェック（型ヒントは任意）
+// from typing import List
+// def process_data(data: List[int]) -> int:
+//     return sum(data)
+//
+// # Pythonでは以下も実行時エラーにならない
+// process_data(["1", "2", "3"])  # 実行時にTypeErrorが発生
+
+// TypeScript: コンパイル時型チェック（厳密）
 function processData(data: number[]): number {
   return data.reduce((sum, num) => sum + num, 0);
 }
 
-// Go との比較
-// Go: func GetUser(id int) (*User, error)
-// TypeScript: エラーハンドリングの違い
+// TypeScriptでは以下はコンパイル時にエラー
+// processData(["1", "2", "3"]);  // Error: Argument of type 'string[]' is not assignable to parameter of type 'number[]'
 
+// Pythonとの違い：
+// 1. TypeScriptはコンパイル時に型エラーを検出
+// 2. Pythonの型ヒントは実行時には無視される
+// 3. TypeScriptは型安全性がより厳密に保証される
+
+// Go との比較
+// Go: 複数戻り値でエラーハンドリング
+// func GetUser(id int) (*User, error) {
+//     if id <= 0 {
+//         return nil, errors.New("invalid id")
+//     }
+//     return &User{Name: "User"}, nil
+// }
+//
+// user, err := GetUser(1)
+// if err != nil {
+//     // エラー処理
+// }
+
+// TypeScript: Union型やnull許容型でエラーハンドリング
 function getUser(id: number): User | null {
   if (id > 0) {
     return new User("User", 25);
   }
-  return null;
+  return null;  // Goのnilに相当
+}
+
+// より明示的なエラーハンドリング（Goスタイルに近い）
+function getUserWithError(id: number): { user: User | null; error: string | null } {
+  if (id <= 0) {
+    return { user: null, error: "invalid id" };
+  }
+  return { user: new User("User", 25), error: null };
+}
+
+// 使用例
+const result = getUserWithError(1);
+if (result.error) {
+  // エラー処理（Goのif err != nilパターンに似ている）
+  console.error(result.error);
+} else {
+  // 正常処理
+  console.log(result.user?.getName());
 }
 
 // Rust との比較
-// Rust: Option<T>, Result<T, E>
-// TypeScript: Union型での表現
+// Rust: 型安全なOption<T>とResult<T, E>
+// enum Option<T> { Some(T), None }
+// enum Result<T, E> { Ok(T), Err(E) }
+//
+// fn divide(a: f64, b: f64) -> Result<f64, String> {
+//     if b == 0.0 {
+//         Err("Division by zero".to_string())
+//     } else {
+//         Ok(a / b)
+//     }
+// }
 
-type Result<T, E> = 
-  | { success: true; data: T }
-  | { success: false; error: E };
+// TypeScript: Union型でRustのResult型を模倣
+type Result<T, E> =
+  | { success: true; data: T }    // Rustの Ok(T) に相当
+  | { success: false; error: E }; // Rustの Err(E) に相当
 
 function divide(a: number, b: number): Result<number, string> {
   if (b === 0) {
@@ -301,6 +395,19 @@ function divide(a: number, b: number): Result<number, string> {
   }
   return { success: true, data: a / b };
 }
+
+// Rustスタイルの使用（パターンマッチング風）
+const divisionResult = divide(10, 2);
+if (divisionResult.success) {
+  console.log(`結果: ${divisionResult.data}`);  // 型安全にアクセス
+} else {
+  console.error(`エラー: ${divisionResult.error}`);
+}
+
+// 違いの要点：
+// Go: 複数戻り値による慣習的エラーハンドリング
+// Rust: 型システムによる強制的エラーハンドリング
+// TypeScript: 柔軟なUnion型による表現力の高いエラーハンドリング
 ```
 
 ## 🎯 実践演習
@@ -332,6 +439,10 @@ function createUser(name, age, email) {
   };
 }
 
+<details>
+<summary>💡 解答例を表示</summary>
+
+```typescript
 // TypeScript版（解答例）
 function calculateBMI(weight: number, height: number): number {
   return weight / (height * height);
@@ -360,6 +471,9 @@ function createUser(name: string, age: number, email: string): {
 }
 ```
 
+</details>
+```
+
 ### 演習 1-2: 配列とオブジェクトの型注釈 🔶
 
 ```typescript
@@ -371,6 +485,10 @@ function createUser(name: string, age: number, email: string): {
 // - 学生の平均点を計算する関数
 // - 学生のリストから特定の条件で検索する関数
 
+<details>
+<summary>💡 解答例を表示</summary>
+
+```typescript
 // 解答例
 type Student = {
   name: string;
@@ -410,6 +528,9 @@ console.log("20歳以上の学生:", findStudentsByMinAge(students, 20));
 console.log("トップ学生:", getTopStudent(students));
 ```
 
+</details>
+```
+
 ### 演習 1-3: 実用的なアプリケーション作成 🔥
 
 ```typescript
@@ -419,6 +540,10 @@ console.log("トップ学生:", getTopStudent(students));
 // 2. タスクの一覧表示
 // 3. 完了済みタスクのフィルタリング
 
+<details>
+<summary>💡 解答例を表示</summary>
+
+```typescript
 // 解答例
 type Task = {
   id: number;
@@ -493,6 +618,9 @@ taskManager.completeTask(1);
 console.log("全タスク:", taskManager.getAllTasks());
 console.log("完了済み:", taskManager.getCompletedTasks());
 console.log("未完了:", taskManager.getPendingTasks());
+```
+
+</details>
 ```
 
 ## 📊 Week 1 評価基準

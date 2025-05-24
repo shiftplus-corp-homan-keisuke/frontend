@@ -2,8 +2,8 @@
 
 ## 📅 学習期間・目標
 
-**期間**: Week 3-4（2週間）  
-**総学習時間**: 40時間（週20時間）
+**期間**: Week 3-4（2 週間）  
+**総学習時間**: 40 時間（週 10 時間）
 
 ### 🎯 Week 3-4 到達目標
 
@@ -34,7 +34,7 @@ interface Repository<TEntity, TId> {
   findById(id: TId): Promise<Option<TEntity>>;
   save(entity: TEntity): Promise<Result<void, RepositoryError>>;
   delete(id: TId): Promise<Result<void, RepositoryError>>;
-  
+
   // コレクション操作
   findAll(criteria?: SearchCriteria): Promise<TEntity[]>;
   count(criteria?: SearchCriteria): Promise<number>;
@@ -45,11 +45,11 @@ interface Repository<TEntity, TId> {
 abstract class Option<T> {
   abstract isSome(): this is Some<T>;
   abstract isNone(): this is None<T>;
-  
+
   static some<T>(value: T): Option<T> {
     return new Some(value);
   }
-  
+
   static none<T>(): Option<T> {
     return new None<T>();
   }
@@ -132,23 +132,20 @@ interface ProductSearchCriteria {
   limit?: number;
   offset?: number;
   sortBy?: ProductSortField;
-  sortOrder?: 'ASC' | 'DESC';
+  sortOrder?: "ASC" | "DESC";
 }
 
 enum ProductSortField {
-  Name = 'name',
-  Price = 'price',
-  CreatedAt = 'createdAt',
-  UpdatedAt = 'updatedAt',
-  StockQuantity = 'stockQuantity'
+  Name = "name",
+  Price = "price",
+  CreatedAt = "createdAt",
+  UpdatedAt = "updatedAt",
+  StockQuantity = "stockQuantity",
 }
 
 // インフラ層：Repository 実装
 class PostgresProductRepository implements ProductRepository {
-  constructor(
-    private db: DatabaseConnection,
-    private mapper: ProductMapper
-  ) {}
+  constructor(private db: DatabaseConnection, private mapper: ProductMapper) {}
 
   async findById(id: ProductId): Promise<Option<Product>> {
     try {
@@ -158,19 +155,21 @@ class PostgresProductRepository implements ProductRepository {
         JOIN product_categories pc ON p.category_id = pc.id
         WHERE p.id = $1 AND p.deleted_at IS NULL
       `;
-      
+
       const result = await this.db.query(query, [id.toString()]);
-      
+
       if (result.rows.length === 0) {
         return Option.none<Product>();
       }
 
       const productResult = this.mapper.toDomain(result.rows[0]);
-      return productResult.isOk() 
+      return productResult.isOk()
         ? Option.some(productResult.value)
         : Option.none<Product>();
     } catch (error) {
-      throw new RepositoryError(`Failed to find product by id: ${error.message}`);
+      throw new RepositoryError(
+        `Failed to find product by id: ${error.message}`
+      );
     }
   }
 
@@ -183,9 +182,9 @@ class PostgresProductRepository implements ProductRepository {
         WHERE pc.name = $1 AND p.deleted_at IS NULL
         ORDER BY p.name ASC
       `;
-      
+
       const result = await this.db.query(query, [category]);
-      
+
       const products: Product[] = [];
       for (const row of result.rows) {
         const productResult = this.mapper.toDomain(row);
@@ -193,17 +192,19 @@ class PostgresProductRepository implements ProductRepository {
           products.push(productResult.value);
         }
       }
-      
+
       return products;
     } catch (error) {
-      throw new RepositoryError(`Failed to find products by category: ${error.message}`);
+      throw new RepositoryError(
+        `Failed to find products by category: ${error.message}`
+      );
     }
   }
 
   async save(product: Product): Promise<Result<void, RepositoryError>> {
     try {
       const persistenceData = this.mapper.toPersistence(product);
-      
+
       const query = `
         INSERT INTO products (
           id, name, description, price_amount, price_currency,
@@ -230,7 +231,7 @@ class PostgresProductRepository implements ProductRepository {
         persistenceData.stockQuantity,
         persistenceData.isActive,
         persistenceData.createdAt,
-        persistenceData.updatedAt
+        persistenceData.updatedAt,
       ]);
 
       return Result.ok(undefined);
@@ -245,7 +246,7 @@ class PostgresProductRepository implements ProductRepository {
     try {
       const { query, params } = this.buildSearchQuery(criteria);
       const result = await this.db.query(query, params);
-      
+
       const products: Product[] = [];
       for (const row of result.rows) {
         const productResult = this.mapper.toDomain(row);
@@ -253,21 +254,24 @@ class PostgresProductRepository implements ProductRepository {
           products.push(productResult.value);
         }
       }
-      
+
       return products;
     } catch (error) {
       throw new RepositoryError(`Failed to find products: ${error.message}`);
     }
   }
 
-  private buildSearchQuery(criteria?: ProductSearchCriteria): { query: string; params: any[] } {
+  private buildSearchQuery(criteria?: ProductSearchCriteria): {
+    query: string;
+    params: any[];
+  } {
     let query = `
       SELECT p.*, pc.name as category_name
       FROM products p
       JOIN product_categories pc ON p.category_id = pc.id
       WHERE p.deleted_at IS NULL
     `;
-    
+
     const params: any[] = [];
     let paramIndex = 1;
 
@@ -285,8 +289,13 @@ class PostgresProductRepository implements ProductRepository {
       }
 
       if (criteria.priceRange) {
-        query += ` AND p.price_amount BETWEEN $${paramIndex} AND $${paramIndex + 1}`;
-        params.push(criteria.priceRange.min.amount, criteria.priceRange.max.amount);
+        query += ` AND p.price_amount BETWEEN $${paramIndex} AND $${
+          paramIndex + 1
+        }`;
+        params.push(
+          criteria.priceRange.min.amount,
+          criteria.priceRange.max.amount
+        );
         paramIndex += 2;
       }
 
@@ -306,7 +315,7 @@ class PostgresProductRepository implements ProductRepository {
 
       if (criteria.sortBy) {
         const sortField = this.mapSortField(criteria.sortBy);
-        const sortOrder = criteria.sortOrder || 'ASC';
+        const sortOrder = criteria.sortOrder || "ASC";
         query += ` ORDER BY ${sortField} ${sortOrder}`;
       }
 
@@ -329,17 +338,17 @@ class PostgresProductRepository implements ProductRepository {
   private mapSortField(sortField: ProductSortField): string {
     switch (sortField) {
       case ProductSortField.Name:
-        return 'p.name';
+        return "p.name";
       case ProductSortField.Price:
-        return 'p.price_amount';
+        return "p.price_amount";
       case ProductSortField.CreatedAt:
-        return 'p.created_at';
+        return "p.created_at";
       case ProductSortField.UpdatedAt:
-        return 'p.updated_at';
+        return "p.updated_at";
       case ProductSortField.StockQuantity:
-        return 'p.stock_quantity';
+        return "p.stock_quantity";
       default:
-        return 'p.created_at';
+        return "p.created_at";
     }
   }
 }
@@ -362,9 +371,14 @@ interface ProductPersistenceData {
 class ProductMapper {
   toDomain(data: ProductPersistenceData): Result<Product, MappingError> {
     try {
-      const priceResult = Money.create(data.priceAmount, data.priceCurrency as Currency);
+      const priceResult = Money.create(
+        data.priceAmount,
+        data.priceCurrency as Currency
+      );
       if (priceResult.isErr()) {
-        return Result.err(new MappingError(`Invalid price: ${priceResult.error.message}`));
+        return Result.err(
+          new MappingError(`Invalid price: ${priceResult.error.message}`)
+        );
       }
 
       return Product.fromPersistence(
@@ -375,12 +389,14 @@ class ProductMapper {
           price: priceResult.value,
           category: data.categoryName as ProductCategory,
           stockQuantity: data.stockQuantity,
-          isActive: data.isActive
+          isActive: data.isActive,
         },
         data.createdAt
       );
     } catch (error) {
-      return Result.err(new MappingError(`Failed to map to domain: ${error.message}`));
+      return Result.err(
+        new MappingError(`Failed to map to domain: ${error.message}`)
+      );
     }
   }
 
@@ -396,18 +412,18 @@ class ProductMapper {
       stockQuantity: product.stockQuantity,
       isActive: product.isActive,
       createdAt: product.createdAt,
-      updatedAt: product.updatedAt
+      updatedAt: product.updatedAt,
     };
   }
 
   private getCategoryId(category: ProductCategory): string {
     // カテゴリ名からIDへのマッピング（実際の実装では別テーブルから取得）
     const categoryMap: Record<ProductCategory, string> = {
-      [ProductCategory.Electronics]: 'cat_electronics',
-      [ProductCategory.Clothing]: 'cat_clothing',
-      [ProductCategory.Books]: 'cat_books',
-      [ProductCategory.Sports]: 'cat_sports',
-      [ProductCategory.Home]: 'cat_home'
+      [ProductCategory.Electronics]: "cat_electronics",
+      [ProductCategory.Clothing]: "cat_clothing",
+      [ProductCategory.Books]: "cat_books",
+      [ProductCategory.Sports]: "cat_sports",
+      [ProductCategory.Home]: "cat_home",
     };
     return categoryMap[category];
   }
@@ -416,14 +432,14 @@ class ProductMapper {
 class RepositoryError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = 'RepositoryError';
+    this.name = "RepositoryError";
   }
 }
 
 class MappingError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = 'MappingError';
+    this.name = "MappingError";
   }
 }
 ```
@@ -462,7 +478,9 @@ interface CreateProductResponse {
   wasCreated: boolean;
 }
 
-class CreateProductUseCase implements UseCase<CreateProductRequest, CreateProductResponse> {
+class CreateProductUseCase
+  implements UseCase<CreateProductRequest, CreateProductResponse>
+{
   constructor(
     private productRepository: ProductRepository,
     private productDomainService: ProductDomainService,
@@ -470,7 +488,9 @@ class CreateProductUseCase implements UseCase<CreateProductRequest, CreateProduc
     private logger: Logger
   ) {}
 
-  async execute(request: CreateProductRequest): Promise<Result<CreateProductResponse, UseCaseError>> {
+  async execute(
+    request: CreateProductRequest
+  ): Promise<Result<CreateProductResponse, UseCaseError>> {
     try {
       // 1. 入力検証
       const validationResult = this.validateRequest(request);
@@ -479,13 +499,19 @@ class CreateProductUseCase implements UseCase<CreateProductRequest, CreateProduc
       }
 
       // 2. Value Object 作成
-      const priceResult = Money.create(request.price.amount, request.price.currency as Currency);
+      const priceResult = Money.create(
+        request.price.amount,
+        request.price.currency as Currency
+      );
       if (priceResult.isErr()) {
-        return Result.err(new UseCaseError(`Invalid price: ${priceResult.error.message}`));
+        return Result.err(
+          new UseCaseError(`Invalid price: ${priceResult.error.message}`)
+        );
       }
 
       // 3. ドメインサービスでビジネスルールチェック
-      const uniquenessResult = await this.productDomainService.ensureProductNameUnique(request.name);
+      const uniquenessResult =
+        await this.productDomainService.ensureProductNameUnique(request.name);
       if (uniquenessResult.isErr()) {
         return Result.err(new UseCaseError(uniquenessResult.error.message));
       }
@@ -496,17 +522,25 @@ class CreateProductUseCase implements UseCase<CreateProductRequest, CreateProduc
         description: request.description,
         price: priceResult.value,
         category: request.category as ProductCategory,
-        stockQuantity: request.initialStock
+        stockQuantity: request.initialStock,
       });
 
       if (productResult.isErr()) {
-        return Result.err(new UseCaseError(`Failed to create product: ${productResult.error.message}`));
+        return Result.err(
+          new UseCaseError(
+            `Failed to create product: ${productResult.error.message}`
+          )
+        );
       }
 
       // 5. 永続化
       const saveResult = await this.productRepository.save(productResult.value);
       if (saveResult.isErr()) {
-        return Result.err(new UseCaseError(`Failed to save product: ${saveResult.error.message}`));
+        return Result.err(
+          new UseCaseError(
+            `Failed to save product: ${saveResult.error.message}`
+          )
+        );
       }
 
       // 6. ドメインイベント発行
@@ -519,39 +553,44 @@ class CreateProductUseCase implements UseCase<CreateProductRequest, CreateProduc
       await this.eventBus.publish(productCreatedEvent);
 
       // 7. ログ記録
-      this.logger.info('Product created successfully', {
+      this.logger.info("Product created successfully", {
         productId: productResult.value.id.toString(),
-        productName: productResult.value.name
+        productName: productResult.value.name,
       });
 
       // 8. レスポンス作成
       const productDto = this.mapToDto(productResult.value);
       return Result.ok({
         product: productDto,
-        wasCreated: true
+        wasCreated: true,
       });
-
     } catch (error) {
-      this.logger.error('Unexpected error in CreateProductUseCase', error);
-      return Result.err(new UseCaseError('An unexpected error occurred'));
+      this.logger.error("Unexpected error in CreateProductUseCase", error);
+      return Result.err(new UseCaseError("An unexpected error occurred"));
     }
   }
 
-  private validateRequest(request: CreateProductRequest): Result<void, UseCaseError> {
+  private validateRequest(
+    request: CreateProductRequest
+  ): Result<void, UseCaseError> {
     if (!request.name?.trim()) {
-      return Result.err(new UseCaseError('Product name is required'));
+      return Result.err(new UseCaseError("Product name is required"));
     }
     if (request.name.length > 100) {
-      return Result.err(new UseCaseError('Product name too long'));
+      return Result.err(new UseCaseError("Product name too long"));
     }
     if (!request.description?.trim()) {
-      return Result.err(new UseCaseError('Product description is required'));
+      return Result.err(new UseCaseError("Product description is required"));
     }
     if (request.initialStock < 0) {
-      return Result.err(new UseCaseError('Initial stock cannot be negative'));
+      return Result.err(new UseCaseError("Initial stock cannot be negative"));
     }
-    if (!Object.values(ProductCategory).includes(request.category as ProductCategory)) {
-      return Result.err(new UseCaseError('Invalid product category'));
+    if (
+      !Object.values(ProductCategory).includes(
+        request.category as ProductCategory
+      )
+    ) {
+      return Result.err(new UseCaseError("Invalid product category"));
     }
     return Result.ok(undefined);
   }
@@ -564,13 +603,13 @@ class CreateProductUseCase implements UseCase<CreateProductRequest, CreateProduc
       price: {
         amount: product.price.amount,
         currency: product.price.currency,
-        formatted: product.price.format()
+        formatted: product.price.format(),
       },
       category: product.category,
       stockQuantity: product.stockQuantity,
       isActive: product.isActive,
       createdAt: product.createdAt.toISOString(),
-      updatedAt: product.updatedAt.toISOString()
+      updatedAt: product.updatedAt.toISOString(),
     };
   }
 }
@@ -578,12 +617,12 @@ class CreateProductUseCase implements UseCase<CreateProductRequest, CreateProduc
 class UseCaseError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = 'UseCaseError';
+    this.name = "UseCaseError";
   }
 }
 ```
 
-### Day 22-28: Application Service・Event Sourcing基礎
+### Day 22-28: Application Service・Event Sourcing 基礎
 
 #### 🔧 Application Service パターン
 
@@ -597,12 +636,22 @@ class UseCaseError extends Error {
 ```typescript
 // Application Service の実装
 interface ProductApplicationService {
-  createProduct(request: CreateProductRequest): Promise<Result<ProductDto, ApplicationError>>;
-  updateProduct(id: string, request: UpdateProductRequest): Promise<Result<ProductDto, ApplicationError>>;
+  createProduct(
+    request: CreateProductRequest
+  ): Promise<Result<ProductDto, ApplicationError>>;
+  updateProduct(
+    id: string,
+    request: UpdateProductRequest
+  ): Promise<Result<ProductDto, ApplicationError>>;
   deleteProduct(id: string): Promise<Result<void, ApplicationError>>;
   getProduct(id: string): Promise<Result<ProductDto, ApplicationError>>;
-  searchProducts(criteria: ProductSearchDto): Promise<Result<ProductListDto, ApplicationError>>;
-  adjustStock(id: string, adjustment: StockAdjustmentDto): Promise<Result<ProductDto, ApplicationError>>;
+  searchProducts(
+    criteria: ProductSearchDto
+  ): Promise<Result<ProductListDto, ApplicationError>>;
+  adjustStock(
+    id: string,
+    adjustment: StockAdjustmentDto
+  ): Promise<Result<ProductDto, ApplicationError>>;
 }
 
 class ProductApplicationServiceImpl implements ProductApplicationService {
@@ -618,28 +667,37 @@ class ProductApplicationServiceImpl implements ProductApplicationService {
     private logger: Logger
   ) {}
 
-  async createProduct(request: CreateProductRequest): Promise<Result<ProductDto, ApplicationError>> {
+  async createProduct(
+    request: CreateProductRequest
+  ): Promise<Result<ProductDto, ApplicationError>> {
     try {
       // 認可チェック
-      const authResult = await this.authorizationService.canCreateProduct(request.userId);
+      const authResult = await this.authorizationService.canCreateProduct(
+        request.userId
+      );
       if (!authResult) {
-        return Result.err(new ApplicationError('Unauthorized to create product'));
+        return Result.err(
+          new ApplicationError("Unauthorized to create product")
+        );
       }
 
       // Use Case実行
       const result = await this.createProductUseCase.execute(request);
-      
+
       if (result.isErr()) {
         return Result.err(new ApplicationError(result.error.message));
       }
 
       // キャッシュ無効化
-      await this.cacheService.invalidatePattern('products:*');
+      await this.cacheService.invalidatePattern("products:*");
 
       return Result.ok(result.value.product);
     } catch (error) {
-      this.logger.error('Error in ProductApplicationService.createProduct', error);
-      return Result.err(new ApplicationError('Internal server error'));
+      this.logger.error(
+        "Error in ProductApplicationService.createProduct",
+        error
+      );
+      return Result.err(new ApplicationError("Internal server error"));
     }
   }
 
@@ -654,7 +712,7 @@ class ProductApplicationServiceImpl implements ProductApplicationService {
 
       // Use Case実行
       const result = await this.getProductUseCase.execute({ id });
-      
+
       if (result.isErr()) {
         return Result.err(new ApplicationError(result.error.message));
       }
@@ -664,8 +722,8 @@ class ProductApplicationServiceImpl implements ProductApplicationService {
 
       return Result.ok(result.value.product);
     } catch (error) {
-      this.logger.error('Error in ProductApplicationService.getProduct', error);
-      return Result.err(new ApplicationError('Internal server error'));
+      this.logger.error("Error in ProductApplicationService.getProduct", error);
+      return Result.err(new ApplicationError("Internal server error"));
     }
   }
 }
@@ -673,7 +731,7 @@ class ProductApplicationServiceImpl implements ProductApplicationService {
 class ApplicationError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = 'ApplicationError';
+    this.name = "ApplicationError";
   }
 }
 ```
@@ -704,7 +762,7 @@ class ProductCreatedEvent implements DomainEvent {
   ) {}
 
   get eventType(): string {
-    return 'ProductCreated';
+    return "ProductCreated";
   }
 
   get eventData(): any {
@@ -713,8 +771,8 @@ class ProductCreatedEvent implements DomainEvent {
       category: this.category,
       price: {
         amount: this.price.amount,
-        currency: this.price.currency
-      }
+        currency: this.price.currency,
+      },
     };
   }
 }
@@ -731,27 +789,31 @@ class ProductPriceChangedEvent implements DomainEvent {
   ) {}
 
   get eventType(): string {
-    return 'ProductPriceChanged';
+    return "ProductPriceChanged";
   }
 
   get eventData(): any {
     return {
       oldPrice: {
         amount: this.oldPrice.amount,
-        currency: this.oldPrice.currency
+        currency: this.oldPrice.currency,
       },
       newPrice: {
         amount: this.newPrice.amount,
-        currency: this.newPrice.currency
+        currency: this.newPrice.currency,
       },
-      reason: this.reason
+      reason: this.reason,
     };
   }
 }
 
 // Event Store インターフェース
 interface EventStore {
-  saveEvents(aggregateId: string, events: DomainEvent[], expectedVersion: number): Promise<Result<void, EventStoreError>>;
+  saveEvents(
+    aggregateId: string,
+    events: DomainEvent[],
+    expectedVersion: number
+  ): Promise<Result<void, EventStoreError>>;
   getEvents(aggregateId: string, fromVersion?: number): Promise<DomainEvent[]>;
   getAllEvents(fromTimestamp?: Date): Promise<DomainEvent[]>;
 }
@@ -761,71 +823,82 @@ class PostgresEventStore implements EventStore {
   constructor(private db: DatabaseConnection) {}
 
   async saveEvents(
-    aggregateId: string, 
-    events: DomainEvent[], 
+    aggregateId: string,
+    events: DomainEvent[],
     expectedVersion: number
   ): Promise<Result<void, EventStoreError>> {
     try {
       const client = await this.db.getClient();
-      await client.query('BEGIN');
+      await client.query("BEGIN");
 
       try {
         // 現在のバージョンチェック
         const versionResult = await client.query(
-          'SELECT MAX(version) as current_version FROM events WHERE aggregate_id = $1',
+          "SELECT MAX(version) as current_version FROM events WHERE aggregate_id = $1",
           [aggregateId]
         );
-        
+
         const currentVersion = versionResult.rows[0]?.current_version || 0;
         if (currentVersion !== expectedVersion) {
-          await client.query('ROLLBACK');
-          return Result.err(new EventStoreError('Concurrency conflict'));
+          await client.query("ROLLBACK");
+          return Result.err(new EventStoreError("Concurrency conflict"));
         }
 
         // イベント保存
         for (let i = 0; i < events.length; i++) {
           const event = events[i];
           const version = expectedVersion + i + 1;
-          
-          await client.query(`
+
+          await client.query(
+            `
             INSERT INTO events (
               event_id, aggregate_id, event_type, event_data, 
               occurred_at, version
             ) VALUES ($1, $2, $3, $4, $5, $6)
-          `, [
-            event.eventId,
-            aggregateId,
-            event.eventType,
-            JSON.stringify(event.eventData),
-            event.occurredAt,
-            version
-          ]);
+          `,
+            [
+              event.eventId,
+              aggregateId,
+              event.eventType,
+              JSON.stringify(event.eventData),
+              event.occurredAt,
+              version,
+            ]
+          );
         }
 
-        await client.query('COMMIT');
+        await client.query("COMMIT");
         return Result.ok(undefined);
       } catch (error) {
-        await client.query('ROLLBACK');
+        await client.query("ROLLBACK");
         throw error;
       } finally {
         client.release();
       }
     } catch (error) {
-      return Result.err(new EventStoreError(`Failed to save events: ${error.message}`));
+      return Result.err(
+        new EventStoreError(`Failed to save events: ${error.message}`)
+      );
     }
   }
 
-  async getEvents(aggregateId: string, fromVersion: number = 0): Promise<DomainEvent[]> {
+  async getEvents(
+    aggregateId: string,
+    fromVersion: number = 0
+  ): Promise<DomainEvent[]> {
     try {
-      const result = await this.db.query(`
+      const result = await this.db.query(
+        `
         SELECT event_id, aggregate_id, event_type, event_data, 
                occurred_at, version
         FROM events 
         WHERE aggregate_id = $1 AND version > $2
         ORDER BY version ASC
-      `, [aggregateId, fromVersion]);
+      `,
+        [aggregateId, fromVersion]
+      );
 
-      return result.rows.map(row => this.mapRowToEvent(row));
+      return result.rows.map((row) => this.mapRowToEvent(row));
     } catch (error) {
       throw new EventStoreError(`Failed to get events: ${error.message}`);
     }
@@ -833,23 +906,32 @@ class PostgresEventStore implements EventStore {
 
   private mapRowToEvent(row: any): DomainEvent {
     const eventData = JSON.parse(row.event_data);
-    
+
     switch (row.event_type) {
-      case 'ProductCreated':
+      case "ProductCreated":
         return new ProductCreatedEvent(
           row.aggregate_id,
           eventData.productName,
           eventData.category,
-          Money.create(eventData.price.amount, eventData.price.currency).getValue(),
+          Money.create(
+            eventData.price.amount,
+            eventData.price.currency
+          ).getValue(),
           row.occurred_at,
           row.event_id,
           row.version
         );
-      case 'ProductPriceChanged':
+      case "ProductPriceChanged":
         return new ProductPriceChangedEvent(
           row.aggregate_id,
-          Money.create(eventData.oldPrice.amount, eventData.oldPrice.currency).getValue(),
-          Money.create(eventData.newPrice.amount, eventData.newPrice.currency).getValue(),
+          Money.create(
+            eventData.oldPrice.amount,
+            eventData.oldPrice.currency
+          ).getValue(),
+          Money.create(
+            eventData.newPrice.amount,
+            eventData.newPrice.currency
+          ).getValue(),
           eventData.reason,
           row.occurred_at,
           row.event_id,
@@ -864,7 +946,7 @@ class PostgresEventStore implements EventStore {
 class EventStoreError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = 'EventStoreError';
+    this.name = "EventStoreError";
   }
 }
 ```
@@ -890,10 +972,10 @@ interface CustomerProps {
 }
 
 enum CustomerTier {
-  Bronze = 'bronze',
-  Silver = 'silver',
-  Gold = 'gold',
-  Platinum = 'platinum'
+  Bronze = "bronze",
+  Silver = "silver",
+  Gold = "gold",
+  Platinum = "platinum",
 }
 
 // Repository要件:
@@ -927,7 +1009,7 @@ interface CustomerSearchCriteria {
   limit?: number;
   offset?: number;
   sortBy?: CustomerSortField;
-  sortOrder?: 'ASC' | 'DESC';
+  sortOrder?: "ASC" | "DESC";
 }
 
 interface CustomerStatistics {
@@ -968,15 +1050,15 @@ interface CancelOrderRequest {
   customerId: string;
   reason: CancelReason;
   reasonDetails?: string;
-  requestedBy: 'customer' | 'admin' | 'system';
+  requestedBy: "customer" | "admin" | "system";
 }
 
 enum CancelReason {
-  CustomerRequest = 'customer_request',
-  PaymentFailed = 'payment_failed',
-  OutOfStock = 'out_of_stock',
-  SystemError = 'system_error',
-  FraudDetected = 'fraud_detected'
+  CustomerRequest = "customer_request",
+  PaymentFailed = "payment_failed",
+  OutOfStock = "out_of_stock",
+  SystemError = "system_error",
+  FraudDetected = "fraud_detected",
 }
 
 interface CancelOrderResponse {
@@ -990,7 +1072,9 @@ interface CancelOrderResponse {
   }>;
 }
 
-class CancelOrderUseCase implements UseCase<CancelOrderRequest, CancelOrderResponse> {
+class CancelOrderUseCase
+  implements UseCase<CancelOrderRequest, CancelOrderResponse>
+{
   constructor(
     private orderRepository: OrderRepository,
     private customerRepository: CustomerRepository,
@@ -1005,7 +1089,9 @@ class CancelOrderUseCase implements UseCase<CancelOrderRequest, CancelOrderRespo
     private logger: Logger
   ) {}
 
-  async execute(request: CancelOrderRequest): Promise<Result<CancelOrderResponse, UseCaseError>> {
+  async execute(
+    request: CancelOrderRequest
+  ): Promise<Result<CancelOrderResponse, UseCaseError>> {
     // 複雑なビジネスロジックを段階的に実装:
     // 1. 注文・顧客の検証
     // 2. キャンセル可能性の判定
@@ -1015,7 +1101,6 @@ class CancelOrderUseCase implements UseCase<CancelOrderRequest, CancelOrderRespo
     // 6. 配送キャンセル
     // 7. 通知送信
     // 8. イベント発行
-
     // 実装
   }
 }
@@ -1036,21 +1121,22 @@ class CancelOrderUseCase implements UseCase<CancelOrderRequest, CancelOrderRespo
       initialStock: number;
     },
     public readonly timestamp: Date = new Date()
-  ) {}
+
+) {}
 }
 
 class CreateProductCommandHandler implements CommandHandler<CreateProductCommand> {
-  constructor(
-    private createProductUseCase: CreateProductUseCase,
-    private logger: Logger
-  ) {}
+constructor(
+private createProductUseCase: CreateProductUseCase,
+private logger: Logger
+) {}
 
-  async handle(command: CreateProductCommand): Promise<Result<void, CommandError>> {
-    try {
-      this.logger.info('Handling CreateProductCommand', {
-        commandId: command.commandId,
-        productName: command.productData.name
-      });
+async handle(command: CreateProductCommand): Promise<Result<void, CommandError>> {
+try {
+this.logger.info('Handling CreateProductCommand', {
+commandId: command.commandId,
+productName: command.productData.name
+});
 
       const request: CreateProductRequest = {
         name: command.productData.name,
@@ -1061,7 +1147,7 @@ class CreateProductCommandHandler implements CommandHandler<CreateProductCommand
       };
 
       const result = await this.createProductUseCase.execute(request);
-      
+
       if (result.isErr()) {
         return Result.err(new CommandError(`Command failed: ${result.error.message}`));
       }
@@ -1079,46 +1165,47 @@ class CreateProductCommandHandler implements CommandHandler<CreateProductCommand
       });
       return Result.err(new CommandError('Unexpected error occurred'));
     }
-  }
+
+}
 }
 
-// Query側（読み込み専用）
+// Query 側（読み込み専用）
 interface Query {
-  readonly queryId: string;
-  readonly timestamp: Date;
+readonly queryId: string;
+readonly timestamp: Date;
 }
 
 interface QueryHandler<TQuery extends Query, TResult> {
-  handle(query: TQuery): Promise<Result<TResult, QueryError>>;
+handle(query: TQuery): Promise<Result<TResult, QueryError>>;
 }
 
 // GetProductsQuery
 class GetProductsQuery implements Query {
-  constructor(
-    public readonly queryId: string,
-    public readonly criteria: {
-      category?: string;
-      priceRange?: { min: number; max: number };
-      searchTerm?: string;
-      page?: number;
-      pageSize?: number;
-    },
-    public readonly timestamp: Date = new Date()
-  ) {}
+constructor(
+public readonly queryId: string,
+public readonly criteria: {
+category?: string;
+priceRange?: { min: number; max: number };
+searchTerm?: string;
+page?: number;
+pageSize?: number;
+},
+public readonly timestamp: Date = new Date()
+) {}
 }
 
 class GetProductsQueryHandler implements QueryHandler<GetProductsQuery, ProductListResult> {
-  constructor(
-    private productReadRepository: ProductReadRepository,
-    private logger: Logger
-  ) {}
+constructor(
+private productReadRepository: ProductReadRepository,
+private logger: Logger
+) {}
 
-  async handle(query: GetProductsQuery): Promise<Result<ProductListResult, QueryError>> {
-    try {
-      this.logger.info('Handling GetProductsQuery', {
-        queryId: query.queryId,
-        criteria: query.criteria
-      });
+async handle(query: GetProductsQuery): Promise<Result<ProductListResult, QueryError>> {
+try {
+this.logger.info('Handling GetProductsQuery', {
+queryId: query.queryId,
+criteria: query.criteria
+});
 
       const searchCriteria = this.buildSearchCriteria(query.criteria);
       const products = await this.productReadRepository.findByCriteria(searchCriteria);
@@ -1156,79 +1243,81 @@ class GetProductsQueryHandler implements QueryHandler<GetProductsQuery, ProductL
       });
       return Result.err(new QueryError('Failed to get products'));
     }
-  }
 
-  private buildSearchCriteria(criteria: any): ProductReadSearchCriteria {
-    return {
-      category: criteria.category,
-      priceMin: criteria.priceRange?.min,
-      priceMax: criteria.priceRange?.max,
-      searchTerm: criteria.searchTerm,
-      page: criteria.page || 1,
-      pageSize: criteria.pageSize || 10
-    };
-  }
-
-  private formatPrice(amount: number, currency: string): string {
-    const formatter = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency
-    });
-    return formatter.format(amount);
-  }
 }
 
-// Read側のリポジトリ（クエリ最適化）
+private buildSearchCriteria(criteria: any): ProductReadSearchCriteria {
+return {
+category: criteria.category,
+priceMin: criteria.priceRange?.min,
+priceMax: criteria.priceRange?.max,
+searchTerm: criteria.searchTerm,
+page: criteria.page || 1,
+pageSize: criteria.pageSize || 10
+};
+}
+
+private formatPrice(amount: number, currency: string): string {
+const formatter = new Intl.NumberFormat('en-US', {
+style: 'currency',
+currency
+});
+return formatter.format(amount);
+}
+}
+
+// Read 側のリポジトリ（クエリ最適化）
 interface ProductReadRepository {
-  findByCriteria(criteria: ProductReadSearchCriteria): Promise<ProductReadModel[]>;
-  countByCriteria(criteria: ProductReadSearchCriteria): Promise<number>;
-  findById(id: string): Promise<ProductReadModel | null>;
+findByCriteria(criteria: ProductReadSearchCriteria): Promise<ProductReadModel[]>;
+countByCriteria(criteria: ProductReadSearchCriteria): Promise<number>;
+findById(id: string): Promise<ProductReadModel | null>;
 }
 
 interface ProductReadSearchCriteria {
-  category?: string;
-  priceMin?: number;
-  priceMax?: number;
-  searchTerm?: string;
-  page: number;
-  pageSize: number;
+category?: string;
+priceMin?: number;
+priceMax?: number;
+searchTerm?: string;
+page: number;
+pageSize: number;
 }
 
 interface ProductReadModel {
-  id: string;
-  name: string;
-  description: string;
-  priceAmount: number;
-  priceCurrency: string;
-  category: string;
-  stockQuantity: number;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+id: string;
+name: string;
+description: string;
+priceAmount: number;
+priceCurrency: string;
+category: string;
+stockQuantity: number;
+isActive: boolean;
+createdAt: Date;
+updatedAt: Date;
 }
 
 interface ProductListResult {
-  products: ProductDto[];
-  totalCount: number;
-  page: number;
-  pageSize: number;
-  hasMore: boolean;
+products: ProductDto[];
+totalCount: number;
+page: number;
+pageSize: number;
+hasMore: boolean;
 }
 
 class CommandError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'CommandError';
-  }
+constructor(message: string) {
+super(message);
+this.name = 'CommandError';
+}
 }
 
 class QueryError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'QueryError';
-  }
+constructor(message: string) {
+super(message);
+this.name = 'QueryError';
 }
-```
+}
+
+````
 
 ## 🎯 実践演習
 
@@ -1252,7 +1341,7 @@ interface UnitOfWork {
 // 2. 型安全な Repository 基底クラス
 abstract class BaseRepository<TEntity, TId> {
   constructor(protected unitOfWork: UnitOfWork) {}
-  
+
   abstract findById(id: TId): Promise<Option<TEntity>>;
   abstract save(entity: TEntity): Promise<Result<void, RepositoryError>>;
   abstract delete(id: TId): Promise<Result<void, RepositoryError>>;
@@ -1274,7 +1363,7 @@ interface SearchResult<T> {
 // 実装例
 class PostgresProductRepository extends BaseRepository<Product, ProductId>
   implements ProductRepository, SearchableRepository<Product, ProductSearchCriteria> {
-  
+
   // 実装
 }
 
@@ -1293,11 +1382,11 @@ try {
   await unitOfWork.rollback();
   throw error;
 }
-```
+````
 
 ### 演習 3-2: Use Case オーケストレーション実装 🔥
 
-**目標**: 複雑なビジネスフローを管理するUse Case設計
+**目標**: 複雑なビジネスフローを管理する Use Case 設計
 
 ```typescript
 // マルチステップのビジネスプロセスを実装せよ
@@ -1305,7 +1394,7 @@ try {
 // ProcessOrderWorkflow Use Case
 interface ProcessOrderWorkflowRequest {
   orderId: string;
-  action: 'confirm' | 'cancel' | 'ship' | 'deliver';
+  action: "confirm" | "cancel" | "ship" | "deliver";
   metadata?: Record<string, any>;
 }
 
@@ -1328,7 +1417,9 @@ class ProcessOrderWorkflowUseCase {
     private logger: Logger
   ) {}
 
-  async execute(request: ProcessOrderWorkflowRequest): Promise<Result<ProcessOrderWorkflowResponse, UseCaseError>> {
+  async execute(
+    request: ProcessOrderWorkflowRequest
+  ): Promise<Result<ProcessOrderWorkflowResponse, UseCaseError>> {
     // 複雑なワークフロー管理を実装
     // 1. 現在の注文状態の検証
     // 2. アクション実行可能性の判定
@@ -1337,7 +1428,6 @@ class ProcessOrderWorkflowUseCase {
     // 5. 状態遷移の実行
     // 6. イベント発行
     // 7. 通知送信
-    
     // 実装
   }
 }
@@ -1353,23 +1443,27 @@ interface WorkflowEngine {
 // 状態機械パターンの実装
 class OrderStateMachine implements WorkflowEngine {
   private transitions: Map<string, Map<string, OrderStatus>>;
-  
+
   constructor() {
     this.transitions = new Map([
-      ['pending', new Map([
-        ['confirm', OrderStatus.Confirmed],
-        ['cancel', OrderStatus.Cancelled]
-      ])],
-      ['confirmed', new Map([
-        ['ship', OrderStatus.Shipped],
-        ['cancel', OrderStatus.Cancelled]
-      ])],
-      ['shipped', new Map([
-        ['deliver', OrderStatus.Delivered]
-      ])]
+      [
+        "pending",
+        new Map([
+          ["confirm", OrderStatus.Confirmed],
+          ["cancel", OrderStatus.Cancelled],
+        ]),
+      ],
+      [
+        "confirmed",
+        new Map([
+          ["ship", OrderStatus.Shipped],
+          ["cancel", OrderStatus.Cancelled],
+        ]),
+      ],
+      ["shipped", new Map([["deliver", OrderStatus.Delivered]])],
     ]);
   }
-  
+
   // 実装
 }
 ```
@@ -1381,7 +1475,7 @@ class OrderStateMachine implements WorkflowEngine {
 #### Repository パターン (35%)
 
 - [ ] Repository インターフェースを適切に設計できる
-- [ ] Option型を使った null安全な実装ができる
+- [ ] Option 型を使った null 安全な実装ができる
 - [ ] 検索条件を型安全に設計できる
 - [ ] データマッパーパターンを実装できる
 - [ ] Unit of Work パターンを活用できる
@@ -1426,24 +1520,24 @@ class OrderStateMachine implements WorkflowEngine {
 
 // Clean Architecture 層分離
 interface DomainLayer {
-  entities: 'Product | Order | Customer';
-  valueObjects: 'Money | Email | Address';
-  domainServices: 'ProductDomainService';
+  entities: "Product | Order | Customer";
+  valueObjects: "Money | Email | Address";
+  domainServices: "ProductDomainService";
 }
 
 interface ApplicationLayer {
-  useCases: 'CreateProductUseCase | PlaceOrderUseCase';
-  applicationServices: 'ProductApplicationService';
+  useCases: "CreateProductUseCase | PlaceOrderUseCase";
+  applicationServices: "ProductApplicationService";
 }
 
 interface InfrastructureLayer {
-  repositories: 'PostgresProductRepository';
-  externalServices: 'PaymentService | ShippingService';
+  repositories: "PostgresProductRepository";
+  externalServices: "PaymentService | ShippingService";
 }
 
 interface InterfaceLayer {
-  controllers: 'ProductController | OrderController';
-  dto: 'ProductDto | OrderDto';
+  controllers: "ProductController | OrderController";
+  dto: "ProductDto | OrderDto";
 }
 
 // 関数型プログラミングパターン

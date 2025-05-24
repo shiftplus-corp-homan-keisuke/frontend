@@ -22,10 +22,10 @@
 
 ```mermaid
 graph TD
-    A[Phase 3: Next.js×TypeScript完全習得<br/>Week 1-8] --> B[Phase 1: Next.js基礎期<br/>Week 1-2]
-    B --> C[Phase 2: Supabase統合期<br/>Week 3-4]
-    C --> D[Phase 3: 最適化期<br/>Week 5-6]
-    D --> E[Phase 4: 実践統合期<br/>Week 7-8]
+    A[Phase 3: Next.js×TypeScript完全習得<br/>Step 1-8] --> B[Phase 1: Next.js基礎期<br/>Step 1-2]
+    B --> C[Phase 2: Supabase統合期<br/>Step 3-4]
+    C --> D[Phase 3: 最適化期<br/>Step 5-6]
+    D --> E[Phase 4: 実践統合期<br/>Step 7-8]
     
     A --> A1[Next.js 15環境構築<br/>App Router・Server Components<br/>shadcn/ui統合]
     B --> B1[Supabase統合<br/>認証・データベース<br/>リアルタイム機能]
@@ -67,12 +67,12 @@ graph TD
 
 ### 段階的複雑化
 ```typescript
-// Week 1: 基本
+// Step 1: 基本
 export default function HomePage(): JSX.Element {
   return <h1>Hello Next.js!</h1>;
 }
 
-// Week 3: 中級
+// Step 3: 中級
 interface UserPageProps {
   params: { id: string };
 }
@@ -82,13 +82,13 @@ export default async function UserPage({ params }: UserPageProps) {
   return <UserProfile user={user} />;
 }
 
-// Week 5: 応用
+// Step 5: 応用
 export async function generateStaticParams() {
   const users = await getUsers();
   return users.map((user) => ({ id: user.id }));
 }
 
-// Week 8: 高度
+// Step 8: 高度
 export const metadata: Metadata = {
   title: 'DataFlow - SaaS Dashboard',
   description: 'Modern SaaS dashboard built with Next.js 15',
@@ -109,10 +109,10 @@ export const metadata: Metadata = {
 - **問題解決力**: 実践的な課題解決（15%）
 
 ### 成果物チェックリスト
-- [ ] **Week 1-2**: Next.js基本アプリとUIコンポーネント集
-- [ ] **Week 3-4**: Supabase統合認証・データ管理システム
-- [ ] **Week 5-6**: 最適化実装例とパフォーマンス改善
-- [ ] **Week 7-8**: SaaSダッシュボード「DataFlow」完成
+- [ ] **Step 1-2**: Next.js基本アプリとUIコンポーネント集
+- [ ] **Step 3-4**: Supabase統合認証・データ管理システム
+- [ ] **Step 5-6**: 最適化実装例とパフォーマンス改善
+- [ ] **Step 7-8**: SaaSダッシュボード「DataFlow」完成
 
 ### 最終認定要件
 - 全週の課題完了率 80% 以上
@@ -177,57 +177,57 @@ interface TechStack {
 
 ## 📝 各週の詳細プラン
 
-### Phase 1: Next.js基礎期（Week 1-2）
+### Phase 1: Next.js基礎期（Step 1-2）
 
-#### [Week 1: Next.js環境構築・App Router](./Week01_Next.js環境構築・App Router.md)
+#### [Step 1: Next.js環境構築・App Router](./Week01_Next.js環境構築・App Router.md)
 - Next.js 15 + TypeScript環境構築
 - App Routerの理解と活用
 - Server Components vs Client Components
 - 基本的なページ・レイアウト作成
 
-#### [Week 2: ルーティング・UI構築](./Week02_ルーティング・UI構築.md)
+#### [Step 2: ルーティング・UI構築](./Week02_ルーティング・UI構築.md)
 - 動的ルーティングとパラメータ
 - Layouts・Templates・Loading UI
 - shadcn/ui統合とコンポーネント設計
 - フォーム処理とバリデーション
 
-### Phase 2: Supabase統合期（Week 3-4）
+### Phase 2: Supabase統合期（Step 3-4）
 
-#### [Week 3: Supabase統合・認証](./Week03_Supabase統合・認証.md)
+#### [Step 3: Supabase統合・認証](./Week03_Supabase統合・認証.md)
 - Supabaseプロジェクト設定
 - Prisma + Supabase統合
 - Supabase Auth実装
 - Row Level Security設定
 
-#### [Week 4: API Routes・リアルタイム](./Week04_API Routes・リアルタイム.md)
+#### [Step 4: API Routes・リアルタイム](./Week04_API Routes・リアルタイム.md)
 - API Routes実装
 - Supabase Realtime統合
 - Edge Functions活用
 - ファイルアップロード・ストレージ
 
-### Phase 3: 最適化期（Week 5-6）
+### Phase 3: 最適化期（Step 5-6）
 
-#### [Week 5: レンダリング戦略・SEO](./Week05_レンダリング戦略・SEO.md)
+#### [Step 5: レンダリング戦略・SEO](./Week05_レンダリング戦略・SEO.md)
 - SSG/SSR/ISRの実装
 - Metadata API活用
 - SEO最適化
 - 動的OGP生成
 
-#### [Week 6: パフォーマンス・監視](./Week06_パフォーマンス・監視.md)
+#### [Step 6: パフォーマンス・監視](./Week06_パフォーマンス・監視.md)
 - Image最適化とNext.js Image
 - Core Web Vitals改善
 - バンドル最適化
 - 監視・分析システム
 
-### Phase 4: 実践統合期（Week 7-8）
+### Phase 4: 実践統合期（Step 7-8）
 
-#### [Week 7: SaaSダッシュボード開発](./Week07_SaaSダッシュボード開発.md)
+#### [Step 7: SaaSダッシュボード開発](./Week07_SaaSダッシュボード開発.md)
 - ダッシュボード設計・実装
 - データ可視化（チャート・グラフ）
 - リアルタイム更新機能
 - 管理画面・ユーザー管理
 
-#### [Week 8: 完成・デプロイ・運用](./Week08_完成・デプロイ・運用.md)
+#### [Step 8: 完成・デプロイ・運用](./Week08_完成・デプロイ・運用.md)
 - アプリケーション完成
 - Vercelデプロイ最適化
 - CI/CD パイプライン構築

@@ -2,8 +2,8 @@
 
 ## 📅 学習期間・目標
 
-**期間**: Week 7-8（2週間）  
-**総学習時間**: 40時間（週20時間）
+**期間**: Week 7-8（2 週間）  
+**総学習時間**: 40 時間（週 10 時間）
 
 ### 🎯 Week 7-8 到達目標
 
@@ -11,7 +11,7 @@
 - [ ] イベントソーシング・CQRS の完全実装
 - [ ] マイクロサービス設計パターンの適用
 - [ ] パフォーマンス最適化とスケーリング対応
-- [ ] 統合テスト・E2Eテストの実装
+- [ ] 統合テスト・E2E テストの実装
 - [ ] 本格的なプロダクション品質システムの構築
 
 ## 📖 最終プロジェクト: ブログプラットフォーム
@@ -25,25 +25,29 @@
 ### 📋 機能要件
 
 #### 1. 記事管理機能
+
 - 記事の作成・編集・公開・下書き保存
 - マークダウン対応
 - 画像アップロード・管理
 - タグ・カテゴリ管理
-- SEO最適化（メタデータ管理）
+- SEO 最適化（メタデータ管理）
 
 #### 2. ユーザー管理機能
+
 - 著者登録・認証・認可
 - プロフィール管理
 - ロール管理（管理者・編集者・著者・読者）
 - フォロー・フォロワー機能
 
 #### 3. コメント・インタラクション機能
+
 - コメント投稿・返信
 - いいね・ブックマーク
 - 記事共有機能
 - 通知システム
 
 #### 4. 検索・発見機能
+
 - 全文検索
 - タグ・カテゴリ検索
 - 人気記事・トレンド表示
@@ -60,21 +64,21 @@ graph TD
     A --> D[Comment Service]
     A --> E[Search Service]
     A --> F[Notification Service]
-    
+
     B --> G[User DB]
     C --> H[Blog DB]
     D --> I[Comment DB]
     E --> J[Elasticsearch]
     F --> K[Redis]
-    
+
     L[Event Bus] --> B
     L --> C
     L --> D
     L --> E
     L --> F
-    
+
     M[Event Store] --> L
-    
+
     style A fill:#ff9999
     style L fill:#99ccff
     style M fill:#99ffcc
@@ -102,12 +106,12 @@ interface EventStore {
     events: DomainEvent[],
     expectedVersion: number
   ): Promise<Result<void, EventStoreError>>;
-  
+
   getEvents(
     aggregateId: string,
     fromVersion?: number
   ): Promise<Result<DomainEvent[], EventStoreError>>;
-  
+
   getAllEvents(
     fromPosition?: number,
     maxCount?: number
@@ -135,7 +139,7 @@ class PostgresEventStore implements EventStore {
 
         // イベント保存
         for (const event of events) {
-          await trx('events').insert({
+          await trx("events").insert({
             event_id: event.eventId,
             aggregate_id: event.aggregateId,
             aggregate_type: event.aggregateType,
@@ -144,14 +148,16 @@ class PostgresEventStore implements EventStore {
             event_version: event.eventVersion,
             occurred_at: event.occurredAt,
             causation_id: event.causationId,
-            correlation_id: event.correlationId
+            correlation_id: event.correlationId,
           });
         }
       });
 
       return Result.ok(undefined);
     } catch (error) {
-      return Result.err(new EventStoreError(`Failed to save events: ${error.message}`));
+      return Result.err(
+        new EventStoreError(`Failed to save events: ${error.message}`)
+      );
     }
   }
 
@@ -160,12 +166,12 @@ class PostgresEventStore implements EventStore {
     fromVersion: number = 0
   ): Promise<Result<DomainEvent[], EventStoreError>> {
     try {
-      const rows = await this.db('events')
-        .where('aggregate_id', aggregateId)
-        .where('event_version', '>', fromVersion)
-        .orderBy('event_version', 'asc');
+      const rows = await this.db("events")
+        .where("aggregate_id", aggregateId)
+        .where("event_version", ">", fromVersion)
+        .orderBy("event_version", "asc");
 
-      const events = rows.map(row => ({
+      const events = rows.map((row) => ({
         eventId: row.event_id,
         aggregateId: row.aggregate_id,
         aggregateType: row.aggregate_type,
@@ -174,21 +180,26 @@ class PostgresEventStore implements EventStore {
         eventVersion: row.event_version,
         occurredAt: row.occurred_at,
         causationId: row.causation_id,
-        correlationId: row.correlation_id
+        correlationId: row.correlation_id,
       }));
 
       return Result.ok(events);
     } catch (error) {
-      return Result.err(new EventStoreError(`Failed to get events: ${error.message}`));
+      return Result.err(
+        new EventStoreError(`Failed to get events: ${error.message}`)
+      );
     }
   }
 
-  private async getCurrentVersion(aggregateId: string, trx: any): Promise<number> {
-    const result = await trx('events')
-      .where('aggregate_id', aggregateId)
-      .max('event_version as max_version')
+  private async getCurrentVersion(
+    aggregateId: string,
+    trx: any
+  ): Promise<number> {
+    const result = await trx("events")
+      .where("aggregate_id", aggregateId)
+      .max("event_version as max_version")
       .first();
-    
+
     return result?.max_version || 0;
   }
 }
@@ -198,7 +209,7 @@ class PostgresEventStore implements EventStore {
 
 ### Blog Aggregate
 
-```typescript
+````typescript
 // Blog Post Events
 interface BlogPostCreatedEvent extends DomainEvent {
   eventType: 'BlogPostCreated';
@@ -428,7 +439,7 @@ class Comment extends EventSourcedAggregateRoot {
     this._authorId = UserId.create(event.eventData.authorId);
     this._content = event.eventData.content;
     this._status = CommentStatus.Pending;
-    this._parentCommentId = event.eventData.parentCommentId 
+    this._parentCommentId = event.eventData.parentCommentId
       ? CommentId.create(event.eventData.parentCommentId)
       : undefined;
     this._createdAt = event.occurredAt;
@@ -464,7 +475,7 @@ class CommentError extends Error {
     this.name = 'CommentError';
   }
 }
-```
+````
 
 ## 🔄 CQRS 実装
 
@@ -488,17 +499,21 @@ interface PublishBlogPostCommand {
 }
 
 // Command Handlers
-class CreateBlogPostCommandHandler implements CommandHandler<CreateBlogPostCommand> {
+class CreateBlogPostCommandHandler
+  implements CommandHandler<CreateBlogPostCommand>
+{
   constructor(
     private blogPostRepository: EventSourcedRepository<BlogPost>,
     private eventBus: EventBus,
     private logger: Logger
   ) {}
 
-  async handle(command: CreateBlogPostCommand): Promise<Result<void, CommandError>> {
+  async handle(
+    command: CreateBlogPostCommand
+  ): Promise<Result<void, CommandError>> {
     try {
       const authorId = UserId.create(command.authorId);
-      
+
       const blogPostResult = BlogPost.create(
         command.title,
         command.content,
@@ -511,9 +526,15 @@ class CreateBlogPostCommandHandler implements CommandHandler<CreateBlogPostComma
         return Result.err(new CommandError(blogPostResult.error.message));
       }
 
-      const saveResult = await this.blogPostRepository.save(blogPostResult.value);
+      const saveResult = await this.blogPostRepository.save(
+        blogPostResult.value
+      );
       if (saveResult.isErr()) {
-        return Result.err(new CommandError(`Failed to save blog post: ${saveResult.error.message}`));
+        return Result.err(
+          new CommandError(
+            `Failed to save blog post: ${saveResult.error.message}`
+          )
+        );
       }
 
       // イベント発行
@@ -522,15 +543,15 @@ class CreateBlogPostCommandHandler implements CommandHandler<CreateBlogPostComma
         await this.eventBus.publish(event);
       }
 
-      this.logger.info('Blog post created successfully', {
+      this.logger.info("Blog post created successfully", {
         commandId: command.commandId,
-        blogPostId: blogPostResult.value.id.toString()
+        blogPostId: blogPostResult.value.id.toString(),
       });
 
       return Result.ok(undefined);
     } catch (error) {
-      this.logger.error('Error handling CreateBlogPostCommand', error);
-      return Result.err(new CommandError('An unexpected error occurred'));
+      this.logger.error("Error handling CreateBlogPostCommand", error);
+      return Result.err(new CommandError("An unexpected error occurred"));
     }
   }
 }
@@ -574,29 +595,37 @@ interface GetBlogPostsQuery {
   status?: string;
   page: number;
   pageSize: number;
-  sortBy: 'createdAt' | 'publishedAt' | 'viewCount' | 'likeCount';
-  sortOrder: 'asc' | 'desc';
+  sortBy: "createdAt" | "publishedAt" | "viewCount" | "likeCount";
+  sortOrder: "asc" | "desc";
 }
 
 // Query Handlers
-class GetBlogPostQueryHandler implements QueryHandler<GetBlogPostQuery, BlogPostProjection> {
+class GetBlogPostQueryHandler
+  implements QueryHandler<GetBlogPostQuery, BlogPostProjection>
+{
   constructor(
     private blogPostReadRepository: BlogPostReadRepository,
     private logger: Logger
   ) {}
 
-  async handle(query: GetBlogPostQuery): Promise<Result<BlogPostProjection, QueryError>> {
+  async handle(
+    query: GetBlogPostQuery
+  ): Promise<Result<BlogPostProjection, QueryError>> {
     try {
-      const blogPost = await this.blogPostReadRepository.findById(query.blogPostId);
-      
+      const blogPost = await this.blogPostReadRepository.findById(
+        query.blogPostId
+      );
+
       if (!blogPost) {
-        return Result.err(new QueryError(`Blog post not found: ${query.blogPostId}`));
+        return Result.err(
+          new QueryError(`Blog post not found: ${query.blogPostId}`)
+        );
       }
 
       return Result.ok(blogPost);
     } catch (error) {
-      this.logger.error('Error handling GetBlogPostQuery', error);
-      return Result.err(new QueryError('An unexpected error occurred'));
+      this.logger.error("Error handling GetBlogPostQuery", error);
+      return Result.err(new QueryError("An unexpected error occurred"));
     }
   }
 }
@@ -620,7 +649,7 @@ class GetBlogPostQueryHandler implements QueryHandler<GetBlogPostQuery, BlogPost
 
 // User Events
 interface UserRegisteredEvent extends DomainEvent {
-  eventType: 'UserRegistered';
+  eventType: "UserRegistered";
   eventData: {
     email: string;
     name: string;
@@ -629,7 +658,7 @@ interface UserRegisteredEvent extends DomainEvent {
 }
 
 interface UserProfileUpdatedEvent extends DomainEvent {
-  eventType: 'UserProfileUpdated';
+  eventType: "UserProfileUpdated";
   eventData: {
     name: string;
     bio: string;
@@ -638,7 +667,7 @@ interface UserProfileUpdatedEvent extends DomainEvent {
 }
 
 interface UserFollowedEvent extends DomainEvent {
-  eventType: 'UserFollowed';
+  eventType: "UserFollowed";
   eventData: {
     followerId: string;
     followedId: string;
@@ -676,7 +705,9 @@ interface Snapshot {
 
 interface SnapshotStore {
   saveSnapshot(snapshot: Snapshot): Promise<Result<void, SnapshotError>>;
-  getSnapshot(aggregateId: string): Promise<Result<Maybe<Snapshot>, SnapshotError>>;
+  getSnapshot(
+    aggregateId: string
+  ): Promise<Result<Maybe<Snapshot>, SnapshotError>>;
 }
 
 // イベントリプレイ機能
@@ -711,7 +742,7 @@ class EventReplayService {
 // 3. 障害時の復旧テスト
 // 4. パフォーマンステスト
 
-describe('Blog Platform Integration Tests', () => {
+describe("Blog Platform Integration Tests", () => {
   let testContainer: TestContainer;
   let userService: UserService;
   let blogService: BlogService;
@@ -723,29 +754,29 @@ describe('Blog Platform Integration Tests', () => {
     // サービス初期化
   });
 
-  it('should handle complete blog workflow', async () => {
+  it("should handle complete blog workflow", async () => {
     // 1. ユーザー登録
     const userResult = await userService.registerUser({
-      email: 'test@example.com',
-      name: 'Test User',
-      password: 'password123'
+      email: "test@example.com",
+      name: "Test User",
+      password: "password123",
     });
     expect(userResult.isOk()).toBe(true);
 
     // 2. ブログ投稿作成
     const blogPostResult = await blogService.createBlogPost({
-      title: 'Test Post',
-      content: 'Test content',
+      title: "Test Post",
+      content: "Test content",
       authorId: userResult.value.id,
-      tags: ['test'],
-      category: 'technology'
+      tags: ["test"],
+      category: "technology",
     });
     expect(blogPostResult.isOk()).toBe(true);
 
     // 3. ブログ投稿公開
     const publishResult = await blogService.publishBlogPost({
       blogPostId: blogPostResult.value.id,
-      publisherId: userResult.value.id
+      publisherId: userResult.value.id,
     });
     expect(publishResult.isOk()).toBe(true);
 
@@ -753,36 +784,40 @@ describe('Blog Platform Integration Tests', () => {
     const commentResult = await commentService.addComment({
       blogPostId: blogPostResult.value.id,
       authorId: userResult.value.id,
-      content: 'Great post!'
+      content: "Great post!",
     });
     expect(commentResult.isOk()).toBe(true);
 
     // 5. 通知確認
     await waitForEventProcessing();
-    const notifications = await notificationService.getNotifications(userResult.value.id);
+    const notifications = await notificationService.getNotifications(
+      userResult.value.id
+    );
     expect(notifications.length).toBeGreaterThan(0);
   });
 
-  it('should handle service failures gracefully', async () => {
+  it("should handle service failures gracefully", async () => {
     // 障害シミュレーション
-    await testContainer.stopService('notification-service');
+    await testContainer.stopService("notification-service");
 
     // ブログ投稿は成功するが、通知は失敗する
     const result = await blogService.createBlogPost({
-      title: 'Test Post',
-      content: 'Test content',
-      authorId: 'user-123',
-      tags: ['test'],
-      category: 'technology'
+      title: "Test Post",
+      content: "Test content",
+      authorId: "user-123",
+      tags: ["test"],
+      category: "technology",
     });
 
     expect(result.isOk()).toBe(true);
 
     // サービス復旧後、通知が送信される
-    await testContainer.startService('notification-service');
+    await testContainer.startService("notification-service");
     await waitForEventProcessing();
 
-    const notifications = await notificationService.getNotifications('user-123');
+    const notifications = await notificationService.getNotifications(
+      "user-123"
+    );
     expect(notifications.length).toBeGreaterThan(0);
   });
 });
@@ -796,7 +831,7 @@ describe('Blog Platform Integration Tests', () => {
 
 - [ ] イベントストアを適切に実装できる
 - [ ] 楽観的ロックを理解し実装できる
-- [ ] Command/Query分離を実践できる
+- [ ] Command/Query 分離を実践できる
 - [ ] プロジェクション更新を設計できる
 - [ ] イベントリプレイ機能を実装できる
 
@@ -818,7 +853,7 @@ describe('Blog Platform Integration Tests', () => {
 #### テスト・品質保証 (10%)
 
 - [ ] 統合テストを包括的に実装できる
-- [ ] E2Eテストシナリオを設計できる
+- [ ] E2E テストシナリオを設計できる
 - [ ] パフォーマンステストを実装できる
 - [ ] 障害テストを設計・実行できる
 
@@ -826,10 +861,10 @@ describe('Blog Platform Integration Tests', () => {
 
 - [ ] **ブログプラットフォーム**: 完全動作するシステム
 - [ ] **イベントソーシング実装**: Event Store + CQRS
-- [ ] **マイクロサービス**: 5つのサービス実装
+- [ ] **マイクロサービス**: 5 つのサービス実装
 - [ ] **統合テストスイート**: 包括的なテストカバレッジ
 - [ ] **パフォーマンス最適化**: スケーラブルな実装
-- [ ] **ドキュメンテーション**: アーキテクチャ・API仕様
+- [ ] **ドキュメンテーション**: アーキテクチャ・API 仕様
 
 ## 🔄 Phase3 完了への準備
 
@@ -839,8 +874,8 @@ describe('Blog Platform Integration Tests', () => {
 // Phase3で習得したすべての技術の統合例
 
 // 1. DDD + Value Object (Week 1-2)
-const email = Email.create('user@example.com').getValue();
-const money = Money.create(100, 'USD').getValue();
+const email = Email.create("user@example.com").getValue();
+const money = Money.create(100, "USD").getValue();
 
 // 2. Repository + Use Case (Week 3-4)
 const createUserUseCase = new CreateUserUseCase(userRepository, domainService);
@@ -859,7 +894,7 @@ const blogPost = BlogPost.create(title, content, authorId, tags, category);
 await eventStore.saveEvents(blogPost.id, blogPost.getUncommittedEvents(), 0);
 ```
 
-### Phase4への移行準備
+### Phase4 への移行準備
 
 - [ ] 開発体験向上ツールの調査
 - [ ] TypeScript 5.x 新機能の学習
@@ -869,96 +904,97 @@ await eventStore.saveEvents(blogPost.id, blogPost.getUncommittedEvents(), 0);
 ---
 
 **📌 重要**: Week 7-8 は Phase3 の集大成として、これまで学習したすべての技術を統合した実践的なシステムを構築します。単なる技術実装だけでなく、実際のプロダクション環境で求められる品質・パフォーマンス・保守性を意識した開発を行いましょう。
-    const event: BlogPostContentUpdatedEvent = {
-      eventId: crypto.randomUUID(),
-      aggregateId: this._id.toString(),
-      aggregateType: 'BlogPost',
-      eventType: 'BlogPostContentUpdated',
-      eventData: {
-        title,
-        content,
-        updatedAt: new Date()
-      },
-      eventVersion: this.version + 1,
-      occurredAt: new Date()
-    };
+const event: BlogPostContentUpdatedEvent = {
+eventId: crypto.randomUUID(),
+aggregateId: this.\_id.toString(),
+aggregateType: 'BlogPost',
+eventType: 'BlogPostContentUpdated',
+eventData: {
+title,
+content,
+updatedAt: new Date()
+},
+eventVersion: this.version + 1,
+occurredAt: new Date()
+};
 
     this.addEvent(event);
     return Result.ok(undefined);
-  }
 
-  apply(event: DomainEvent): void {
-    switch (event.eventType) {
-      case 'BlogPostCreated':
-        this.applyBlogPostCreated(event as BlogPostCreatedEvent);
-        break;
-      case 'BlogPostPublished':
-        this.applyBlogPostPublished(event as BlogPostPublishedEvent);
-        break;
-      case 'BlogPostContentUpdated':
-        this.applyBlogPostContentUpdated(event as BlogPostContentUpdatedEvent);
-        break;
-    }
-    this.version = event.eventVersion;
-  }
+}
 
-  private applyBlogPostCreated(event: BlogPostCreatedEvent): void {
-    this._id = BlogPostId.create(event.aggregateId);
-    this._title = event.eventData.title;
-    this._content = event.eventData.content;
-    this._authorId = UserId.create(event.eventData.authorId);
-    this._tags = event.eventData.tags;
-    this._category = event.eventData.category;
-    this._status = BlogPostStatus.Draft;
-    this._createdAt = event.occurredAt;
-    this._updatedAt = event.occurredAt;
-  }
+apply(event: DomainEvent): void {
+switch (event.eventType) {
+case 'BlogPostCreated':
+this.applyBlogPostCreated(event as BlogPostCreatedEvent);
+break;
+case 'BlogPostPublished':
+this.applyBlogPostPublished(event as BlogPostPublishedEvent);
+break;
+case 'BlogPostContentUpdated':
+this.applyBlogPostContentUpdated(event as BlogPostContentUpdatedEvent);
+break;
+}
+this.version = event.eventVersion;
+}
 
-  private applyBlogPostPublished(event: BlogPostPublishedEvent): void {
-    this._status = BlogPostStatus.Published;
-    this._publishedAt = event.eventData.publishedAt;
-    this._slug = event.eventData.slug;
-    this._updatedAt = event.occurredAt;
-  }
+private applyBlogPostCreated(event: BlogPostCreatedEvent): void {
+this.\_id = BlogPostId.create(event.aggregateId);
+this.\_title = event.eventData.title;
+this.\_content = event.eventData.content;
+this.\_authorId = UserId.create(event.eventData.authorId);
+this.\_tags = event.eventData.tags;
+this.\_category = event.eventData.category;
+this.\_status = BlogPostStatus.Draft;
+this.\_createdAt = event.occurredAt;
+this.\_updatedAt = event.occurredAt;
+}
 
-  private applyBlogPostContentUpdated(event: BlogPostContentUpdatedEvent): void {
-    this._title = event.eventData.title;
-    this._content = event.eventData.content;
-    this._updatedAt = event.eventData.updatedAt;
-  }
+private applyBlogPostPublished(event: BlogPostPublishedEvent): void {
+this.\_status = BlogPostStatus.Published;
+this.\_publishedAt = event.eventData.publishedAt;
+this.\_slug = event.eventData.slug;
+this.\_updatedAt = event.occurredAt;
+}
 
-  private generateSlug(title: string): string {
-    return title
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .trim('-');
-  }
+private applyBlogPostContentUpdated(event: BlogPostContentUpdatedEvent): void {
+this.\_title = event.eventData.title;
+this.\_content = event.eventData.content;
+this.\_updatedAt = event.eventData.updatedAt;
+}
 
-  // Getters
-  get id(): BlogPostId { return this._id; }
-  get title(): string { return this._title; }
-  get content(): string { return this._content; }
-  get authorId(): UserId { return this._authorId; }
-  get status(): BlogPostStatus { return this._status; }
-  get tags(): readonly string[] { return [...this._tags]; }
-  get category(): string { return this._category; }
-  get slug(): string | undefined { return this._slug; }
-  get publishedAt(): Date | undefined { return this._publishedAt; }
-  get createdAt(): Date { return this._createdAt; }
-  get updatedAt(): Date { return this._updatedAt; }
+private generateSlug(title: string): string {
+return title
+.toLowerCase()
+.replace(/[^a-z0-9\s-]/g, '')
+.replace(/\s+/g, '-')
+.replace(/-+/g, '-')
+.trim('-');
+}
+
+// Getters
+get id(): BlogPostId { return this.\_id; }
+get title(): string { return this.\_title; }
+get content(): string { return this.\_content; }
+get authorId(): UserId { return this.\_authorId; }
+get status(): BlogPostStatus { return this.\_status; }
+get tags(): readonly string[] { return [...this._tags]; }
+get category(): string { return this.\_category; }
+get slug(): string | undefined { return this.\_slug; }
+get publishedAt(): Date | undefined { return this.\_publishedAt; }
+get createdAt(): Date { return this.\_createdAt; }
+get updatedAt(): Date { return this.\_updatedAt; }
 }
 
 enum BlogPostStatus {
-  Draft = 'draft',
-  Published = 'published',
-  Archived = 'archived'
+Draft = 'draft',
+Published = 'published',
+Archived = 'archived'
 }
 
 class BlogPostError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'BlogPostError';
-  }
+constructor(message: string) {
+super(message);
+this.name = 'BlogPostError';
+}
 }

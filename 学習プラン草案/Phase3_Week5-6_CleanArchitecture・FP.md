@@ -2,8 +2,8 @@
 
 ## 📅 学習期間・目標
 
-**期間**: Week 5-6（2週間）  
-**総学習時間**: 40時間（週20時間）
+**期間**: Week 5-6（2 週間）  
+**総学習時間**: 40 時間（週 10 時間）
 
 ### 🎯 Week 5-6 到達目標
 
@@ -18,7 +18,7 @@
 
 ### Day 29-32: Clean Architecture 完全実装
 
-#### 🏗️ Clean Architecture の4層構造
+#### 🏗️ Clean Architecture の 4 層構造
 
 **層の責任と依存関係**
 
@@ -29,7 +29,7 @@ graph TD
     A --> C
     D[Infrastructure Layer<br/>Repositories, External Services] --> C
     D --> B
-    
+
     style C fill:#ff9999,stroke:#333,stroke-width:4px
     style B fill:#99ccff,stroke:#333,stroke-width:2px
     style A fill:#99ffcc,stroke:#333,stroke-width:2px
@@ -83,11 +83,11 @@ class ProductController {
         req.body,
         CreateProductRequestDto
       );
-      
+
       if (validationResult.isErr()) {
         res.status(400).json({
-          error: 'Validation failed',
-          details: validationResult.error.details
+          error: "Validation failed",
+          details: validationResult.error.details,
         });
         return;
       }
@@ -96,13 +96,15 @@ class ProductController {
       const createRequest = this.mapper.toDomainRequest(req.body);
 
       // 3. Application Service 実行
-      const result = await this.productApplicationService.createProduct(createRequest);
+      const result = await this.productApplicationService.createProduct(
+        createRequest
+      );
 
       if (result.isErr()) {
         const statusCode = this.getStatusCodeFromError(result.error);
         res.status(statusCode).json({
           error: result.error.message,
-          code: result.error.code
+          code: result.error.code,
         });
         return;
       }
@@ -112,13 +114,12 @@ class ProductController {
 
       res.status(201).json({
         data: responseDto,
-        message: 'Product created successfully'
+        message: "Product created successfully",
       });
-
     } catch (error) {
-      this.logger.error('Unexpected error in ProductController', error);
+      this.logger.error("Unexpected error in ProductController", error);
       res.status(500).json({
-        error: 'Internal server error'
+        error: "Internal server error",
       });
     }
   }
@@ -128,38 +129,39 @@ class ProductController {
       const queryParams = req.query;
       const searchCriteria = this.mapper.toSearchCriteria(queryParams);
 
-      const result = await this.productApplicationService.getProducts(searchCriteria);
+      const result = await this.productApplicationService.getProducts(
+        searchCriteria
+      );
 
       if (result.isErr()) {
         const statusCode = this.getStatusCodeFromError(result.error);
         res.status(statusCode).json({
-          error: result.error.message
+          error: result.error.message,
         });
         return;
       }
 
       const responseDto = this.mapper.toProductListDto(result.value);
       res.status(200).json(responseDto);
-
     } catch (error) {
-      this.logger.error('Unexpected error in getProducts', error);
+      this.logger.error("Unexpected error in getProducts", error);
       res.status(500).json({
-        error: 'Internal server error'
+        error: "Internal server error",
       });
     }
   }
 
   private getStatusCodeFromError(error: ApplicationError): number {
     switch (error.type) {
-      case 'VALIDATION_ERROR':
+      case "VALIDATION_ERROR":
         return 400;
-      case 'NOT_FOUND':
+      case "NOT_FOUND":
         return 404;
-      case 'BUSINESS_RULE_VIOLATION':
+      case "BUSINESS_RULE_VIOLATION":
         return 422;
-      case 'UNAUTHORIZED':
+      case "UNAUTHORIZED":
         return 401;
-      case 'FORBIDDEN':
+      case "FORBIDDEN":
         return 403;
       default:
         return 500;
@@ -175,7 +177,7 @@ class ProductDtoMapper {
       description: dto.description,
       price: dto.price,
       category: dto.category,
-      initialStock: dto.initialStock
+      initialStock: dto.initialStock,
     };
   }
 
@@ -187,13 +189,13 @@ class ProductDtoMapper {
       price: {
         amount: product.price.amount,
         currency: product.price.currency,
-        formatted: product.price.format()
+        formatted: product.price.format(),
       },
       category: product.category,
       stockQuantity: product.stockQuantity,
       isActive: product.isActive,
       createdAt: product.createdAt.toISOString(),
-      updatedAt: product.updatedAt.toISOString()
+      updatedAt: product.updatedAt.toISOString(),
     };
   }
 
@@ -201,26 +203,35 @@ class ProductDtoMapper {
     return {
       name: queryParams.name,
       category: queryParams.category,
-      priceRange: queryParams.minPrice && queryParams.maxPrice ? {
-        min: Money.create(parseFloat(queryParams.minPrice), queryParams.currency || 'USD').getValue(),
-        max: Money.create(parseFloat(queryParams.maxPrice), queryParams.currency || 'USD').getValue()
-      } : undefined,
-      inStock: queryParams.inStock === 'true',
-      isActive: queryParams.isActive !== 'false',
+      priceRange:
+        queryParams.minPrice && queryParams.maxPrice
+          ? {
+              min: Money.create(
+                parseFloat(queryParams.minPrice),
+                queryParams.currency || "USD"
+              ).getValue(),
+              max: Money.create(
+                parseFloat(queryParams.maxPrice),
+                queryParams.currency || "USD"
+              ).getValue(),
+            }
+          : undefined,
+      inStock: queryParams.inStock === "true",
+      isActive: queryParams.isActive !== "false",
       limit: queryParams.limit ? parseInt(queryParams.limit) : 10,
-      offset: queryParams.offset ? parseInt(queryParams.offset) : 0
+      offset: queryParams.offset ? parseInt(queryParams.offset) : 0,
     };
   }
 
   toProductListDto(result: ProductListResult): any {
     return {
-      data: result.products.map(product => this.toResponseDto(product)),
+      data: result.products.map((product) => this.toResponseDto(product)),
       pagination: {
         total: result.totalCount,
         page: Math.floor(result.offset / result.limit) + 1,
         pageSize: result.limit,
-        hasMore: result.hasMore
-      }
+        hasMore: result.hasMore,
+      },
     };
   }
 }
@@ -231,10 +242,17 @@ class ProductDtoMapper {
 ```typescript
 // Application Service
 interface ProductApplicationService {
-  createProduct(request: CreateProductRequest): Promise<Result<Product, ApplicationError>>;
-  updateProduct(id: string, request: UpdateProductRequest): Promise<Result<Product, ApplicationError>>;
+  createProduct(
+    request: CreateProductRequest
+  ): Promise<Result<Product, ApplicationError>>;
+  updateProduct(
+    id: string,
+    request: UpdateProductRequest
+  ): Promise<Result<Product, ApplicationError>>;
   getProduct(id: string): Promise<Result<Product, ApplicationError>>;
-  getProducts(criteria: ProductSearchCriteria): Promise<Result<ProductListResult, ApplicationError>>;
+  getProducts(
+    criteria: ProductSearchCriteria
+  ): Promise<Result<ProductListResult, ApplicationError>>;
   deleteProduct(id: string): Promise<Result<void, ApplicationError>>;
 }
 
@@ -248,70 +266,72 @@ class ProductApplicationServiceImpl implements ProductApplicationService {
     private logger: Logger
   ) {}
 
-  async createProduct(request: CreateProductRequest): Promise<Result<Product, ApplicationError>> {
+  async createProduct(
+    request: CreateProductRequest
+  ): Promise<Result<Product, ApplicationError>> {
     try {
       const result = await this.createProductUseCase.execute(request);
-      
-      return result.mapError(error => 
+
+      return result.mapError(
+        (error) =>
+          new ApplicationError(error.message, this.mapErrorType(error), error)
+      );
+    } catch (error) {
+      this.logger.error("Unexpected error in createProduct", error);
+      return Result.err(
         new ApplicationError(
-          error.message,
-          this.mapErrorType(error),
+          "An unexpected error occurred",
+          "INTERNAL_ERROR",
           error
         )
       );
-    } catch (error) {
-      this.logger.error('Unexpected error in createProduct', error);
-      return Result.err(new ApplicationError(
-        'An unexpected error occurred',
-        'INTERNAL_ERROR',
-        error
-      ));
     }
   }
 
-  async getProducts(criteria: ProductSearchCriteria): Promise<Result<ProductListResult, ApplicationError>> {
+  async getProducts(
+    criteria: ProductSearchCriteria
+  ): Promise<Result<ProductListResult, ApplicationError>> {
     try {
       const result = await this.getProductsUseCase.execute(criteria);
-      
-      return result.mapError(error => 
+
+      return result.mapError(
+        (error) =>
+          new ApplicationError(error.message, this.mapErrorType(error), error)
+      );
+    } catch (error) {
+      this.logger.error("Unexpected error in getProducts", error);
+      return Result.err(
         new ApplicationError(
-          error.message,
-          this.mapErrorType(error),
+          "An unexpected error occurred",
+          "INTERNAL_ERROR",
           error
         )
       );
-    } catch (error) {
-      this.logger.error('Unexpected error in getProducts', error);
-      return Result.err(new ApplicationError(
-        'An unexpected error occurred',
-        'INTERNAL_ERROR',
-        error
-      ));
     }
   }
 
   private mapErrorType(error: any): ApplicationErrorType {
     if (error instanceof ValidationError) {
-      return 'VALIDATION_ERROR';
+      return "VALIDATION_ERROR";
     }
     if (error instanceof NotFoundError) {
-      return 'NOT_FOUND';
+      return "NOT_FOUND";
     }
     if (error instanceof BusinessRuleViolationError) {
-      return 'BUSINESS_RULE_VIOLATION';
+      return "BUSINESS_RULE_VIOLATION";
     }
-    return 'INTERNAL_ERROR';
+    return "INTERNAL_ERROR";
   }
 }
 
 // Application Error
-type ApplicationErrorType = 
-  | 'VALIDATION_ERROR'
-  | 'NOT_FOUND'
-  | 'BUSINESS_RULE_VIOLATION'
-  | 'UNAUTHORIZED'
-  | 'FORBIDDEN'
-  | 'INTERNAL_ERROR';
+type ApplicationErrorType =
+  | "VALIDATION_ERROR"
+  | "NOT_FOUND"
+  | "BUSINESS_RULE_VIOLATION"
+  | "UNAUTHORIZED"
+  | "FORBIDDEN"
+  | "INTERNAL_ERROR";
 
 class ApplicationError extends Error {
   constructor(
@@ -320,7 +340,7 @@ class ApplicationError extends Error {
     public readonly cause?: Error
   ) {
     super(message);
-    this.name = 'ApplicationError';
+    this.name = "ApplicationError";
   }
 
   get code(): string {
@@ -358,67 +378,78 @@ class DIContainer implements Container {
 class DependencyConfiguration {
   static configure(container: DIContainer): void {
     // Infrastructure Layer
-    container.register('DatabaseConnection', () => 
-      new PostgresConnection(process.env.DATABASE_URL!)
+    container.register(
+      "DatabaseConnection",
+      () => new PostgresConnection(process.env.DATABASE_URL!)
     );
 
-    container.register('Logger', () => 
-      new WinstonLogger()
-    );
+    container.register("Logger", () => new WinstonLogger());
 
     // Repositories
-    container.register('ProductRepository', () => 
-      new PostgresProductRepository(
-        container.resolve('DatabaseConnection'),
-        new ProductMapper()
-      )
+    container.register(
+      "ProductRepository",
+      () =>
+        new PostgresProductRepository(
+          container.resolve("DatabaseConnection"),
+          new ProductMapper()
+        )
     );
 
-    container.register('CustomerRepository', () => 
-      new PostgresCustomerRepository(
-        container.resolve('DatabaseConnection'),
-        new CustomerMapper()
-      )
+    container.register(
+      "CustomerRepository",
+      () =>
+        new PostgresCustomerRepository(
+          container.resolve("DatabaseConnection"),
+          new CustomerMapper()
+        )
     );
 
     // Domain Services
-    container.register('ProductDomainService', () => 
-      new ProductDomainServiceImpl(
-        container.resolve('ProductRepository'),
-        container.resolve('MarketDataService')
-      )
+    container.register(
+      "ProductDomainService",
+      () =>
+        new ProductDomainServiceImpl(
+          container.resolve("ProductRepository"),
+          container.resolve("MarketDataService")
+        )
     );
 
     // Use Cases
-    container.register('CreateProductUseCase', () => 
-      new CreateProductUseCase(
-        container.resolve('ProductRepository'),
-        container.resolve('ProductDomainService'),
-        container.resolve('EventBus'),
-        container.resolve('Logger')
-      )
+    container.register(
+      "CreateProductUseCase",
+      () =>
+        new CreateProductUseCase(
+          container.resolve("ProductRepository"),
+          container.resolve("ProductDomainService"),
+          container.resolve("EventBus"),
+          container.resolve("Logger")
+        )
     );
 
     // Application Services
-    container.register('ProductApplicationService', () => 
-      new ProductApplicationServiceImpl(
-        container.resolve('CreateProductUseCase'),
-        container.resolve('UpdateProductUseCase'),
-        container.resolve('GetProductUseCase'),
-        container.resolve('GetProductsUseCase'),
-        container.resolve('DeleteProductUseCase'),
-        container.resolve('Logger')
-      )
+    container.register(
+      "ProductApplicationService",
+      () =>
+        new ProductApplicationServiceImpl(
+          container.resolve("CreateProductUseCase"),
+          container.resolve("UpdateProductUseCase"),
+          container.resolve("GetProductUseCase"),
+          container.resolve("GetProductsUseCase"),
+          container.resolve("DeleteProductUseCase"),
+          container.resolve("Logger")
+        )
     );
 
     // Controllers
-    container.register('ProductController', () => 
-      new ProductController(
-        container.resolve('ProductApplicationService'),
-        new ProductDtoMapper(),
-        new RequestValidator(),
-        container.resolve('Logger')
-      )
+    container.register(
+      "ProductController",
+      () =>
+        new ProductController(
+          container.resolve("ProductApplicationService"),
+          new ProductDtoMapper(),
+          new RequestValidator(),
+          container.resolve("Logger")
+        )
     );
   }
 }
@@ -450,35 +481,38 @@ class Application {
   }
 
   private setupRoutes(): void {
-    const productController = this.container.resolve<ProductController>('ProductController');
+    const productController =
+      this.container.resolve<ProductController>("ProductController");
 
-    this.server.post('/api/products', (req, res) => 
+    this.server.post("/api/products", (req, res) =>
       productController.createProduct(req, res)
     );
-    this.server.get('/api/products', (req, res) => 
+    this.server.get("/api/products", (req, res) =>
       productController.getProducts(req, res)
     );
-    this.server.get('/api/products/:id', (req, res) => 
+    this.server.get("/api/products/:id", (req, res) =>
       productController.getProduct(req, res)
     );
-    this.server.put('/api/products/:id', (req, res) => 
+    this.server.put("/api/products/:id", (req, res) =>
       productController.updateProduct(req, res)
     );
-    this.server.delete('/api/products/:id', (req, res) => 
+    this.server.delete("/api/products/:id", (req, res) =>
       productController.deleteProduct(req, res)
     );
   }
 
   private setupErrorHandling(): void {
-    this.server.use((error: Error, req: Request, res: Response, next: NextFunction) => {
-      const logger = this.container.resolve<Logger>('Logger');
-      logger.error('Unhandled error', error);
+    this.server.use(
+      (error: Error, req: Request, res: Response, next: NextFunction) => {
+        const logger = this.container.resolve<Logger>("Logger");
+        logger.error("Unhandled error", error);
 
-      res.status(500).json({
-        error: 'Internal server error',
-        requestId: req.headers['x-request-id']
-      });
-    });
+        res.status(500).json({
+          error: "Internal server error",
+          requestId: req.headers["x-request-id"],
+        });
+      }
+    );
   }
 
   async start(port: number): Promise<void> {
@@ -500,30 +534,36 @@ class Application {
 // 関数合成ユーティリティ
 type Func<T, U> = (arg: T) => U;
 
-const compose = <T, U, V>(f: Func<U, V>, g: Func<T, U>): Func<T, V> =>
-  (x: T) => f(g(x));
+const compose =
+  <T, U, V>(f: Func<U, V>, g: Func<T, U>): Func<T, V> =>
+  (x: T) =>
+    f(g(x));
 
 const pipe = <T>(value: T) => ({
-  to: <U>(fn: Func<T, U>) => pipe(fn(value))
+  to: <U>(fn: Func<T, U>) => pipe(fn(value)),
 });
 
 // パイプライン演算子の模倣
-const flow = <T extends readonly unknown[], U>(
-  ...fns: PipeArgs<T, U>
-): (arg: Head<T>) => U => (arg) => 
-  (fns as any[]).reduce((acc, fn) => fn(acc), arg);
+const flow =
+  <T extends readonly unknown[], U>(
+    ...fns: PipeArgs<T, U>
+  ): ((arg: Head<T>) => U) =>
+  (arg) =>
+    (fns as any[]).reduce((acc, fn) => fn(acc), arg);
 
 // 型安全なパイプライン
 type PipeArgs<T extends readonly unknown[], U> = {
   readonly [K in keyof T]: (arg: K extends 0 ? T[0] : any) => any;
 } & {
-  readonly length: T['length'];
+  readonly length: T["length"];
 };
 
 type Head<T extends readonly unknown[]> = T extends readonly [
   infer H,
   ...unknown[]
-] ? H : never;
+]
+  ? H
+  : never;
 
 // 使用例
 const processProductData = flow(
@@ -534,21 +574,30 @@ const processProductData = flow(
 );
 
 // カリー化
-const curry = <T, U, V>(fn: (a: T, b: U) => V) =>
-  (a: T) => (b: U) => fn(a, b);
+const curry =
+  <T, U, V>(fn: (a: T, b: U) => V) =>
+  (a: T) =>
+  (b: U) =>
+    fn(a, b);
 
 const add = (a: number, b: number): number => a + b;
 const curriedAdd = curry(add);
 const add5 = curriedAdd(5);
 
 // 部分適用
-const partial = <T extends readonly unknown[], U, V>(
-  fn: (...args: [...T, U]) => V,
-  ...partialArgs: T
-) => (lastArg: U) => fn(...partialArgs, lastArg);
+const partial =
+  <T extends readonly unknown[], U, V>(
+    fn: (...args: [...T, U]) => V,
+    ...partialArgs: T
+  ) =>
+  (lastArg: U) =>
+    fn(...partialArgs, lastArg);
 
-const calculatePrice = (basePrice: number, taxRate: number, discount: number): number =>
-  basePrice * (1 + taxRate) * (1 - discount);
+const calculatePrice = (
+  basePrice: number,
+  taxRate: number,
+  discount: number
+): number => basePrice * (1 + taxRate) * (1 - discount);
 
 const calculateJapanPrice = partial(calculatePrice, 0.1); // 消費税10%
 const calculateDiscountedJapanPrice = calculateJapanPrice(0.2); // 20%割引
@@ -573,7 +622,7 @@ abstract class Maybe<T> {
 
   // Utility methods
   filter(predicate: (value: T) => boolean): Maybe<T> {
-    return this.flatMap(value => 
+    return this.flatMap((value) =>
       predicate(value) ? Maybe.some(value) : Maybe.none()
     );
   }
@@ -607,12 +656,9 @@ abstract class Maybe<T> {
   }
 
   // Traverse for arrays
-  static traverse<T, U>(
-    items: T[],
-    fn: (item: T) => Maybe<U>
-  ): Maybe<U[]> {
+  static traverse<T, U>(items: T[], fn: (item: T) => Maybe<U>): Maybe<U[]> {
     const results: U[] = [];
-    
+
     for (const item of items) {
       const result = fn(item);
       if (result.isNone()) {
@@ -620,13 +666,13 @@ abstract class Maybe<T> {
       }
       results.push(result.value);
     }
-    
+
     return Maybe.some(results);
   }
 
   // Sequence for Maybe array
   static sequence<T>(maybes: Maybe<T>[]): Maybe<T[]> {
-    return Maybe.traverse(maybes, x => x);
+    return Maybe.traverse(maybes, (x) => x);
   }
 }
 
@@ -691,7 +737,7 @@ abstract class Either<L, R> {
 
   // Bimap (両側)
   bimap<U, V>(leftFn: (error: L) => U, rightFn: (value: R) => V): Either<U, V> {
-    return this.isLeft() 
+    return this.isLeft()
       ? Either.left(leftFn(this.error))
       : Either.right(rightFn(this.value));
   }
@@ -715,7 +761,7 @@ abstract class Either<L, R> {
     predicate: (value: R) => boolean,
     onFalse: () => L
   ): (value: R) => Either<L, R> {
-    return (value: R) => 
+    return (value: R) =>
       predicate(value) ? Either.right(value) : Either.left(onFalse());
   }
 
@@ -801,7 +847,7 @@ class Right<L, R> extends Either<L, R> {
   }
 
   apply<U>(fn: Either<L, (value: R) => U>): Either<L, U> {
-    return fn.isRight() 
+    return fn.isRight()
       ? Either.right(fn.value(this.value))
       : Either.left(fn.error);
   }
@@ -845,7 +891,7 @@ class ImmutableList<T> {
     }
     return new ImmutableList([
       ...this.items.slice(0, index),
-      ...this.items.slice(index + 1)
+      ...this.items.slice(index + 1),
     ]);
   }
 
@@ -862,7 +908,7 @@ class ImmutableList<T> {
     return new ImmutableList([
       ...this.items.slice(0, index),
       item,
-      ...this.items.slice(index + 1)
+      ...this.items.slice(index + 1),
     ]);
   }
 
@@ -881,7 +927,7 @@ class ImmutableList<T> {
 
   // アクセス
   get(index: number): Maybe<T> {
-    return index >= 0 && index < this.items.length 
+    return index >= 0 && index < this.items.length
       ? Maybe.some(this.items[index])
       : Maybe.none();
   }
@@ -1009,7 +1055,7 @@ const lens = <S, A>(
   setter: (value: A) => (source: S) => S
 ): Lens<S, A> => ({
   get: getter,
-  set: setter
+  set: setter,
 });
 
 // レンズ合成
@@ -1018,8 +1064,8 @@ const compose = <S, A, B>(
   inner: Lens<A, B>
 ): Lens<S, B> => ({
   get: (source: S) => inner.get(outer.get(source)),
-  set: (value: B) => (source: S) => 
-    outer.set(inner.set(value)(outer.get(source)))(source)
+  set: (value: B) => (source: S) =>
+    outer.set(inner.set(value)(outer.get(source)))(source),
 });
 
 // 使用例
@@ -1032,36 +1078,36 @@ interface User {
 }
 
 const userNameLens: Lens<User, string> = lens(
-  user => user.name,
-  name => user => ({ ...user, name })
+  (user) => user.name,
+  (name) => (user) => ({ ...user, name })
 );
 
-const userProfileLens: Lens<User, User['profile']> = lens(
-  user => user.profile,
-  profile => user => ({ ...user, profile })
+const userProfileLens: Lens<User, User["profile"]> = lens(
+  (user) => user.profile,
+  (profile) => (user) => ({ ...user, profile })
 );
 
-const profileEmailLens: Lens<User['profile'], string> = lens(
-  profile => profile.email,
-  email => profile => ({ ...profile, email })
+const profileEmailLens: Lens<User["profile"], string> = lens(
+  (profile) => profile.email,
+  (email) => (profile) => ({ ...profile, email })
 );
 
 const userEmailLens = compose(userProfileLens, profileEmailLens);
 
 // 使用
 const user: User = {
-  name: 'Alice',
-  profile: { email: 'alice@example.com', age: 30 }
+  name: "Alice",
+  profile: { email: "alice@example.com", age: 30 },
 };
 
-const updatedUser = userEmailLens.set('alice@newdomain.com')(user);
+const updatedUser = userEmailLens.set("alice@newdomain.com")(user);
 ```
 
 ## 🎯 実践演習
 
 ### 演習 5-1: Clean Architecture 完全実装 🔥
 
-**目標**: 4層アーキテクチャの完全な実装
+**目標**: 4 層アーキテクチャの完全な実装
 
 ```typescript
 // 以下の要件を満たすEコマースシステムを4層アーキテクチャで実装せよ
@@ -1092,8 +1138,12 @@ interface Order {
 
 // Application Layer
 interface ProductApplicationService {
-  createProduct(request: CreateProductRequest): Promise<Either<ApplicationError, Product>>;
-  getProducts(criteria: ProductSearchCriteria): Promise<Either<ApplicationError, ProductListResult>>;
+  createProduct(
+    request: CreateProductRequest
+  ): Promise<Either<ApplicationError, Product>>;
+  getProducts(
+    criteria: ProductSearchCriteria
+  ): Promise<Either<ApplicationError, ProductListResult>>;
 }
 
 // Infrastructure Layer
@@ -1108,7 +1158,7 @@ class ProductController {
     private productService: ProductApplicationService,
     private mapper: ProductDtoMapper
   ) {}
-  
+
   async createProduct(req: Request, res: Response): Promise<void> {
     // 実装
   }
@@ -1167,11 +1217,15 @@ const processOrderData = flow(
 );
 
 // 各ステップの実装
-const validateRawData = (data: RawOrderData): Either<ValidationError, ValidatedOrderData> => {
+const validateRawData = (
+  data: RawOrderData
+): Either<ValidationError, ValidatedOrderData> => {
   // 実装
 };
 
-const enrichWithCustomerData = (data: ValidatedOrderData): Either<EnrichmentError, EnrichedOrderData> => {
+const enrichWithCustomerData = (
+  data: ValidatedOrderData
+): Either<EnrichmentError, EnrichedOrderData> => {
   // 実装
 };
 
@@ -1183,10 +1237,12 @@ const calculateItemTotal = curry((taxRate: number, item: OrderItem): Money => {
 const calculateJapanItemTotal = calculateItemTotal(0.1); // 消費税10%
 
 // Maybe/Eitherを使った安全な操作
-const safelyProcessOrder = (data: RawOrderData): Either<ProcessingError, ProcessedOrder> => {
+const safelyProcessOrder = (
+  data: RawOrderData
+): Either<ProcessingError, ProcessedOrder> => {
   return Either.fromPredicate(
     (data: RawOrderData) => data.items.length > 0,
-    () => new ProcessingError('Order must have at least one item')
+    () => new ProcessingError("Order must have at least one item")
   )(data)
     .flatMap(processOrderData)
     .map(applyDiscounts)
@@ -1194,11 +1250,13 @@ const safelyProcessOrder = (data: RawOrderData): Either<ProcessingError, Process
 };
 
 // イミュータブルリストを使った操作
-const processOrderItems = (items: ImmutableList<RawOrderItem>): ImmutableList<ProcessedOrderItem> => {
+const processOrderItems = (
+  items: ImmutableList<RawOrderItem>
+): ImmutableList<ProcessedOrderItem> => {
   return items
     .map(validateItem)
-    .filter(item => item.isSome())
-    .map(item => item.orElseThrow(() => new Error('Invalid item')))
+    .filter((item) => item.isSome())
+    .map((item) => item.orElseThrow(() => new Error("Invalid item")))
     .map(enrichItemData)
     .map(calculateItemTotal);
 };
@@ -1217,7 +1275,7 @@ const processOrderItems = (items: ImmutableList<RawOrderItem>): ImmutableList<Pr
 
 #### Clean Architecture (40%)
 
-- [ ] 4層の責任を明確に分離できる
+- [ ] 4 層の責任を明確に分離できる
 - [ ] 依存性逆転原則を実践できる
 - [ ] インターフェース駆動設計を実装できる
 - [ ] 依存性注入を効果的に活用できる
@@ -1226,7 +1284,7 @@ const processOrderItems = (items: ImmutableList<RawOrderItem>): ImmutableList<Pr
 #### 関数型プログラミング (35%)
 
 - [ ] 関数合成とパイプラインを実装できる
-- [ ] Maybe/Eitherモナドを効果的に活用できる
+- [ ] Maybe/Either モナドを効果的に活用できる
 - [ ] カリー化と部分適用を理解している
 - [ ] 純粋関数の概念を実践できる
 - [ ] 副作用を適切に管理できる
@@ -1247,9 +1305,9 @@ const processOrderItems = (items: ImmutableList<RawOrderItem>): ImmutableList<Pr
 
 ### 成果物チェックリスト
 
-- [ ] **Clean Architecture テンプレート**: 4層完全分離の実装例
-- [ ] **関数型ライブラリ**: Maybe/Either/ImmutableList等の実装
-- [ ] **依存性注入システム**: 型安全なDIコンテナ
+- [ ] **Clean Architecture テンプレート**: 4 層完全分離の実装例
+- [ ] **関数型ライブラリ**: Maybe/Either/ImmutableList 等の実装
+- [ ] **依存性注入システム**: 型安全な DI コンテナ
 - [ ] **関数型パイプライン**: データ変換の実用例
 - [ ] **統合テスト**: アーキテクチャ全体のテスト
 
@@ -1272,7 +1330,11 @@ interface DomainEvent {
 }
 
 interface EventStore {
-  saveEvents(aggregateId: string, events: DomainEvent[], expectedVersion: number): Promise<void>;
+  saveEvents(
+    aggregateId: string,
+    events: DomainEvent[],
+    expectedVersion: number
+  ): Promise<void>;
   getEvents(aggregateId: string): Promise<DomainEvent[]>;
 }
 
@@ -1333,7 +1395,7 @@ interface BlogPostReadRepository {
 
 ### 環境準備
 
-- [ ] イベントストア実装の調査（EventStore DB、PostgreSQL等）
+- [ ] イベントストア実装の調査（EventStore DB、PostgreSQL 等）
 - [ ] CQRS フレームワークの検討
 - [ ] プロジェクション更新システムの設計
 - [ ] パフォーマンステストツールの準備

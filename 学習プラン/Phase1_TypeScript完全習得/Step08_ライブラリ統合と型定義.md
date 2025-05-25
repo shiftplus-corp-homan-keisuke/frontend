@@ -27,8 +27,9 @@
 
 #### 🔍 d.ts ファイルの理解
 
+##### 1. 基本的な型定義ファイル
+
 ```typescript
-// 1. 基本的な型定義ファイル
 // 💡 詳細解説: 型定義ファイル → Step08_補足_専門用語集.md#型定義ファイルtype-definition-files
 // 💡 詳細解説: declare文 → Step08_補足_専門用語集.md#declare文declare-statement
 // types/global.d.ts
@@ -51,8 +52,11 @@ declare global {
 }
 
 export {};
+```
 
-// 2. モジュール宣言
+##### 2. モジュール宣言
+
+```typescript
 // 💡 詳細解説: モジュール宣言 → Step08_補足_専門用語集.md#モジュール宣言module-declaration
 // types/external-lib.d.ts
 declare module "some-external-library" {
@@ -69,8 +73,11 @@ declare module "some-external-library" {
 
   export function createClient(config: Config): ApiClient;
 }
+```
 
-// 3. 既存モジュールの拡張
+##### 3. 既存モジュールの拡張
+
+```typescript
 // 💡 詳細解説: モジュール拡張 → Step08_補足_専門用語集.md#モジュール拡張module-augmentation
 // types/lodash-extensions.d.ts
 import "lodash";
@@ -80,8 +87,11 @@ declare module "lodash" {
     customMethod<T>(array: T[]): T[];
   }
 }
+```
 
-// 4. CSS モジュールの型定義
+##### 4. CSS モジュールの型定義
+
+```typescript
 // 💡 詳細解説: ワイルドカードモジュール → Step08_補足_専門用語集.md#ワイルドカードモジュールwildcard-modules
 // types/css-modules.d.ts
 declare module "*.module.css" {
@@ -93,8 +103,11 @@ declare module "*.module.scss" {
   const classes: { [key: string]: string };
   export default classes;
 }
+```
 
-// 5. 画像ファイルの型定義
+##### 5. 画像ファイルの型定義
+
+```typescript
 // 💡 詳細解説: アセット型定義 → Step08_補足_専門用語集.md#アセット型定義asset-type-definitions
 // types/assets.d.ts
 declare module "*.png" {
@@ -115,14 +128,19 @@ declare module "*.svg" {
 
 #### 🎯 DefinitelyTyped の活用
 
-```typescript
-// 1. 人気ライブラリの型定義インストール
-// npm install @types/lodash
-// npm install @types/express
-// npm install @types/node
-// npm install @types/jest
+##### 1. 人気ライブラリの型定義インストール
 
-// 2. Lodash の型安全な使用
+```bash
+# 人気ライブラリの型定義インストール
+npm install @types/lodash
+npm install @types/express
+npm install @types/node
+npm install @types/jest
+```
+
+##### 2. Lodash の型安全な使用
+
+```typescript
 import _ from "lodash";
 
 interface User {
@@ -143,8 +161,11 @@ const activeUsers = _.filter(users, { active: true }); // User[]
 const userNames = _.map(users, "name"); // string[]
 const userById = _.keyBy(users, "id"); // Record<string, User>
 const groupedByActive = _.groupBy(users, "active"); // Record<string, User[]>
+```
 
-// 3. Express の型安全な使用
+##### 3. Express の型安全な使用
+
+```typescript
 import express, { Request, Response, NextFunction } from "express";
 
 interface AuthenticatedRequest extends Request {
@@ -185,8 +206,11 @@ app.get(
     res.json({ users: [] });
   }
 );
+```
 
-// 4. Jest の型安全なテスト
+##### 4. Jest の型安全なテスト
+
+```typescript
 import { describe, it, expect, beforeEach, jest } from "@jest/globals";
 
 describe("UserService", () => {
@@ -226,8 +250,9 @@ describe("UserService", () => {
 
 #### 🔧 実用的な型定義パターン
 
+##### 1. API レスポンスの型定義
+
 ```typescript
-// 1. API レスポンスの型定義
 // types/api.d.ts
 export namespace API {
   interface BaseResponse {
@@ -311,8 +336,11 @@ export namespace API {
     type RefreshResult = Response<{ token: string }>;
   }
 }
+```
 
-// 2. 設定ファイルの型定義
+##### 2. 設定ファイルの型定義
+
+```typescript
 // types/config.d.ts
 export interface AppConfig {
   app: {
@@ -363,8 +391,11 @@ export interface AppConfig {
     [featureName: string]: boolean;
   };
 }
+```
 
-// 3. イベントシステムの型定義
+##### 3. イベントシステムの型定義
+
+```typescript
 // types/events.d.ts
 export namespace Events {
   interface BaseEvent {
@@ -413,8 +444,11 @@ export namespace Events {
     ): () => void;
   }
 }
+```
 
-// 4. フォームバリデーションの型定義
+##### 4. フォームバリデーションの型定義
+
+```typescript
 // types/validation.d.ts
 export namespace Validation {
   interface ValidationRule<T = any> {
@@ -457,8 +491,9 @@ export namespace Validation {
 
 #### 🔧 型安全なライブラリラッパー
 
+##### 1. HTTP クライアントライブラリのラッパー
+
 ```typescript
-// 1. HTTP クライアントライブラリのラッパー
 // lib/http-client.ts
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import { API } from "../types/api";
@@ -596,8 +631,11 @@ export class TypeSafeHttpClient {
     delete this.client.defaults.headers.common["Authorization"];
   }
 }
+```
 
-// 2. ユーザーAPI サービス
+##### 2. ユーザーAPI サービス
+
+```typescript
 // services/user-api.ts
 export class UserApiService {
   constructor(private httpClient: TypeSafeHttpClient) {}
@@ -638,8 +676,11 @@ export class UserApiService {
     return this.httpClient.delete<{}>(`/users/${id}`);
   }
 }
+```
 
-// 3. 認証API サービス
+##### 3. 認証API サービス
+
+```typescript
 // services/auth-api.ts
 export class AuthApiService {
   constructor(private httpClient: TypeSafeHttpClient) {}
@@ -671,8 +712,11 @@ export class AuthApiService {
     await this.httpClient.post("/auth/logout", {});
   }
 }
+```
 
-// 4. サービスファクトリ
+##### 4. サービスファクトリと使用例
+
+```typescript
 // services/index.ts
 export class ApiServiceFactory {
   private httpClient: TypeSafeHttpClient;

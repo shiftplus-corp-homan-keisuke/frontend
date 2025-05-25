@@ -29,8 +29,9 @@
 
 #### 🔍 基本型の詳細と他言語との比較
 
+##### 1. string型 - 文字列
+
 ```typescript
-// 1. string型 - 文字列
 // Java: String, C#: string, Python: str, Go: string
 let message: string = "Hello TypeScript";
 let template: string = `User name is ${message}`;
@@ -43,8 +44,11 @@ let multiline: string = `
 // 💡 詳細解説: リテラル型 → Step02_補足_専門用語集.md#リテラル型literal-types
 let status: "pending" | "approved" | "rejected" = "pending";
 // status = "invalid"; // Error: Type '"invalid"' is not assignable
+```
 
-// 2. number型 - 数値（整数・浮動小数点）
+##### 2. number型 - 数値（整数・浮動小数点）
+
+```typescript
 // Java: int/double, C#: int/double, Python: int/float, Go: int/float64
 let age: number = 25;
 let price: number = 99.99;
@@ -55,13 +59,19 @@ let hex: number = 0xff; // 16進数
 // 数値リテラル型
 // 💡 詳細解説: リテラル型 → Step02_補足_専門用語集.md#リテラル型literal-types
 let diceRoll: 1 | 2 | 3 | 4 | 5 | 6 = 3;
+```
 
-// 3. boolean型 - 真偽値
+##### 3. boolean型 - 真偽値
+
+```typescript
 // Java: boolean, C#: bool, Python: bool, Go: bool
 let isActive: boolean = true;
 let isCompleted: boolean = false;
+```
 
-// 4. null と undefined
+##### 4. null と undefined
+
+```typescript
 // Java: null, C#: null, Python: None, Go: nil
 let nullValue: null = null;
 let undefinedValue: undefined = undefined;
@@ -70,14 +80,20 @@ let undefinedValue: undefined = undefined;
 // 💡 詳細解説: ユニオン型 → Step02_補足_専門用語集.md#ユニオン型union-types
 let maybeString: string | null = null;
 let optionalString: string | undefined = undefined;
+```
 
-// 5. symbol型 - 一意識別子
+##### 5. symbol型 - 一意識別子
+
+```typescript
 // ES6で追加、他言語にはあまり類似概念なし
 let sym1: symbol = Symbol("key");
 let sym2: symbol = Symbol("key");
 console.log(sym1 === sym2); // false（常に一意）
+```
 
-// 6. bigint型 - 大きな整数
+##### 6. bigint型 - 大きな整数
+
+```typescript
 // Java: BigInteger, C#: BigInteger, Python: int（自動拡張）
 let bigNumber: bigint = 123456789012345678901234567890n;
 let anotherBig: bigint = BigInt("123456789012345678901234567890");
@@ -85,36 +101,49 @@ let anotherBig: bigint = BigInt("123456789012345678901234567890");
 
 #### 🎯 型推論の詳細メカニズム
 
+##### 1. 基本的な型推論
+
 ```typescript
-// 1. 基本的な型推論
 // 💡 詳細解説: 型推論 → Step02_補足_専門用語集.md#型推論type-inference
 let inferredString = "Hello"; // string型として推論
 let inferredNumber = 42; // number型として推論
 let inferredBoolean = true; // boolean型として推論
+```
 
-// 2. 最適共通型（Best Common Type）
+##### 2. 最適共通型（Best Common Type）
+
+```typescript
 // 💡 詳細解説: 型推論 → Step02_補足_専門用語集.md#型推論type-inference
 let mixedArray = [1, "hello", true]; // (string | number | boolean)[]
 let numbers = [1, 2, 3]; // number[]
 let strings = ["a", "b", "c"]; // string[]
+```
 
-// 3. 文脈的型推論（Contextual Typing）
+##### 3. 文脈的型推論（Contextual Typing）
+
+```typescript
 // 💡 詳細解説: 型推論 → Step02_補足_専門用語集.md#型推論type-inference
 const button = document.querySelector("button");
 button?.addEventListener("click", function (event) {
   // eventは自動的にMouseEvent型として推論
   console.log(event.clientX);
 });
+```
 
-// 4. 型推論の限界と明示的型注釈の必要性
+##### 4. 型推論の限界と明示的型注釈の必要性
+
+```typescript
 let value; // any型（推論不可）
 value = "string";
 value = 42; // 型安全性が失われる
 
 let typedValue: string; // 明示的型注釈で型安全性確保
 // typedValue = 42;           // Error
+```
 
-// 5. 関数の戻り値型推論
+##### 5. 関数の戻り値型推論
+
+```typescript
 function add(a: number, b: number) {
   return a + b; // number型として推論
 }
@@ -126,8 +155,11 @@ function getUser() {
     age: 30,
   };
 }
+```
 
-// 6. 条件分岐での型推論
+##### 6. 条件分岐での型推論
+
+```typescript
 function processValue(value: string | number) {
   if (typeof value === "string") {
     // この分岐内ではvalueはstring型として推論
@@ -143,14 +175,18 @@ function processValue(value: string | number) {
 
 #### 🔧 配列型の詳細活用
 
+##### 1. 基本的な配列型
+
 ```typescript
-// 1. 基本的な配列型
 // 💡 詳細解説: 配列型 → Step02_補足_専門用語集.md#配列型array-types
 let numbers: number[] = [1, 2, 3, 4, 5];
 let strings: Array<string> = ["apple", "banana", "cherry"];
 let booleans: boolean[] = [true, false, true];
+```
 
-// 2. 多次元配列
+##### 2. 多次元配列
+
+```typescript
 // 💡 詳細解説: 配列型 → Step02_補足_専門用語集.md#配列型array-types
 let matrix: number[][] = [
   [1, 2, 3],
@@ -168,14 +204,20 @@ let cube: number[][][] = [
     [7, 8],
   ],
 ];
+```
 
-// 3. 読み取り専用配列
+##### 3. 読み取り専用配列
+
+```typescript
 // 💡 詳細解説: 読み取り専用型 → Step02_補足_専門用語集.md#読み取り専用型readonly-types
 let readonlyNumbers: readonly number[] = [1, 2, 3];
 let readonlyStrings: ReadonlyArray<string> = ["a", "b", "c"];
 // readonlyNumbers.push(4); // Error: Property 'push' does not exist
+```
 
-// 4. 配列の型ガード
+##### 4. 配列の型ガード
+
+```typescript
 function isNumberArray(value: unknown): value is number[] {
   return (
     Array.isArray(value) && value.every((item) => typeof item === "number")
@@ -189,8 +231,11 @@ function processArray(input: unknown) {
   }
   return 0;
 }
+```
 
-// 5. 配列操作の型安全性
+##### 5. 配列操作の型安全性
+
+```typescript
 const fruits: string[] = ["apple", "banana", "cherry"];
 
 // map操作での型変換
@@ -213,13 +258,17 @@ const fruitMap: Record<string, number> = fruits.reduce((map, fruit, index) => {
 
 #### 🎯 タプル型の実践活用
 
+##### 1. 基本的なタプル型
+
 ```typescript
-// 1. 基本的なタプル型
 // 💡 詳細解説: タプル型 → Step02_補足_専門用語集.md#タプル型tuple-types
 let coordinate: [number, number] = [10, 20];
 let person: [string, number, boolean] = ["Alice", 30, true];
+```
 
-// 2. 名前付きタプル（TypeScript 4.0+）
+##### 2. 名前付きタプル（TypeScript 4.0+）
+
+```typescript
 // 💡 詳細解説: タプル型 → Step02_補足_専門用語集.md#タプル型tuple-types
 let namedCoordinate: [x: number, y: number] = [10, 20];
 let userInfo: [name: string, age: number, isActive: boolean] = [
@@ -227,27 +276,42 @@ let userInfo: [name: string, age: number, isActive: boolean] = [
   25,
   false,
 ];
+```
 
-// 3. オプショナル要素
+##### 3. オプショナル要素
+
+```typescript
 // 💡 詳細解説: タプル型 → Step02_補足_専門用語集.md#タプル型tuple-types
 let optionalTuple: [string, number?] = ["hello"];
 optionalTuple = ["hello", 42];
+```
 
-// 4. 残余要素（Rest Elements）
+##### 4. 残余要素（Rest Elements）
+
+```typescript
 // 💡 詳細解説: タプル型 → Step02_補足_専門用語集.md#タプル型tuple-types
 let restTuple: [string, ...number[]] = ["prefix", 1, 2, 3, 4];
 let mixedRest: [boolean, ...string[], number] = [true, "a", "b", "c", 42];
+```
 
-// 5. 読み取り専用タプル
+##### 5. 読み取り専用タプル
+
+```typescript
 // 💡 詳細解説: 読み取り専用型 → Step02_補足_専門用語集.md#読み取り専用型readonly-types
 let readonlyTuple: readonly [string, number] = ["hello", 42];
 // readonlyTuple[0] = "world"; // Error: Cannot assign to '0'
+```
 
-// 6. タプルの分割代入
+##### 6. タプルの分割代入
+
+```typescript
 let [name, age, isActive] = person;
 let [x, y] = coordinate;
+```
 
-// 7. 関数の戻り値としてのタプル
+##### 7. 関数の戻り値としてのタプル
+
+```typescript
 function getNameAndAge(): [string, number] {
   return ["Alice", 30];
 }
@@ -263,8 +327,11 @@ function parseCoordinate(input: string): [number, number] | null {
   }
   return null;
 }
+```
 
-// 8. タプルとしての配列メソッド
+##### 8. タプルとしての配列メソッド
+
+```typescript
 function swapCoordinate([x, y]: [number, number]): [number, number] {
   return [y, x];
 }
@@ -281,8 +348,9 @@ function distance(
 
 #### 🔧 オブジェクト型の詳細設計
 
+##### 1. 基本的なオブジェクト型
+
 ```typescript
-// 1. 基本的なオブジェクト型
 // 💡 詳細解説: オブジェクト型 → Step02_補足_専門用語集.md#オブジェクト型object-types
 let user: {
   name: string;
@@ -293,8 +361,11 @@ let user: {
   age: 30,
   email: "alice@example.com",
 };
+```
 
-// 2. オプショナルプロパティ
+##### 2. オプショナルプロパティ
+
+```typescript
 // 💡 詳細解説: オプショナルプロパティ → Step02_補足_専門用語集.md#オプショナルプロパティoptional-properties
 let partialUser: {
   name: string;
@@ -303,8 +374,11 @@ let partialUser: {
 } = {
   name: "Bob",
 };
+```
 
-// 3. 読み取り専用プロパティ
+##### 3. 読み取り専用プロパティ
+
+```typescript
 // 💡 詳細解説: 読み取り専用型 → Step02_補足_専門用語集.md#読み取り専用型readonly-types
 let config: {
   readonly apiUrl: string;
@@ -318,8 +392,11 @@ let config: {
 
 // config.apiUrl = "new url"; // Error: Cannot assign to 'apiUrl'
 config.retries = 5; // OK
+```
 
-// 4. インデックスシグネチャ
+##### 4. インデックスシグネチャ
+
+```typescript
 // 💡 詳細解説: インデックスシグネチャ → Step02_補足_専門用語集.md#インデックスシグネチャindex-signatures
 let dictionary: {
   [key: string]: string;
@@ -335,8 +412,11 @@ let scores: {
   bob: 87,
   charlie: 92,
 };
+```
 
-// 5. 混合型のオブジェクト
+##### 5. 混合型のオブジェクト
+
+```typescript
 let complexObject: {
   id: number;
   name: string;
@@ -359,8 +439,9 @@ let complexObject: {
 
 #### 🎯 関数型の詳細活用
 
+##### 1. 基本的な関数型注釈
+
 ```typescript
-// 1. 基本的な関数型注釈
 // 💡 詳細解説: 関数型 → Step02_補足_専門用語集.md#関数型function-types
 function greet(name: string): string {
   return `Hello, ${name}!`;
@@ -373,19 +454,28 @@ function add(a: number, b: number): number {
 function logMessage(message: string): void {
   console.log(message);
 }
+```
 
-// 2. アロー関数の型注釈
+##### 2. アロー関数の型注釈
+
+```typescript
 // 💡 詳細解説: 関数型 → Step02_補足_専門用語集.md#関数型function-types
 const multiply = (a: number, b: number): number => a * b;
 const isEven = (num: number): boolean => num % 2 === 0;
+```
 
-// 3. 関数型の変数
+##### 3. 関数型の変数
+
+```typescript
 // 💡 詳細解説: 関数型 → Step02_補足_専門用語集.md#関数型function-types
 let calculator: (a: number, b: number) => number;
 calculator = add;
 calculator = multiply;
+```
 
-// 4. オプショナルパラメータ
+##### 4. オプショナルパラメータ
+
+```typescript
 // 💡 詳細解説: オプショナルパラメータ → Step02_補足_専門用語集.md#オプショナルパラメータoptional-parameters
 function createUser(name: string, age?: number, email?: string): object {
   return {
@@ -394,28 +484,40 @@ function createUser(name: string, age?: number, email?: string): object {
     email: email || "",
   };
 }
+```
 
-// 5. デフォルトパラメータ
+##### 5. デフォルトパラメータ
+
+```typescript
 // 💡 詳細解説: デフォルトパラメータ → Step02_補足_専門用語集.md#デフォルトパラメータdefault-parameters
 function greetWithDefault(name: string, greeting: string = "Hello"): string {
   return `${greeting}, ${name}!`;
 }
+```
 
-// 6. 残余パラメータ
+##### 6. 残余パラメータ
+
+```typescript
 // 💡 詳細解説: 残余パラメータ → Step02_補足_専門用語集.md#残余パラメータrest-parameters
 function sum(...numbers: number[]): number {
   return numbers.reduce((total, num) => total + num, 0);
 }
+```
 
-// 7. 関数オーバーロード
+##### 7. 関数オーバーロード
+
+```typescript
 function format(value: string): string;
 function format(value: number): string;
 function format(value: boolean): string;
 function format(value: string | number | boolean): string {
   return String(value);
 }
+```
 
-// 8. 高階関数の型注釈
+##### 8. 高階関数の型注釈
+
+```typescript
 function applyOperation(
   numbers: number[],
   operation: (num: number) => number

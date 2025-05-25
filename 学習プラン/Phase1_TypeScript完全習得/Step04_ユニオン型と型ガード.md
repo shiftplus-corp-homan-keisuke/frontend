@@ -27,8 +27,9 @@
 
 #### 🔍 ユニオン型の基本概念と他言語との比較
 
+##### 1. 基本的なユニオン型
+
 ```typescript
-// 1. 基本的なユニオン型
 // Java: Object (型安全性なし), Kotlin: sealed class
 // C#: object (型安全性なし), F#: discriminated union
 // Rust: enum, Go: interface{}
@@ -44,8 +45,11 @@ function processValue(value: StringOrNumber): string {
   return value.toString(); // OK: toString()は両方の型に存在
   // return value.toUpperCase(); // Error: numberにはtoUpperCase()がない
 }
+```
 
-// 2. リテラル型のユニオン
+##### 2. リテラル型のユニオン
+
+```typescript
 // 💡 詳細解説: リテラル型 → Step04_補足_専門用語集.md#リテラル型literal-types
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 type ResponseStatus = 200 | 201 | 400 | 401 | 404 | 500;
@@ -53,8 +57,11 @@ type ResponseStatus = 200 | 201 | 400 | 401 | 404 | 500;
 function makeRequest(method: HttpMethod, url: string): Promise<Response> {
   return fetch(url, { method });
 }
+```
 
-// 3. オブジェクト型のユニオン
+##### 3. オブジェクト型のユニオン
+
+```typescript
 type Circle = {
   kind: "circle";
   radius: number;
@@ -73,18 +80,27 @@ type Triangle = {
 };
 
 type Shape = Circle | Rectangle | Triangle;
+```
 
-// 4. 関数型のユニオン
+##### 4. 関数型のユニオン
+
+```typescript
 type EventHandler =
   | ((event: MouseEvent) => void)
   | ((event: KeyboardEvent) => void)
   | ((event: TouchEvent) => void);
+```
 
-// 5. 配列とユニオン型
+##### 5. 配列とユニオン型
+
+```typescript
 type MixedArray = (string | number | boolean)[];
 type NumberOrStringArray = number[] | string[];
+```
 
-// 6. null/undefinedとのユニオン（Nullable型）
+##### 6. null/undefinedとのユニオン（Nullable型）
+
+```typescript
 type NullableString = string | null;
 type OptionalString = string | undefined;
 type MaybeString = string | null | undefined;
@@ -99,8 +115,9 @@ function processNullableString(value: NullableString): string {
 
 #### 🎯 インターセクション型の活用
 
+##### 1. 基本的なインターセクション型
+
 ```typescript
-// 1. 基本的なインターセクション型
 // 💡 詳細解説: インターセクション型 → Step04_補足_専門用語集.md#インターセクション型intersection-types
 type User = {
   id: number;
@@ -115,8 +132,11 @@ type Timestamps = {
 
 type UserWithTimestamps = User & Timestamps;
 // 結果: { id: number; name: string; email: string; createdAt: Date; updatedAt: Date; }
+```
 
-// 2. Mixin パターン
+##### 2. Mixin パターン
+
+```typescript
 type Serializable = {
   serialize(): string;
   deserialize(data: string): void;
@@ -128,8 +148,11 @@ type Cacheable = {
 };
 
 type Entity = User & Serializable & Cacheable;
+```
 
-// 3. 関数型のインターセクション
+##### 3. 関数型のインターセクション
+
+```typescript
 type Logger = {
   log(message: string): void;
 };
@@ -142,15 +165,21 @@ type Service = Logger &
   ErrorHandler & {
     process(data: unknown): Promise<unknown>;
   };
+```
 
-// 4. 条件付きインターセクション
+##### 4. 条件付きインターセクション
+
+```typescript
 type WithOptionalId<T> = T & { id?: number };
 type WithRequiredId<T> = T & { id: number };
 
 type CreateUserRequest = WithOptionalId<User>;
 type UpdateUserRequest = WithRequiredId<Partial<User>>;
+```
 
-// 5. 型の合成
+##### 5. 型の合成
+
+```typescript
 type ApiResponse<T> = {
   data: T;
   status: number;
@@ -174,8 +203,9 @@ type PaginatedResponse<T> = ApiResponse<T[]> & {
 
 #### 🔧 基本的な型ガード
 
+##### 1. typeof 型ガード
+
 ```typescript
-// 1. typeof 型ガード
 function processStringOrNumber(value: string | number): string {
   if (typeof value === "string") {
     // この分岐内ではvalueはstring型
@@ -185,8 +215,11 @@ function processStringOrNumber(value: string | number): string {
     return value.toFixed(2);
   }
 }
+```
 
-// 2. instanceof 型ガード
+##### 2. instanceof 型ガード
+
+```typescript
 class Dog {
   bark(): void {
     console.log("Woof!");
@@ -206,8 +239,11 @@ function makeSound(animal: Dog | Cat): void {
     animal.meow(); // Catのメソッドにアクセス可能
   }
 }
+```
 
-// 3. in 演算子による型ガード
+##### 3. in 演算子による型ガード
+
+```typescript
 type Fish = {
   swim(): void;
   fins: number;
@@ -227,8 +263,11 @@ function move(animal: Fish | Bird): void {
     console.log(`Bird has ${animal.wings} wings`);
   }
 }
+```
 
-// 4. カスタム型ガード関数
+##### 4. カスタム型ガード関数
+
+```typescript
 function isString(value: unknown): value is string {
   return typeof value === "string";
 }
@@ -259,8 +298,11 @@ function processUnknownValue(value: unknown): string {
     return "Unknown type";
   }
 }
+```
 
-// 5. 複雑な型ガード
+##### 5. 複雑な型ガード
+
+```typescript
 interface User {
   id: number;
   name: string;
@@ -279,8 +321,11 @@ function isUser(value: unknown): value is User {
 function isUserArray(value: unknown): value is User[] {
   return isArray(value) && value.every(isUser);
 }
+```
 
-// 6. 非同期型ガード
+##### 6. 非同期型ガード
+
+```typescript
 async function isValidUser(value: unknown): Promise<value is User> {
   if (!isUser(value)) {
     return false;
@@ -294,8 +339,9 @@ async function isValidUser(value: unknown): Promise<value is User> {
 
 #### 🎯 判別可能なユニオン（Discriminated Union）
 
+##### 1. 基本的な判別可能なユニオン
+
 ```typescript
-// 1. 基本的な判別可能なユニオン
 interface LoadingState {
   status: "loading";
   progress?: number;
@@ -332,8 +378,11 @@ function handleAsyncState(state: AsyncState): string {
       return "Unknown state";
   }
 }
+```
 
-// 2. 複雑な判別可能なユニオン
+##### 2. 複雑な判別可能なユニオン
+
+```typescript
 type PaymentMethod =
   | {
       type: "credit_card";
@@ -377,8 +426,11 @@ function processPayment(method: PaymentMethod, amount: number): string {
       throw new Error("Unknown payment method");
   }
 }
+```
 
-// 3. ネストした判別可能なユニオン
+##### 3. ネストした判別可能なユニオン
+
+```typescript
 type ApiResult<T> =
   | {
       success: true;
@@ -417,8 +469,9 @@ function handleApiResult<T>(result: ApiResult<T>): T | null {
 
 #### 🔧 型アサーションの適切な使用
 
+##### 1. 基本的な型アサーション
+
 ```typescript
-// 1. 基本的な型アサーション
 // 注意: 型アサーションは型安全性を損なう可能性があるため慎重に使用
 
 // DOM要素の型アサーション
@@ -433,8 +486,11 @@ function getButtonElement(id: string): HTMLButtonElement | null {
   }
   return null;
 }
+```
 
-// 2. unknown からの型アサーション
+##### 2. unknown からの型アサーション
+
+```typescript
 function parseJsonSafely<T>(json: string): T | null {
   try {
     const parsed = JSON.parse(json) as T;
@@ -456,8 +512,11 @@ function parseUserJson(json: string): User | null {
     return null;
   }
 }
+```
 
-// 3. const アサーション
+##### 3. const アサーション
+
+```typescript
 const colors = ["red", "green", "blue"] as const;
 // type: readonly ["red", "green", "blue"]
 
@@ -467,8 +526,11 @@ const config = {
   retries: 3,
 } as const;
 // プロパティがreadonlyになる
+```
 
-// 4. 非null アサーション演算子（!）
+##### 4. 非null アサーション演算子（!）
+
+```typescript
 function processUser(userId: string): void {
   const user = users.find((u) => u.id === userId);
   // userが確実に存在することが分かっている場合のみ使用
@@ -479,8 +541,11 @@ function processUser(userId: string): void {
     console.log(user.name);
   }
 }
+```
 
-// 5. 型アサーション関数
+##### 5. 型アサーション関数
+
+```typescript
 function assertIsNumber(value: unknown): asserts value is number {
   if (typeof value !== "number") {
     throw new Error("Expected number");

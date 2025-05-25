@@ -25,8 +25,9 @@
 
 ### 🎯 Todo アプリケーション仕様
 
+#### 1. データモデル定義
+
 ```typescript
-// 1. データモデル定義
 // 💡 詳細解説: インターフェース設計 → Step07_補足_専門用語集.md#インターフェース設計interface-design
 // 💡 詳細解説: リテラル型 → Step07_補足_専門用語集.md#リテラル型literal-types
 interface TodoItem {
@@ -47,8 +48,11 @@ interface TodoCategory {
   color: string;
   icon?: string;
 }
+```
 
-// 2. アプリケーション状態
+#### 2. アプリケーション状態
+
+```typescript
 // 💡 詳細解説: 状態管理設計 → Step07_補足_専門用語集.md#状態管理設計state-management-design
 interface AppState {
   todos: TodoItem[];
@@ -63,8 +67,11 @@ interface AppState {
 
 type TodoFilter = "all" | "active" | "completed";
 type TodoSortBy = "created" | "updated" | "priority" | "dueDate" | "title";
+```
 
-// 3. アクション定義
+#### 3. アクション定義
+
+```typescript
 // 💡 詳細解説: 判別可能なユニオン → Step07_補足_専門用語集.md#判別可能なユニオンdiscriminated-unions
 // 💡 詳細解説: Omit型の活用 → Step07_補足_専門用語集.md#omit型の活用omit-type-usage
 type TodoAction =
@@ -92,6 +99,8 @@ type TodoAction =
 ### Day 1-2: プロジェクト基盤構築
 
 #### 🔧 状態管理システム
+
+##### 1. TodoStore クラスの基本構造
 
 ```typescript
 // store.ts - 型安全な状態管理
@@ -134,87 +143,95 @@ class TodoStore {
       }
     };
   }
+}
+```
 
-  private reducer(state: AppState, action: TodoAction): AppState {
-    switch (action.type) {
-      case "ADD_TODO":
-        const newTodo: TodoItem = {
-          ...action.payload,
-          id: this.generateId(),
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        };
-        return {
-          ...state,
-          todos: [...state.todos, newTodo],
-        };
+##### 2. Reducer の実装
 
-      case "UPDATE_TODO":
-        return {
-          ...state,
-          todos: state.todos.map((todo) =>
-            todo.id === action.payload.id
-              ? { ...todo, ...action.payload.updates, updatedAt: new Date() }
-              : todo
-          ),
-        };
+```typescript
+private reducer(state: AppState, action: TodoAction): AppState {
+  switch (action.type) {
+    case "ADD_TODO":
+      const newTodo: TodoItem = {
+        ...action.payload,
+        id: this.generateId(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      return {
+        ...state,
+        todos: [...state.todos, newTodo],
+      };
 
-      case "DELETE_TODO":
-        return {
-          ...state,
-          todos: state.todos.filter((todo) => todo.id !== action.payload.id),
-        };
+    case "UPDATE_TODO":
+      return {
+        ...state,
+        todos: state.todos.map((todo) =>
+          todo.id === action.payload.id
+            ? { ...todo, ...action.payload.updates, updatedAt: new Date() }
+            : todo
+        ),
+      };
 
-      case "TOGGLE_TODO":
-        return {
-          ...state,
-          todos: state.todos.map((todo) =>
-            todo.id === action.payload.id
-              ? { ...todo, completed: !todo.completed, updatedAt: new Date() }
-              : todo
-          ),
-        };
+    case "DELETE_TODO":
+      return {
+        ...state,
+        todos: state.todos.filter((todo) => todo.id !== action.payload.id),
+      };
 
-      case "SET_FILTER":
-        return { ...state, filter: action.payload.filter };
+    case "TOGGLE_TODO":
+      return {
+        ...state,
+        todos: state.todos.map((todo) =>
+          todo.id === action.payload.id
+            ? { ...todo, completed: !todo.completed, updatedAt: new Date() }
+            : todo
+        ),
+      };
 
-      case "SET_SORT":
-        return { ...state, sortBy: action.payload.sortBy };
+    case "SET_FILTER":
+      return { ...state, filter: action.payload.filter };
 
-      case "SET_SEARCH":
-        return { ...state, searchQuery: action.payload.query };
+    case "SET_SORT":
+      return { ...state, sortBy: action.payload.sortBy };
 
-      case "SET_CATEGORY_FILTER":
-        return { ...state, selectedCategory: action.payload.categoryId };
+    case "SET_SEARCH":
+      return { ...state, searchQuery: action.payload.query };
 
-      case "ADD_CATEGORY":
-        const newCategory: TodoCategory = {
-          ...action.payload,
-          id: this.generateId(),
-        };
-        return {
-          ...state,
-          categories: [...state.categories, newCategory],
-        };
+    case "SET_CATEGORY_FILTER":
+      return { ...state, selectedCategory: action.payload.categoryId };
 
-      case "SET_LOADING":
-        return { ...state, isLoading: action.payload.isLoading };
+    case "ADD_CATEGORY":
+      const newCategory: TodoCategory = {
+        ...action.payload,
+        id: this.generateId(),
+      };
+      return {
+        ...state,
+        categories: [...state.categories, newCategory],
+      };
 
-      case "SET_ERROR":
-        return { ...state, error: action.payload.error };
+    case "SET_LOADING":
+      return { ...state, isLoading: action.payload.isLoading };
 
-      default:
-        return state;
-    }
+    case "SET_ERROR":
+      return { ...state, error: action.payload.error };
+
+    default:
+      return state;
   }
+}
+```
 
-  private notifyListeners(): void {
-    this.listeners.forEach((listener) => listener(this.state));
-  }
+##### 3. ヘルパーメソッドとエクスポート
 
-  private generateId(): string {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
-  }
+```typescript
+private notifyListeners(): void {
+  this.listeners.forEach((listener) => listener(this.state));
+}
+
+private generateId(): string {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2);
 }
 
 // グローバルストアインスタンス
@@ -222,6 +239,8 @@ export const todoStore = new TodoStore();
 ```
 
 #### 🎯 ビジネスロジック層
+
+##### 1. TodoService クラスの基本構造
 
 ```typescript
 // services/todoService.ts - ビジネスロジック
@@ -244,102 +263,110 @@ export class TodoService {
   toggleTodo(id: string): void {
     this.store.dispatch({ type: "TOGGLE_TODO", payload: { id } });
   }
+}
+```
 
-  // フィルタリング・ソート
-  getFilteredTodos(): TodoItem[] {
-    const state = this.store.getState();
-    let todos = [...state.todos];
+##### 2. フィルタリング・ソート機能
 
-    // フィルタリング
-    if (state.filter === "active") {
-      todos = todos.filter((todo) => !todo.completed);
-    } else if (state.filter === "completed") {
-      todos = todos.filter((todo) => todo.completed);
+```typescript
+// フィルタリング・ソート
+getFilteredTodos(): TodoItem[] {
+  const state = this.store.getState();
+  let todos = [...state.todos];
+
+  // フィルタリング
+  if (state.filter === "active") {
+    todos = todos.filter((todo) => !todo.completed);
+  } else if (state.filter === "completed") {
+    todos = todos.filter((todo) => todo.completed);
+  }
+
+  // カテゴリフィルタ
+  if (state.selectedCategory) {
+    todos = todos.filter((todo) => todo.category === state.selectedCategory);
+  }
+
+  // 検索
+  if (state.searchQuery) {
+    const query = state.searchQuery.toLowerCase();
+    todos = todos.filter(
+      (todo) =>
+        todo.title.toLowerCase().includes(query) ||
+        (todo.description && todo.description.toLowerCase().includes(query))
+    );
+  }
+
+  // ソート
+  todos.sort((a, b) => {
+    switch (state.sortBy) {
+      case "title":
+        return a.title.localeCompare(b.title);
+      case "priority":
+        const priorityOrder = { high: 3, medium: 2, low: 1 };
+        return priorityOrder[b.priority] - priorityOrder[a.priority];
+      case "dueDate":
+        if (!a.dueDate && !b.dueDate) return 0;
+        if (!a.dueDate) return 1;
+        if (!b.dueDate) return -1;
+        return a.dueDate.getTime() - b.dueDate.getTime();
+      case "updated":
+        return b.updatedAt.getTime() - a.updatedAt.getTime();
+      case "created":
+      default:
+        return b.createdAt.getTime() - a.createdAt.getTime();
     }
+  });
 
-    // カテゴリフィルタ
-    if (state.selectedCategory) {
-      todos = todos.filter((todo) => todo.category === state.selectedCategory);
-    }
+  return todos;
+}
+```
 
-    // 検索
-    if (state.searchQuery) {
-      const query = state.searchQuery.toLowerCase();
-      todos = todos.filter(
-        (todo) =>
-          todo.title.toLowerCase().includes(query) ||
-          (todo.description && todo.description.toLowerCase().includes(query))
-      );
-    }
+##### 3. 統計情報とその他の機能
 
-    // ソート
-    todos.sort((a, b) => {
-      switch (state.sortBy) {
-        case "title":
-          return a.title.localeCompare(b.title);
-        case "priority":
-          const priorityOrder = { high: 3, medium: 2, low: 1 };
-          return priorityOrder[b.priority] - priorityOrder[a.priority];
-        case "dueDate":
-          if (!a.dueDate && !b.dueDate) return 0;
-          if (!a.dueDate) return 1;
-          if (!b.dueDate) return -1;
-          return a.dueDate.getTime() - b.dueDate.getTime();
-        case "updated":
-          return b.updatedAt.getTime() - a.updatedAt.getTime();
-        case "created":
-        default:
-          return b.createdAt.getTime() - a.createdAt.getTime();
-      }
-    });
+```typescript
+// 統計情報
+getStats(): {
+  total: number;
+  completed: number;
+  active: number;
+  overdue: number;
+} {
+  const todos = this.store.getState().todos;
+  const now = new Date();
 
-    return todos;
-  }
+  return {
+    total: todos.length,
+    completed: todos.filter((todo) => todo.completed).length,
+    active: todos.filter((todo) => !todo.completed).length,
+    overdue: todos.filter(
+      (todo) => !todo.completed && todo.dueDate && todo.dueDate < now
+    ).length,
+  };
+}
 
-  // 統計情報
-  getStats(): {
-    total: number;
-    completed: number;
-    active: number;
-    overdue: number;
-  } {
-    const todos = this.store.getState().todos;
-    const now = new Date();
+// カテゴリ操作
+addCategory(categoryData: Omit<TodoCategory, "id">): void {
+  this.store.dispatch({ type: "ADD_CATEGORY", payload: categoryData });
+}
 
-    return {
-      total: todos.length,
-      completed: todos.filter((todo) => todo.completed).length,
-      active: todos.filter((todo) => !todo.completed).length,
-      overdue: todos.filter(
-        (todo) => !todo.completed && todo.dueDate && todo.dueDate < now
-      ).length,
-    };
-  }
+// 検索・フィルタ操作
+setFilter(filter: TodoFilter): void {
+  this.store.dispatch({ type: "SET_FILTER", payload: { filter } });
+}
 
-  // カテゴリ操作
-  addCategory(categoryData: Omit<TodoCategory, "id">): void {
-    this.store.dispatch({ type: "ADD_CATEGORY", payload: categoryData });
-  }
+setSort(sortBy: TodoSortBy): void {
+  this.store.dispatch({ type: "SET_SORT", payload: { sortBy } });
+}
 
-  // 検索・フィルタ操作
-  setFilter(filter: TodoFilter): void {
-    this.store.dispatch({ type: "SET_FILTER", payload: { filter } });
-  }
+setSearch(query: string): void {
+  this.store.dispatch({ type: "SET_SEARCH", payload: { query } });
+}
 
-  setSort(sortBy: TodoSortBy): void {
-    this.store.dispatch({ type: "SET_SORT", payload: { sortBy } });
-  }
-
-  setSearch(query: string): void {
-    this.store.dispatch({ type: "SET_SEARCH", payload: { query } });
-  }
-
-  setCategoryFilter(categoryId: string | null): void {
-    this.store.dispatch({
-      type: "SET_CATEGORY_FILTER",
-      payload: { categoryId },
-    });
-  }
+setCategoryFilter(categoryId: string | null): void {
+  this.store.dispatch({
+    type: "SET_CATEGORY_FILTER",
+    payload: { categoryId },
+  });
 }
 
 export const todoService = new TodoService(todoStore);
@@ -348,6 +375,8 @@ export const todoService = new TodoService(todoStore);
 ### Day 3-5: UI コンポーネント実装
 
 #### 🔧 型安全な DOM 操作
+
+##### 1. BaseComponent クラスの基本構造
 
 ```typescript
 // components/BaseComponent.ts - 基底コンポーネント
@@ -404,7 +433,11 @@ export abstract class BaseComponent<TProps = {}> {
     this.render();
   }
 }
+```
 
+##### 2. TodoItemComponent の型定義
+
+```typescript
 // components/TodoItem.ts - Todo項目コンポーネント
 interface TodoItemProps {
   todo: TodoItem;
@@ -423,95 +456,101 @@ export class TodoItemComponent extends BaseComponent<TodoItemProps> {
     this.element.className = "todo-item";
     this.render();
   }
+}
+```
 
-  protected render(): void {
-    const { todo } = this.props;
+##### 3. TodoItemComponent のレンダリング実装
 
-    this.element.innerHTML = "";
-    this.element.className = `todo-item ${
-      todo.completed ? "completed" : ""
-    } priority-${todo.priority}`;
+```typescript
+protected render(): void {
+  const { todo } = this.props;
 
-    // チェックボックス
-    this.checkbox = this.createElement("input", {
-      type: "checkbox",
-      checked: todo.completed,
-      className: "todo-checkbox",
-    });
+  this.element.innerHTML = "";
+  this.element.className = `todo-item ${
+    todo.completed ? "completed" : ""
+  } priority-${todo.priority}`;
 
-    // タイトル
-    this.titleElement = this.createElement(
-      "span",
-      {
-        className: "todo-title",
-      },
-      todo.title
-    );
+  // チェックボックス
+  this.checkbox = this.createElement("input", {
+    type: "checkbox",
+    checked: todo.completed,
+    className: "todo-checkbox",
+  });
 
-    // 優先度インジケータ
-    const priorityElement = this.createElement(
-      "span",
-      {
-        className: `priority-indicator priority-${todo.priority}`,
-      },
-      todo.priority.toUpperCase()
-    );
+  // タイトル
+  this.titleElement = this.createElement(
+    "span",
+    {
+      className: "todo-title",
+    },
+    todo.title
+  );
 
-    // 期限表示
-    const dueDateElement = this.createElement("span", {
-      className: "due-date",
-    });
+  // 優先度インジケータ
+  const priorityElement = this.createElement(
+    "span",
+    {
+      className: `priority-indicator priority-${todo.priority}`,
+    },
+    todo.priority.toUpperCase()
+  );
 
-    if (todo.dueDate) {
-      const isOverdue = !todo.completed && todo.dueDate < new Date();
-      dueDateElement.textContent = todo.dueDate.toLocaleDateString();
-      dueDateElement.className += isOverdue ? " overdue" : "";
-    }
+  // 期限表示
+  const dueDateElement = this.createElement("span", {
+    className: "due-date",
+  });
 
-    // アクションボタン
-    this.editButton = this.createElement("button", {
-      className: "btn btn-edit",
-      textContent: "編集",
-    });
-
-    this.deleteButton = this.createElement("button", {
-      className: "btn btn-delete",
-      textContent: "削除",
-    });
-
-    // イベントリスナー
-    this.addEventListeners(this.checkbox, {
-      change: () => this.props.onToggle(todo.id),
-    });
-
-    this.addEventListeners(this.editButton, {
-      click: () => this.props.onEdit(todo.id),
-    });
-
-    this.addEventListeners(this.deleteButton, {
-      click: () => this.props.onDelete(todo.id),
-    });
-
-    // 要素の組み立て
-    const contentDiv = this.createElement("div", { className: "todo-content" });
-    contentDiv.appendChild(this.checkbox);
-    contentDiv.appendChild(this.titleElement);
-    contentDiv.appendChild(priorityElement);
-    contentDiv.appendChild(dueDateElement);
-
-    const actionsDiv = this.createElement("div", { className: "todo-actions" });
-    actionsDiv.appendChild(this.editButton);
-    actionsDiv.appendChild(this.deleteButton);
-
-    this.element.appendChild(contentDiv);
-    this.element.appendChild(actionsDiv);
+  if (todo.dueDate) {
+    const isOverdue = !todo.completed && todo.dueDate < new Date();
+    dueDateElement.textContent = todo.dueDate.toLocaleDateString();
+    dueDateElement.className += isOverdue ? " overdue" : "";
   }
+
+  // アクションボタン
+  this.editButton = this.createElement("button", {
+    className: "btn btn-edit",
+    textContent: "編集",
+  });
+
+  this.deleteButton = this.createElement("button", {
+    className: "btn btn-delete",
+    textContent: "削除",
+  });
+
+  // イベントリスナー
+  this.addEventListeners(this.checkbox, {
+    change: () => this.props.onToggle(todo.id),
+  });
+
+  this.addEventListeners(this.editButton, {
+    click: () => this.props.onEdit(todo.id),
+  });
+
+  this.addEventListeners(this.deleteButton, {
+    click: () => this.props.onDelete(todo.id),
+  });
+
+  // 要素の組み立て
+  const contentDiv = this.createElement("div", { className: "todo-content" });
+  contentDiv.appendChild(this.checkbox);
+  contentDiv.appendChild(this.titleElement);
+  contentDiv.appendChild(priorityElement);
+  contentDiv.appendChild(dueDateElement);
+
+  const actionsDiv = this.createElement("div", { className: "todo-actions" });
+  actionsDiv.appendChild(this.editButton);
+  actionsDiv.appendChild(this.deleteButton);
+
+  this.element.appendChild(contentDiv);
+  this.element.appendChild(actionsDiv);
 }
 ```
 
 ### Day 6-7: アプリケーション統合
 
 #### 🔧 メインアプリケーション
+
+##### 1. TodoApp クラスの基本構造
 
 ```typescript
 // app.ts - メインアプリケーション
@@ -536,189 +575,197 @@ export class TodoApp {
     this.subscribeToStore();
     this.render();
   }
+}
+```
 
-  private setupHTML(): void {
-    this.container.innerHTML = `
-      <div class="todo-app">
-        <header class="app-header">
-          <h1>TypeScript Todo App</h1>
-          <div class="stats" id="stats"></div>
-        </header>
-        
-        <div class="app-controls">
-          <input type="text" id="search" placeholder="検索..." />
-          <select id="filter">
-            <option value="all">すべて</option>
-            <option value="active">未完了</option>
-            <option value="completed">完了済み</option>
-          </select>
-          <select id="sort">
-            <option value="created">作成日順</option>
-            <option value="updated">更新日順</option>
-            <option value="priority">優先度順</option>
-            <option value="dueDate">期限順</option>
-            <option value="title">タイトル順</option>
-          </select>
-        </div>
+##### 2. HTML セットアップとイベントリスナー
 
-        <div class="add-todo-form">
-          <input type="text" id="new-todo-title" placeholder="新しいタスク..." />
-          <select id="new-todo-priority">
-            <option value="low">低</option>
-            <option value="medium">中</option>
-            <option value="high">高</option>
-          </select>
-          <select id="new-todo-category">
-            <!-- カテゴリは動的に生成 -->
-          </select>
-          <input type="date" id="new-todo-due" />
-          <button id="add-todo-btn">追加</button>
-        </div>
-
-        <div class="todo-list" id="todo-list"></div>
+```typescript
+private setupHTML(): void {
+  this.container.innerHTML = `
+    <div class="todo-app">
+      <header class="app-header">
+        <h1>TypeScript Todo App</h1>
+        <div class="stats" id="stats"></div>
+      </header>
+      
+      <div class="app-controls">
+        <input type="text" id="search" placeholder="検索..." />
+        <select id="filter">
+          <option value="all">すべて</option>
+          <option value="active">未完了</option>
+          <option value="completed">完了済み</option>
+        </select>
+        <select id="sort">
+          <option value="created">作成日順</option>
+          <option value="updated">更新日順</option>
+          <option value="priority">優先度順</option>
+          <option value="dueDate">期限順</option>
+          <option value="title">タイトル順</option>
+        </select>
       </div>
+
+      <div class="add-todo-form">
+        <input type="text" id="new-todo-title" placeholder="新しいタスク..." />
+        <select id="new-todo-priority">
+          <option value="low">低</option>
+          <option value="medium">中</option>
+          <option value="high">高</option>
+        </select>
+        <select id="new-todo-category">
+          <!-- カテゴリは動的に生成 -->
+        </select>
+        <input type="date" id="new-todo-due" />
+        <button id="add-todo-btn">追加</button>
+      </div>
+
+      <div class="todo-list" id="todo-list"></div>
+    </div>
+  `;
+}
+
+private setupEventListeners(): void {
+  // 検索
+  const searchInput = document.getElementById("search") as HTMLInputElement;
+  searchInput.addEventListener("input", (e) => {
+    const target = e.target as HTMLInputElement;
+    this.todoService.setSearch(target.value);
+  });
+
+  // フィルタ
+  const filterSelect = document.getElementById("filter") as HTMLSelectElement;
+  filterSelect.addEventListener("change", (e) => {
+    const target = e.target as HTMLSelectElement;
+    this.todoService.setFilter(target.value as TodoFilter);
+  });
+
+  // ソート
+  const sortSelect = document.getElementById("sort") as HTMLSelectElement;
+  sortSelect.addEventListener("change", (e) => {
+    const target = e.target as HTMLSelectElement;
+    this.todoService.setSort(target.value as TodoSortBy);
+  });
+
+  // 新しいTodo追加
+  const addButton = document.getElementById(
+    "add-todo-btn"
+  ) as HTMLButtonElement;
+  addButton.addEventListener("click", () => this.handleAddTodo());
+
+  // Enterキーでの追加
+  const titleInput = document.getElementById(
+    "new-todo-title"
+  ) as HTMLInputElement;
+  titleInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      this.handleAddTodo();
+    }
+  });
+}
+```
+
+##### 3. Todo 操作とレンダリング
+
+```typescript
+private handleAddTodo(): void {
+  const titleInput = document.getElementById(
+    "new-todo-title"
+  ) as HTMLInputElement;
+  const prioritySelect = document.getElementById(
+    "new-todo-priority"
+  ) as HTMLSelectElement;
+  const categorySelect = document.getElementById(
+    "new-todo-category"
+  ) as HTMLSelectElement;
+  const dueInput = document.getElementById(
+    "new-todo-due"
+  ) as HTMLInputElement;
+
+  const title = titleInput.value.trim();
+  if (!title) return;
+
+  const todoData: Omit<TodoItem, "id" | "createdAt" | "updatedAt"> = {
+    title,
+    completed: false,
+    priority: prioritySelect.value as "low" | "medium" | "high",
+    category: categorySelect.value,
+    dueDate: dueInput.value ? new Date(dueInput.value) : undefined,
+  };
+
+  this.todoService.addTodo(todoData);
+
+  // フォームリセット
+  titleInput.value = "";
+  dueInput.value = "";
+}
+
+private subscribeToStore(): void {
+  todoStore.subscribe(() => {
+    this.render();
+  });
+}
+
+private render(): void {
+  this.renderStats();
+  this.renderCategories();
+  this.renderTodoList();
+}
+
+private renderStats(): void {
+  const stats = this.todoService.getStats();
+  const statsElement = document.getElementById("stats");
+  if (statsElement) {
+    statsElement.innerHTML = `
+      <span>総数: ${stats.total}</span>
+      <span>完了: ${stats.completed}</span>
+      <span>未完了: ${stats.active}</span>
+      <span class="overdue">期限切れ: ${stats.overdue}</span>
     `;
   }
+}
 
-  private setupEventListeners(): void {
-    // 検索
-    const searchInput = document.getElementById("search") as HTMLInputElement;
-    searchInput.addEventListener("input", (e) => {
-      const target = e.target as HTMLInputElement;
-      this.todoService.setSearch(target.value);
+private renderCategories(): void {
+  const categorySelect = document.getElementById(
+    "new-todo-category"
+  ) as HTMLSelectElement;
+  const categories = todoStore.getState().categories;
+
+  categorySelect.innerHTML = categories
+    .map(
+      (cat) => `<option value="${cat.id}">${cat.icon} ${cat.name}</option>`
+    )
+    .join("");
+}
+
+private renderTodoList(): void {
+  const todoListElement = document.getElementById("todo-list");
+  if (!todoListElement) return;
+
+  // 既存のコンポーネントをクリア
+  this.components.forEach((component) => component.unmount());
+  this.components.clear();
+  todoListElement.innerHTML = "";
+
+  const todos = this.todoService.getFilteredTodos();
+
+  todos.forEach((todo) => {
+    const todoComponent = new TodoItemComponent({
+      todo,
+      onToggle: (id) => this.todoService.toggleTodo(id),
+      onEdit: (id) => this.handleEditTodo(id),
+      onDelete: (id) => this.todoService.deleteTodo(id),
     });
 
-    // フィルタ
-    const filterSelect = document.getElementById("filter") as HTMLSelectElement;
-    filterSelect.addEventListener("change", (e) => {
-      const target = e.target as HTMLSelectElement;
-      this.todoService.setFilter(target.value as TodoFilter);
-    });
+    todoComponent.mount(todoListElement);
+    this.components.set(todo.id, todoComponent);
+  });
+}
 
-    // ソート
-    const sortSelect = document.getElementById("sort") as HTMLSelectElement;
-    sortSelect.addEventListener("change", (e) => {
-      const target = e.target as HTMLSelectElement;
-      this.todoService.setSort(target.value as TodoSortBy);
-    });
-
-    // 新しいTodo追加
-    const addButton = document.getElementById(
-      "add-todo-btn"
-    ) as HTMLButtonElement;
-    addButton.addEventListener("click", () => this.handleAddTodo());
-
-    // Enterキーでの追加
-    const titleInput = document.getElementById(
-      "new-todo-title"
-    ) as HTMLInputElement;
-    titleInput.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") {
-        this.handleAddTodo();
-      }
-    });
-  }
-
-  private handleAddTodo(): void {
-    const titleInput = document.getElementById(
-      "new-todo-title"
-    ) as HTMLInputElement;
-    const prioritySelect = document.getElementById(
-      "new-todo-priority"
-    ) as HTMLSelectElement;
-    const categorySelect = document.getElementById(
-      "new-todo-category"
-    ) as HTMLSelectElement;
-    const dueInput = document.getElementById(
-      "new-todo-due"
-    ) as HTMLInputElement;
-
-    const title = titleInput.value.trim();
-    if (!title) return;
-
-    const todoData: Omit<TodoItem, "id" | "createdAt" | "updatedAt"> = {
-      title,
-      completed: false,
-      priority: prioritySelect.value as "low" | "medium" | "high",
-      category: categorySelect.value,
-      dueDate: dueInput.value ? new Date(dueInput.value) : undefined,
-    };
-
-    this.todoService.addTodo(todoData);
-
-    // フォームリセット
-    titleInput.value = "";
-    dueInput.value = "";
-  }
-
-  private subscribeToStore(): void {
-    todoStore.subscribe(() => {
-      this.render();
-    });
-  }
-
-  private render(): void {
-    this.renderStats();
-    this.renderCategories();
-    this.renderTodoList();
-  }
-
-  private renderStats(): void {
-    const stats = this.todoService.getStats();
-    const statsElement = document.getElementById("stats");
-    if (statsElement) {
-      statsElement.innerHTML = `
-        <span>総数: ${stats.total}</span>
-        <span>完了: ${stats.completed}</span>
-        <span>未完了: ${stats.active}</span>
-        <span class="overdue">期限切れ: ${stats.overdue}</span>
-      `;
-    }
-  }
-
-  private renderCategories(): void {
-    const categorySelect = document.getElementById(
-      "new-todo-category"
-    ) as HTMLSelectElement;
-    const categories = todoStore.getState().categories;
-
-    categorySelect.innerHTML = categories
-      .map(
-        (cat) => `<option value="${cat.id}">${cat.icon} ${cat.name}</option>`
-      )
-      .join("");
-  }
-
-  private renderTodoList(): void {
-    const todoListElement = document.getElementById("todo-list");
-    if (!todoListElement) return;
-
-    // 既存のコンポーネントをクリア
-    this.components.forEach((component) => component.unmount());
-    this.components.clear();
-    todoListElement.innerHTML = "";
-
-    const todos = this.todoService.getFilteredTodos();
-
-    todos.forEach((todo) => {
-      const todoComponent = new TodoItemComponent({
-        todo,
-        onToggle: (id) => this.todoService.toggleTodo(id),
-        onEdit: (id) => this.handleEditTodo(id),
-        onDelete: (id) => this.todoService.deleteTodo(id),
-      });
-
-      todoComponent.mount(todoListElement);
-      this.components.set(todo.id, todoComponent);
-    });
-  }
-
-  private handleEditTodo(id: string): void {
-    // 編集機能の実装（簡略化）
-    const newTitle = prompt("新しいタイトルを入力してください:");
-    if (newTitle && newTitle.trim()) {
-      this.todoService.updateTodo(id, { title: newTitle.trim() });
-    }
+private handleEditTodo(id: string): void {
+  // 編集機能の実装（簡略化）
+  const newTitle = prompt("新しいタイトルを入力してください:");
+  if (newTitle && newTitle.trim()) {
+    this.todoService.updateTodo(id, { title: newTitle.trim() });
   }
 }
 

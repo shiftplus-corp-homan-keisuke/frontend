@@ -27,6 +27,8 @@
 
 #### 🔍 TypeScript 用 ESLint 設定
 
+##### 1. 基本的な ESLint 設定
+
 ```typescript
 // 💡 詳細解説: ESLint設定 → Step11_補足_専門用語集.md#eslint設定eslint-configuration
 // .eslintrc.js
@@ -47,23 +49,39 @@ module.exports = {
     "@typescript-eslint/no-unused-vars": "error",
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/explicit-function-return-type": "error",
-    // 💡 詳細解説: 命名規則 → Step11_補足_専門用語集.md#命名規則naming-conventions
-    "@typescript-eslint/naming-convention": [
-      "error",
-      {
-        selector: "interface",
-        format: ["PascalCase"],
-      },
-      {
-        selector: "typeAlias",
-        format: ["PascalCase"],
-      },
-    ],
   },
 };
 ```
 
+##### 2. 命名規則の設定
+
+```typescript
+// 💡 詳細解説: 命名規則 → Step11_補足_専門用語集.md#命名規則naming-conventions
+// .eslintrc.js の rules セクションに追加
+"@typescript-eslint/naming-convention": [
+  "error",
+  {
+    selector: "interface",
+    format: ["PascalCase"],
+  },
+  {
+    selector: "typeAlias",
+    format: ["PascalCase"],
+  },
+  {
+    selector: "variable",
+    format: ["camelCase", "UPPER_CASE"],
+  },
+  {
+    selector: "function",
+    format: ["camelCase"],
+  },
+]
+```
+
 #### 🎯 カスタム ESLint ルールの作成
+
+##### 1. 基本的なカスタムルール
 
 ```typescript
 // 💡 詳細解説: カスタムESLintルール → Step11_補足_専門用語集.md#カスタムeslintルールcustom-eslint-rules
@@ -96,9 +114,44 @@ module.exports = {
 };
 ```
 
+##### 2. より複雑なカスタムルール
+
+```typescript
+// eslint-rules/prefer-readonly-array.js
+module.exports = {
+  meta: {
+    type: "suggestion",
+    docs: {
+      description: "Prefer readonly arrays when possible",
+      category: "TypeScript",
+    },
+    fixable: "code",
+    messages: {
+      preferReadonly: "Use readonly array instead of mutable array",
+    },
+  },
+
+  create(context) {
+    return {
+      TSArrayType(node) {
+        context.report({
+          node,
+          messageId: "preferReadonly",
+          fix(fixer) {
+            return fixer.replaceText(node, `readonly ${context.getSourceCode().getText(node)}`);
+          },
+        });
+      },
+    };
+  },
+};
+```
+
 ### Day 3-4: 開発ツールの作成
 
 #### 🔧 型定義生成ツール
+
+##### 1. 基本的な型定義とインターフェース
 
 ```typescript
 // 💡 詳細解説: 型定義生成ツール → Step11_補足_専門用語集.md#型定義生成ツールtype-definition-generator
@@ -113,7 +166,11 @@ interface ApiEndpoint {
   responseBody: any;
   description?: string;
 }
+```
 
+##### 2. TypeScript ジェネレータークラス
+
+```typescript
 class TypeScriptGenerator {
   private output: string[] = [];
 
@@ -153,6 +210,14 @@ class TypeScriptGenerator {
     this.output.push("    }");
     this.output.push("  }");
   }
+}
+```
+
+##### 3. ヘルパーメソッドと使用例
+
+```typescript
+class TypeScriptGenerator {
+  // ... 前のメソッド
 
   private generateObjectProperties(obj: any, indent: number): void {
     const spaces = " ".repeat(indent);

@@ -27,8 +27,9 @@
 
 #### 🔍 インターフェースの基本概念と他言語との比較
 
+##### 1. 基本的なインターフェース定義
+
 ```typescript
-// 1. 基本的なインターフェース定義
 // Java: interface User { String getName(); }
 // C#: interface IUser { string Name { get; } }
 // TypeScript: より柔軟な構造的型付け
@@ -41,8 +42,11 @@ interface User {
   email: string;
   createdAt: Date;
 }
+```
 
-// 2. オプショナルプロパティ
+##### 2. オプショナルプロパティ
+
+```typescript
 // 💡 詳細解説: オプショナルプロパティ → Step02_補足_専門用語集.md#オプショナルプロパティoptional-properties
 interface CreateUserRequest {
   name: string;
@@ -53,8 +57,11 @@ interface CreateUserRequest {
     avatar?: string;
   };
 }
+```
 
-// 3. 読み取り専用プロパティ
+##### 3. 読み取り専用プロパティ
+
+```typescript
 // 💡 詳細解説: 読み取り専用型 → Step02_補足_専門用語集.md#読み取り専用型readonly-types
 interface ReadonlyUser {
   readonly id: number;
@@ -62,8 +69,11 @@ interface ReadonlyUser {
   name: string; // 変更可能
   email: string; // 変更可能
 }
+```
 
-// 4. インデックスシグネチャ
+##### 4. インデックスシグネチャ
+
+```typescript
 // 💡 詳細解説: インデックスシグネチャ → Step02_補足_専門用語集.md#インデックスシグネチャindex-signatures
 interface StringDictionary {
   [key: string]: string;
@@ -73,16 +83,22 @@ interface NumberDictionary {
   [key: string]: number;
   length: number; // 明示的プロパティも可能
 }
+```
 
-// 5. 関数型プロパティ
+##### 5. 関数型プロパティ
+
+```typescript
 interface Calculator {
   add: (a: number, b: number) => number;
   subtract: (a: number, b: number) => number;
   multiply: (a: number, b: number) => number;
   divide: (a: number, b: number) => number;
 }
+```
 
-// 6. メソッドシグネチャ（2つの書き方）
+##### 6. メソッドシグネチャ（2つの書き方）
+
+```typescript
 interface UserService {
   // 関数型プロパティ
   getUser: (id: number) => Promise<User>;
@@ -96,8 +112,9 @@ interface UserService {
 
 #### 🎯 インターフェースの継承と拡張
 
+##### 1. 基本的な継承
+
 ```typescript
-// 1. 基本的な継承
 interface Animal {
   name: string;
   age: number;
@@ -112,8 +129,11 @@ interface Cat extends Animal {
   color: string;
   meow(): void;
 }
+```
 
-// 2. 複数インターフェースの継承
+##### 2. 複数インターフェースの継承
+
+```typescript
 interface Flyable {
   fly(): void;
   altitude: number;
@@ -127,8 +147,11 @@ interface Swimmable {
 interface Duck extends Animal, Flyable, Swimmable {
   quack(): void;
 }
+```
 
-// 3. ジェネリックインターフェース
+##### 3. ジェネリックインターフェース
+
+```typescript
 interface Repository<T, K> {
   findById(id: K): Promise<T | null>;
   findAll(): Promise<T[]>;
@@ -177,9 +200,9 @@ class ProductRepository implements Repository<Product, string> {
 
 #### 🔧 type vs interface の詳細比較
 
-```typescript
-// 1. 基本的な違い
+##### 1. 基本的な違い
 
+```typescript
 // interface: 拡張可能、宣言マージ可能
 interface UserInterface {
   name: string;
@@ -195,20 +218,29 @@ type UserType = {
   name: string;
   age: number;
 };
+```
 
-// 2. ユニオン型（typeのみ可能）
+##### 2. ユニオン型（typeのみ可能）
+
+```typescript
 type Status = "pending" | "approved" | "rejected";
 type ID = string | number;
+```
 
-// 3. 交差型（typeが得意）
+##### 3. 交差型（typeが得意）
+
+```typescript
 type Timestamped = {
   createdAt: Date;
   updatedAt: Date;
 };
 
 type UserWithTimestamp = UserType & Timestamped;
+```
 
-// 4. 使い分けのガイドライン
+##### 4. 使い分けのガイドライン
+
+```typescript
 // interface: オブジェクトの形状定義、継承が必要、ライブラリAPI
 interface DatabaseEntity {
   id: string;
@@ -231,6 +263,8 @@ type UserWithRole = User & { role: UserRole };
 
 #### 🔧 ドメインモデルの設計
 
+##### 1. 基本エンティティの設計
+
 ```typescript
 // ECサイトのデータモデル例
 namespace ECommerce {
@@ -240,7 +274,13 @@ namespace ECommerce {
     readonly createdAt: Date;
     readonly updatedAt: Date;
   }
+}
+```
 
+##### 2. 商品関連のモデル
+
+```typescript
+namespace ECommerce {
   // 商品関連
   interface Product extends BaseEntity {
     name: string;
@@ -272,7 +312,13 @@ namespace ECommerce {
     isPrimary: boolean;
     order: number;
   }
+}
+```
 
+##### 3. ユーザー関連のモデル
+
+```typescript
+namespace ECommerce {
   // ユーザー関連
   interface User extends BaseEntity {
     email: string;
@@ -299,7 +345,13 @@ namespace ECommerce {
     country: string;
     isDefault: boolean;
   }
+}
+```
 
+##### 4. 注文関連のモデル
+
+```typescript
+namespace ECommerce {
   // 注文関連
   interface Order extends BaseEntity {
     orderNumber: string;
@@ -319,20 +371,6 @@ namespace ECommerce {
     product?: Product; // 参照データ
   }
 
-  type OrderStatus =
-    | "pending"
-    | "confirmed"
-    | "processing"
-    | "shipped"
-    | "delivered"
-    | "cancelled";
-  type PaymentMethod =
-    | "credit_card"
-    | "paypal"
-    | "bank_transfer"
-    | "cash_on_delivery";
-  type PaymentStatus = "pending" | "completed" | "failed" | "refunded";
-
   interface OrderTotals {
     subtotal: number;
     tax: number;
@@ -340,6 +378,28 @@ namespace ECommerce {
     discount: number;
     total: number;
   }
+}
+```
+
+##### 5. 型定義とステータス管理
+
+```typescript
+namespace ECommerce {
+  type OrderStatus =
+    | "pending"
+    | "confirmed"
+    | "processing"
+    | "shipped"
+    | "delivered"
+    | "cancelled";
+    
+  type PaymentMethod =
+    | "credit_card"
+    | "paypal"
+    | "bank_transfer"
+    | "cash_on_delivery";
+    
+  type PaymentStatus = "pending" | "completed" | "failed" | "refunded";
 }
 ```
 

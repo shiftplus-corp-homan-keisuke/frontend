@@ -27,8 +27,9 @@
 
 #### 🔍 基本的なユーティリティ型
 
+##### 1. Partial<T> - 全プロパティをオプショナルに
+
 ```typescript
-// 1. Partial<T> - 全プロパティをオプショナルに
 // 💡 詳細解説: ユーティリティ型 → Step06_補足_専門用語集.md#ユーティリティ型utility-types
 // 💡 詳細解説: Partial型 → Step06_補足_専門用語集.md#partial型partial-type
 interface User {
@@ -45,8 +46,11 @@ function updateUser(id: number, updates: Partial<User>): User {
   const existingUser = getUserById(id);
   return { ...existingUser, ...updates };
 }
+```
 
-// 2. Required<T> - 全プロパティを必須に
+##### 2. Required<T> - 全プロパティを必須に
+
+```typescript
 // 💡 詳細解説: Required型 → Step06_補足_専門用語集.md#required型required-type
 interface Config {
   apiUrl?: string;
@@ -56,24 +60,33 @@ interface Config {
 
 type RequiredConfig = Required<Config>;
 // { apiUrl: string; timeout: number; retries: number; }
+```
 
-// 3. Pick<T, K> - 特定プロパティを選択
+##### 3. Pick<T, K> - 特定プロパティを選択
+
+```typescript
 // 💡 詳細解説: Pick型 → Step06_補足_専門用語集.md#pick型pick-type
 type UserSummary = Pick<User, "id" | "name">;
 // { id: number; name: string; }
 
 type UserContact = Pick<User, "name" | "email">;
 // { name: string; email: string; }
+```
 
-// 4. Omit<T, K> - 特定プロパティを除外
+##### 4. Omit<T, K> - 特定プロパティを除外
+
+```typescript
 // 💡 詳細解説: Omit型 → Step06_補足_専門用語集.md#omit型omit-type
 type CreateUserRequest = Omit<User, "id">;
 // { name: string; email: string; age: number; }
 
 type PublicUser = Omit<User, "email">;
 // { id: number; name: string; age: number; }
+```
 
-// 5. Record<K, T> - キーと値の型を指定
+##### 5. Record<K, T> - キーと値の型を指定
+
+```typescript
 // 💡 詳細解説: Record型 → Step06_補足_専門用語集.md#record型record-type
 type UserRoles = "admin" | "editor" | "viewer";
 type Permissions = Record<UserRoles, string[]>;
@@ -84,20 +97,29 @@ const permissions: Permissions = {
   editor: ["read", "write"],
   viewer: ["read"],
 };
+```
 
-// 6. Exclude<T, U> - ユニオン型から特定の型を除外
+##### 6. Exclude<T, U> - ユニオン型から特定の型を除外
+
+```typescript
 // 💡 詳細解説: Exclude型 → Step06_補足_専門用語集.md#exclude型exclude-type
 type AllColors = "red" | "green" | "blue" | "yellow";
 type PrimaryColors = Exclude<AllColors, "yellow">;
 // 'red' | 'green' | 'blue'
+```
 
-// 7. Extract<T, U> - ユニオン型から特定の型を抽出
+##### 7. Extract<T, U> - ユニオン型から特定の型を抽出
+
+```typescript
 // 💡 詳細解説: Extract型 → Step06_補足_専門用語集.md#extract型extract-type
 type StringOrNumber = string | number | boolean;
 type OnlyStringOrNumber = Extract<StringOrNumber, string | number>;
 // string | number
+```
 
-// 8. NonNullable<T> - null/undefinedを除外
+##### 8. NonNullable<T> - null/undefinedを除外
+
+```typescript
 // 💡 詳細解説: NonNullable型 → Step06_補足_専門用語集.md#nonnullable型nonnullable-type
 type MaybeString = string | null | undefined;
 type DefiniteString = NonNullable<MaybeString>;
@@ -106,44 +128,60 @@ type DefiniteString = NonNullable<MaybeString>;
 
 #### 🎯 関数関連のユーティリティ型
 
+##### 1. ReturnType<T> - 関数の戻り値型を取得
+
 ```typescript
-// 1. ReturnType<T> - 関数の戻り値型を取得
 function getUser(): { id: number; name: string } {
   return { id: 1, name: "Alice" };
 }
 
 type UserType = ReturnType<typeof getUser>;
 // { id: number; name: string }
+```
 
-// 2. Parameters<T> - 関数のパラメータ型を取得
+##### 2. Parameters<T> - 関数のパラメータ型を取得
+
+```typescript
 function createUser(name: string, age: number, email: string): User {
   return { id: Date.now(), name, age, email };
 }
 
 type CreateUserParams = Parameters<typeof createUser>;
 // [string, number, string]
+```
 
-// 3. ConstructorParameters<T> - コンストラクタのパラメータ型
+##### 3. ConstructorParameters<T> - コンストラクタのパラメータ型
+
+```typescript
 class ApiClient {
   constructor(baseUrl: string, timeout: number) {}
 }
 
 type ApiClientParams = ConstructorParameters<typeof ApiClient>;
 // [string, number]
+```
 
-// 4. InstanceType<T> - コンストラクタのインスタンス型
+##### 4. InstanceType<T> - コンストラクタのインスタンス型
+
+```typescript
 type ApiClientInstance = InstanceType<typeof ApiClient>;
 // ApiClient
+```
 
-// 5. ThisParameterType<T> - this パラメータの型
+##### 5. ThisParameterType<T> - this パラメータの型
+
+```typescript
 function greet(this: User, message: string): string {
   return `${this.name}: ${message}`;
 }
 
 type GreetThisType = ThisParameterType<typeof greet>;
 // User
+```
 
-// 6. OmitThisParameter<T> - this パラメータを除外
+##### 6. OmitThisParameter<T> - this パラメータを除外
+
+```typescript
 type GreetFunction = OmitThisParameter<typeof greet>;
 // (message: string) => string
 ```
@@ -152,8 +190,9 @@ type GreetFunction = OmitThisParameter<typeof greet>;
 
 #### 🔧 高度なユーティリティ型
 
+##### 1. DeepPartial - ネストしたオブジェクトも含めて全てオプショナル
+
 ```typescript
-// 1. DeepPartial - ネストしたオブジェクトも含めて全てオプショナル
 type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
 };
@@ -175,16 +214,22 @@ interface NestedConfig {
 
 type PartialNestedConfig = DeepPartial<NestedConfig>;
 // 全てのプロパティがオプショナルになる
+```
 
-// 2. DeepReadonly - ネストしたオブジェクトも含めて全て読み取り専用
+##### 2. DeepReadonly - ネストしたオブジェクトも含めて全て読み取り専用
+
+```typescript
 type DeepReadonly<T> = {
   readonly [P in keyof T]: T[P] extends object ? DeepReadonly<T[P]> : T[P];
 };
 
 type ReadonlyConfig = DeepReadonly<NestedConfig>;
 // 全てのプロパティがreadonlyになる
+```
 
-// 3. KeysOfType - 特定の型のプロパティキーを取得
+##### 3. KeysOfType - 特定の型のプロパティキーを取得
+
+```typescript
 type KeysOfType<T, U> = {
   [K in keyof T]: T[K] extends U ? K : never;
 }[keyof T];
@@ -202,8 +247,11 @@ type StringKeys = KeysOfType<MixedObject, string>;
 
 type NumberKeys = KeysOfType<MixedObject, number>;
 // 'id' | 'count'
+```
 
-// 4. RequireAtLeastOne - 最低1つのプロパティが必須
+##### 4. RequireAtLeastOne - 最低1つのプロパティが必須
+
+```typescript
 type RequireAtLeastOne<T, Keys extends keyof T = keyof T> = Pick<
   T,
   Exclude<keyof T, Keys>
@@ -220,8 +268,11 @@ interface ContactInfo {
 
 type ContactRequired = RequireAtLeastOne<ContactInfo>;
 // email, phone, address のうち最低1つは必須
+```
 
-// 5. Mutable - readonlyを除去
+##### 5. Mutable - readonlyを除去
+
+```typescript
 type Mutable<T> = {
   -readonly [P in keyof T]: T[P];
 };
@@ -234,8 +285,11 @@ interface ReadonlyUser {
 
 type MutableUser = Mutable<ReadonlyUser>;
 // { id: number; name: string; email: string; }
+```
 
-// 6. PickByType - 特定の型のプロパティのみを選択
+##### 6. PickByType - 特定の型のプロパティのみを選択
+
+```typescript
 type PickByType<T, U> = Pick<T, KeysOfType<T, U>>;
 
 type StringProperties = PickByType<MixedObject, string>;
@@ -248,6 +302,8 @@ type NumberProperties = PickByType<MixedObject, number>;
 ### Day 5-7: 実用的な型変換システム
 
 #### 🔧 型安全なフォームシステム
+
+##### 1. フォームバリデーションの型定義
 
 ```typescript
 // フォームバリデーションシステム
@@ -274,7 +330,11 @@ type FormState<T> = {
   isValid: boolean;
   isSubmitting: boolean;
 };
+```
 
+##### 2. 型安全なフォームクラス
+
+```typescript
 class TypeSafeForm<T extends Record<string, any>> {
   private state: FormState<T>;
 
@@ -367,7 +427,11 @@ class TypeSafeForm<T extends Record<string, any>> {
     };
   }
 }
+```
 
+##### 3. フォームシステムの使用例
+
+```typescript
 // 使用例
 interface UserForm {
   name: string;

@@ -27,6 +27,8 @@
 
 #### 🔍 ポートフォリオ設計
 
+##### 1. 基本的な型定義
+
 ```typescript
 // 💡 詳細解説: ポートフォリオ設計 → Step12_補足_専門用語集.md#ポートフォリオ設計portfolio-design
 // portfolio/types/index.ts
@@ -54,7 +56,11 @@ export interface Technology {
   proficiency: "beginner" | "intermediate" | "advanced";
   icon?: string;
 }
+```
 
+##### 2. プロジェクト分類と状態管理
+
+```typescript
 // 💡 詳細解説: プロジェクト分類 → Step12_補足_専門用語集.md#プロジェクト分類project-categorization
 export type ProjectCategory =
   | "web-application"
@@ -68,7 +74,11 @@ export type ProjectStatus =
   | "in-progress"
   | "planned"
   | "archived";
+```
 
+##### 3. ポートフォリオデータ構造
+
+```typescript
 // 💡 詳細解説: データ構造設計 → Step12_補足_専門用語集.md#データ構造設計data-structure-design
 export interface PortfolioData {
   personal: {
@@ -85,9 +95,27 @@ export interface PortfolioData {
   skills: Skill[];
   experience: Experience[];
 }
+
+export interface Skill {
+  name: string;
+  category: string;
+  level: number;
+  yearsOfExperience: number;
+}
+
+export interface Experience {
+  company: string;
+  position: string;
+  startDate: Date;
+  endDate?: Date;
+  description: string;
+  technologies: string[];
+}
 ```
 
 #### 🎯 メインポートフォリオアプリ
+
+##### 1. アプリケーションクラスの基本構造
 
 ```typescript
 // 💡 詳細解説: アプリケーション設計 → Step12_補足_専門用語集.md#アプリケーション設計application-architecture
@@ -112,114 +140,117 @@ export class PortfolioApp {
     this.renderSkills();
     this.setupEventListeners();
   }
+}
+```
 
-  private setupHTML(): void {
-    this.container.innerHTML = `
-      <header class="portfolio-header">
-        <div class="hero-section">
-          <img src="${this.data.personal.avatar}" alt="${
-      this.data.personal.name
-    }" class="avatar" />
-          <h1>${this.data.personal.name}</h1>
-          <h2>${this.data.personal.title}</h2>
-          <p>${this.data.personal.bio}</p>
-          <div class="social-links">
-            <a href="${this.data.personal.github}" target="_blank">GitHub</a>
-            ${
-              this.data.personal.linkedin
-                ? `<a href="${this.data.personal.linkedin}" target="_blank">LinkedIn</a>`
-                : ""
-            }
-          </div>
-        </div>
-      </header>
+##### 2. HTML構造の設定
 
-      <main class="portfolio-main">
-        <section id="projects" class="projects-section">
-          <h2>プロジェクト</h2>
-          <div class="project-filters">
-            <button class="filter-btn active" data-filter="all">すべて</button>
-            <button class="filter-btn" data-filter="web-application">Webアプリ</button>
-            <button class="filter-btn" data-filter="library">ライブラリ</button>
-            <button class="filter-btn" data-filter="tool">ツール</button>
-          </div>
-          <div class="projects-grid" id="projects-grid"></div>
-        </section>
-
-        <section id="skills" class="skills-section">
-          <h2>スキル</h2>
-          <div class="skills-container" id="skills-container"></div>
-        </section>
-
-        <section id="experience" class="experience-section">
-          <h2>学習経験</h2>
-          <div class="timeline" id="timeline"></div>
-        </section>
-      </main>
-    `;
-  }
-
-  private renderProjects(): void {
-    const grid = document.getElementById("projects-grid");
-    if (!grid) return;
-
-    this.data.projects.forEach((project) => {
-      const projectCard = this.createProjectCard(project);
-      grid.appendChild(projectCard);
-    });
-  }
-
-  private createProjectCard(project: Project): HTMLElement {
-    const card = document.createElement("div");
-    card.className = `project-card ${project.category}`;
-    card.innerHTML = `
-      <div class="project-image">
-        <img src="${project.imageUrl}" alt="${project.title}" />
-        <div class="project-overlay">
-          <div class="project-links">
-            ${
-              project.demoUrl
-                ? `<a href="${project.demoUrl}" target="_blank" class="btn btn-demo">Demo</a>`
-                : ""
-            }
-            <a href="${
-              project.sourceUrl
-            }" target="_blank" class="btn btn-source">Source</a>
-          </div>
+```typescript
+private setupHTML(): void {
+  this.container.innerHTML = `
+    <header class="portfolio-header">
+      <div class="hero-section">
+        <img src="${this.data.personal.avatar}" alt="${this.data.personal.name}" class="avatar" />
+        <h1>${this.data.personal.name}</h1>
+        <h2>${this.data.personal.title}</h2>
+        <p>${this.data.personal.bio}</p>
+        <div class="social-links">
+          <a href="${this.data.personal.github}" target="_blank">GitHub</a>
+          ${this.data.personal.linkedin
+            ? `<a href="${this.data.personal.linkedin}" target="_blank">LinkedIn</a>`
+            : ""}
         </div>
       </div>
-      <div class="project-content">
-        <h3>${project.title}</h3>
-        <p>${project.description}</p>
-        <div class="project-technologies">
-          ${project.technologies
-            .map((tech) => `<span class="tech-tag">${tech.name}</span>`)
-            .join("")}
+    </header>
+
+    <main class="portfolio-main">
+      <section id="projects" class="projects-section">
+        <h2>プロジェクト</h2>
+        <div class="project-filters">
+          <button class="filter-btn active" data-filter="all">すべて</button>
+          <button class="filter-btn" data-filter="web-application">Webアプリ</button>
+          <button class="filter-btn" data-filter="library">ライブラリ</button>
+          <button class="filter-btn" data-filter="tool">ツール</button>
         </div>
-        <div class="project-meta">
-          <span class="project-status status-${project.status}">${
-      project.status
-    }</span>
+        <div class="projects-grid" id="projects-grid"></div>
+      </section>
+
+      <section id="skills" class="skills-section">
+        <h2>スキル</h2>
+        <div class="skills-container" id="skills-container"></div>
+      </section>
+
+      <section id="experience" class="experience-section">
+        <h2>学習経験</h2>
+        <div class="timeline" id="timeline"></div>
+      </section>
+    </main>
+  `;
+}
+```
+
+##### 3. プロジェクトカードの生成
+
+```typescript
+private renderProjects(): void {
+  const grid = document.getElementById("projects-grid");
+  if (!grid) return;
+
+  this.data.projects.forEach((project) => {
+    const projectCard = this.createProjectCard(project);
+    grid.appendChild(projectCard);
+  });
+}
+
+private createProjectCard(project: Project): HTMLElement {
+  const card = document.createElement("div");
+  card.className = `project-card ${project.category}`;
+  card.innerHTML = `
+    <div class="project-image">
+      <img src="${project.imageUrl}" alt="${project.title}" />
+      <div class="project-overlay">
+        <div class="project-links">
+          ${project.demoUrl
+            ? `<a href="${project.demoUrl}" target="_blank" class="btn btn-demo">Demo</a>`
+            : ""}
+          <a href="${project.sourceUrl}" target="_blank" class="btn btn-source">Source</a>
         </div>
       </div>
-    `;
+    </div>
+    <div class="project-content">
+      <h3>${project.title}</h3>
+      <p>${project.description}</p>
+      <div class="project-technologies">
+        ${project.technologies
+          .map((tech) => `<span class="tech-tag">${tech.name}</span>`)
+          .join("")}
+      </div>
+      <div class="project-meta">
+        <span class="project-status status-${project.status}">${project.status}</span>
+      </div>
+    </div>
+  `;
 
-    card.addEventListener("click", () => {
-      this.showProjectModal(project);
-    });
+  card.addEventListener("click", () => {
+    this.showProjectModal(project);
+  });
 
-    return card;
-  }
+  return card;
+}
+```
 
-  private showProjectModal(project: Project): void {
-    const modal = document.createElement("div");
-    modal.className = "modal-overlay";
-    modal.innerHTML = `
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2>${project.title}</h2>
-          <button class="modal-close">&times;</button>
-        </div>
+##### 4. プロジェクトモーダルの表示
+
+```typescript
+private showProjectModal(project: Project): void {
+  const modal = document.createElement("div");
+  modal.className = "modal-overlay";
+  modal.innerHTML = `
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>${project.title}</h2>
+        <button class="modal-close">&times;</button>
+      </div>
         <div class="modal-body">
           <img src="${project.imageUrl}" alt="${project.title}" />
           <div class="project-details">

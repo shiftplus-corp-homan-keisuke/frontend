@@ -27,16 +27,20 @@
 
 #### 🔍 条件付き型の基本と応用
 
+##### 1. 基本的な条件付き型
+
 ```typescript
-// 1. 基本的な条件付き型
 // 💡 詳細解説: 条件付き型 → Step10_補足_専門用語集.md#条件付き型conditional-types
 type IsString<T> = T extends string ? true : false;
 
 type Test1 = IsString<string>; // true
 type Test2 = IsString<number>; // false
 type Test3 = IsString<"hello">; // true
+```
 
-// 2. ネストした条件付き型
+##### 2. ネストした条件付き型
+
+```typescript
 // 💡 詳細解説: ネストした条件付き型 → Step10_補足_専門用語集.md#ネストした条件付き型nested-conditional-types
 type TypeName<T> = T extends string
   ? "string"
@@ -53,8 +57,11 @@ type TypeName<T> = T extends string
 type Example1 = TypeName<string>; // "string"
 type Example2 = TypeName<() => void>; // "function"
 type Example3 = TypeName<{}>; // "object"
+```
 
-// 3. 分散条件付き型
+##### 3. 分散条件付き型
+
+```typescript
 // 💡 詳細解説: 分散条件付き型 → Step10_補足_専門用語集.md#分散条件付き型distributive-conditional-types
 type ToArray<T> = T extends any ? T[] : never;
 
@@ -67,8 +74,11 @@ type ToArrayNonDistributive<T> = [T] extends [any] ? T[] : never;
 
 type Combined = ToArrayNonDistributive<string | number>;
 // (string | number)[] (分散されない)
+```
 
-// 4. 実用的な条件付き型
+##### 4. 実用的な条件付き型
+
+```typescript
 type NonNullable<T> = T extends null | undefined ? never : T;
 type Flatten<T> = T extends (infer U)[] ? U : T;
 type Awaited<T> = T extends Promise<infer U> ? U : T;
@@ -81,8 +91,9 @@ type PromiseValue = Awaited<Promise<number>>; // number
 
 #### 🎯 infer キーワードの活用
 
+##### 1. 関数の戻り値型とパラメータ型を取得
+
 ```typescript
-// 1. 関数の戻り値型を取得
 // 💡 詳細解説: infer キーワード → Step10_補足_専門用語集.md#infer-キーワードinfer-keyword
 type ReturnType<T> = T extends (...args: any[]) => infer R ? R : never;
 
@@ -93,7 +104,6 @@ function getUserData(): { id: number; name: string } {
 type UserData = ReturnType<typeof getUserData>;
 // { id: number; name: string }
 
-// 2. 関数のパラメータ型を取得
 // 💡 詳細解説: パラメータ型抽出 → Step10_補足_専門用語集.md#パラメータ型抽出parameter-type-extraction
 type Parameters<T> = T extends (...args: infer P) => any ? P : never;
 
@@ -101,8 +111,11 @@ function createUser(name: string, age: number, email: string): void {}
 
 type CreateUserParams = Parameters<typeof createUser>;
 // [string, number, string]
+```
 
-// 3. 配列の要素型を取得
+##### 2. 配列の要素型を取得
+
+```typescript
 type ElementType<T> = T extends (infer U)[] ? U : never;
 type Head<T> = T extends [infer H, ...any[]] ? H : never;
 type Tail<T> = T extends [any, ...infer T] ? T : never;
@@ -110,8 +123,11 @@ type Tail<T> = T extends [any, ...infer T] ? T : never;
 type Numbers = ElementType<number[]>; // number
 type FirstElement = Head<[string, number]>; // string
 type RestElements = Tail<[string, number, boolean]>; // [number, boolean]
+```
 
-// 4. オブジェクトのプロパティ型を取得
+##### 3. オブジェクトのプロパティ型を取得
+
+```typescript
 type PropertyType<T, K> = K extends keyof T ? T[K] : never;
 
 interface User {
@@ -122,8 +138,11 @@ interface User {
 
 type UserName = PropertyType<User, "name">; // string
 type UserId = PropertyType<User, "id">; // number
+```
 
-// 5. 複雑なinferパターン
+##### 4. 複雑なinferパターン
+
+```typescript
 type ExtractArrayType<T> = T extends Promise<infer U>[]
   ? U
   : T extends (infer U)[]
@@ -133,7 +152,7 @@ type ExtractArrayType<T> = T extends Promise<infer U>[]
 type PromiseArrayElement = ExtractArrayType<Promise<string>[]>; // string
 type RegularArrayElement = ExtractArrayType<number[]>; // number
 
-// 6. 関数のthis型を取得
+// 関数のthis型を取得
 type ThisType<T> = T extends (this: infer U, ...args: any[]) => any ? U : never;
 
 function greetUser(this: User, message: string): string {
@@ -147,8 +166,9 @@ type GreetThisType = ThisType<typeof greetUser>; // User
 
 #### 🔧 高度なマップ型パターン
 
+##### 1. 基本的なマップ型の復習
+
 ```typescript
-// 1. 基本的なマップ型の復習
 type Readonly<T> = {
   readonly [P in keyof T]: T[P];
 };
@@ -157,7 +177,7 @@ type Partial<T> = {
   [P in keyof T]?: T[P];
 };
 
-// 2. 条件付きマップ型
+// 条件付きマップ型
 type NullableProperties<T> = {
   [P in keyof T]: T[P] | null;
 };
@@ -165,8 +185,11 @@ type NullableProperties<T> = {
 type RequiredProperties<T> = {
   [P in keyof T]-?: T[P];
 };
+```
 
-// 3. キーの変換
+##### 2. キーの変換
+
+```typescript
 type PrefixedKeys<T, Prefix extends string> = {
   [P in keyof T as `${Prefix}${string & P}`]: T[P];
 };
@@ -186,8 +209,11 @@ type PrefixedUser = PrefixedKeys<User, "user_">;
 
 type SuffixedUser = SuffixedKeys<User, "_prop">;
 // { id_prop: number; name_prop: string; email_prop: string; }
+```
 
-// 4. フィルタリングマップ型
+##### 3. フィルタリングマップ型
+
+```typescript
 type PickByType<T, U> = {
   [P in keyof T as T[P] extends U ? P : never]: T[P];
 };
@@ -209,8 +235,11 @@ type StringProperties = PickByType<MixedInterface, string>;
 
 type NonArrayProperties = OmitByType<MixedInterface, any[]>;
 // { id: number; name: string; active: boolean; count: number; }
+```
 
-// 5. 深い変換
+##### 4. 深い変換と関数型の変換
+
+```typescript
 type DeepReadonly<T> = {
   readonly [P in keyof T]: T[P] extends object ? DeepReadonly<T[P]> : T[P];
 };
@@ -233,7 +262,6 @@ interface NestedUser {
 type ReadonlyNestedUser = DeepReadonly<NestedUser>;
 // 全てのプロパティがreadonlyになる
 
-// 6. 関数型の変換
 type FunctionPropertyNames<T> = {
   [K in keyof T]: T[K] extends Function ? K : never;
 }[keyof T];
@@ -265,12 +293,14 @@ type ServiceData = NonFunctionProperties<UserService>;
 
 #### 🔧 テンプレートリテラル型の実践
 
+##### 1. 基本的なテンプレートリテラル型と文字列操作
+
 ```typescript
-// 1. 基本的なテンプレートリテラル型
+// 基本的なテンプレートリテラル型
 type Greeting<T extends string> = `Hello, ${T}!`;
 type PersonalGreeting = Greeting<"Alice">; // "Hello, Alice!"
 
-// 2. 文字列操作ユーティリティ
+// 文字列操作ユーティリティ
 type Uppercase<S extends string> = Intrinsic;
 type Lowercase<S extends string> = Intrinsic;
 type Capitalize<S extends string> = Intrinsic;
@@ -280,15 +310,19 @@ type UpperName = Uppercase<"alice">; // "ALICE"
 type LowerName = Lowercase<"ALICE">; // "alice"
 type CapitalName = Capitalize<"alice">; // "Alice"
 type UncapitalName = Uncapitalize<"Alice">; // "alice"
+```
 
-// 3. イベント名の生成
+##### 2. イベント名とAPI エンドポイントの生成
+
+```typescript
+// イベント名の生成
 type EventName<T extends string> = `on${Capitalize<T>}`;
 type EventHandler<T extends string> = `handle${Capitalize<T>}`;
 
 type ClickEvent = EventName<"click">; // "onClick"
 type ClickHandler = EventHandler<"click">; // "handleClick"
 
-// 4. API エンドポイントの型生成
+// API エンドポイントの型生成
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 type ApiEndpoint<
   Method extends HttpMethod,
@@ -300,8 +334,12 @@ type UserEndpoints =
   | ApiEndpoint<"POST", "/users">
   | ApiEndpoint<"PUT", "/users/:id">
   | ApiEndpoint<"DELETE", "/users/:id">;
+```
 
-// 5. CSS プロパティの型生成
+##### 3. CSS プロパティとパスの型安全性
+
+```typescript
+// CSS プロパティの型生成
 type CSSProperty<
   Property extends string,
   Value extends string | number
@@ -310,7 +348,7 @@ type CSSProperty<
 type ColorProperty = CSSProperty<"color", "red" | "blue" | "green">;
 // "color: red" | "color: blue" | "color: green"
 
-// 6. パスの型安全性
+// パスの型安全性
 type Join<T extends string[], Separator extends string = "/"> = T extends [
   infer First,
   ...infer Rest
@@ -326,7 +364,7 @@ type Join<T extends string[], Separator extends string = "/"> = T extends [
 
 type ApiPath = Join<["api", "v1", "users", "profile"]>; // "api/v1/users/profile"
 
-// 7. 文字列の分割
+// 文字列の分割
 type Split<
   S extends string,
   Delimiter extends string
@@ -339,13 +377,15 @@ type PathSegments = Split<"api/v1/users", "/">; // ["api", "v1", "users"]
 
 #### 🎯 再帰的型定義の実践
 
+##### 1. 配列の長さと要素操作
+
 ```typescript
-// 1. 配列の長さを型レベルで計算
+// 配列の長さを型レベルで計算
 type Length<T extends readonly any[]> = T["length"];
 
 type ArrayLength = Length<[1, 2, 3, 4]>; // 4
 
-// 2. 配列の要素を型レベルで操作
+// 配列の要素を型レベルで操作
 type Head<T extends readonly any[]> = T extends readonly [infer H, ...any[]]
   ? H
   : never;
@@ -355,8 +395,12 @@ type Tail<T extends readonly any[]> = T extends readonly [any, ...infer T]
 
 type FirstElement = Head<[1, 2, 3]>; // 1
 type RestElements = Tail<[1, 2, 3]>; // [2, 3]
+```
 
-// 3. 配列の反転
+##### 2. 配列の反転と型レベル計算
+
+```typescript
+// 配列の反転
 type Reverse<T extends readonly any[]> = T extends readonly [
   ...infer Rest,
   infer Last
@@ -366,7 +410,7 @@ type Reverse<T extends readonly any[]> = T extends readonly [
 
 type ReversedArray = Reverse<[1, 2, 3, 4]>; // [4, 3, 2, 1]
 
-// 4. 型レベルでの数値計算（制限あり）
+// 型レベルでの数値計算（制限あり）
 type Add<A extends number, B extends number> = [
   ...Array<A>,
   ...Array<B>

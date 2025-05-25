@@ -27,8 +27,9 @@
 
 #### 🔍 コンパイルエラーの分析と解決
 
+##### 1. 型エラーの基本パターン
+
 ```typescript
-// 1. 型エラーの基本パターン
 // 💡 詳細解説: 型エラーの種類 → Step09_補足_専門用語集.md#型エラーの種類type-error-types
 // Type 'string' is not assignable to type 'number'
 let count: number = "hello"; // ❌ エラー
@@ -75,8 +76,11 @@ function getExtendedUser(): ExtendedUser {
     age: 30, // ✅ 正解
   };
 }
+```
 
-// 2. 関数型エラーの解決
+##### 2. 関数型エラーの解決
+
+```typescript
 // 💡 詳細解説: 関数型エラー → Step09_補足_専門用語集.md#関数型エラーfunction-type-errors
 // Argument of type 'X' is not assignable to parameter of type 'Y'
 function processNumbers(numbers: number[]): number {
@@ -90,13 +94,9 @@ processNumbers(["1", "2", "3"]); // ❌ エラー: string[] は number[] に代�
 const stringNumbers = ["1", "2", "3"];
 const numbers = stringNumbers.map((str) => parseInt(str, 10));
 processNumbers(numbers); // ✅ 正解
+```
 
-// 3. ジェネリクスエラーの解決
-// 💡 詳細解説: ジェネリクスエラー → Step09_補足_専門用語集.md#ジェネリクスエラーgenerics-errors
-// Type 'T' is not assignable to type 'string'
-function processValue<T>(value: T): string {
-  return value.toString(); // ❌ エラー: T に toString() があるとは限らない
-}
+##### 3. ジェネリクスエラーの解決
 
 // 正しい解決方法
 // 💡 詳細解説: 制約による解決 → Step09_補足_専門用語集.md#制約による解決constraint-based-solutions
@@ -112,13 +112,15 @@ function processValue3<T>(value: T): string {
 
 #### 🎯 実行時エラーハンドリング
 
+##### 1. Result型パターンとカスタムエラークラス
+
 ```typescript
-// 1. Result型パターン
+// Result型パターン
 type Result<T, E = Error> =
   | { success: true; data: T }
   | { success: false; error: E };
 
-// 2. カスタムエラークラス
+// カスタムエラークラス
 class ValidationError extends Error {
   constructor(public field: string, message: string, public value?: unknown) {
     super(message);
@@ -147,8 +149,11 @@ class BusinessLogicError extends Error {
     this.name = "BusinessLogicError";
   }
 }
+```
 
-// 3. 型安全なエラーハンドリング関数
+##### 2. 型安全なエラーハンドリング関数
+
+```typescript
 function safeParseInt(value: string): Result<number, ValidationError> {
   const parsed = parseInt(value, 10);
 
@@ -191,8 +196,11 @@ async function safeFetch<T>(url: string): Promise<Result<T, NetworkError>> {
     };
   }
 }
+```
 
-// 4. エラーハンドリングユーティリティ
+##### 3. エラーハンドリングユーティリティ
+
+```typescript
 class ErrorHandler {
   private static errorMap = new Map<string, (error: Error) => void>();
 
@@ -249,8 +257,9 @@ ErrorHandler.register(BusinessLogicError, (error) => {
 
 #### 🔧 効果的なデバッグ手法
 
+##### 1. 型安全なログシステム
+
 ```typescript
-// 1. 型安全なログシステム
 enum LogLevel {
   DEBUG = 0,
   INFO = 1,
@@ -363,8 +372,11 @@ class TypeSafeLogger {
     this.logs = [];
   }
 }
+```
 
-// 2. パフォーマンス測定
+##### 2. パフォーマンス測定
+
+```typescript
 class PerformanceProfiler {
   private static measurements = new Map<string, number>();
 
@@ -385,28 +397,26 @@ class PerformanceProfiler {
     return duration;
   }
 
-  static measure<T>(label: string, fn: () => T): T;
-  static measure<T>(label: string, fn: () => Promise<T>): Promise<T>;
-  static measure<T>(label: string, fn: () => T | Promise<T>): T | Promise<T> {
-    this.start(label);
+  try {
+    const result = fn();
 
-    try {
-      const result = fn();
-
-      if (result instanceof Promise) {
-        return result.finally(() => this.end(label));
-      } else {
-        this.end(label);
-        return result;
-      }
-    } catch (error) {
+    if (result instanceof Promise) {
+      return result.finally(() => this.end(label));
+    } else {
       this.end(label);
-      throw error;
+      return result;
     }
+  } catch (error) {
+    this.end(label);
+    throw error;
   }
 }
+```
 
-// 3. デバッグ用ヘルパー関数
+##### 3. デバッグ用ヘルパー関数と使用例
+
+```typescript
+// デバッグ用ヘルパー関数
 function debugValue<T>(value: T, label?: string): T {
   const logger = TypeSafeLogger.getInstance();
   logger.debug(label || "Debug value", { value, type: typeof value });
@@ -456,8 +466,9 @@ async function exampleFunction() {
 
 #### 🔧 型安全なテストフレームワーク
 
+##### 1. テストユーティリティ型
+
 ```typescript
-// 1. テストユーティリティ型
 type TestCase<TInput, TExpected> = {
   name: string;
   input: TInput;
@@ -469,8 +480,11 @@ type TestCase<TInput, TExpected> = {
 type AsyncTestCase<TInput, TExpected> = TestCase<TInput, TExpected> & {
   timeout?: number;
 };
+```
 
-// 2. 型安全なモックシステム
+##### 2. 型安全なモックシステム
+
+```typescript
 type MockFunction<T extends (...args: any[]) => any> = {
   (...args: Parameters<T>): ReturnType<T>;
   mockReturnValue(value: ReturnType<T>): void;
@@ -550,8 +564,11 @@ function createMock<T extends (...args: any[]) => any>(): MockFunction<T> {
 
   return mockFn;
 }
+```
 
-// 3. 型安全なアサーション
+##### 3. 型安全なアサーション
+
+```typescript
 class TypeSafeAssert {
   static equal<T>(actual: T, expected: T, message?: string): void {
     if (actual !== expected) {

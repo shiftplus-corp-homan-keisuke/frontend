@@ -27,8 +27,9 @@
 
 #### 🔍 ジェネリクスの基本と他言語との比較
 
+##### 1. 基本的なジェネリクス
+
 ```typescript
-// 1. 基本的なジェネリクス
 // Java: <T> T identity(T arg) { return arg; }
 // C#: T Identity<T>(T arg) { return arg; }
 // Rust: fn identity<T>(arg: T) -> T { arg }
@@ -44,16 +45,22 @@ const stringResult = identity<string>("hello"); // 明示的な型指定
 const numberResult = identity<number>(42); // 明示的な型指定
 const autoInferred = identity("world"); // 型推論でstring
 const boolInferred = identity(true); // 型推論でboolean
+```
 
-// 2. 複数の型パラメータ
+##### 2. 複数の型パラメータ
+
+```typescript
 function pair<T, U>(first: T, second: U): [T, U] {
   return [first, second];
 }
 
 const stringNumberPair = pair("hello", 42); // [string, number]
 const booleanArrayPair = pair(true, [1, 2, 3]); // [boolean, number[]]
+```
 
-// 3. ジェネリック配列操作
+##### 3. ジェネリック配列操作
+
+```typescript
 function getFirst<T>(array: T[]): T | undefined {
   return array.length > 0 ? array[0] : undefined;
 }
@@ -79,8 +86,9 @@ const reversedStrings = reverse(strings); // string[]
 
 #### 🎯 ジェネリック制約の活用
 
+##### 1. extends制約
+
 ```typescript
-// 1. extends制約
 // 💡 詳細解説: ジェネリック制約 → Step05_補足_専門用語集.md#ジェネリック制約generic-constraints
 interface Lengthwise {
   length: number;
@@ -96,8 +104,11 @@ loggingIdentity("hello"); // OK: string has length
 loggingIdentity([1, 2, 3]); // OK: array has length
 loggingIdentity({ length: 10, value: 3 }); // OK: object has length
 // loggingIdentity(3);                       // Error: number doesn't have length
+```
 
-// 2. keyof制約
+##### 2. keyof制約
+
+```typescript
 // 💡 詳細解説: keyof演算子 → Step05_補足_専門用語集.md#keyof演算子keyof-operator
 function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
   return obj[key];
@@ -114,8 +125,11 @@ const person: Person = { name: "Alice", age: 30, email: "alice@example.com" };
 const name = getProperty(person, "name"); // string型
 const age = getProperty(person, "age"); // number型
 // const invalid = getProperty(person, "invalid"); // Error
+```
 
-// 3. 条件付き制約
+##### 3. 条件付き制約
+
+```typescript
 // 💡 詳細解説: 条件付き制約 → Step05_補足_専門用語集.md#条件付き制約conditional-constraints
 function processValue<T extends string | number>(value: T): string {
   if (typeof value === "string") {
@@ -124,8 +138,11 @@ function processValue<T extends string | number>(value: T): string {
     return value.toString();
   }
 }
+```
 
-// 4. 複数制約
+##### 4. 複数制約
+
+```typescript
 interface Serializable {
   serialize(): string;
 }
@@ -148,8 +165,9 @@ function processEntity<T extends Serializable & Timestamped>(
 
 #### 🔧 基本的なジェネリッククラス
 
+##### 1. 基本的なジェネリッククラス
+
 ```typescript
-// 1. 基本的なジェネリッククラス
 // 💡 詳細解説: ジェネリッククラス → Step05_補足_専門用語集.md#ジェネリッククラスgeneric-classes
 class Box<T> {
   private value: T;
@@ -176,8 +194,11 @@ class Box<T> {
 const stringBox = new Box("hello");
 const numberBox = stringBox.map((str) => str.length); // Box<number>
 const upperBox = stringBox.map((str) => str.toUpperCase()); // Box<string>
+```
 
-// 2. 複数型パラメータのクラス
+##### 2. 複数型パラメータのクラス
+
+```typescript
 class Pair<T, U> {
   constructor(private first: T, private second: U) {}
 
@@ -214,6 +235,8 @@ const mapped = stringNumberPair.map(
 
 #### 🔧 型安全な API クライアント
 
+##### 1. API エンドポイントの型定義
+
 ```typescript
 // 型安全なAPIクライアント
 interface ApiEndpoint {
@@ -232,7 +255,11 @@ interface ApiResponse<T> {
     message: string;
   };
 }
+```
 
+##### 2. 型安全な API クライアントクラス
+
+```typescript
 class TypeSafeApiClient<TEndpoints extends Record<string, ApiEndpoint>> {
   constructor(private baseUrl: string, private endpoints: TEndpoints) {}
 

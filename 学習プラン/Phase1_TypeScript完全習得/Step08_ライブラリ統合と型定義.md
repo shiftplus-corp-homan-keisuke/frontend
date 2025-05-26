@@ -25,20 +25,47 @@
 
 ### Section 1: 型定義ファイルの基礎
 
-#### 🔍 d.ts ファイルの理解
+#### 🔍 型定義ファイルの実践的価値
+
+**💡 なぜ型定義・ライブラリ統合が重要なのか**
+
+型定義ファイルは、JavaScript ライブラリとの型安全な連携を実現する TypeScript の核心機能です。型安全性による開発効率向上、実際のプロジェクトでの統合価値、チーム開発での効果を最大化します。特に外部ライブラリ、API 連携、レガシーコードとの統合において、型定義は開発者体験を大幅に改善し、ランタイムエラーを予防します。
+
+**🎯 どういう場面で使うのか**
+
+- **外部ライブラリ統合**: JavaScript ライブラリの型安全な使用
+- **API 連携**: 外部 API との型安全な通信
+- **レガシーコード統合**: 既存 JavaScript コードの段階的 TypeScript 化
+- **グローバル変数管理**: window オブジェクトや環境変数の型安全な管理
+- **アセット管理**: CSS モジュール、画像ファイルの型定義
+- **チーム開発**: 型定義による契約の明確化と共有
 
 ##### 1. 基本的な型定義ファイル
 
 ```typescript
 // 💡 詳細解説: 型定義ファイル → Step08_補足_専門用語集.md#型定義ファイルtype-definition-files
 // 💡 詳細解説: declare文 → Step08_補足_専門用語集.md#declare文declare-statement
-// types/global.d.ts
+
+// types/global.d.ts - グローバル型定義
 declare global {
   interface Window {
     customAPI: {
       version: string;
       init(): void;
       getData<T>(key: string): Promise<T>;
+    };
+
+    // 実際のプロジェクトでよく使用される拡張
+    gtag?: (...args: any[]) => void; // Google Analytics
+    dataLayer?: any[]; // Google Tag Manager
+    fbq?: (...args: any[]) => void; // Facebook Pixel
+
+    // 環境固有のAPI
+    electron?: {
+      ipcRenderer: {
+        invoke(channel: string, ...args: any[]): Promise<any>;
+        on(channel: string, listener: (...args: any[]) => void): void;
+      };
     };
   }
 
@@ -47,11 +74,282 @@ declare global {
       NODE_ENV: "development" | "production" | "test";
       API_URL: string;
       API_KEY: string;
+      DATABASE_URL: string;
+      JWT_SECRET: string;
+      REDIS_URL?: string;
+      SENTRY_DSN?: string;
+
+      // 機能フラグ
+      FEATURE_NEW_UI?: "true" | "false";
+      FEATURE_ANALYTICS?: "true" | "false";
+    }
+  }
+
+  // カスタムイベント型定義
+  interface CustomEventMap {
+    "user:login": CustomEvent<{ userId: string; email: string }>;
+    "user:logout": CustomEvent<{}>;
+    "cart:update": CustomEvent<{ itemCount: number; total: number }>;
+    "notification:show": CustomEvent<{
+      type: "success" | "error" | "warning" | "info";
+      message: string;
+      duration?: number;
+    }>;
+  }
+
+  interface Document {
+    addEventListener<K extends keyof CustomEventMap>(
+      type: K,
+      listener: (this: Document, ev: CustomEventMap[K]) => any,
+      options?: boolean | AddEventListenerOptions
+    ): void;
+
+    dispatchEvent<K extends keyof CustomEventMap>(
+      event: CustomEventMap[K]
+    ): boolean;
+  }
+}
+
+// 実際のプロジェクトでの型定義戦略
+// types/api.d.ts - API関連の型定義
+declare namespace API {
+  interface BaseResponse {
+    success: boolean;
+    message: string;
+    timestamp: string;
+  }
+
+  interface ErrorResponse extends BaseResponse {
+    success: false;
+    error: {
+      code: string;
+      details?: Record<string, any>;
+    };
+  }
+
+  interface SuccessResponse<T = any> extends BaseResponse {
+    success: true;
+    data: T;
+  }
+
+  type Response<T = any> = SuccessResponse<T> | ErrorResponse;
+
+  // 認証関連
+  namespace Auth {
+    interface LoginRequest {
+      email: string;
+      password: string;
+      rememberMe?: boolean;
+    }
+
+    interface LoginResponse {
+      user: User;
+      token: string;
+      refreshToken: string;
+      expiresIn: number;
+    }
+
+    interface User {
+      id: string;
+      email: string;
+      name: string;
+      role: "admin" | "user" | "moderator";
+      avatar?: string;
+      preferences: UserPreferences;
+    }
+
+    interface UserPreferences {
+      theme: "light" | "dark" | "auto";
+      language: "en" | "ja" | "es";
+      notifications: {
+        email: boolean;
+        push: boolean;
+        sms: boolean;
+      };
+    }
+  }
+
+  // 商品関連
+  namespace Product {
+    interface Item {
+      id: string;
+      name: string;
+      description: string;
+      price: number;
+      currency: string;
+      category: Category;
+      images: Image[];
+      inventory: Inventory;
+      metadata: Record<string, any>;
+    }
+
+    interface Category {
+      id: string;
+      name: string;
+      slug: string;
+      parent?: Category;
+    }
+
+    interface Image {
+      id: string;
+      url: string;
+      alt: string;
+      width: number;
+      height: number;
+      format: "jpg" | "png" | "webp";
+    }
+
+    interface Inventory {
+      stock: number;
+      reserved: number;
+      available: number;
+      lowStockThreshold: number;
     }
   }
 }
 
+// types/utils.d.ts - ユーティリティ型定義
+declare namespace Utils {
+  // 深い部分更新用の型
+  type DeepPartial<T> = {
+    [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
+  };
+
+  // 必須フィールドを指定する型
+  type RequireFields<T, K extends keyof T> = T & Required<Pick<T, K>>;
+
+  // 特定の型のキーのみを抽出
+  type KeysOfType<T, U> = {
+    [K in keyof T]: T[K] extends U ? K : never;
+  }[keyof T];
+
+  // 関数の型を抽出
+  type FunctionKeys<T> = KeysOfType<T, Function>;
+
+  // イベントハンドラーの型
+  type EventHandler<T = Event> = (event: T) => void;
+
+  // 非同期関数の戻り値型を抽出
+  type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;
+}
+
 export {};
+```
+
+**📝 統合の詳細解説**
+
+- **グローバル拡張**: Window、NodeJS.ProcessEnv の拡張により、実際のプロジェクトで使用される API や環境変数を型安全に管理
+- **名前空間活用**: API、Utils 名前空間により、関連する型定義を論理的にグループ化
+- **カスタムイベント**: 型安全なカスタムイベントシステムの実現
+- **実用的な型**: 実際のプロジェクトで頻繁に使用される型パターンの定義
+
+**⚠️ よくある統合ミスと注意点**
+
+```typescript
+// ❌ 間違い: グローバル汚染
+declare const myGlobalVar: string; // グローバルスコープを汚染
+
+// ❌ 間違い: 型定義の重複
+interface Window {
+  customAPI: any; // 既に定義済みの場合、競合する
+}
+
+// ❌ 間違い: 不適切な any の使用
+declare global {
+  interface Window {
+    someAPI: any; // 型安全性を失う
+  }
+}
+
+// ✅ 正解: 適切なグローバル拡張
+declare global {
+  interface Window {
+    customAPI: {
+      version: string;
+      init(): void;
+      getData<T>(key: string): Promise<T>;
+    };
+  }
+}
+
+// ✅ 正解: 名前空間による整理
+declare namespace MyLibrary {
+  interface Config {
+    apiUrl: string;
+    timeout: number;
+  }
+}
+```
+
+**🚀 実際のプロジェクトでの活用例**
+
+```typescript
+// React プロジェクトでの活用
+// types/react-extensions.d.ts
+import "react";
+
+declare module "react" {
+  interface CSSProperties {
+    "--custom-property"?: string;
+    "--theme-color"?: string;
+  }
+}
+
+// Next.js プロジェクトでの活用
+// types/next-env.d.ts
+declare namespace NodeJS {
+  interface ProcessEnv {
+    NEXT_PUBLIC_API_URL: string;
+    NEXT_PUBLIC_ANALYTICS_ID: string;
+    DATABASE_URL: string;
+    NEXTAUTH_SECRET: string;
+  }
+}
+
+// Express.js プロジェクトでの活用
+// types/express.d.ts
+import { API } from "./api";
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: API.Auth.User;
+      requestId: string;
+      startTime: number;
+    }
+
+    interface Response {
+      success<T>(data: T, message?: string): Response;
+      error(message: string, code?: string): Response;
+    }
+  }
+}
+
+// 実際の使用例
+app.use((req, res, next) => {
+  req.requestId = crypto.randomUUID();
+  req.startTime = Date.now();
+
+  res.success = function <T>(data: T, message = "Success") {
+    return this.json({
+      success: true,
+      message,
+      data,
+      requestId: req.requestId,
+    });
+  };
+
+  res.error = function (message: string, code = "UNKNOWN_ERROR") {
+    return this.status(400).json({
+      success: false,
+      message,
+      error: { code },
+      requestId: req.requestId,
+    });
+  };
+
+  next();
+});
 ```
 
 ##### 2. モジュール宣言

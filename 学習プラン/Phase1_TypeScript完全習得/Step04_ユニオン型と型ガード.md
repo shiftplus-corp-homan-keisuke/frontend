@@ -25,15 +25,23 @@
 
 ### Section 1: ユニオン型の基礎と活用
 
-#### 🔍 ユニオン型の基本概念と他言語との比較
+#### 🔍 ユニオン型の実践的価値
+
+**💡 なぜユニオン型が重要なのか**
+
+ユニオン型は、JavaScript の動的型付けの柔軟性を保ちながら、TypeScript の型安全性を実現する重要な機能です。実際の開発では、API レスポンスの処理、ユーザー入力の検証、状態管理など、様々な場面で「複数の可能性がある値」を安全に扱う必要があります。ユニオン型により、ランタイムエラーを予防し、堅牢なアプリケーションを構築できます。
+
+**🎯 どういう場面で使うのか**
+
+- **API レスポンス処理**: サーバーから返される可能性のある複数の形式のデータ
+- **ユーザー入力検証**: フォームで入力される様々な型の値
+- **状態管理**: アプリケーションの複数の状態を型安全に表現
+- **設定値管理**: 環境や条件によって変わる設定値の安全な管理
+- **エラーハンドリング**: 成功・失敗の両方のケースを型安全に処理
 
 ##### 1. 基本的なユニオン型
 
 ```typescript
-// Java: Object (型安全性なし), Kotlin: sealed class
-// C#: object (型安全性なし), F#: discriminated union
-// Rust: enum, Go: interface{}
-// TypeScript: 型安全なユニオン型
 // 💡 詳細解説: ユニオン型 → Step04_補足_専門用語集.md#ユニオン型union-types
 
 type StringOrNumber = string | number;
@@ -47,7 +55,30 @@ function processValue(value: StringOrNumber): string {
 }
 ```
 
-##### 2. リテラル型のユニオン
+**📝 実装の詳細解説**
+
+- ユニオン型では、すべての型に共通するプロパティ・メソッドのみアクセス可能
+- 型ガードを使用することで、特定の型のプロパティにアクセス可能
+- リテラル型のユニオンにより、許可される値を制限し、タイポを防止
+
+**⚠️ よくある間違いと注意点**
+
+```typescript
+// ❌ 間違い: 型ガードなしで特定の型のメソッドを使用
+function badExample(value: string | number): string {
+  return value.toUpperCase(); // Error: numberにはtoUpperCase()がない
+}
+
+// ✅ 正解: 型ガードを使用
+function goodExample(value: string | number): string {
+  if (typeof value === "string") {
+    return value.toUpperCase(); // OK: この分岐内ではstring型
+  }
+  return value.toString(); // OK: number型
+}
+```
+
+##### 2. リテラル型のユニオンによる設定値管理
 
 ```typescript
 // 💡 詳細解説: リテラル型 → Step04_補足_専門用語集.md#リテラル型literal-types
@@ -56,6 +87,66 @@ type ResponseStatus = 200 | 201 | 400 | 401 | 404 | 500;
 
 function makeRequest(method: HttpMethod, url: string): Promise<Response> {
   return fetch(url, { method });
+}
+
+// 実際のAPI設定での活用例
+type Environment = "development" | "staging" | "production";
+type LogLevel = "debug" | "info" | "warn" | "error";
+
+interface ApiConfig {
+  baseUrl: string;
+  timeout: number;
+  retries: number;
+  logLevel: LogLevel;
+}
+
+function createApiConfig(env: Environment): ApiConfig {
+  switch (env) {
+    case "development":
+      return {
+        baseUrl: "http://localhost:3000",
+        timeout: 10000,
+        retries: 1,
+        logLevel: "debug",
+      };
+    case "staging":
+      return {
+        baseUrl: "https://staging-api.example.com",
+        timeout: 5000,
+        retries: 2,
+        logLevel: "info",
+      };
+    case "production":
+      return {
+        baseUrl: "https://api.example.com",
+        timeout: 3000,
+        retries: 3,
+        logLevel: "error",
+      };
+  }
+}
+```
+
+**🚀 実際のプロジェクトでの活用例**
+
+```typescript
+// React での状態管理での活用
+type LoadingState = "idle" | "loading" | "success" | "error";
+
+interface UserState {
+  status: LoadingState;
+  user: User | null;
+  error: string | null;
+}
+
+// Vue.js での props 型定義での活用
+type ButtonVariant = "primary" | "secondary" | "danger" | "success";
+type ButtonSize = "small" | "medium" | "large";
+
+interface ButtonProps {
+  variant: ButtonVariant;
+  size: ButtonSize;
+  disabled?: boolean;
 }
 ```
 
@@ -98,7 +189,7 @@ type MixedArray = (string | number | boolean)[];
 type NumberOrStringArray = number[] | string[];
 ```
 
-##### 6. null/undefined とのユニオン（Nullable 型）
+##### 6. Nullable 型の実践的な使用場面
 
 ```typescript
 type NullableString = string | null;
@@ -111,9 +202,42 @@ function processNullableString(value: NullableString): string {
   }
   return value.toUpperCase(); // nullチェック後は安全にアクセス可能
 }
+
+// 実際のデータベース操作での活用
+interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string | null; // データベースでNULL許可
+  bio: string | undefined; // オプショナルフィールド
+  lastLoginAt: Date | null; // 初回ログイン前はnull
+}
+
+function formatUserProfile(profile: UserProfile): string {
+  const avatarText = profile.avatar ? `Avatar: ${profile.avatar}` : "No avatar";
+
+  const bioText = profile.bio ? `Bio: ${profile.bio}` : "No bio provided";
+
+  const lastLoginText = profile.lastLoginAt
+    ? `Last login: ${profile.lastLoginAt.toISOString()}`
+    : "Never logged in";
+
+  return `${profile.name} (${profile.email}) - ${avatarText}, ${bioText}, ${lastLoginText}`;
+}
 ```
 
-#### 🎯 インターセクション型の活用
+#### 🎯 インターセクション型の設計パターン
+
+**💡 なぜインターセクション型が重要なのか**
+
+インターセクション型は、複数の型を組み合わせて新しい型を作成する強力な機能です。Mixin パターンの実現、API 設計での型合成、再利用可能なコンポーネント設計において、コードの重複を避けながら型安全性を保つことができます。
+
+**🎯 どういう場面で使うのか**
+
+- **Mixin パターン**: 複数の機能を組み合わせたオブジェクトの作成
+- **API 設計**: 基本型に追加情報を付与したレスポンス型の作成
+- **コンポーネント設計**: 基本プロパティに特定の機能を追加
+- **データベースモデル**: エンティティにタイムスタンプやメタデータを追加
 
 ##### 1. 基本的なインターセクション型
 
@@ -132,9 +256,20 @@ type Timestamps = {
 
 type UserWithTimestamps = User & Timestamps;
 // 結果: { id: number; name: string; email: string; createdAt: Date; updatedAt: Date; }
+
+// 実際の使用例
+function createUser(userData: Omit<User, "id">): UserWithTimestamps {
+  const now = new Date();
+  return {
+    id: Math.floor(Math.random() * 1000),
+    ...userData,
+    createdAt: now,
+    updatedAt: now,
+  };
+}
 ```
 
-##### 2. Mixin パターン
+##### 2. Mixin パターンの実際の使用場面
 
 ```typescript
 type Serializable = {
@@ -145,9 +280,70 @@ type Serializable = {
 type Cacheable = {
   cache(): void;
   invalidateCache(): void;
+  getCacheKey(): string;
 };
 
-type Entity = User & Serializable & Cacheable;
+type Auditable = {
+  getAuditLog(): AuditEntry[];
+  addAuditEntry(action: string, userId: string): void;
+};
+
+// 実際のライブラリ設計での活用
+type Entity = User & Serializable & Cacheable & Auditable;
+
+class UserEntity implements Entity {
+  constructor(
+    public id: number,
+    public name: string,
+    public email: string,
+    private auditLog: AuditEntry[] = []
+  ) {}
+
+  serialize(): string {
+    return JSON.stringify({
+      id: this.id,
+      name: this.name,
+      email: this.email,
+    });
+  }
+
+  deserialize(data: string): void {
+    const parsed = JSON.parse(data);
+    this.id = parsed.id;
+    this.name = parsed.name;
+    this.email = parsed.email;
+  }
+
+  cache(): void {
+    localStorage.setItem(this.getCacheKey(), this.serialize());
+  }
+
+  invalidateCache(): void {
+    localStorage.removeItem(this.getCacheKey());
+  }
+
+  getCacheKey(): string {
+    return `user:${this.id}`;
+  }
+
+  getAuditLog(): AuditEntry[] {
+    return [...this.auditLog];
+  }
+
+  addAuditEntry(action: string, userId: string): void {
+    this.auditLog.push({
+      action,
+      userId,
+      timestamp: new Date(),
+    });
+  }
+}
+
+interface AuditEntry {
+  action: string;
+  userId: string;
+  timestamp: Date;
+}
 ```
 
 ##### 3. 関数型のインターセクション
@@ -201,9 +397,21 @@ type PaginatedResponse<T> = ApiResponse<T[]> & {
 
 ### Section 2: 型ガードの実装パターン
 
-#### 🔧 基本的な型ガード
+#### 🔧 基本的な型ガードの実践活用
 
-##### 1. typeof 型ガード
+**💡 なぜ型ガードが重要なのか**
+
+型ガードは、ランタイムでの型チェックを通じて、TypeScript の型システムに実際の値の型を「教える」仕組みです。これにより、`unknown` 型や ユニオン型の値を安全に扱い、実行時エラーを予防できます。特に、外部 API からのデータ、ユーザー入力、DOM 操作において、型ガードは堅牢なアプリケーション構築の要となります。
+
+**🎯 どういう場面で使うのか**
+
+- **外部 API データ検証**: サーバーから受け取ったデータの型確認
+- **ユーザー入力検証**: フォーム入力値の型・形式チェック
+- **DOM 操作**: HTML 要素の型確認と安全なアクセス
+- **ファイル処理**: アップロードされたファイルの形式確認
+- **設定値検証**: 環境変数や設定ファイルの値の検証
+
+##### 1. typeof 型ガードによるランタイムエラー予防
 
 ```typescript
 function processStringOrNumber(value: string | number): string {
@@ -215,9 +423,32 @@ function processStringOrNumber(value: string | number): string {
     return value.toFixed(2);
   }
 }
+
+// 実際のユーザー入力検証での活用
+function validateFormInput(input: unknown): string | null {
+  if (typeof input !== "string") {
+    return "入力値は文字列である必要があります";
+  }
+
+  if (input.trim().length === 0) {
+    return "入力値は空にできません";
+  }
+
+  if (input.length > 100) {
+    return "入力値は100文字以内にしてください";
+  }
+
+  return null; // バリデーション成功
+}
 ```
 
-##### 2. instanceof 型ガード
+**📝 実装の詳細解説**
+
+- `typeof` 演算子は JavaScript のランタイム型チェック
+- TypeScript は型ガードの結果を理解し、分岐内で型を絞り込む
+- プリミティブ型（string, number, boolean, undefined）の判定に最適
+
+##### 2. instanceof 型ガードによる DOM 操作の安全性確保
 
 ```typescript
 class Dog {
@@ -238,6 +469,38 @@ function makeSound(animal: Dog | Cat): void {
   } else {
     animal.meow(); // Catのメソッドにアクセス可能
   }
+}
+
+// DOM操作での型安全性確保の重要性
+function setupFormValidation(formId: string): void {
+  const element = document.getElementById(formId);
+
+  if (!(element instanceof HTMLFormElement)) {
+    throw new Error(`Element with id "${formId}" is not a form`);
+  }
+
+  // この時点でelementはHTMLFormElement型として扱われる
+  element.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(element);
+    // 安全にフォームデータを処理
+    processFormData(formData);
+  });
+}
+
+function getInputValue(inputId: string): string | null {
+  const element = document.getElementById(inputId);
+
+  if (element instanceof HTMLInputElement) {
+    return element.value;
+  } else if (element instanceof HTMLTextAreaElement) {
+    return element.value;
+  } else if (element instanceof HTMLSelectElement) {
+    return element.value;
+  }
+
+  return null; // 対応していない要素型
 }
 ```
 
@@ -337,7 +600,19 @@ async function isValidUser(value: unknown): Promise<value is User> {
 }
 ```
 
-#### 🎯 判別可能なユニオン（Discriminated Union）
+#### 🎯 判別可能なユニオンの状態管理での実践活用
+
+**💡 なぜ判別可能なユニオンが重要なのか**
+
+判別可能なユニオン（Discriminated Union）は、共通のプロパティ（判別子）を持つユニオン型で、TypeScript が各分岐で正確な型を推論できる仕組みです。状態管理、エラーハンドリング、API レスポンス処理において、型安全性を保ちながら複雑なロジックを実装できます。特に非同期処理の状態表現や、React/Vue.js での状態管理において威力を発揮します。
+
+**🎯 どういう場面で使うのか**
+
+- **状態管理ライブラリ**: Redux、Zustand での action や state の型安全な管理
+- **非同期処理の状態表現**: loading、success、error の状態を型安全に表現
+- **API レスポンス処理**: 成功・失敗レスポンスの型安全な処理
+- **複雑なビジネスロジック**: 複数の条件分岐を型安全に実装
+- **React/Vue.js での状態管理**: コンポーネントの状態を型安全に管理
 
 ##### 1. 基本的な判別可能なユニオン
 

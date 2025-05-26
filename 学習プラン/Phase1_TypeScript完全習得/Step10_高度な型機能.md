@@ -25,17 +25,108 @@
 
 ### Section 1: 条件付き型と infer
 
-#### 🔍 条件付き型の基本と応用
+#### 🔍 条件付き型の実践的価値
 
-##### 1. 基本的な条件付き型
+**💡 なぜ高度な型機能が重要なのか**
+
+高度な型機能は、TypeScript の型システムを最大限に活用し、型レベルプログラミングによる表現力豊かなライブラリ設計を可能にします。型レベルプログラミングの価値、実際のライブラリ設計での効果、型安全性と表現力の向上を実現します。特に条件付き型、infer、マップ型、テンプレートリテラル型により、コンパイル時の型計算と推論を活用した高度な型操作が可能になります。
+
+**🎯 どういう場面で使うのか**
+
+- **ライブラリ・フレームワーク設計**: 型安全で表現力豊かな API 設計
+- **型レベルプログラミング**: コンパイル時の型計算と推論
+- **メタプログラミング**: 型情報を活用した動的な型生成
+- **高度な型操作**: 複雑な型変換と型推論が必要な場面
+- **API 設計**: 型安全性を極限まで高める設計手法
+- **型安全性の極限追求**: 既存ライブラリの型安全性向上
+
+##### 1. 条件付き型による柔軟な型システム構築
 
 ```typescript
 // 💡 詳細解説: 条件付き型 → Step10_補足_専門用語集.md#条件付き型conditional-types
+
+// 基本的な条件付き型
 type IsString<T> = T extends string ? true : false;
 
 type Test1 = IsString<string>; // true
 type Test2 = IsString<number>; // false
 type Test3 = IsString<"hello">; // true
+
+// 実際のライブラリ設計での活用例
+// API レスポンス型の条件付き生成
+type ApiResponse<T, TError = never> = T extends never
+  ? { success: false; error: TError }
+  : { success: true; data: T };
+
+// 使用例
+type UserResponse = ApiResponse<User, "USER_NOT_FOUND">;
+// { success: true; data: User } | { success: false; error: 'USER_NOT_FOUND' }
+
+type EmptyResponse = ApiResponse<never, "VALIDATION_ERROR">;
+// { success: false; error: 'VALIDATION_ERROR' }
+
+// 関数オーバーロードの型安全な実装
+type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
+
+type RequestConfig<M extends HttpMethod> = {
+  method: M;
+  url: string;
+  headers?: Record<string, string>;
+} & (M extends "GET" | "DELETE" ? { body?: never } : { body: unknown });
+
+// 使用例
+const getConfig: RequestConfig<"GET"> = {
+  method: "GET",
+  url: "/api/users",
+  // body: {} // ❌ GET リクエストには body は不要
+};
+
+const postConfig: RequestConfig<"POST"> = {
+  method: "POST",
+  url: "/api/users",
+  body: { name: "Alice" }, // ✅ POST リクエストには body が必要
+};
+
+// 型安全なイベントハンドラー設計
+type EventMap = {
+  click: MouseEvent;
+  keydown: KeyboardEvent;
+  custom: CustomEvent<{ data: string }>;
+};
+
+type EventHandler<K extends keyof EventMap> = K extends "custom"
+  ? (event: EventMap[K] & { detail: { data: string } }) => void
+  : (event: EventMap[K]) => void;
+
+// 使用例
+const clickHandler: EventHandler<"click"> = (event) => {
+  console.log(event.clientX, event.clientY); // MouseEvent のプロパティ
+};
+
+const customHandler: EventHandler<"custom"> = (event) => {
+  console.log(event.detail.data); // CustomEvent の detail プロパティ
+};
+
+// フォーム型の条件付き生成
+type FormField<T> = T extends string
+  ? { type: "text"; value: string; placeholder?: string }
+  : T extends number
+  ? { type: "number"; value: number; min?: number; max?: number }
+  : T extends boolean
+  ? { type: "checkbox"; checked: boolean; label: string }
+  : T extends Date
+  ? { type: "date"; value: string; min?: string; max?: string }
+  : { type: "unknown"; value: T };
+
+// 使用例
+type NameField = FormField<string>;
+// { type: 'text'; value: string; placeholder?: string }
+
+type AgeField = FormField<number>;
+// { type: 'number'; value: number; min?: number; max?: number }
+
+type ActiveField = FormField<boolean>;
+// { type: 'checkbox'; checked: boolean; label: string }
 ```
 
 ##### 2. ネストした条件付き型

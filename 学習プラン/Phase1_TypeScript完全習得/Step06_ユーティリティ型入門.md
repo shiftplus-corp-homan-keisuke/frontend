@@ -25,9 +25,21 @@
 
 ### Section 1: 組み込みユーティリティ型
 
-#### 🔍 基本的なユーティリティ型
+#### 🔍 基本ユーティリティ型の実践的価値
 
-##### 1. Partial<T> - 全プロパティをオプショナルに
+**💡 なぜユーティリティ型が重要なのか**
+
+ユーティリティ型は、既存の型から新しい型を効率的に生成する TypeScript の強力な機能です。型変換による開発効率の向上、実際のプロジェクトでの型安全性確保、コード重複の削減と保守性向上を実現します。特に Web アプリケーション開発において、フォーム処理、API 設計、状態管理での型変換は必須のスキルとなります。
+
+**🎯 どういう場面で使うのか**
+
+- **フォーム処理**: 部分更新や段階的な入力での型安全性確保
+- **API 設計**: リクエスト・レスポンス型の柔軟な変換
+- **状態管理**: Redux、Zustand での型安全な状態変換
+- **設定管理**: 環境別設定や動的設定での型管理
+- **データ変換**: 外部データの内部型への安全な変換
+
+##### 1. Partial<T> - フォーム処理での部分更新
 
 ```typescript
 // 💡 詳細解説: ユーティリティ型 → Step06_補足_専門用語集.md#ユーティリティ型utility-types
@@ -46,6 +58,164 @@ function updateUser(id: number, updates: Partial<User>): User {
   const existingUser = getUserById(id);
   return { ...existingUser, ...updates };
 }
+
+// 実際のフォーム処理での活用
+interface UserForm {
+  personalInfo: Partial<Pick<User, "name" | "age">>;
+  contactInfo: Partial<Pick<User, "email">>;
+  isValid: boolean;
+}
+
+class FormManager<T> {
+  private data: Partial<T> = {};
+  private validators: Map<keyof T, (value: any) => boolean> = new Map();
+
+  updateField<K extends keyof T>(field: K, value: T[K]): void {
+    this.data[field] = value;
+  }
+
+  getPartialData(): Partial<T> {
+    return { ...this.data };
+  }
+
+  isComplete(): this is { data: T } {
+    // 実際の実装では全フィールドの存在をチェック
+    return Object.keys(this.data).length > 0;
+  }
+
+  validate(): boolean {
+    for (const [field, validator] of this.validators) {
+      const value = this.data[field];
+      if (value !== undefined && !validator(value)) {
+        return false;
+      }
+    }
+    return true;
+  }
+}
+
+// 使用例
+const userForm = new FormManager<User>();
+userForm.updateField("name", "Alice");
+userForm.updateField("email", "alice@example.com");
+
+// 段階的なフォーム入力での型安全性
+interface RegistrationStep1 {
+  email: string;
+  password: string;
+}
+
+interface RegistrationStep2 {
+  firstName: string;
+  lastName: string;
+}
+
+interface RegistrationStep3 {
+  preferences: {
+    newsletter: boolean;
+    notifications: boolean;
+  };
+}
+
+type RegistrationData = RegistrationStep1 &
+  RegistrationStep2 &
+  RegistrationStep3;
+
+class MultiStepForm {
+  private step1Data: Partial<RegistrationStep1> = {};
+  private step2Data: Partial<RegistrationStep2> = {};
+  private step3Data: Partial<RegistrationStep3> = {};
+
+  updateStep1(data: Partial<RegistrationStep1>): void {
+    this.step1Data = { ...this.step1Data, ...data };
+  }
+
+  updateStep2(data: Partial<RegistrationStep2>): void {
+    this.step2Data = { ...this.step2Data, ...data };
+  }
+
+  updateStep3(data: Partial<RegistrationStep3>): void {
+    this.step3Data = { ...this.step3Data, ...data };
+  }
+
+  getFinalData(): Partial<RegistrationData> {
+    return {
+      ...this.step1Data,
+      ...this.step2Data,
+      ...this.step3Data,
+    };
+  }
+}
+```
+
+**📝 型変換の詳細解説**
+
+- `Partial<T>` は全てのプロパティを `T[K] | undefined` に変換
+- フォームの段階的入力や部分更新で威力を発揮
+- 型安全性を保ちながら柔軟な更新処理を実現
+
+**⚠️ よくある間違いと注意点**
+
+```typescript
+// ❌ 間違い: Partialを使わずに全プロパティを要求
+function badUpdateUser(id: number, updates: User): User {
+  // 部分更新なのに全プロパティが必要になってしまう
+  return { ...getUserById(id), ...updates };
+}
+
+// ❌ 間違い: undefinedチェックを忘れる
+function badProcessPartial(data: Partial<User>): string {
+  return data.name.toUpperCase(); // data.nameがundefinedの可能性
+}
+
+// ✅ 正解: 適切なundefinedチェック
+function goodProcessPartial(data: Partial<User>): string {
+  return data.name ? data.name.toUpperCase() : "Unknown";
+}
+```
+
+**🚀 実際のプロジェクトでの活用例**
+
+```typescript
+// React でのフォーム状態管理
+interface ContactForm {
+  name: string;
+  email: string;
+  message: string;
+  phone?: string;
+}
+
+function useContactForm() {
+  const [formData, setFormData] = useState<Partial<ContactForm>>({});
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof ContactForm, string>>
+  >({});
+
+  const updateField = <K extends keyof ContactForm>(
+    field: K,
+    value: ContactForm[K]
+  ) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+
+    // バリデーション
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+  };
+
+  const validateForm = (): boolean => {
+    const newErrors: Partial<Record<keyof ContactForm, string>> = {};
+
+    if (!formData.name) newErrors.name = "Name is required";
+    if (!formData.email) newErrors.email = "Email is required";
+    if (!formData.message) newErrors.message = "Message is required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  return { formData, errors, updateField, validateForm };
+}
 ```
 
 ##### 2. Required<T> - 全プロパティを必須に
@@ -62,7 +232,7 @@ type RequiredConfig = Required<Config>;
 // { apiUrl: string; timeout: number; retries: number; }
 ```
 
-##### 3. Pick<T, K> - 特定プロパティを選択
+##### 3. Pick<T, K> - API 設計での特定プロパティ選択
 
 ```typescript
 // 💡 詳細解説: Pick型 → Step06_補足_専門用語集.md#pick型pick-type
@@ -71,9 +241,93 @@ type UserSummary = Pick<User, "id" | "name">;
 
 type UserContact = Pick<User, "name" | "email">;
 // { name: string; email: string; }
+
+// 実際のAPI設計での活用
+interface FullProduct {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  inventory: {
+    stock: number;
+    reserved: number;
+    available: number;
+  };
+  metadata: {
+    createdAt: Date;
+    updatedAt: Date;
+    createdBy: string;
+  };
+  internalNotes: string;
+}
+
+// 公開API用の型（内部情報を除外）
+type PublicProduct = Pick<
+  FullProduct,
+  "id" | "name" | "description" | "price" | "category"
+>;
+
+// 在庫管理用の型
+type InventoryProduct = Pick<FullProduct, "id" | "name" | "inventory">;
+
+// 商品一覧表示用の型
+type ProductListItem = Pick<FullProduct, "id" | "name" | "price" | "category">;
+
+// 検索結果用の型
+type SearchResult = Pick<
+  FullProduct,
+  "id" | "name" | "description" | "category"
+>;
+
+// API エンドポイント設計での活用
+class ProductService {
+  async getProducts(): Promise<ProductListItem[]> {
+    // 一覧表示に必要な最小限の情報のみ返す
+    const products = await this.fetchAllProducts();
+    return products.map((product) => ({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      category: product.category,
+    }));
+  }
+
+  async getProductDetails(id: string): Promise<PublicProduct> {
+    // 詳細表示用の情報を返す（内部情報は除外）
+    const product = await this.fetchProductById(id);
+    return {
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      category: product.category,
+    };
+  }
+
+  async getInventoryInfo(id: string): Promise<InventoryProduct> {
+    // 在庫管理用の情報のみ返す
+    const product = await this.fetchProductById(id);
+    return {
+      id: product.id,
+      name: product.name,
+      inventory: product.inventory,
+    };
+  }
+
+  private async fetchAllProducts(): Promise<FullProduct[]> {
+    // 実際のデータ取得処理
+    return [];
+  }
+
+  private async fetchProductById(id: string): Promise<FullProduct> {
+    // 実際のデータ取得処理
+    return {} as FullProduct;
+  }
+}
 ```
 
-##### 4. Omit<T, K> - 特定プロパティを除外
+##### 4. Omit<T, K> - 型安全なデータ変換での除外
 
 ```typescript
 // 💡 詳細解説: Omit型 → Step06_補足_専門用語集.md#omit型omit-type
@@ -82,6 +336,174 @@ type CreateUserRequest = Omit<User, "id">;
 
 type PublicUser = Omit<User, "email">;
 // { id: number; name: string; age: number; }
+
+// 実際のデータ変換での活用
+interface DatabaseUser {
+  id: string;
+  email: string;
+  passwordHash: string;
+  salt: string;
+  name: string;
+  age: number;
+  createdAt: Date;
+  updatedAt: Date;
+  lastLoginAt: Date | null;
+  isActive: boolean;
+  role: "admin" | "user" | "moderator";
+}
+
+// 認証レスポンス用（機密情報を除外）
+type AuthUser = Omit<DatabaseUser, "passwordHash" | "salt">;
+
+// 公開プロフィール用（個人情報を除外）
+type PublicProfile = Omit<
+  DatabaseUser,
+  "email" | "passwordHash" | "salt" | "lastLoginAt" | "isActive"
+>;
+
+// ユーザー作成リクエスト用（自動生成フィールドを除外）
+type CreateUserRequest = Omit<
+  DatabaseUser,
+  "id" | "createdAt" | "updatedAt" | "lastLoginAt"
+>;
+
+// ユーザー更新リクエスト用（変更不可フィールドを除外）
+type UpdateUserRequest = Partial<
+  Omit<DatabaseUser, "id" | "createdAt" | "passwordHash" | "salt">
+>;
+
+// 実際のユーザーサービスでの活用
+class UserService {
+  async createUser(userData: CreateUserRequest): Promise<AuthUser> {
+    const hashedPassword = await this.hashPassword(userData.passwordHash);
+    const salt = await this.generateSalt();
+
+    const newUser: DatabaseUser = {
+      id: this.generateId(),
+      ...userData,
+      passwordHash: hashedPassword,
+      salt,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      lastLoginAt: null,
+    };
+
+    await this.saveUser(newUser);
+
+    // 機密情報を除外して返す
+    const { passwordHash, salt: _, ...authUser } = newUser;
+    return authUser;
+  }
+
+  async updateUser(id: string, updates: UpdateUserRequest): Promise<AuthUser> {
+    const existingUser = await this.getUserById(id);
+    const updatedUser: DatabaseUser = {
+      ...existingUser,
+      ...updates,
+      updatedAt: new Date(),
+    };
+
+    await this.saveUser(updatedUser);
+
+    // 機密情報を除外して返す
+    const { passwordHash, salt, ...authUser } = updatedUser;
+    return authUser;
+  }
+
+  async getPublicProfile(id: string): Promise<PublicProfile> {
+    const user = await this.getUserById(id);
+
+    // 個人情報を除外して返す
+    const {
+      email,
+      passwordHash,
+      salt,
+      lastLoginAt,
+      isActive,
+      ...publicProfile
+    } = user;
+    return publicProfile;
+  }
+
+  private async hashPassword(password: string): Promise<string> {
+    // パスワードハッシュ化処理
+    return "";
+  }
+
+  private async generateSalt(): Promise<string> {
+    // ソルト生成処理
+    return "";
+  }
+
+  private generateId(): string {
+    // ID生成処理
+    return "";
+  }
+
+  private async saveUser(user: DatabaseUser): Promise<void> {
+    // ユーザー保存処理
+  }
+
+  private async getUserById(id: string): Promise<DatabaseUser> {
+    // ユーザー取得処理
+    return {} as DatabaseUser;
+  }
+}
+```
+
+**📝 型変換の詳細解説**
+
+- `Pick<T, K>` は指定したプロパティのみを含む新しい型を作成
+- `Omit<T, K>` は指定したプロパティを除外した新しい型を作成
+- API 設計において、必要な情報のみを公開する際に威力を発揮
+- データベース型から API レスポンス型への安全な変換を実現
+
+**⚠️ よくある間違いと注意点**
+
+```typescript
+// ❌ 間違い: 存在しないプロパティをPickしようとする
+type BadPick = Pick<User, "id" | "nonExistent">; // Error
+
+// ❌ 間違い: 全プロパティをOmitしてしまう
+type EmptyType = Omit<User, "id" | "name" | "email" | "age">; // {}
+
+// ✅ 正解: 適切なプロパティの選択・除外
+type GoodPick = Pick<User, "id" | "name">;
+type GoodOmit = Omit<User, "email">; // 機密情報のみ除外
+```
+
+**🚀 実際のプロジェクトでの活用例**
+
+```typescript
+// GraphQL スキーマでの活用
+interface BlogPost {
+  id: string;
+  title: string;
+  content: string;
+  authorId: string;
+  publishedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+  isDraft: boolean;
+  tags: string[];
+}
+
+// 公開記事一覧用
+type PublicPostSummary = Pick<
+  BlogPost,
+  "id" | "title" | "publishedAt" | "tags"
+>;
+
+// 記事作成リクエスト用
+type CreatePostRequest = Omit<BlogPost, "id" | "createdAt" | "updatedAt">;
+
+// 記事更新リクエスト用
+type UpdatePostRequest = Partial<
+  Omit<BlogPost, "id" | "authorId" | "createdAt">
+>;
+
+// 下書き記事用
+type DraftPost = Omit<BlogPost, "publishedAt"> & { publishedAt: null };
 ```
 
 ##### 5. Record<K, T> - キーと値の型を指定

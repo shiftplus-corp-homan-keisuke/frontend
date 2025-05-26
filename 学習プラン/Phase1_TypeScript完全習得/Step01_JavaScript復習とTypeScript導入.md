@@ -25,7 +25,7 @@
 
 ## 📚 理論学習内容
 
-### Day 1-2: JavaScript 基礎復習
+### Section 1: JavaScript 基礎復習
 
 #### 🔍 多言語経験者向け JavaScript 特徴
 
@@ -116,7 +116,7 @@ console.log([] + []); // "" (空文字列)
 console.log({} + []); // "[object Object]"
 ```
 
-##### 2. undefined/nullの混在
+##### 2. undefined/null の混在
 
 ```javascript
 let data;
@@ -159,11 +159,11 @@ mixedArray.forEach((item) => {
 });
 ```
 
-### Day 3-4: TypeScript 導入と環境構築
+### Section 2: TypeScript 導入と環境構築
 
 #### 🛠️ 開発環境構築
 
-##### 1. Node.js確認（LTS版推奨）
+##### 1. Node.js 確認（LTS 版推奨）
 
 ```bash
 node --version  # v18.x.x以上
@@ -184,7 +184,7 @@ cd typescript-learning
 npm init -y
 ```
 
-##### 4. TypeScript設定
+##### 4. TypeScript 設定
 
 ```bash
 npm install -D typescript @types/node ts-node
@@ -315,7 +315,7 @@ const multiply = (a: number, b: number): number => a * b;
 const isEven = (num: number): boolean => num % 2 === 0;
 ```
 
-### Day 5-7: 実践的な TypeScript 活用
+### Section 3: 実践的な TypeScript 活用
 
 #### 🔧 他言語との比較学習
 

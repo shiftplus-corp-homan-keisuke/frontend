@@ -23,7 +23,7 @@
 
 ## 📚 理論学習内容
 
-### Day 1-2: 組み込みユーティリティ型
+### Section 1: 組み込みユーティリティ型
 
 #### 🔍 基本的なユーティリティ型
 
@@ -117,7 +117,7 @@ type OnlyStringOrNumber = Extract<StringOrNumber, string | number>;
 // string | number
 ```
 
-##### 8. NonNullable<T> - null/undefinedを除外
+##### 8. NonNullable<T> - null/undefined を除外
 
 ```typescript
 // 💡 詳細解説: NonNullable型 → Step06_補足_専門用語集.md#nonnullable型nonnullable-type
@@ -186,7 +186,7 @@ type GreetFunction = OmitThisParameter<typeof greet>;
 // (message: string) => string
 ```
 
-### Day 3-4: カスタムユーティリティ型の作成
+### Section 2: カスタムユーティリティ型の作成
 
 #### 🔧 高度なユーティリティ型
 
@@ -249,7 +249,7 @@ type NumberKeys = KeysOfType<MixedObject, number>;
 // 'id' | 'count'
 ```
 
-##### 4. RequireAtLeastOne - 最低1つのプロパティが必須
+##### 4. RequireAtLeastOne - 最低 1 つのプロパティが必須
 
 ```typescript
 type RequireAtLeastOne<T, Keys extends keyof T = keyof T> = Pick<
@@ -270,7 +270,7 @@ type ContactRequired = RequireAtLeastOne<ContactInfo>;
 // email, phone, address のうち最低1つは必須
 ```
 
-##### 5. Mutable - readonlyを除去
+##### 5. Mutable - readonly を除去
 
 ```typescript
 type Mutable<T> = {
@@ -299,7 +299,7 @@ type NumberProperties = PickByType<MixedObject, number>;
 // { id: number; count: number; }
 ```
 
-### Day 5-7: 実用的な型変換システム
+### Section 3: 実用的な型変換システム
 
 #### 🔧 型安全なフォームシステム
 

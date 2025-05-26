@@ -23,7 +23,7 @@
 
 ## 📚 理論学習内容
 
-### Day 1-2: ユニオン型の基礎と活用
+### Section 1: ユニオン型の基礎と活用
 
 #### 🔍 ユニオン型の基本概念と他言語との比較
 
@@ -98,7 +98,7 @@ type MixedArray = (string | number | boolean)[];
 type NumberOrStringArray = number[] | string[];
 ```
 
-##### 6. null/undefinedとのユニオン（Nullable型）
+##### 6. null/undefined とのユニオン（Nullable 型）
 
 ```typescript
 type NullableString = string | null;
@@ -199,7 +199,7 @@ type PaginatedResponse<T> = ApiResponse<T[]> & {
 };
 ```
 
-### Day 3-4: 型ガードの実装パターン
+### Section 2: 型ガードの実装パターン
 
 #### 🔧 基本的な型ガード
 
@@ -465,7 +465,7 @@ function handleApiResult<T>(result: ApiResult<T>): T | null {
 }
 ```
 
-### Day 5-7: 型アサーションと高度なパターン
+### Section 3: 型アサーションと高度なパターン
 
 #### 🔧 型アサーションの適切な使用
 
@@ -528,7 +528,7 @@ const config = {
 // プロパティがreadonlyになる
 ```
 
-##### 4. 非null アサーション演算子（!）
+##### 4. 非 null アサーション演算子（!）
 
 ```typescript
 function processUser(userId: string): void {

@@ -23,7 +23,7 @@
 
 ## 📚 理論学習内容
 
-### Day 1-2: ESLint 設定とカスタマイズ
+### Section 1: ESLint 設定とカスタマイズ
 
 #### 🔍 TypeScript 用 ESLint 設定
 
@@ -138,7 +138,10 @@ module.exports = {
           node,
           messageId: "preferReadonly",
           fix(fixer) {
-            return fixer.replaceText(node, `readonly ${context.getSourceCode().getText(node)}`);
+            return fixer.replaceText(
+              node,
+              `readonly ${context.getSourceCode().getText(node)}`
+            );
           },
         });
       },
@@ -147,7 +150,7 @@ module.exports = {
 };
 ```
 
-### Day 3-4: 開発ツールの作成
+### Section 2: 開発ツールの作成
 
 #### 🔧 型定義生成ツール
 
@@ -269,7 +272,7 @@ const types = generator.generateTypes(spec);
 console.log(types);
 ```
 
-### Day 5-7: TypeScript Compiler API
+### Section 3: TypeScript Compiler API
 
 #### 🔧 AST 操作の基礎
 

@@ -23,7 +23,7 @@
 
 ## 📚 理論学習内容
 
-### Day 1-2: 条件付き型と infer
+### Section 1: 条件付き型と infer
 
 #### 🔍 条件付き型の基本と応用
 
@@ -140,7 +140,7 @@ type UserName = PropertyType<User, "name">; // string
 type UserId = PropertyType<User, "id">; // number
 ```
 
-##### 4. 複雑なinferパターン
+##### 4. 複雑な infer パターン
 
 ```typescript
 type ExtractArrayType<T> = T extends Promise<infer U>[]
@@ -162,7 +162,7 @@ function greetUser(this: User, message: string): string {
 type GreetThisType = ThisType<typeof greetUser>; // User
 ```
 
-### Day 3-4: マップ型の高度な活用
+### Section 2: マップ型の高度な活用
 
 #### 🔧 高度なマップ型パターン
 
@@ -289,7 +289,7 @@ type ServiceData = NonFunctionProperties<UserService>;
 // { id: number; name: string; }
 ```
 
-### Day 5-7: テンプレートリテラル型と再帰的型
+### Section 3: テンプレートリテラル型と再帰的型
 
 #### 🔧 テンプレートリテラル型の実践
 
@@ -312,7 +312,7 @@ type CapitalName = Capitalize<"alice">; // "Alice"
 type UncapitalName = Uncapitalize<"Alice">; // "alice"
 ```
 
-##### 2. イベント名とAPI エンドポイントの生成
+##### 2. イベント名と API エンドポイントの生成
 
 ```typescript
 // イベント名の生成

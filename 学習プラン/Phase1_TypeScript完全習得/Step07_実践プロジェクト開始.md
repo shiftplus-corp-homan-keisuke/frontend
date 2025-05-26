@@ -96,7 +96,7 @@ type TodoAction =
   | { type: "SET_ERROR"; payload: { error: string | null } };
 ```
 
-### Day 1-2: プロジェクト基盤構築
+### Section 1: プロジェクト基盤構築
 
 #### 🔧 状態管理システム
 
@@ -372,7 +372,7 @@ setCategoryFilter(categoryId: string | null): void {
 export const todoService = new TodoService(todoStore);
 ```
 
-### Day 3-5: UI コンポーネント実装
+### Section2 : UI コンポーネント実装
 
 #### 🔧 型安全な DOM 操作
 
@@ -546,7 +546,7 @@ protected render(): void {
 }
 ```
 
-### Day 6-7: アプリケーション統合
+### Section3 : アプリケーション統合
 
 #### 🔧 メインアプリケーション
 
@@ -588,7 +588,7 @@ private setupHTML(): void {
         <h1>TypeScript Todo App</h1>
         <div class="stats" id="stats"></div>
       </header>
-      
+
       <div class="app-controls">
         <input type="text" id="search" placeholder="検索..." />
         <select id="filter">

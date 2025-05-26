@@ -16,7 +16,7 @@
 
 ## 📚 理論学習内容
 
-### Day 1-2: React 19 + TypeScript 環境構築
+### Section 1: React 19 + TypeScript 環境構築
 
 #### 🛠️ 開発環境セットアップ
 
@@ -120,7 +120,7 @@ function SubmitButton() {
 }
 ```
 
-### Day 3-4: JSX の型システム理解
+### Section 2: JSX の型システム理解
 
 #### 🔍 JSX 型の基本概念
 
@@ -319,7 +319,7 @@ function ContactForm(): JSX.Element {
 }
 ```
 
-### Day 5-7: 基本コンポーネント設計
+### Section 3: 基本コンポーネント設計
 
 #### 🧩 コンポーネント設計パターン
 

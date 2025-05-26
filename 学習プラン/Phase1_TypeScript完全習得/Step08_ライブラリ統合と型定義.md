@@ -23,7 +23,7 @@
 
 ## 📚 理論学習内容
 
-### Day 1-2: 型定義ファイルの基礎
+### Section 1: 型定義ファイルの基礎
 
 #### 🔍 d.ts ファイルの理解
 
@@ -246,7 +246,7 @@ describe("UserService", () => {
 });
 ```
 
-### Day 3-4: カスタム型定義の作成
+### Section 2: カスタム型定義の作成
 
 #### 🔧 実用的な型定義パターン
 
@@ -487,7 +487,7 @@ export namespace Validation {
 }
 ```
 
-### Day 5-7: ライブラリ統合の実践
+### Section 3: ライブラリ統合の実践
 
 #### 🔧 型安全なライブラリラッパー
 
@@ -633,7 +633,7 @@ export class TypeSafeHttpClient {
 }
 ```
 
-##### 2. ユーザーAPI サービス
+##### 2. ユーザー API サービス
 
 ```typescript
 // services/user-api.ts
@@ -678,7 +678,7 @@ export class UserApiService {
 }
 ```
 
-##### 3. 認証API サービス
+##### 3. 認証 API サービス
 
 ```typescript
 // services/auth-api.ts

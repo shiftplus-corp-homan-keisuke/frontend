@@ -23,7 +23,7 @@
 
 ## 📚 理論学習内容
 
-### Day 1-2: インターフェースの基礎と設計
+### Section 1: インターフェースの基礎と設計
 
 #### 🔍 インターフェースの基本概念と他言語との比較
 
@@ -96,7 +96,7 @@ interface Calculator {
 }
 ```
 
-##### 6. メソッドシグネチャ（2つの書き方）
+##### 6. メソッドシグネチャ（2 つの書き方）
 
 ```typescript
 interface UserService {
@@ -196,7 +196,7 @@ class ProductRepository implements Repository<Product, string> {
 }
 ```
 
-### Day 3-4: 型エイリアスとの使い分け
+### Section 2: 型エイリアスとの使い分け
 
 #### 🔧 type vs interface の詳細比較
 
@@ -220,14 +220,14 @@ type UserType = {
 };
 ```
 
-##### 2. ユニオン型（typeのみ可能）
+##### 2. ユニオン型（type のみ可能）
 
 ```typescript
 type Status = "pending" | "approved" | "rejected";
 type ID = string | number;
 ```
 
-##### 3. 交差型（typeが得意）
+##### 3. 交差型（type が得意）
 
 ```typescript
 type Timestamped = {
@@ -259,7 +259,7 @@ type UserPermissions = Record<UserRole, string[]>;
 type UserWithRole = User & { role: UserRole };
 ```
 
-### Day 5-7: 実践的なデータモデル設計
+### Section 3: 実践的なデータモデル設計
 
 #### 🔧 ドメインモデルの設計
 
@@ -392,13 +392,13 @@ namespace ECommerce {
     | "shipped"
     | "delivered"
     | "cancelled";
-    
+
   type PaymentMethod =
     | "credit_card"
     | "paypal"
     | "bank_transfer"
     | "cash_on_delivery";
-    
+
   type PaymentStatus = "pending" | "completed" | "failed" | "refunded";
 }
 ```

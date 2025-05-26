@@ -23,7 +23,7 @@
 
 ## 📚 理論学習内容
 
-### Day 1-2: TypeScript エラーの理解
+### Section 1: TypeScript エラーの理解
 
 #### 🔍 コンパイルエラーの分析と解決
 
@@ -99,16 +99,17 @@ processNumbers(numbers); // ✅ 正解
 ##### 3. ジェネリクスエラーの解決
 
 // 正しい解決方法
-// 💡 詳細解説: 制約による解決 → Step09_補足_専門用語集.md#制約による解決constraint-based-solutions
+// 💡 詳細解説: 制約による解決 → Step09*補足*専門用語集.md#制約による解決 constraint-based-solutions
 function processValue2<T extends { toString(): string }>(value: T): string {
-  return value.toString(); // ✅ 正解
+return value.toString(); // ✅ 正解
 }
 
 // または
 function processValue3<T>(value: T): string {
-  return String(value); // ✅ 正解
+return String(value); // ✅ 正解
 }
-```
+
+````
 
 #### 🎯 実行時エラーハンドリング
 
@@ -149,7 +150,7 @@ class BusinessLogicError extends Error {
     this.name = "BusinessLogicError";
   }
 }
-```
+````
 
 ##### 2. 型安全なエラーハンドリング関数
 
@@ -253,7 +254,7 @@ ErrorHandler.register(BusinessLogicError, (error) => {
 });
 ```
 
-### Day 3-4: デバッグ技術とツール
+### Section 2: デバッグ技術とツール
 
 #### 🔧 効果的なデバッグ手法
 
@@ -462,7 +463,7 @@ async function exampleFunction() {
 }
 ```
 
-### Day 5-7: テストの型安全性
+### Section 3: テストの型安全性
 
 #### 🔧 型安全なテストフレームワーク
 

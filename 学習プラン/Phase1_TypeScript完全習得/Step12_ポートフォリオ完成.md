@@ -23,7 +23,7 @@
 
 ## 📚 プロジェクト統合
 
-### Day 1-2: ポートフォリオサイト構築
+### Section 1: ポートフォリオサイト構築
 
 #### 🔍 ポートフォリオ設計
 
@@ -143,7 +143,7 @@ export class PortfolioApp {
 }
 ```
 
-##### 2. HTML構造の設定
+##### 2. HTML 構造の設定
 
 ```typescript
 private setupHTML(): void {
@@ -256,13 +256,13 @@ private showProjectModal(project: Project): void {
           <div class="project-details">
             <h3>概要</h3>
             <p>${project.longDescription}</p>
-            
+
             <h3>主な機能</h3>
             <ul>${project.features.map((f) => `<li>${f}</li>`).join("")}</ul>
-            
+
             <h3>技術的課題</h3>
             <ul>${project.challenges.map((c) => `<li>${c}</li>`).join("")}</ul>
-            
+
             <h3>解決方法</h3>
             <ul>${project.solutions.map((s) => `<li>${s}</li>`).join("")}</ul>
           </div>
@@ -367,7 +367,7 @@ private showProjectModal(project: Project): void {
 }
 ```
 
-### Day 3-4: プロジェクトデータの統合
+### Section 2: プロジェクトデータの統合
 
 #### 🔧 学習成果データ
 
@@ -515,7 +515,7 @@ export const portfolioData: PortfolioData = {
 };
 ```
 
-### Day 5-7: ドキュメント整備とデプロイ
+### Section 3: ドキュメント整備とデプロイ
 
 #### 🔧 学習の軌跡ドキュメント
 

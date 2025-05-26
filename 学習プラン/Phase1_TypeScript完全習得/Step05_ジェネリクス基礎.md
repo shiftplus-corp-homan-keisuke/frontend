@@ -23,7 +23,7 @@
 
 ## 📚 理論学習内容
 
-### Day 1-2: ジェネリクスの基本概念
+### Section 1: ジェネリクスの基本概念
 
 #### 🔍 ジェネリクスの基本と他言語との比較
 
@@ -86,7 +86,7 @@ const reversedStrings = reverse(strings); // string[]
 
 #### 🎯 ジェネリック制約の活用
 
-##### 1. extends制約
+##### 1. extends 制約
 
 ```typescript
 // 💡 詳細解説: ジェネリック制約 → Step05_補足_専門用語集.md#ジェネリック制約generic-constraints
@@ -106,7 +106,7 @@ loggingIdentity({ length: 10, value: 3 }); // OK: object has length
 // loggingIdentity(3);                       // Error: number doesn't have length
 ```
 
-##### 2. keyof制約
+##### 2. keyof 制約
 
 ```typescript
 // 💡 詳細解説: keyof演算子 → Step05_補足_専門用語集.md#keyof演算子keyof-operator
@@ -161,7 +161,7 @@ function processEntity<T extends Serializable & Timestamped>(
 }
 ```
 
-### Day 3-4: ジェネリッククラスの設計
+### Section 2: ジェネリッククラスの設計
 
 #### 🔧 基本的なジェネリッククラス
 
@@ -231,7 +231,7 @@ const mapped = stringNumberPair.map(
 ); // Pair<number, string>
 ```
 
-### Day 5-7: 実用的なジェネリック活用
+### Section 3: 実用的なジェネリック活用
 
 #### 🔧 型安全な API クライアント
 

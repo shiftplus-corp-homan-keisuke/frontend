@@ -108,6 +108,8 @@ userName = 123; // エラー！型が一致しない
 
 ##### 2. スコープとクロージャ
 
+> 💡 **詳細解説**: クロージャの詳細と実践例は [Step01\_補足\_専門用語集.md#クロージャ](./Step01_補足_専門用語集.md#クロージャ) を見てね 🐰
+
 **💡 なぜこの概念が重要なのか**
 
 スコープとクロージャは JavaScript の核心的な概念です。スコープは変数がアクセス可能な範囲を決定し、クロージャは関数が定義された時の環境を「記憶」する仕組みです。これらを理解することで、予期しないバグを防ぎ、より安全で保守性の高いコードが書けるようになります。
@@ -207,6 +209,8 @@ function createTypedCounter(): {
 ##### 3. ES6+ モダン構文
 
 ###### 分割代入（Destructuring）
+
+> 💡 **詳細解説**: 分割代入の詳細と応用例は [Step01\_補足\_専門用語集.md#分割代入 destructuring](./Step01_補足_専門用語集.md#分割代入destructuring) を見てね 🐰
 
 **💡 なぜこの概念が重要なのか**
 
@@ -347,6 +351,8 @@ function UserCard({ name, age, avatar, isOnline = false }) {
 
 ###### スプレッド演算子
 
+> 💡 **詳細解説**: スプレッド演算子の詳細と活用パターンは [Step01\_補足\_専門用語集.md#スプレッド演算子 spread-operator](./Step01_補足_専門用語集.md#スプレッド演算子spread-operator) を見てね 🐰
+
 ```javascript
 // 配列のスプレッド
 const arr1 = [1, 2, 3];
@@ -381,6 +387,8 @@ console.log(sum(...numbers)); // 6
 
 ###### テンプレートリテラル
 
+> 💡 **詳細解説**: テンプレートリテラルの詳細と高度な使い方は [Step01\_補足\_専門用語集.md#テンプレートリテラル template-literals](./Step01_補足_専門用語集.md#テンプレートリテラルtemplate-literals) を見てね 🐰
+
 ```javascript
 const name = "Alice";
 const age = 30;
@@ -414,6 +422,8 @@ const priceMessage = `Price: ${formatCurrency(price)}`;
 ```
 
 ##### 4. 関数型プログラミングの基礎
+
+> 💡 **詳細解説**: 高階関数とイミュータブル操作について [Step01\_補足\_専門用語集.md#高階関数](./Step01_補足_専門用語集.md#高階関数) を見てね 🐰
 
 ```javascript
 // 高階関数の例
@@ -460,7 +470,11 @@ console.log(userNames); // ["Alice", "Bob", "Charlie", "Diana"]
 
 ##### 5. 非同期プログラミング
 
+> 💡 **詳細解説**: JavaScript の非同期プログラミングについて [Step01\_補足\_専門用語集.md#promise](./Step01_補足_専門用語集.md#promise) および [Step01\_補足\_専門用語集.md#asyncawait](./Step01_補足_専門用語集.md#asyncawait) を見てね 🐰
+
 ###### Promise の基礎
+
+> 💡 **詳細解説**: Promise の詳細と使いこなしテクニックは [Step01\_補足\_専門用語集.md#promise](./Step01_補足_専門用語集.md#promise) を見てね 🐰
 
 ```javascript
 // Promise の作成
@@ -506,6 +520,8 @@ Promise.all([fetchUserData(1), fetchUserData(2), fetchUserData(3)])
 
 ###### async/await の使用
 
+> 💡 **詳細解説**: async/await の詳細と非同期処理のパターンは [Step01\_補足\_専門用語集.md#asyncawait](./Step01_補足_専門用語集.md#asyncawait) を見てね 🐰
+
 ```javascript
 // async/await を使った書き方
 async function getUserInfo(userId) {
@@ -550,6 +566,8 @@ getAllUsers().then((users) => {
 ```
 
 #### 🚨 JavaScript の型関連の問題点
+
+> 💡 **詳細解説**: これらの問題への TypeScript の解決法については [Step01\_補足\_実践コード例.md](./Step01_補足_実践コード例.md) を見てね 🐰
 
 ##### 1. 暗黙的型変換による予期しない動作
 
@@ -608,13 +626,19 @@ mixedArray.forEach((item) => {
 
 #### 🛠️ 開発環境構築
 
+> 💡 **詳細解説**: 完全な環境構築手順は [Step01\_補足\_開発環境ガイド.md](./Step01_補足_開発環境ガイド.md) を見てね 🐰
+
 ##### 1. Node.js 確認（LTS 版推奨）
+
+> 💡 **詳細解説**: Node.js のインストール方法と LTS 版について [Step01\_補足\_開発環境ガイド.md#nodejs-lts 版について](./Step01_補足_開発環境ガイド.md#nodejs-lts版について) を見てね 🐰
 
 ```bash
 node --version  # v18.x.x以上
 ```
 
 ##### 2. TypeScript グローバルインストール
+
+> 💡 **詳細解説**: TypeScript のインストール方法とトラブルシューティングは [Step01\_補足\_トラブルシューティング.md](./Step01_補足_トラブルシューティング.md) を見てね 🐰
 
 ```bash
 npm install -g typescript
@@ -637,6 +661,8 @@ npx tsc --init
 ```
 
 ##### 5. 開発用ツール
+
+> 💡 **詳細解説**: 開発用ツールの設定と推奨拡張機能は [Step01\_補足\_開発環境ガイド.md#vs-code 拡張機能の推奨設定](./Step01_補足_開発環境ガイド.md#vs-code拡張機能の推奨設定) を見てね 🐰
 
 ```bash
 npm install -D eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin
@@ -696,13 +722,15 @@ let message: string = "Hello World";
 ##### 2. 型推論の活用
 
 ```typescript
-// 💡 詳細解説: 型推論 → Step01_補足_専門用語集.md#型推論type-inference
+// 💡 詳細解説: 型推論 → [Step01_補足_専門用語集.md#型推論type-inference](./Step01_補足_専門用語集.md#型推論type-inference)
 let inferredString = "Hello"; // string型として推論
 let inferredNumber = 42; // number型として推論
 let inferredBoolean = true; // boolean型として推論
 ```
 
 ##### 3. 基本的な型
+
+> 💡 **詳細解説**: TypeScript の基本型について詳しくは [Step02\_基本型システムと型注釈.md](./Step02_基本型システムと型注釈.md) を見てね 🐰
 
 ```typescript
 let userName: string = "Alice";
@@ -713,6 +741,8 @@ let notDefined: undefined = undefined;
 ```
 
 ##### 4. 配列の型注釈
+
+> 💡 **詳細解説**: 配列とタプルの詳細は [Step02\_基本型システムと型注釈.md](./Step02_基本型システムと型注釈.md) で学習するよ 🐰
 
 ```typescript
 let numbers: number[] = [1, 2, 3, 4, 5];
@@ -766,6 +796,8 @@ const isEven = (num: number): boolean => num % 2 === 0;
 
 ##### 1. 型エイリアスの活用
 
+> 💡 **詳細解説**: 型エイリアスの詳細と応用は [Step02\_補足\_専門用語集.md#型エイリアス type-aliases](./Step02_補足_専門用語集.md#型エイリアスtype-aliases) を見てね 🐰
+
 ```typescript
 // 基本的な型エイリアス
 type UserName = string;
@@ -800,6 +832,8 @@ function processUser(user: User): string {
 ```
 
 ##### 2. インターフェースの基礎
+
+> 💡 **詳細解説**: インターフェースの詳細と応用例は [Step03\_インターフェースとオブジェクト型.md](./Step03_インターフェースとオブジェクト型.md) で学習するよ 🐰
 
 ```typescript
 // インターフェースの定義
@@ -854,6 +888,8 @@ const calc: Calculator = {
 
 ##### 3. Union 型の基礎
 
+> 💡 **詳細解説**: Union 型と型ガードについては [Step04\_ユニオン型と型ガード.md](./Step04_ユニオン型と型ガード.md) を見てね 🐰
+
 ```typescript
 // 基本的なUnion型
 type Status = "pending" | "approved" | "rejected";
@@ -886,6 +922,8 @@ console.log(formatID(123)); // "ID: 000123"
 ```
 
 ##### 4. 実用的なアプリケーション例
+
+> 💡 **詳細解説**: より実践的なコード例は [Step01\_補足\_実践コード例.md](./Step01_補足_実践コード例.md) で確認できるよ 🐰
 
 ```typescript
 // タスク管理システムの例
@@ -948,6 +986,8 @@ console.log("進行中のタスク:", taskManager.getTasksByStatus("in-progress"
 ## 🎯 実践演習
 
 ### 演習 1-1: 基本的な型注釈練習 🔰
+
+> 💡 **詳細解説**: 演習問題の解説と追加の練習問題は [Step01\_補足\_実践コード例.md](./Step01_補足_実践コード例.md) を見てね 🐰
 
 ```typescript
 // 以下のJavaScriptコードにTypeScriptの型注釈を追加してください
@@ -1014,6 +1054,8 @@ function createUser(
 </details>
 
 ### 演習 1-2: 配列とオブジェクトの型注釈 🔶
+
+> 💡 **詳細解説**: より発展的な練習問題と解答例は [Step01\_補足\_実践コード例.md](./Step01_補足_実践コード例.md) を参考にしてね 🐰
 
 ```typescript
 // 以下の要件を満たすTypeScriptコードを作成してください
@@ -1164,6 +1206,8 @@ console.log("未完了:", taskManager.getPendingTasks());
 
 ## 📊 Step 1 評価基準
 
+> 💡 **詳細解説**: 学習の進め方とトラブルシューティングは [Step01\_補足\_参考リソース.md](./Step01_補足_参考リソース.md) にもまとめてあるよ 🐰
+
 ### 理解度チェックリスト
 
 #### JavaScript 復習 (25%)
@@ -1202,6 +1246,8 @@ console.log("未完了:", taskManager.getPendingTasks());
 - [ ] **学習ノート**: JavaScript/TypeScript 基本概念まとめ
 
 ## 🔄 Step 2 への準備
+
+> 💡 **詳細解説**: 次のステップでの学習内容について [Step02\_基本型システムと型注釈.md](./Step02_基本型システムと型注釈.md) の概要を先に確認しておくとスムーズに学習を進められるよ 🐰
 
 ### 次週学習内容の予習
 

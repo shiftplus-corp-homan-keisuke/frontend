@@ -6,6 +6,7 @@
 > - 💻 [実践コード例](./Step08_補足_実践コード例.md) - 段階的な学習用コード集
 > - 🚨 [トラブルシューティング](./Step08_補足_トラブルシューティング.md) - よくあるエラーと解決方法
 > - 📚 [参考リソース](./Step08_補足_参考リソース.md) - 学習に役立つリンク集
+> - 📋 [補足資料](./Step08_補足資料.md) - その他の重要な補足情報
 
 ## 📅 学習期間・目標
 
@@ -42,10 +43,9 @@
 
 ##### 1. 基本的な型定義ファイル
 
-```typescript
-// 💡 詳細解説: 型定義ファイル → Step08_補足_専門用語集.md#型定義ファイルtype-definition-files
-// 💡 詳細解説: declare文 → Step08_補足_専門用語集.md#declare文declare-statement
+> 💡 **詳細解説**: 型定義ファイルと declare 文について [Step08\_補足\_専門用語集.md#型定義ファイル](./Step08_補足_専門用語集.md#型定義ファイルtype-definition-files) を見てね 🐰
 
+```typescript
 // types/global.d.ts - グローバル型定義
 declare global {
   interface Window {
@@ -354,8 +354,9 @@ app.use((req, res, next) => {
 
 ##### 2. モジュール宣言
 
+> 💡 **詳細解説**: モジュール宣言について [Step08\_補足\_専門用語集.md#モジュール宣言](./Step08_補足_専門用語集.md#モジュール宣言module-declaration) を見てね 🐰
+
 ```typescript
-// 💡 詳細解説: モジュール宣言 → Step08_補足_専門用語集.md#モジュール宣言module-declaration
 // types/external-lib.d.ts
 declare module "some-external-library" {
   export interface Config {
@@ -375,8 +376,9 @@ declare module "some-external-library" {
 
 ##### 3. 既存モジュールの拡張
 
+> 💡 **詳細解説**: モジュール拡張について [Step08\_補足\_専門用語集.md#モジュール拡張](./Step08_補足_専門用語集.md#モジュール拡張module-augmentation) を見てね 🐰
+
 ```typescript
-// 💡 詳細解説: モジュール拡張 → Step08_補足_専門用語集.md#モジュール拡張module-augmentation
 // types/lodash-extensions.d.ts
 import "lodash";
 
@@ -389,8 +391,9 @@ declare module "lodash" {
 
 ##### 4. CSS モジュールの型定義
 
+> 💡 **詳細解説**: ワイルドカードモジュールについて [Step08\_補足\_専門用語集.md#ワイルドカードモジュール](./Step08_補足_専門用語集.md#ワイルドカードモジュールwildcard-modules) を見てね 🐰
+
 ```typescript
-// 💡 詳細解説: ワイルドカードモジュール → Step08_補足_専門用語集.md#ワイルドカードモジュールwildcard-modules
 // types/css-modules.d.ts
 declare module "*.module.css" {
   const classes: { [key: string]: string };
@@ -405,8 +408,9 @@ declare module "*.module.scss" {
 
 ##### 5. 画像ファイルの型定義
 
+> 💡 **詳細解説**: アセット型定義について [Step08\_補足\_専門用語集.md#アセット型定義](./Step08_補足_専門用語集.md#アセット型定義asset-type-definitions) を見てね 🐰
+
 ```typescript
-// 💡 詳細解説: アセット型定義 → Step08_補足_専門用語集.md#アセット型定義asset-type-definitions
 // types/assets.d.ts
 declare module "*.png" {
   const value: string;
@@ -785,6 +789,8 @@ export namespace Validation {
 }
 ```
 
+> 💡 **詳細解説**: より実践的なコード例は [Step08\_補足\_実践コード例.md](./Step08_補足_実践コード例.md) で確認できるよ 🐰
+
 ### Section 3: ライブラリ統合の実践
 
 #### 🔧 型安全なライブラリラッパー
@@ -1068,7 +1074,11 @@ async function example() {
 }
 ```
 
+> 💡 **詳細解説**: 実装中に問題が発生した場合は [Step08\_補足\_トラブルシューティング.md](./Step08_補足_トラブルシューティング.md) を参考にしてね 🐰
+
 ## 📊 Step 8 評価基準
+
+> 💡 **詳細解説**: 学習の進め方とトラブルシューティングは [Step08\_補足\_参考リソース.md](./Step08_補足_参考リソース.md) にもまとめてあるよ 🐰
 
 ### 理解度チェックリスト
 
@@ -1108,6 +1118,8 @@ async function example() {
 - [ ] **統合テスト**: ライブラリ統合の動作確認
 
 ## 🔄 Step 9 への準備
+
+> 💡 **詳細解説**: 次のステップでの学習内容について [Step09\_エラーハンドリングとデバッグ.md](./Step09_エラーハンドリングとデバッグ.md) の概要を先に確認しておくとスムーズに学習を進められるよ 🐰
 
 ### 次週学習内容の予習
 

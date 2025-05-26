@@ -6,6 +6,7 @@
 > - 💻 [実践コード例](./Step05_補足_実践コード例.md) - 段階的な学習用コード集
 > - 🚨 [トラブルシューティング](./Step05_補足_トラブルシューティング.md) - よくあるエラーと解決方法
 > - 📚 [参考リソース](./Step05_補足_参考リソース.md) - 学習に役立つリンク集
+> - 📋 [補足資料](./Step05_補足資料.md) - その他の重要な補足情報
 
 ## 📅 学習期間・目標
 
@@ -41,9 +42,9 @@
 
 ##### 1. 基本的なジェネリクス
 
-```typescript
-// 💡 詳細解説: ジェネリクス → Step05_補足_専門用語集.md#ジェネリクスgenerics
+> 💡 **詳細解説**: ジェネリクスの詳細と実践的な活用パターンは [Step05_補足_専門用語集.md#ジェネリクスgenerics](./Step05_補足_専門用語集.md#ジェネリクスgenerics) を見てね 🐰
 
+```typescript
 function identity<T>(arg: T): T {
   return arg;
 }
@@ -236,6 +237,8 @@ const processedUsers = new DataProcessor(users)
 
 #### 🎯 ジェネリック制約の設計思想
 
+> 💡 **詳細解説**: ジェネリック制約の設計思想と実践的な活用パターンは [Step05_補足_専門用語集.md#ジェネリック制約generic-constraints](./Step05_補足_専門用語集.md#ジェネリック制約generic-constraints) を見てね 🐰
+
 **💡 なぜジェネリック制約が重要なのか**
 
 ジェネリック制約（Generic Constraints）は、ジェネリクスの柔軟性を保ちながら、特定のプロパティやメソッドの存在を保証する仕組みです。`extends` キーワードを使用することで、型安全性を確保しつつ、より具体的な操作を可能にします。特に API クライアント設計、データ変換処理、ライブラリ開発において、制約は堅牢で使いやすいインターフェースの構築を可能にします。
@@ -250,8 +253,9 @@ const processedUsers = new DataProcessor(users)
 
 ##### 1. extends 制約による安全なプロパティアクセス
 
+> 💡 **詳細解説**: ジェネリック制約の詳細と実践的な活用パターンは [Step05_補足_専門用語集.md#ジェネリック制約generic-constraints](./Step05_補足_専門用語集.md#ジェネリック制約generic-constraints) を見てね 🐰
+
 ```typescript
-// 💡 詳細解説: ジェネリック制約 → Step05_補足_専門用語集.md#ジェネリック制約generic-constraints
 interface Lengthwise {
   length: number;
 }
@@ -392,8 +396,9 @@ function createDatabaseConnection<T extends DatabaseConfig>(config: T): string {
 
 ##### 2. keyof 制約
 
+> 💡 **詳細解説**: keyof演算子の詳細と実践的な活用パターンは [Step05_補足_専門用語集.md#keyof演算子keyof-operator](./Step05_補足_専門用語集.md#keyof演算子keyof-operator) を見てね 🐰
+
 ```typescript
-// 💡 詳細解説: keyof演算子 → Step05_補足_専門用語集.md#keyof演算子keyof-operator
 function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
   return obj[key];
 }
@@ -413,8 +418,9 @@ const age = getProperty(person, "age"); // number型
 
 ##### 3. 条件付き制約
 
+> 💡 **詳細解説**: 条件付き制約の詳細と実践的な活用パターンは [Step05_補足_専門用語集.md#条件付き制約conditional-constraints](./Step05_補足_専門用語集.md#条件付き制約conditional-constraints) を見てね 🐰
+
 ```typescript
-// 💡 詳細解説: 条件付き制約 → Step05_補足_専門用語集.md#条件付き制約conditional-constraints
 function processValue<T extends string | number>(value: T): string {
   if (typeof value === "string") {
     return value.toUpperCase();
@@ -435,7 +441,9 @@ interface Timestamped {
   timestamp: Date;
 }
 
-// 💡 詳細解説: インターセクション型 → Step05_補足_専門用語集.md#インターセクション型intersection-types
+> 💡 **詳細解説**: インターセクション型の詳細と実践的な活用パターンは [Step05_補足_専門用語集.md#インターセクション型intersection-types](./Step05_補足_専門用語集.md#インターセクション型intersection-types) を見てね 🐰
+
+```typescript
 function processEntity<T extends Serializable & Timestamped>(
   entity: T
 ): string {
@@ -451,8 +459,9 @@ function processEntity<T extends Serializable & Timestamped>(
 
 ##### 1. 基本的なジェネリッククラス
 
+> 💡 **詳細解説**: ジェネリッククラスの詳細と実践的な活用パターンは [Step05_補足_専門用語集.md#ジェネリッククラスgeneric-classes](./Step05_補足_専門用語集.md#ジェネリッククラスgeneric-classes) を見てね 🐰
+
 ```typescript
-// 💡 詳細解説: ジェネリッククラス → Step05_補足_専門用語集.md#ジェネリッククラスgeneric-classes
 class Box<T> {
   private value: T;
 
@@ -474,7 +483,6 @@ class Box<T> {
 }
 
 // 使用例
-// 💡 詳細解説: 型推論 → Step05_補足_専門用語集.md#型推論type-inference
 const stringBox = new Box("hello");
 const numberBox = stringBox.map((str) => str.length); // Box<number>
 const upperBox = stringBox.map((str) => str.toUpperCase()); // Box<string>
@@ -516,6 +524,8 @@ const mapped = stringNumberPair.map(
 ```
 
 ### Section 3: 実用的なジェネリック活用
+
+> 💡 **詳細解説**: 実用的なジェネリック活用パターンと実践コード例は [Step05_補足_実践コード例.md#実用的なジェネリック活用例](./Step05_補足_実践コード例.md#実用的なジェネリック活用例) を見てね 🐰
 
 #### 🔧 型安全な API クライアント
 

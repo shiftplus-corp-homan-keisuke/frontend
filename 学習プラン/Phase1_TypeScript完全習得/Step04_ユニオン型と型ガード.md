@@ -6,6 +6,7 @@
 > - 💻 [実践コード例](./Step04_補足_実践コード例.md) - 段階的な学習用コード集
 > - 🚨 [トラブルシューティング](./Step04_補足_トラブルシューティング.md) - よくあるエラーと解決方法
 > - 📚 [参考リソース](./Step04_補足_参考リソース.md) - 学習に役立つリンク集
+> - 📋 [補足資料](./Step04_補足資料.md) - その他の重要な補足情報
 
 ## 📅 学習期間・目標
 
@@ -41,9 +42,9 @@
 
 ##### 1. 基本的なユニオン型
 
-```typescript
-// 💡 詳細解説: ユニオン型 → Step04_補足_専門用語集.md#ユニオン型union-types
+> 💡 **詳細解説**: ユニオン型の詳細と実践的な活用パターンは [Step04_補足_専門用語集.md#ユニオン型union-types](./Step04_補足_専門用語集.md#ユニオン型union-types) を見てね 🐰
 
+```typescript
 type StringOrNumber = string | number;
 type Status = "loading" | "success" | "error";
 type Theme = "light" | "dark" | "auto";
@@ -80,8 +81,9 @@ function goodExample(value: string | number): string {
 
 ##### 2. リテラル型のユニオンによる設定値管理
 
+> 💡 **詳細解説**: リテラル型の詳細と実践的な活用パターンは [Step04_補足_専門用語集.md#リテラル型literal-types](./Step04_補足_専門用語集.md#リテラル型literal-types) を見てね 🐰
+
 ```typescript
-// 💡 詳細解説: リテラル型 → Step04_補足_専門用語集.md#リテラル型literal-types
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 type ResponseStatus = 200 | 201 | 400 | 401 | 404 | 500;
 
@@ -241,8 +243,9 @@ function formatUserProfile(profile: UserProfile): string {
 
 ##### 1. 基本的なインターセクション型
 
+> 💡 **詳細解説**: インターセクション型の詳細と実践的な活用パターンは [Step04_補足_専門用語集.md#インターセクション型intersection-types](./Step04_補足_専門用語集.md#インターセクション型intersection-types) を見てね 🐰
+
 ```typescript
-// 💡 詳細解説: インターセクション型 → Step04_補足_専門用語集.md#インターセクション型intersection-types
 type User = {
   id: number;
   name: string;
@@ -396,6 +399,8 @@ type PaginatedResponse<T> = ApiResponse<T[]> & {
 ```
 
 ### Section 2: 型ガードの実装パターン
+
+> 💡 **詳細解説**: 型ガードの詳細な実装パターンと活用方法は [Step04_補足_専門用語集.md#型ガードtype-guards](./Step04_補足_専門用語集.md#型ガードtype-guards) を見てね 🐰
 
 #### 🔧 基本的な型ガードの実践活用
 
@@ -602,6 +607,8 @@ async function isValidUser(value: unknown): Promise<value is User> {
 
 #### 🎯 判別可能なユニオンの状態管理での実践活用
 
+> 💡 **詳細解説**: 判別可能なユニオンの詳細な設計パターンと実践的活用方法は [Step04_補足_専門用語集.md#判別可能なユニオンdiscriminated-unions](./Step04_補足_専門用語集.md#判別可能なユニオンdiscriminated-unions) を見てね 🐰
+
 **💡 なぜ判別可能なユニオンが重要なのか**
 
 判別可能なユニオン（Discriminated Union）は、共通のプロパティ（判別子）を持つユニオン型で、TypeScript が各分岐で正確な型を推論できる仕組みです。状態管理、エラーハンドリング、API レスポンス処理において、型安全性を保ちながら複雑なロジックを実装できます。特に非同期処理の状態表現や、React/Vue.js での状態管理において威力を発揮します。
@@ -741,6 +748,8 @@ function handleApiResult<T>(result: ApiResult<T>): T | null {
 ```
 
 ### Section 3: 型アサーションと高度なパターン
+
+> 💡 **詳細解説**: 型アサーションの適切な使用方法と注意点は [Step04_補足_専門用語集.md#型アサーションtype-assertion](./Step04_補足_専門用語集.md#型アサーションtype-assertion) を見てね 🐰
 
 #### 🔧 型アサーションの適切な使用
 
@@ -1258,6 +1267,8 @@ eventEmitter.emit("notification", "Welcome to the app!", "info");
 ## 🔄 Step 5 への準備
 
 ### 次週学習内容の予習
+
+> 💡 **詳細解説**: ジェネリクスの基礎概念と実践的な活用パターンは [Step05_補足_専門用語集.md#ジェネリクスgenerics](./Step05_補足_専門用語集.md#ジェネリクスgenerics) を見てね 🐰
 
 ```typescript
 // Step 5で学習するジェネリクスの基礎概念

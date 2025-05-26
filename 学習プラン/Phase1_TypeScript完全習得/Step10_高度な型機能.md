@@ -3,9 +3,12 @@
 > 💡 **補足資料**: 詳細な解説は以下の補足資料を見てね 🐰
 >
 > - 📖 [専門用語集](./Step10_補足_専門用語集.md) - 高度な型機能・型レベルプログラミング・パフォーマンス・実用パターンの重要な概念と用語の詳細解説
+> - 🛠️ [開発環境ガイド](./Step10_補足_開発環境ガイド.md) - 高度な型機能開発のための環境設定
+> - ⚙️ [設定ファイル解説](./Step10_補足_設定ファイル解説.md) - 型レベルプログラミング用のtsconfig設定
 > - 💻 [実践コード例](./Step10_補足_実践コード例.md) - 段階的な学習用コード集
 > - 🚨 [トラブルシューティング](./Step10_補足_トラブルシューティング.md) - よくあるエラーと解決方法
 > - 📚 [参考リソース](./Step10_補足_参考リソース.md) - 学習に役立つリンク集
+> - 📋 [補足資料](./Step10_補足資料.md) - その他の重要な補足情報
 
 ## 📅 学習期間・目標
 
@@ -42,9 +45,9 @@
 
 ##### 1. 条件付き型による柔軟な型システム構築
 
-```typescript
-// 💡 詳細解説: 条件付き型 → Step10_補足_専門用語集.md#条件付き型conditional-types
+> 💡 **詳細解説**: 条件付き型について [Step10\_補足\_専門用語集.md#条件付き型](./Step10_補足_専門用語集.md#条件付き型conditional-types) を見てね 🐰
 
+```typescript
 // 基本的な条件付き型
 type IsString<T> = T extends string ? true : false;
 
@@ -131,8 +134,9 @@ type ActiveField = FormField<boolean>;
 
 ##### 2. ネストした条件付き型
 
+> 💡 **詳細解説**: ネストした条件付き型について [Step10\_補足\_専門用語集.md#ネストした条件付き型](./Step10_補足_専門用語集.md#ネストした条件付き型nested-conditional-types) を見てね 🐰
+
 ```typescript
-// 💡 詳細解説: ネストした条件付き型 → Step10_補足_専門用語集.md#ネストした条件付き型nested-conditional-types
 type TypeName<T> = T extends string
   ? "string"
   : T extends number
@@ -152,15 +156,20 @@ type Example3 = TypeName<{}>; // "object"
 
 ##### 3. 分散条件付き型
 
+> 💡 **詳細解説**: 分散条件付き型について [Step10\_補足\_専門用語集.md#分散条件付き型](./Step10_補足_専門用語集.md#分散条件付き型distributive-conditional-types) を見てね 🐰
+
 ```typescript
-// 💡 詳細解説: 分散条件付き型 → Step10_補足_専門用語集.md#分散条件付き型distributive-conditional-types
 type ToArray<T> = T extends any ? T[] : never;
 
 type StringOrNumberArray = ToArray<string | number>;
 // string[] | number[] (分散される)
 
 // 分散を防ぐ場合
-// 💡 詳細解説: 分散防止パターン → Step10_補足_専門用語集.md#分散防止パターンnon-distributive-patterns
+```
+
+> 💡 **詳細解説**: 分散防止パターンについて [Step10\_補足\_専門用語集.md#分散防止パターン](./Step10_補足_専門用語集.md#分散防止パターンnon-distributive-patterns) を見てね 🐰
+
+```typescript
 type ToArrayNonDistributive<T> = [T] extends [any] ? T[] : never;
 
 type Combined = ToArrayNonDistributive<string | number>;
@@ -182,10 +191,13 @@ type PromiseValue = Awaited<Promise<number>>; // number
 
 #### 🎯 infer キーワードの活用
 
+> 💡 **詳細解説**: inferキーワードの実践的な活用について [Step10\_補足\_実践コード例.md#inferキーワードの活用](./Step10_補足_実践コード例.md#inferキーワードの活用) を見てね 🐰
+
 ##### 1. 関数の戻り値型とパラメータ型を取得
 
+> 💡 **詳細解説**: inferキーワードについて [Step10\_補足\_専門用語集.md#inferキーワード](./Step10_補足_専門用語集.md#infer-キーワードinfer-keyword) を見てね 🐰
+
 ```typescript
-// 💡 詳細解説: infer キーワード → Step10_補足_専門用語集.md#infer-キーワードinfer-keyword
 type ReturnType<T> = T extends (...args: any[]) => infer R ? R : never;
 
 function getUserData(): { id: number; name: string } {
@@ -195,7 +207,11 @@ function getUserData(): { id: number; name: string } {
 type UserData = ReturnType<typeof getUserData>;
 // { id: number; name: string }
 
-// 💡 詳細解説: パラメータ型抽出 → Step10_補足_専門用語集.md#パラメータ型抽出parameter-type-extraction
+```
+
+> 💡 **詳細解説**: パラメータ型抽出について [Step10\_補足\_専門用語集.md#パラメータ型抽出](./Step10_補足_専門用語集.md#パラメータ型抽出parameter-type-extraction) を見てね 🐰
+
+```typescript
 type Parameters<T> = T extends (...args: infer P) => any ? P : never;
 
 function createUser(name: string, age: number, email: string): void {}
@@ -255,7 +271,11 @@ type GreetThisType = ThisType<typeof greetUser>; // User
 
 ### Section 2: マップ型の高度な活用
 
+> 💡 **詳細解説**: マップ型について [Step10\_補足\_専門用語集.md#マップ型](./Step10_補足_専門用語集.md#マップ型mapped-types) を見てね 🐰
+
 #### 🔧 高度なマップ型パターン
+
+> 💡 **詳細解説**: 高度なマップ型パターンについて [Step10\_補足\_実践コード例.md#高度なマップ型パターン](./Step10_補足_実践コード例.md#高度なマップ型パターン) を見てね 🐰
 
 ##### 1. 基本的なマップ型の復習
 
@@ -382,9 +402,15 @@ type ServiceData = NonFunctionProperties<UserService>;
 
 ### Section 3: テンプレートリテラル型と再帰的型
 
+> 💡 **詳細解説**: テンプレートリテラル型について [Step10\_補足\_専門用語集.md#テンプレートリテラル型](./Step10_補足_専門用語集.md#テンプレートリテラル型template-literal-types) を見てね 🐰
+
+> 💡 **詳細解説**: 再帰的型について [Step10\_補足\_専門用語集.md#再帰的型](./Step10_補足_専門用語集.md#再帰的型recursive-types) を見てね 🐰
+
 #### 🔧 テンプレートリテラル型の実践
 
 ##### 1. 基本的なテンプレートリテラル型と文字列操作
+
+> 💡 **詳細解説**: 基本的なテンプレートリテラル型について [Step10\_補足\_実践コード例.md#基本的なテンプレートリテラル型](./Step10_補足_実践コード例.md#基本的なテンプレートリテラル型) を見てね 🐰
 
 ```typescript
 // 基本的なテンプレートリテラル型
@@ -469,6 +495,10 @@ type PathSegments = Split<"api/v1/users", "/">; // ["api", "v1", "users"]
 #### 🎯 再帰的型定義の実践
 
 ##### 1. 配列の長さと要素操作
+
+> 💡 **詳細解説**: 型レベルプログラミングについて [Step10\_補足\_専門用語集.md#型レベルプログラミング](./Step10_補足_専門用語集.md#型レベルプログラミングtype-level-programming) を見てね 🐰
+
+> 💡 **詳細解説**: 配列の型レベル操作について [Step10\_補足\_実践コード例.md#配列の型レベル操作](./Step10_補足_実践コード例.md#配列の型レベル操作) を見てね 🐰
 
 ```typescript
 // 配列の長さを型レベルで計算
@@ -610,6 +640,8 @@ type JSONResult = ParseJSON<'{"name": "Alice", "age": 30}'>;
 
 ## 📊 Step 10 評価基準
 
+> 💡 **詳細解説**: 学習の進め方とトラブルシューティングは [Step10\_補足\_トラブルシューティング.md](./Step10_補足_トラブルシューティング.md) にもまとめてあるよ 🐰
+
 ### 理解度チェックリスト
 
 #### 条件付き型・infer (35%)
@@ -648,6 +680,8 @@ type JSONResult = ParseJSON<'{"name": "Alice", "age": 30}'>;
 - [ ] **型レベル計算**: 再帰的型定義の実装
 
 ## 🔄 Step 11 への準備
+
+> 💡 **詳細解説**: 次のステップでの学習内容について [Step10\_補足\_参考リソース.md](./Step10_補足_参考リソース.md) にもまとめてあるよ 🐰
 
 ### 次週学習内容の予習
 

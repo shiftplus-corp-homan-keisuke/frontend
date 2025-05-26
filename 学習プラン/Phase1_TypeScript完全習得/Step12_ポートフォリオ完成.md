@@ -3,9 +3,12 @@
 > 💡 **補足資料**: 詳細な解説は以下の補足資料を見てね 🐰
 >
 > - 📖 [専門用語集](./Step12_補足_専門用語集.md) - ポートフォリオ開発・デプロイ・ドキュメント・継続学習の重要な概念と用語の詳細解説
-> - 💻 [実践コード例](./Step12_補足_実践コード例.md) - 段階的な学習用コード集
+> - 🛠️ [開発環境ガイド](./Step12_補足_開発環境ガイド.md) - ポートフォリオ開発のための環境設定
+> - ⚙️ [設定ファイル解説](./Step12_補足_設定ファイル解説.md) - デプロイ・CI/CD 等の詳細設定
+> - � [実践コード例](./Step12_補足_実践コード例.md) - 段階的な学習用コード集
 > - 🚨 [トラブルシューティング](./Step12_補足_トラブルシューティング.md) - よくあるエラーと解決方法
 > - 📚 [参考リソース](./Step12_補足_参考リソース.md) - 学習に役立つリンク集
+> - 📋 [補足資料](./Step12_補足資料.md) - その他の重要な補足情報
 
 ## 📅 学習期間・目標
 
@@ -42,9 +45,9 @@
 
 ##### 1. キャリア戦略を考慮した型定義設計
 
-```typescript
-// 💡 詳細解説: ポートフォリオ設計 → Step12_補足_専門用語集.md#ポートフォリオ設計portfolio-design
+> 💡 **詳細解説**: ポートフォリオ設計の詳細と戦略的アプローチは [Step12\_補足\_専門用語集.md#ポートフォリオ設計 portfolio-design](./Step12_補足_専門用語集.md#ポートフォリオ設計portfolio-design) を見てね 🐰
 
+```typescript
 // portfolio/types/index.ts - キャリア戦略を考慮した設計
 export interface Project {
   id: string;
@@ -467,8 +470,9 @@ interface SkillProgression {
 
 ##### 2. プロジェクト分類と状態管理
 
+> 💡 **詳細解説**: プロジェクト分類の詳細と効果的な管理方法は [Step12\_補足\_専門用語集.md#プロジェクト分類 project-categorization](./Step12_補足_専門用語集.md#プロジェクト分類project-categorization) を見てね 🐰
+
 ```typescript
-// 💡 詳細解説: プロジェクト分類 → Step12_補足_専門用語集.md#プロジェクト分類project-categorization
 export type ProjectCategory =
   | "web-application"
   | "library"
@@ -485,8 +489,9 @@ export type ProjectStatus =
 
 ##### 3. ポートフォリオデータ構造
 
+> 💡 **詳細解説**: データ構造設計の詳細とベストプラクティスは [Step12\_補足\_専門用語集.md#データ構造設計 data-structure-design](./Step12_補足_専門用語集.md#データ構造設計data-structure-design) を見てね 🐰
+
 ```typescript
-// 💡 詳細解説: データ構造設計 → Step12_補足_専門用語集.md#データ構造設計data-structure-design
 export interface PortfolioData {
   personal: {
     name: string;
@@ -522,10 +527,13 @@ export interface Experience {
 
 #### 🎯 メインポートフォリオアプリ
 
+> 💡 **詳細解説**: ポートフォリオアプリの設計パターンと実装のベストプラクティスは [Step12\_補足\_実践コード例.md#ポートフォリオアプリ設計](./Step12_補足_実践コード例.md#ポートフォリオアプリ設計) を見てね 🐰
+
 ##### 1. アプリケーションクラスの基本構造
 
+> 💡 **詳細解説**: アプリケーション設計の詳細とアーキテクチャパターンは [Step12\_補足\_専門用語集.md#アプリケーション設計 application-architecture](./Step12_補足_専門用語集.md#アプリケーション設計application-architecture) を見てね 🐰
+
 ```typescript
-// 💡 詳細解説: アプリケーション設計 → Step12_補足_専門用語集.md#アプリケーション設計application-architecture
 // portfolio/src/PortfolioApp.ts
 export class PortfolioApp {
   private container: HTMLElement;
@@ -551,6 +559,8 @@ export class PortfolioApp {
 ```
 
 ##### 2. HTML 構造の設定
+
+> 💡 **詳細解説**: レスポンシブデザインとアクセシビリティを考慮した HTML 構造については [Step12\_補足\_専門用語集.md#レスポンシブデザイン](./Step12_補足_専門用語集.md#レスポンシブデザイン) を見てね 🐰
 
 ```typescript
 private setupHTML(): void {
@@ -597,6 +607,8 @@ private setupHTML(): void {
 ```
 
 ##### 3. プロジェクトカードの生成
+
+> 💡 **詳細解説**: 動的なコンテンツ生成とイベント処理については [Step12\_補足\_実践コード例.md#動的コンテンツ生成](./Step12_補足_実践コード例.md#動的コンテンツ生成) を見てね 🐰
 
 ```typescript
 private renderProjects(): void {
@@ -647,6 +659,8 @@ private createProjectCard(project: Project): HTMLElement {
 ```
 
 ##### 4. プロジェクトモーダルの表示
+
+> 💡 **詳細解説**: モーダル UI の実装とユーザビリティについては [Step12\_補足\_専門用語集.md#モーダル UI](./Step12_補足_専門用語集.md#モーダルUI) を見てね 🐰
 
 ```typescript
 private showProjectModal(project: Project): void {
@@ -776,7 +790,11 @@ private showProjectModal(project: Project): void {
 
 ### Section 2: プロジェクトデータの統合
 
+> 💡 **詳細解説**: プロジェクトデータの効果的な構造化と管理方法は [Step12\_補足\_専門用語集.md#プロジェクトデータ統合](./Step12_補足_専門用語集.md#プロジェクトデータ統合) を見てね 🐰
+
 #### 🔧 学習成果データ
+
+> 💡 **詳細解説**: 学習成果の効果的な整理方法は [Step12\_補足\_実践コード例.md#学習成果データ整理](./Step12_補足_実践コード例.md#学習成果データ整理) を見てね 🐰
 
 ```typescript
 // portfolio/data/portfolio-data.ts
@@ -924,7 +942,11 @@ export const portfolioData: PortfolioData = {
 
 ### Section 3: ドキュメント整備とデプロイ
 
+> 💡 **詳細解説**: 技術ドキュメントの効果的な作成方法は [Step12\_補足\_参考リソース.md#ドキュメント作成ガイド](./Step12_補足_参考リソース.md#ドキュメント作成ガイド) を見てね 🐰
+
 #### 🔧 学習の軌跡ドキュメント
+
+> 💡 **詳細解説**: 学習軌跡の効果的な記録方法は [Step12\_補足\_専門用語集.md#学習軌跡記録](./Step12_補足_専門用語集.md#学習軌跡記録) を見てね 🐰
 
 ```typescript
 // portfolio/docs/learning-journey.md
@@ -975,6 +997,8 @@ export const learningJourneyMarkdown = `
 
 #### 🎯 デプロイメント
 
+> 💡 **詳細解説**: デプロイメントの詳細手順とトラブルシューティングは [Step12\_補足\_トラブルシューティング.md#デプロイメント問題](./Step12_補足_トラブルシューティング.md#デプロイメント問題) を見てね 🐰
+
 ```typescript
 // portfolio/scripts/deploy.ts
 export class PortfolioDeployer {
@@ -1024,6 +1048,8 @@ if (require.main === module) {
 
 ## 📊 Step 12 評価基準
 
+> 💡 **詳細解説**: 評価基準の詳細と自己評価方法は [Step12\_補足\_参考リソース.md#評価基準詳細](./Step12_補足_参考リソース.md#評価基準詳細) を見てね 🐰
+
 ### 完成度チェックリスト
 
 #### ポートフォリオサイト (40%)
@@ -1056,6 +1082,8 @@ if (require.main === module) {
 
 ## 🎯 継続学習計画
 
+> 💡 **詳細解説**: 継続学習の効果的な計画立案方法は [Step12\_補足\_参考リソース.md#継続学習計画](./Step12_補足_参考リソース.md#継続学習計画) を見てね 🐰
+
 ### 短期目標（3 ヶ月）
 
 - [ ] React + TypeScript での SPA 開発
@@ -1078,6 +1106,8 @@ if (require.main === module) {
 - [ ] コミュニティでの活動
 
 ## 🏆 学習完了の証明
+
+> 💡 **詳細解説**: 学習成果の効果的なアピール方法は [Step12\_補足\_実践コード例.md#学習成果アピール](./Step12_補足_実践コード例.md#学習成果アピール) を見てね 🐰
 
 ### 成果物一覧
 

@@ -6,6 +6,7 @@
 > - 💻 [実践コード例](./Step06_補足_実践コード例.md) - 段階的な学習用コード集
 > - 🚨 [トラブルシューティング](./Step06_補足_トラブルシューティング.md) - よくあるエラーと解決方法
 > - 📚 [参考リソース](./Step06_補足_参考リソース.md) - 学習に役立つリンク集
+> - 📋 [補足資料](./Step06_補足資料.md) - その他の重要な補足情報
 
 ## 📅 学習期間・目標
 
@@ -41,9 +42,9 @@
 
 ##### 1. Partial<T> - フォーム処理での部分更新
 
+> 💡 **詳細解説**: ユーティリティ型とPartial型の詳細と実践的な活用パターンは [Step06_補足_専門用語集.md#ユーティリティ型utility-types](./Step06_補足_専門用語集.md#ユーティリティ型utility-types) と [Step06_補足_専門用語集.md#partial型partial-type](./Step06_補足_専門用語集.md#partial型partial-type) を見てね 🐰
+
 ```typescript
-// 💡 詳細解説: ユーティリティ型 → Step06_補足_専門用語集.md#ユーティリティ型utility-types
-// 💡 詳細解説: Partial型 → Step06_補足_専門用語集.md#partial型partial-type
 interface User {
   id: number;
   name: string;
@@ -220,8 +221,9 @@ function useContactForm() {
 
 ##### 2. Required<T> - 全プロパティを必須に
 
+> 💡 **詳細解説**: Required型の詳細と実践的な活用パターンは [Step06_補足_専門用語集.md#required型required-type](./Step06_補足_専門用語集.md#required型required-type) を見てね 🐰
+
 ```typescript
-// 💡 詳細解説: Required型 → Step06_補足_専門用語集.md#required型required-type
 interface Config {
   apiUrl?: string;
   timeout?: number;
@@ -234,8 +236,9 @@ type RequiredConfig = Required<Config>;
 
 ##### 3. Pick<T, K> - API 設計での特定プロパティ選択
 
+> 💡 **詳細解説**: Pick型の詳細と実践的な活用パターンは [Step06_補足_専門用語集.md#pick型pick-type](./Step06_補足_専門用語集.md#pick型pick-type) を見てね 🐰
+
 ```typescript
-// 💡 詳細解説: Pick型 → Step06_補足_専門用語集.md#pick型pick-type
 type UserSummary = Pick<User, "id" | "name">;
 // { id: number; name: string; }
 
@@ -329,8 +332,9 @@ class ProductService {
 
 ##### 4. Omit<T, K> - 型安全なデータ変換での除外
 
+> 💡 **詳細解説**: Omit型の詳細と実践的な活用パターンは [Step06_補足_専門用語集.md#omit型omit-type](./Step06_補足_専門用語集.md#omit型omit-type) を見てね 🐰
+
 ```typescript
-// 💡 詳細解説: Omit型 → Step06_補足_専門用語集.md#omit型omit-type
 type CreateUserRequest = Omit<User, "id">;
 // { name: string; email: string; age: number; }
 
@@ -508,8 +512,9 @@ type DraftPost = Omit<BlogPost, "publishedAt"> & { publishedAt: null };
 
 ##### 5. Record<K, T> - キーと値の型を指定
 
+> 💡 **詳細解説**: Record型の詳細と実践的な活用パターンは [Step06_補足_専門用語集.md#record型record-type](./Step06_補足_専門用語集.md#record型record-type) を見てね 🐰
+
 ```typescript
-// 💡 詳細解説: Record型 → Step06_補足_専門用語集.md#record型record-type
 type UserRoles = "admin" | "editor" | "viewer";
 type Permissions = Record<UserRoles, string[]>;
 // { admin: string[]; editor: string[]; viewer: string[]; }
@@ -523,8 +528,9 @@ const permissions: Permissions = {
 
 ##### 6. Exclude<T, U> - ユニオン型から特定の型を除外
 
+> 💡 **詳細解説**: Exclude型の詳細と実践的な活用パターンは [Step06_補足_専門用語集.md#exclude型exclude-type](./Step06_補足_専門用語集.md#exclude型exclude-type) を見てね 🐰
+
 ```typescript
-// 💡 詳細解説: Exclude型 → Step06_補足_専門用語集.md#exclude型exclude-type
 type AllColors = "red" | "green" | "blue" | "yellow";
 type PrimaryColors = Exclude<AllColors, "yellow">;
 // 'red' | 'green' | 'blue'
@@ -532,8 +538,9 @@ type PrimaryColors = Exclude<AllColors, "yellow">;
 
 ##### 7. Extract<T, U> - ユニオン型から特定の型を抽出
 
+> 💡 **詳細解説**: Extract型の詳細と実践的な活用パターンは [Step06_補足_専門用語集.md#extract型extract-type](./Step06_補足_専門用語集.md#extract型extract-type) を見てね 🐰
+
 ```typescript
-// 💡 詳細解説: Extract型 → Step06_補足_専門用語集.md#extract型extract-type
 type StringOrNumber = string | number | boolean;
 type OnlyStringOrNumber = Extract<StringOrNumber, string | number>;
 // string | number
@@ -541,14 +548,17 @@ type OnlyStringOrNumber = Extract<StringOrNumber, string | number>;
 
 ##### 8. NonNullable<T> - null/undefined を除外
 
+> 💡 **詳細解説**: NonNullable型の詳細と実践的な活用パターンは [Step06_補足_専門用語集.md#nonnullable型nonnullable-type](./Step06_補足_専門用語集.md#nonnullable型nonnullable-type) を見てね 🐰
+
 ```typescript
-// 💡 詳細解説: NonNullable型 → Step06_補足_専門用語集.md#nonnullable型nonnullable-type
 type MaybeString = string | null | undefined;
 type DefiniteString = NonNullable<MaybeString>;
 // string
 ```
 
 #### 🎯 関数関連のユーティリティ型
+
+> 💡 **詳細解説**: 関数関連のユーティリティ型の詳細と実践的な活用パターンは [Step06_補足_専門用語集.md#関数関連ユーティリティ型function-utility-types](./Step06_補足_専門用語集.md#関数関連ユーティリティ型function-utility-types) を見てね 🐰
 
 ##### 1. ReturnType<T> - 関数の戻り値型を取得
 
@@ -609,6 +619,8 @@ type GreetFunction = OmitThisParameter<typeof greet>;
 ```
 
 ### Section 2: カスタムユーティリティ型の作成
+
+> 💡 **詳細解説**: カスタムユーティリティ型の作成方法と高度なパターンは [Step06_補足_実践コード例.md#カスタムユーティリティ型の実装](./Step06_補足_実践コード例.md#カスタムユーティリティ型の実装) を見てね 🐰
 
 #### 🔧 高度なユーティリティ型
 
@@ -722,6 +734,8 @@ type NumberProperties = PickByType<MixedObject, number>;
 ```
 
 ### Section 3: 実用的な型変換システム
+
+> 💡 **詳細解説**: 実用的な型変換システムの設計と実装パターンは [Step06_補足_実践コード例.md#実用的な型変換システム](./Step06_補足_実践コード例.md#実用的な型変換システム) を見てね 🐰
 
 #### 🔧 型安全なフォームシステム
 

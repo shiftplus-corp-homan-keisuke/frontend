@@ -6,6 +6,7 @@
 > - 💻 [実践コード例](./Step09_補足_実践コード例.md) - 段階的な学習用コード集
 > - 🚨 [トラブルシューティング](./Step09_補足_トラブルシューティング.md) - よくあるエラーと解決方法
 > - 📚 [参考リソース](./Step09_補足_参考リソース.md) - 学習に役立つリンク集
+> - 📋 [補足資料](./Step09_補足資料.md) - その他の重要な補足情報
 
 ## 📅 学習期間・目標
 
@@ -42,9 +43,9 @@ TypeScript のエラーハンドリングとデバッグは、堅牢で保守性
 
 ##### 1. 型エラーの実践的解決パターン
 
-```typescript
-// 💡 詳細解説: 型エラーの種類 → Step09_補足_専門用語集.md#型エラーの種類type-error-types
+> 💡 **詳細解説**: 型エラーの種類について [Step09\_補足\_専門用語集.md#型エラーの種類](./Step09_補足_専門用語集.md#型エラーの種類type-error-types) を見てね 🐰
 
+```typescript
 // 1. 基本的な型不一致エラーの実践的解決
 // Type 'string' is not assignable to type 'number'
 let count: number = "hello"; // ❌ エラー
@@ -73,7 +74,11 @@ function getPort(): number {
 
 // 2. null/undefined 安全性の実践的確保
 // Object is possibly 'null'
-// 💡 詳細解説: null安全性 → Step09_補足_専門用語集.md#null安全性null-safety
+```
+
+> 💡 **詳細解説**: null安全性について [Step09\_補足\_専門用語集.md#null安全性](./Step09_補足_専門用語集.md#null安全性null-safety) を見てね 🐰
+
+```typescript
 interface User {
   id: string;
   name: string;
@@ -96,7 +101,11 @@ function processUser(user: User | null) {
   console.log(user.name); // ✅ 正解
 
   // ネストしたオプショナルプロパティの安全なアクセス
-  // 💡 詳細解説: オプショナルチェーン → Step09_補足_専門用語集.md#オプショナルチェーンoptional-chaining
+```
+
+> 💡 **詳細解説**: オプショナルチェーンについて [Step09\_補足\_専門用語集.md#オプショナルチェーン](./Step09_補足_専門用語集.md#オプショナルチェーンoptional-chaining) を見てね 🐰
+
+```typescript
   console.log(user.profile?.avatar ?? "default-avatar.png");
 
   // Null Coalescing を活用した実践的パターン
@@ -115,6 +124,11 @@ async function fetchUser(id: string): Promise<User | null> {
     const userData = await response.json();
 
     // 型ガードによる安全な型チェック
+```
+
+> 💡 **詳細解説**: 型ガードについて [Step09\_補足\_専門用語集.md#型ガード](./Step09_補足_専門用語集.md#型ガードtype-guards) を見てね 🐰
+
+```typescript
     if (isValidUser(userData)) {
       return userData;
     }
@@ -375,8 +389,9 @@ app.get("/api/users/:id", async (req, res) => {
 
 ##### 2. 関数型エラーの解決
 
+> 💡 **詳細解説**: 関数型エラーについて [Step09\_補足\_専門用語集.md#関数型エラー](./Step09_補足_専門用語集.md#関数型エラーfunction-type-errors) を見てね 🐰
+
 ```typescript
-// 💡 詳細解説: 関数型エラー → Step09_補足_専門用語集.md#関数型エラーfunction-type-errors
 // Argument of type 'X' is not assignable to parameter of type 'Y'
 function processNumbers(numbers: number[]): number {
   return numbers.reduce((sum, num) => sum + num, 0);
@@ -385,7 +400,11 @@ function processNumbers(numbers: number[]): number {
 processNumbers(["1", "2", "3"]); // ❌ エラー: string[] は number[] に代入不可
 
 // 正しい解決方法
-// 💡 詳細解説: 型変換パターン → Step09_補足_専門用語集.md#型変換パターンtype-conversion-patterns
+```
+
+> 💡 **詳細解説**: 型変換パターンについて [Step09\_補足\_専門用語集.md#型変換パターン](./Step09_補足_専門用語集.md#型変換パターンtype-conversion-patterns) を見てね 🐰
+
+```typescript
 const stringNumbers = ["1", "2", "3"];
 const numbers = stringNumbers.map((str) => parseInt(str, 10));
 processNumbers(numbers); // ✅ 正解
@@ -393,8 +412,10 @@ processNumbers(numbers); // ✅ 正解
 
 ##### 3. ジェネリクスエラーの解決
 
+> 💡 **詳細解説**: 制約による解決について [Step09\_補足\_専門用語集.md#制約による解決](./Step09_補足_専門用語集.md#制約による解決constraint-based-solutions) を見てね 🐰
+
+```typescript
 // 正しい解決方法
-// 💡 詳細解説: 制約による解決 → Step09*補足*専門用語集.md#制約による解決 constraint-based-solutions
 function processValue2<T extends { toString(): string }>(value: T): string {
 return value.toString(); // ✅ 正解
 }
@@ -550,6 +571,8 @@ ErrorHandler.register(BusinessLogicError, (error) => {
 ```
 
 ### Section 2: デバッグ技術とツール
+
+> 💡 **詳細解説**: デバッグ技術について [Step09\_補足\_専門用語集.md#デバッグ技術](./Step09_補足_専門用語集.md#デバッグ技術debugging-techniques) を見てね 🐰
 
 #### 🔧 効果的なデバッグ手法
 
@@ -760,6 +783,8 @@ async function exampleFunction() {
 
 ### Section 3: テストの型安全性
 
+> 💡 **詳細解説**: 型安全なテストについて [Step09\_補足\_専門用語集.md#型安全なテスト](./Step09_補足_専門用語集.md#型安全なテストtype-safe-testing) を見てね 🐰
+
 #### 🔧 型安全なテストフレームワーク
 
 ##### 1. テストユーティリティ型
@@ -863,6 +888,8 @@ function createMock<T extends (...args: any[]) => any>(): MockFunction<T> {
 ```
 
 ##### 3. 型安全なアサーション
+
+> 💡 **詳細解説**: 型安全なアサーションについて [Step09\_補足\_専門用語集.md#型安全なアサーション](./Step09_補足_専門用語集.md#型安全なアサーションtype-safe-assertions) を見てね 🐰
 
 ```typescript
 class TypeSafeAssert {

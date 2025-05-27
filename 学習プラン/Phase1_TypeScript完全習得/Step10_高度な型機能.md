@@ -4,7 +4,7 @@
 >
 > - 📖 [専門用語集](./Step10_補足_専門用語集.md) - 高度な型機能・型レベルプログラミング・パフォーマンス・実用パターンの重要な概念と用語の詳細解説
 > - 🛠️ [開発環境ガイド](./Step10_補足_開発環境ガイド.md) - 高度な型機能開発のための環境設定
-> - ⚙️ [設定ファイル解説](./Step10_補足_設定ファイル解説.md) - 型レベルプログラミング用のtsconfig設定
+> - ⚙️ [設定ファイル解説](./Step10_補足_設定ファイル解説.md) - 型レベルプログラミング用の tsconfig 設定
 > - 💻 [実践コード例](./Step10_補足_実践コード例.md) - 段階的な学習用コード集
 > - 🚨 [トラブルシューティング](./Step10_補足_トラブルシューティング.md) - よくあるエラーと解決方法
 > - 📚 [参考リソース](./Step10_補足_参考リソース.md) - 学習に役立つリンク集
@@ -191,11 +191,11 @@ type PromiseValue = Awaited<Promise<number>>; // number
 
 #### 🎯 infer キーワードの活用
 
-> 💡 **詳細解説**: inferキーワードの実践的な活用について [Step10\_補足\_実践コード例.md#inferキーワードの活用](./Step10_補足_実践コード例.md#inferキーワードの活用) を見てね 🐰
+> 💡 **詳細解説**: infer キーワードの実践的な活用について [Step10\_補足\_実践コード例.md#infer キーワードの活用](./Step10_補足_実践コード例.md#inferキーワードの活用) を見てね 🐰
 
 ##### 1. 関数の戻り値型とパラメータ型を取得
 
-> 💡 **詳細解説**: inferキーワードについて [Step10\_補足\_専門用語集.md#inferキーワード](./Step10_補足_専門用語集.md#infer-キーワードinfer-keyword) を見てね 🐰
+> 💡 **詳細解説**: infer キーワードについて [Step10\_補足\_専門用語集.md#infer キーワード](./Step10_補足_専門用語集.md#infer-キーワードinfer-keyword) を見てね 🐰
 
 ```typescript
 type ReturnType<T> = T extends (...args: any[]) => infer R ? R : never;
@@ -206,7 +206,6 @@ function getUserData(): { id: number; name: string } {
 
 type UserData = ReturnType<typeof getUserData>;
 // { id: number; name: string }
-
 ```
 
 > 💡 **詳細解説**: パラメータ型抽出について [Step10\_補足\_専門用語集.md#パラメータ型抽出](./Step10_補足_専門用語集.md#パラメータ型抽出parameter-type-extraction) を見てね 🐰

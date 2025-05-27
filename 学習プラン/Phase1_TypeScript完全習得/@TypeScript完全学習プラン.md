@@ -30,9 +30,9 @@ graph TD
     B --> B1[ユニオン型<br/>ジェネリクス<br/>ユーティリティ型]
     C --> C1[実践プロジェクト<br/>ライブラリ統合<br/>エラーハンドリング]
 
-    style A fill:#003300
-    style B fill:#333300
-    style C fill:#330000
+    style A fill:#ffccff
+    style B fill:#ccccff
+    style C fill:#ffcccc
 ```
 
 ## 📅 ステップ別学習スケジュール

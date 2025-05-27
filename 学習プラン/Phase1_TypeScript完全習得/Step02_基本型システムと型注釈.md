@@ -3587,7 +3587,7 @@ console.log("数学のトップ学生:", manager.getTopStudents("math", 3));
 
 - [ ] 基本型（string, number, boolean 等）を正しく使用できる → [専門用語集: プリミティブ型](./Step02_補足_専門用語集.md#プリミティブ型primitive-types)
 - [ ] リテラル型の概念を理解している → [専門用語集: リテラル型](./Step02_補足_専門用語集.md#リテラル型literal-types)
-- [ ] null/undefined の違いを説明できる → [トラブルシューティング: null/undefined関連のエラー](./Step02_補足_トラブルシューティング.md#nullundefined関連のエラー)
+- [ ] null/undefined の違いを説明できる → [トラブルシューティング: null/undefined 関連のエラー](./Step02_補足_トラブルシューティング.md#nullundefined関連のエラー)
 - [ ] 他言語との型システムの違いを理解している → [参考リソース: 型システム学習サイト](./Step02_補足_参考リソース.md#型システム学習サイト)
 
 #### 型推論 (25%)
@@ -3629,7 +3629,7 @@ console.log("数学のトップ学生:", manager.getTopStudents("math", 3));
 > 💡 **Step 3 準備サポート**: 次のステップに向けた準備に役立つ補足資料
 >
 > - 🛠️ [開発環境ガイド](./Step01_補足_開発環境ガイド.md) - 環境設定の詳細手順
-> - ⚙️ [設定ファイル解説](./Step01_補足_設定ファイル解説.md) - tsconfig.json等の設定方法
+> - ⚙️ [設定ファイル解説](./Step01_補足_設定ファイル解説.md) - tsconfig.json 等の設定方法
 > - 📚 [参考リソース](./Step02_補足_参考リソース.md) - 継続学習のためのリソース集
 
 ### 次週学習内容の予習
@@ -3663,6 +3663,7 @@ interface Calculator {
 ```
 
 **関連リンク**:
+
 - [専門用語集: オプショナルプロパティ](./Step02_補足_専門用語集.md#オプショナルパラメータoptional-parameters)
 - [専門用語集: 型エイリアス](./Step02_補足_専門用語集.md#型エイリアスtype-aliases)
 - [専門用語集: 関数型](./Step02_補足_専門用語集.md#関数型function-types)

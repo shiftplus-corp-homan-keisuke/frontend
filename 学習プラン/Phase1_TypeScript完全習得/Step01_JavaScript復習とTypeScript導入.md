@@ -21,7 +21,6 @@
 - [ ] TypeScript 開発環境の構築
 - [ ] 基本的な型注釈の理解と実践
 - [ ] 簡単な TypeScript アプリケーションの作成
-- [ ] JavaScript から TypeScript への移行メリットの理解
 
 ## 📚 理論学習内容
 

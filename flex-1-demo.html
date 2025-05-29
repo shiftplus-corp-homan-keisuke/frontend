@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flex-1 問題検証デモ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="p-8 bg-gray-100">
+    <h1 class="text-2xl font-bold mb-6">Flex-1 問題検証</h1>
+
+    <!-- ❌ 問題のあるコード（元の学習ファイルのコード） -->
+    <section class="mb-12">
+      <h2 class="text-xl font-semibold mb-4 text-red-600">
+        ❌ 問題のあるコード
+      </h2>
+      <div class="flex gap-4">
+        <div class="flex-1 p-4 border border-gray-300 rounded-lg bg-white">
+          <div class="flex flex-col">
+            <h3 class="font-semibold text-lg mb-3">短いタイトル</h3>
+            <p class="flex-1 text-gray-600 mb-4">短いテキスト</p>
+            <button
+              class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              詳細を見る
+            </button>
+          </div>
+        </div>
+
+        <div class="flex-1 p-4 border border-gray-300 rounded-lg bg-white">
+          <div class="flex flex-col">
+            <h3 class="font-semibold text-lg mb-3">
+              非常に長いタイトルで複数行になる場合
+            </h3>
+            <p class="flex-1 text-gray-600 mb-4">
+              非常に長いテキストで、複数行にわたる説明文が入っています。
+              この場合、隣のカードとの高さが揃わなくなり、レイアウトが崩れる原因となります。
+              さらに長い説明が続いて、ボタンの位置が不揃いになります。
+            </p>
+            <button
+              class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              詳細を見る
+            </button>
+          </div>
+        </div>
+      </div>
+      <p class="mt-4 text-sm text-gray-600">
+        ↑ カードの高さは揃っているが、ボタンの位置がバラバラ
+      </p>
+    </section>
+
+    <!-- ✅ 修正版1：h-fullを追加 -->
+    <section class="mb-12">
+      <h2 class="text-xl font-semibold mb-4 text-green-600">
+        ✅ 修正版1：内側コンテナにh-fullを追加
+      </h2>
+      <div class="flex gap-4">
+        <div class="flex-1 p-4 border border-gray-300 rounded-lg bg-white">
+          <div class="flex flex-col h-full">
+            <h3 class="font-semibold text-lg mb-3">短いタイトル</h3>
+            <p class="flex-1 text-gray-600 mb-4">短いテキスト</p>
+            <button
+              class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              詳細を見る
+            </button>
+          </div>
+        </div>
+
+        <div class="flex-1 p-4 border border-gray-300 rounded-lg bg-white">
+          <div class="flex flex-col h-full">
+            <h3 class="font-semibold text-lg mb-3">
+              非常に長いタイトルで複数行になる場合
+            </h3>
+            <p class="flex-1 text-gray-600 mb-4">
+              非常に長いテキストで、複数行にわたる説明文が入っています。
+              この場合、隣のカードとの高さが揃わなくなり、レイアウトが崩れる原因となります。
+              さらに長い説明が続いて、ボタンの位置が不揃いになります。
+            </p>
+            <button
+              class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              詳細を見る
+            </button>
+          </div>
+        </div>
+      </div>
+      <p class="mt-4 text-sm text-gray-600">
+        ↑ h-fullにより内側コンテナが親の高さを占有し、flex-1が正常に動作
+      </p>
+    </section>
+
+    <!-- ✅ 修正版2：カード自体をflexコンテナに -->
+    <section class="mb-12">
+      <h2 class="text-xl font-semibold mb-4 text-green-600">
+        ✅ 修正版2：カード自体をflexコンテナに
+      </h2>
+      <div class="flex gap-4">
+        <div
+          class="flex-1 p-4 border border-gray-300 rounded-lg bg-white flex flex-col"
+        >
+          <h3 class="font-semibold text-lg mb-3">短いタイトル</h3>
+          <p class="flex-1 text-gray-600 mb-4">短いテキスト</p>
+          <button
+            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            詳細を見る
+          </button>
+        </div>
+
+        <div
+          class="flex-1 p-4 border border-gray-300 rounded-lg bg-white flex flex-col"
+        >
+          <h3 class="font-semibold text-lg mb-3">
+            非常に長いタイトルで複数行になる場合
+          </h3>
+          <p class="flex-1 text-gray-600 mb-4">
+            非常に長いテキストで、複数行にわたる説明文が入っています。
+            この場合、隣のカードとの高さが揃わなくなり、レイアウトが崩れる原因となります。
+            さらに長い説明が続いて、ボタンの位置が不揃いになります。
+          </p>
+          <button
+            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            詳細を見る
+          </button>
+        </div>
+      </div>
+      <p class="mt-4 text-sm text-gray-600">
+        ↑ 不要な入れ子を排除し、カード自体をflexコンテナに
+      </p>
+    </section>
+
+    <!-- 解説セクション -->
+    <section class="bg-white p-6 rounded-lg border">
+      <h2 class="text-xl font-semibold mb-4">🔍 問題の本質</h2>
+      <div class="space-y-4 text-sm">
+        <div class="bg-red-50 p-4 rounded">
+          <h3 class="font-semibold text-red-700 mb-2">❌ 誤った解説</h3>
+          <p>
+            「flex-1が問題」→ これは間違い。flex-1自体は正常に動作している。
+          </p>
+        </div>
+
+        <div class="bg-green-50 p-4 rounded">
+          <h3 class="font-semibold text-green-700 mb-2">✅ 正しい原因</h3>
+          <ul class="list-disc list-inside space-y-1">
+            <li>
+              <strong>親コンテナの高さ不足</strong>：内側の flex flex-col
+              コンテナが親の高さを占有していない
+            </li>
+            <li>
+              <strong>Flexboxの仕組み</strong
+              >：flex-1は親のflexコンテナ内でのみ有効
+            </li>
+            <li>
+              <strong>高さの継承問題</strong
+              >：外側のflexで高さが揃っても、内側に正しく伝わっていない
+            </li>
+          </ul>
+        </div>
+
+        <div class="bg-blue-50 p-4 rounded">
+          <h3 class="font-semibold text-blue-700 mb-2">🛠️ 解決方法</h3>
+          <ul class="list-disc list-inside space-y-1">
+            <li><code>h-full</code>を内側コンテナに追加</li>
+            <li>
+              または、カード自体を<code>flex flex-col</code
+              >にして不要な入れ子を排除
+            </li>
+            <li>どちらも同じ結果：flex-1が正常に動作する環境を作る</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>

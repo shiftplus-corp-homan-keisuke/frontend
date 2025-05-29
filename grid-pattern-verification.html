@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grid問題検証</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .grid-debug {
+        border: 2px dashed #3b82f6;
+        background-color: rgba(59, 130, 246, 0.1);
+      }
+      .item-debug {
+        border: 1px solid #ef4444;
+        background-color: rgba(239, 68, 68, 0.1);
+        min-height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body class="p-8 bg-gray-100">
+    <h1 class="text-2xl font-bold mb-6">CSS Grid 自動配置問題検証</h1>
+
+    <!-- ❌ 問題のあるパターン -->
+    <section class="mb-12">
+      <h2 class="text-xl font-semibold mb-4 text-red-600">
+        ❌ 問題のあるコード（学習ファイルから）
+      </h2>
+      <div
+        class="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 p-4 grid-debug"
+      >
+        <div class="aspect-square bg-gray-200 rounded-lg item-debug">1</div>
+        <div class="aspect-square bg-gray-300 rounded-lg item-debug">2</div>
+
+        <!-- 特徴アイテム：2倍サイズにしたいが期待した位置にならない -->
+        <div class="col-span-2 row-span-2 bg-blue-200 rounded-lg item-debug">
+          特徴3
+        </div>
+
+        <div class="aspect-square bg-gray-400 rounded-lg item-debug">4</div>
+        <div class="aspect-square bg-gray-500 rounded-lg item-debug">5</div>
+        <div class="aspect-square bg-gray-600 rounded-lg item-debug">6</div>
+      </div>
+      <p class="mt-4 text-sm text-gray-600">
+        ↑ 特徴アイテム（青色）の配置に問題があることを確認
+      </p>
+    </section>
+
+    <!-- ✅ 修正版1：学習ファイルの解決策を検証 -->
+    <section class="mb-12">
+      <h2 class="text-xl font-semibold mb-4 text-green-600">
+        ✅ 学習ファイルの解決策：密度優先配置
+      </h2>
+      <div
+        class="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] auto-rows-[200px] gap-4 p-4 grid-debug"
+        style="grid-auto-flow: row dense"
+      >
+        <!-- 通常アイテム -->
+        <div class="bg-gray-200 rounded-lg overflow-hidden item-debug">
+          画像1
+        </div>
+
+        <div class="bg-gray-300 rounded-lg overflow-hidden item-debug">
+          画像2
+        </div>
+
+        <!-- レスポンシブ特徴アイテム -->
+        <div
+          class="col-span-2 row-span-2 bg-blue-200 rounded-lg overflow-hidden featured-item item-debug"
+        >
+          特徴画像
+        </div>
+
+        <div class="bg-gray-400 rounded-lg overflow-hidden item-debug">
+          画像4
+        </div>
+
+        <div class="bg-gray-500 rounded-lg overflow-hidden item-debug">
+          画像5
+        </div>
+
+        <!-- たて長アイテム -->
+        <div
+          class="row-span-2 bg-green-200 rounded-lg overflow-hidden item-debug"
+        >
+          縦長画像
+        </div>
+      </div>
+      <p class="mt-4 text-sm text-gray-600">
+        ↑ grid-auto-flow: row dense により隙間が埋められているかを確認
+      </p>
+    </section>
+
+    <!-- ✅ 修正版2：レスポンシブ対応確認 -->
+    <section class="mb-12">
+      <h2 class="text-xl font-semibold mb-4 text-green-600">
+        ✅ レスポンシブ対応確認
+      </h2>
+      <div
+        class="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] auto-rows-[200px] gap-4 p-4 grid-debug"
+        style="grid-auto-flow: row dense"
+      >
+        <div class="bg-gray-200 rounded-lg item-debug">1</div>
+        <div class="bg-gray-300 rounded-lg item-debug">2</div>
+
+        <!-- レスポンシブ特徴アイテム -->
+        <div
+          class="col-span-2 row-span-2 bg-blue-200 rounded-lg featured-item item-debug sm:col-span-1 sm:row-span-1"
+        >
+          レスポンシブ特徴
+        </div>
+
+        <div class="bg-gray-400 rounded-lg item-debug">4</div>
+        <div class="bg-gray-500 rounded-lg item-debug">5</div>
+        <div class="row-span-2 bg-green-200 rounded-lg item-debug">縦長</div>
+        <div class="bg-gray-600 rounded-lg item-debug">7</div>
+        <div class="bg-gray-700 rounded-lg item-debug">8</div>
+      </div>
+      <p class="mt-4 text-sm text-gray-600">
+        ↑ 画面を縮小して、特徴アイテムが通常サイズになることを確認
+      </p>
+    </section>
+
+    <!-- Grid設定の詳細説明 -->
+    <section class="bg-white p-6 rounded-lg border">
+      <h2 class="text-xl font-semibold mb-4">📊 Grid設定の詳細解析</h2>
+      <div class="space-y-4 text-sm">
+        <div class="bg-blue-50 p-4 rounded">
+          <h3 class="font-semibold text-blue-700 mb-2">
+            🔍 問題のパターン解析
+          </h3>
+          <ul class="list-disc list-inside space-y-1">
+            <li>
+              <code>grid-cols-[repeat(auto-fit,minmax(200px,1fr))]</code
+              >：列数は動的だが行配置が問題
+            </li>
+            <li>
+              <code>col-span-2 row-span-2</code
+              >：明示的配置だが自動フロー制御がない
+            </li>
+            <li>
+              デフォルトの<code>grid-auto-flow: row</code>では隙間が生まれる
+            </li>
+          </ul>
+        </div>
+
+        <div class="bg-green-50 p-4 rounded">
+          <h3 class="font-semibold text-green-700 mb-2">
+            ✅ 解決策の検証ポイント
+          </h3>
+          <ul class="list-disc list-inside space-y-1">
+            <li><code>auto-rows-[200px]</code>：行の高さを固定</li>
+            <li><code>grid-auto-flow: row dense</code>：隙間を埋める配置</li>
+            <li><code>@media</code>クエリでレスポンシブ対応</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <style>
+      /* レスポンシブ対応：小画面では特徴アイテムを通常サイズに */
+      @media (max-width: 640px) {
+        .featured-item {
+          grid-column: span 1 !important;
+          grid-row: span 1 !important;
+        }
+      }
+    </style>
+  </body>
+</html>

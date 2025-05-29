@@ -266,7 +266,6 @@ h3 { font-size: clamp(1.25rem, 3vw, 2rem); }
 #### 問題のコード例
 
 ```html
-<!-- ❌ NG: Flexboxで高さが不揃いになる -->
 <div class="flex flex-wrap gap-6">
   <div class="bg-white rounded-lg shadow-md overflow-hidden flex-1 min-w-80">
     <!-- ❌ 固定高さで画像が歪む -->
@@ -303,10 +302,7 @@ h3 { font-size: clamp(1.25rem, 3vw, 2rem); }
 
 #### 🔍 問題が発生する理由
 
-1. **Flexboxの特性**: `flex`レイアウトでは各アイテムの高さが自動調整されない
-2. **コンテンツ量の差**: テキスト量の違いでカード高さが不揃いになる
-3. **視覚的統一感の欠如**: 高さが異なることで整列感が失われる
-4. **レスポンシブ対応不足**: 画面サイズ変化時の考慮不足
+1. 高さを固定することで画像のアスペクト比が変わる
 
 ### NG パターン 3: 固定サイズ指定の問題
 
@@ -472,7 +468,11 @@ setViewportHeight();
   <div class="bg-white rounded-lg shadow-md overflow-hidden">
     <!-- ✅ aspect-ratioで比率維持 -->
     <div class="aspect-video bg-gray-200">
-      <img src="https://picsum.photos/400/300?random=7" alt="画像1" class="w-full h-full object-cover" />
+      <img
+        src="https://picsum.photos/400/300?random=7"
+        alt="画像1"
+        class="w-full h-full object-cover"
+      />
     </div>
     <div class="p-4">
       <h3 class="text-lg font-semibold">タイトル</h3>

@@ -1,19 +1,9 @@
 # Step01: Tailwind CSS Flexbox・Grid 入門
 
-> 💡 **補足資料**: より詳細な解説と実践例は以下を参照 🚀
->
-> - 📖 [Tailwind Flexbox 基礎ガイド](./Step01_補足_Tailwind_Flexbox基礎.md) - Tailwind での flexbox の基本から実践的な活用法
-> - 🛠️ [Tailwind Grid 基礎ガイド](./Step01_補足_Tailwind_Grid基礎.md) - Grid + Tailwind の基本から実践的な活用法
-> - 📱 [レスポンシブ設計入門](./Step01_補足_レスポンシブ設計入門.md) - モバイルファーストなレスポンシブ実装
-> - 💻 [Tailwind 開発環境セットアップ](./Step01_補足_開発環境セットアップ.md) - 効率的な開発環境構築
-> - 🎨 [Tailwind レイアウトパターン集](./Step01_補足_レイアウトパターン集.md) - よく使われるレイアウトの実装例
-> - 📚 [参考リソース](./Step01_補足_参考リソース.md) - 学習に役立つツールとリンク集
-
 ## 📅 学習期間・目標
 
 **期間**: Step 1
-**総学習時間**: 3 時間
-**学習スタイル**: 問題分析 40% + 解決実践 50% + パターン習得 10%
+**総学習時間**: 1 時間
 
 ### 🎯 Step 1 到達目標
 
@@ -365,7 +355,7 @@ Tailwind では **モバイルファースト** のアプローチを採用し�
 ```html
 <!-- ✅ ヘッダー・メイン・サイドバー・フッターレイアウト -->
 <div
-  class="min-h-screen grid grid-rows-[auto_1fr_auto] lg:grid-cols-[1fr_300px]"
+  class="min-h-screen grid grid-rows-[auto_1fr_auto_auto] lg:grid-cols-[1fr_300px]"
 >
   <!-- ヘッダー（全幅） -->
   <header class="bg-gray-800 text-white p-4 lg:col-span-2">
@@ -400,60 +390,32 @@ Tailwind では **モバイルファースト** のアプローチを採用し�
 <!-- ✅ レスポンシブ画像ギャラリー -->
 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
   <div class="aspect-square bg-gray-200 rounded-lg overflow-hidden">
-    <img src="image1.jpg" alt="画像1" class="w-full h-full object-cover" />
+    <img
+      src="https://picsum.photos/400/400?random=1"
+      alt="画像1"
+      class="w-full h-full object-cover"
+    />
   </div>
   <div class="aspect-square bg-gray-200 rounded-lg overflow-hidden">
-    <img src="image2.jpg" alt="画像2" class="w-full h-full object-cover" />
+    <img
+      src="https://picsum.photos/400/400?random=2"
+      alt="画像2"
+      class="w-full h-full object-cover"
+    />
   </div>
   <div class="aspect-square bg-gray-200 rounded-lg overflow-hidden col-span-2">
-    <img src="image3.jpg" alt="画像3" class="w-full h-full object-cover" />
+    <img
+      src="https://picsum.photos/800/400?random=3"
+      alt="画像3"
+      class="w-full h-full object-cover"
+    />
   </div>
 </div>
 ```
 
-### ✅ 実践演習
-
-#### 演習 1: レスポンシブナビゲーション
-
-下記の HTML ファイルを作成してブラウザで確認してください：
-
-```html
-<!DOCTYPE html>
-<html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Flexbox ナビゲーション演習</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-  <body class="bg-gray-100">
-    <!-- TODO: ここにレスポンシブナビゲーションを実装 -->
-    <!-- ヒント: flex, items-center, justify-between, hidden, md:flex を使用 -->
-  </body>
-</html>
-```
-
-#### 演習 2: カードレイアウト
-
-```html
-<!DOCTYPE html>
-<html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Grid カードレイアウト演習</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-  <body class="bg-gray-100 p-6">
-    <!-- TODO: ここに6つのカードをグリッドレイアウトで配置 -->
-    <!-- ヒント: grid, grid-cols-1, md:grid-cols-2, lg:grid-cols-3, gap-6 を使用 -->
-  </body>
-</html>
-```
-
 ---
 
-## ✅ パターン化・体系化 (10%)
+## ✅ パターン化・体系化
 
 ### 🔧 Flexbox vs Grid 使い分けガイド
 
@@ -464,7 +426,7 @@ Tailwind では **モバイルファースト** のアプローチを採用し�
 | **ナビゲーション**               | Flexbox        | 要素間の配置・間隔調整         |
 | **カードリスト**                 | Grid           | 等間隔・等サイズ配置           |
 | **中央寄せ**                     | Flexbox        | `items-center justify-center`  |
-| **ページ全体構造**               | Grid           | ヘッダー・メイン・フッター管理 |
+| **ページ全体構造**               | Grid / Flexbox | ヘッダー・メイン・フッター管理 |
 
 ### 📝 実装チェックリスト
 
@@ -486,55 +448,166 @@ Tailwind では **モバイルファースト** のアプローチを採用し�
 - [ ] `gap`で要素間隔調整
 - [ ] 必要に応じて要素の配置指定（`col-span-2`等）
 
-### 🎨 よく使う組み合わせパターン
-
-#### パターン 1: レスポンシブヘッダー
-
-```
-flex + items-center + justify-between + hidden + md:flex
-```
-
-#### パターン 2: カードグリッド
-
-```
-grid + grid-cols-1 + md:grid-cols-2 + lg:grid-cols-3 + gap-6
-```
-
-#### パターン 3: 中央寄せモーダル
-
-```
-flex + items-center + justify-center + min-h-screen
-```
-
-#### パターン 4: サイドバー付きレイアウト
-
-```
-grid + grid-cols-1 + lg:grid-cols-[1fr_300px] + gap-6
-```
-
----
-
 ## 🛠️ 実践課題
 
 ### 課題 1: 基本レイアウト作成
 
-以下の要件を満たす HTML ページを作成してください：
+**🎯 目標**: Flexbox を使ったレスポンシブなヘッダーナビゲーションと Grid を使ったカードレイアウトを実装
 
-1. **ヘッダー**: ロゴ（左）+ ナビゲーション（右）+ ハンバーガーメニュー（モバイル）
-2. **メインエリア**:
-   - ヒーローセクション（画像 + テキスト中央寄せ）
-   - 特徴セクション（3 つのカード、レスポンシブグリッド）
-3. **フッター**: シンプルなコピーライト表示
+**📝 実装手順**:
 
-**必須条件:**
+1. [Tailwind Playground](https://play.tailwindcss.com/) を開く
+2. 以下の要件を満たすレイアウトを作成：
+   - **ヘッダー**: ロゴ（左）+ ナビゲーション（右）+ ハンバーガーメニュー（モバイル）
+   - **メインエリア**: 3 つのカードをレスポンシブグリッドで配置
+   - **フッター**: シンプルなコピーライト表示
 
-- Tailwind CDN を使用
+**📋 必須条件**:
+
 - モバイルファースト設計
 - ブレークポイント: `md`（768px 以上）、`lg`（1024px 以上）
+- Flexbox でヘッダーナビゲーション
+- Grid でカードレイアウト
+
+<details>
+<summary>💡 解答例を表示</summary>
+
+```html
+<!-- ヘッダー -->
+<header class="bg-white shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <!-- ロゴ -->
+            <div class="flex items-center">
+                <div class="text-xl font-bold text-gray-900">Logo</div>
+            </div>
+
+            <!-- デスクトップナビゲーション -->
+            <nav class="hidden md:flex space-x-8">
+                <a href="#" class="text-gray-700 hover:text-blue-600">ホーム</a>
+                <a href="#" class="text-gray-700 hover:text-blue-600">サービス</a>
+                <a href="#" class="text-gray-700 hover:text-blue-600">会社情報</a>
+                <a href="#" class="text-gray-700 hover:text-blue-600">お問い合わせ</a>
+            </nav>
+
+            <!-- ハンバーガーメニュー（モバイル） -->
+            <button class="md:hidden text-gray-700">
+                <span class="text-2xl">三</span>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- メインコンテンツ -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-gray-50">
+    <h1 class="text-3xl font-bold text-center mb-12">特徴セクション</h1>
+
+    <!-- カードグリッド -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="w-12 h-12 bg-blue-500 rounded-lg mb-4"></div>
+            <h3 class="text-xl font-semibold mb-2">特徴 1</h3>
+            <p class="text-gray-600">ここに特徴の説明が入ります。</p>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="w-12 h-12 bg-green-500 rounded-lg mb-4"></div>
+            <h3 class="text-xl font-semibold mb-2">特徴 2</h3>
+            <p class="text-gray-600">ここに特徴の説明が入ります。</p>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="w-12 h-12 bg-purple-500 rounded-lg mb-4"></div>
+            <h3 class="text-xl font-semibold mb-2">特徴 3</h3>
+            <p class="text-gray-600">ここに特徴の説明が入ります。</p>
+        </div>
+    </div>
+</main>
+
+<!-- フッター -->
+<footer class="bg-gray-800 text-white py-8 mt-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <p class="text-center">&copy; 2025 サンプルサイト. All rights reserved.</p>
+    </div>
+</footer>
+    <!-- ヘッダー -->
+    <header class="bg-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- ロゴ -->
+                <div class="flex items-center">
+                    <div class="text-xl font-bold text-gray-900">Logo</div>
+                </div>
+
+                <!-- デスクトップナビゲーション -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#" class="text-gray-700 hover:text-blue-600">ホーム</a>
+                    <a href="#" class="text-gray-700 hover:text-blue-600">サービス</a>
+                    <a href="#" class="text-gray-700 hover:text-blue-600">会社情報</a>
+                    <a href="#" class="text-gray-700 hover:text-blue-600">お問い合わせ</a>
+                </nav>
+
+                <!-- ハンバーガーメニュー（モバイル） -->
+                <button class="md:hidden text-gray-700">
+                    <span class="text-2xl">三</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h1 class="text-3xl font-bold text-center mb-12">特徴セクション</h1>
+
+        <!-- カードグリッド -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="w-12 h-12 bg-blue-500 rounded-lg mb-4"></div>
+                <h3 class="text-xl font-semibold mb-2">特徴 1</h3>
+                <p class="text-gray-600">ここに特徴の説明が入ります。</p>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="w-12 h-12 bg-green-500 rounded-lg mb-4"></div>
+                <h3 class="text-xl font-semibold mb-2">特徴 2</h3>
+                <p class="text-gray-600">ここに特徴の説明が入ります。</p>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="w-12 h-12 bg-purple-500 rounded-lg mb-4"></div>
+                <h3 class="text-xl font-semibold mb-2">特徴 3</h3>
+                <p class="text-gray-600">ここに特徴の説明が入ります。</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- フッター -->
+    <footer class="bg-gray-800 text-white py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <p class="text-center">&copy; 2025 サンプルサイト. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
+```
+
+**🔍 ポイント解説**:
+
+- `flex items-center justify-between` でヘッダーの左右配置
+- `hidden md:flex` でレスポンシブナビゲーション
+- `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3` でレスポンシブグリッド
+- `max-w-7xl mx-auto` でコンテンツ幅制限と中央寄せ
+
+</details>
 
 ### 課題 2: 複雑なグリッドレイアウト
 
-以下のレイアウトを実装してください：
+**🎯 目標**: CSS Grid を使った複雑なページレイアウトの実装
+
+**📝 実装手順**:
+
+1. [Tailwind Playground](https://play.tailwindcss.com/) を開く
+2. 以下のレイアウト構造を実装：
 
 ```
 [ヘッダー　　　　　　] 全幅
@@ -542,104 +615,112 @@ grid + grid-cols-1 + lg:grid-cols-[1fr_300px] + gap-6
 [フッター　　　　　　] 全幅
 ```
 
-**追加要件:**
+**📋 追加要件**:
 
-- メインエリア内に 2x3 のカードグリッド配置
+- メインエリア内に 2×3 のカードグリッド配置
 - サイドバーに縦並びメニュー
 - モバイルでは 1 列レイアウトに変更
 
-### 課題 3: インタラクティブコンポーネント
+<details>
+<summary>💡 解答例を表示</summary>
 
-以下の機能を持つコンポーネントを作成：
+```html
+<!-- グリッドコンテナ -->
+<div
+  class="min-h-screen grid grid-rows-[auto_1fr_auto_auto] lg:grid-cols-[1fr_300px] bg-gray-50"
+>
+  <!-- ヘッダー（全幅） -->
+  <header class="bg-blue-600 text-white p-4 lg:col-span-2">
+    <div class="max-w-7xl mx-auto">
+      <h1 class="text-2xl font-bold">複雑レイアウトサイト</h1>
+    </div>
+  </header>
 
-1. **タブ切り替え**: Flexbox でタブヘッダー、Grid でコンテンツエリア
-2. **画像ギャラリー**: 不規則サイズのグリッドレイアウト
-3. **カード フィルター**: ボタンでカードの表示・非表示切り替え
+  <!-- メインコンテンツ -->
+  <main class="p-6 lg:p-8">
+    <h2 class="text-2xl font-bold mb-6">メインコンテンツ</h2>
 
----
+    <!-- 2×3 カードグリッド -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="bg-white rounded-lg shadow p-4">
+        <h3 class="font-semibold mb-2">カード 1</h3>
+        <p class="text-gray-600">コンテンツ</p>
+      </div>
+      <div class="bg-white rounded-lg shadow p-4">
+        <h3 class="font-semibold mb-2">カード 2</h3>
+        <p class="text-gray-600">コンテンツ</p>
+      </div>
+      <div class="bg-white rounded-lg shadow p-4">
+        <h3 class="font-semibold mb-2">カード 3</h3>
+        <p class="text-gray-600">コンテンツ</p>
+      </div>
+      <div class="bg-white rounded-lg shadow p-4">
+        <h3 class="font-semibold mb-2">カード 4</h3>
+        <p class="text-gray-600">コンテンツ</p>
+      </div>
+      <div class="bg-white rounded-lg shadow p-4">
+        <h3 class="font-semibold mb-2">カード 5</h3>
+        <p class="text-gray-600">コンテンツ</p>
+      </div>
+      <div class="bg-white rounded-lg shadow p-4">
+        <h3 class="font-semibold mb-2">カード 6</h3>
+        <p class="text-gray-600">コンテンツ</p>
+      </div>
+    </div>
+  </main>
 
-## 🔍 デバッグ・検証ツール
+  <!-- サイドバー -->
+  <aside class="bg-white border-l border-gray-200 p-6">
+    <h3 class="text-lg font-semibold mb-4">サイドバー</h3>
+    <nav class="space-y-2">
+      <a
+        href="#"
+        class="block py-2 px-3 text-gray-700 hover:bg-gray-100 rounded"
+        >メニュー 1</a
+      >
+      <a
+        href="#"
+        class="block py-2 px-3 text-gray-700 hover:bg-gray-100 rounded"
+        >メニュー 2</a
+      >
+      <a
+        href="#"
+        class="block py-2 px-3 text-gray-700 hover:bg-gray-100 rounded"
+        >メニュー 3</a
+      >
+      <a
+        href="#"
+        class="block py-2 px-3 text-gray-700 hover:bg-gray-100 rounded"
+        >メニュー 4</a
+      >
+    </nav>
+  </aside>
 
-### ブラウザ DevTools での確認ポイント
+  <!-- フッター（全幅） -->
+  <footer class="bg-gray-800 text-white p-4 lg:col-span-2">
+    <div class="max-w-7xl mx-auto text-center">
+      <p>&copy; 2025 複雑レイアウトサイト</p>
+    </div>
+  </footer>
+</div>
+```
 
-1. **Flexbox Inspector**（Firefox）
+**🔍 ポイント解説**:
 
-   - Flex アイテムの伸縮状態確認
-   - 主軸・交差軸の方向確認
+- `grid-rows-[auto_1fr_auto_auto]` でヘッダー・メイン・フッターの高さ設定
+- `lg:grid-cols-[1fr_300px]` でメイン・サイドバーの幅設定
+- `lg:col-span-2` でヘッダー・フッターを全幅に
+- `space-y-2` でサイドバーメニューの間隔調整
 
-2. **Grid Inspector**（Firefox/Chrome）
+</details>
 
-   - グリッドラインの可視化
-   - グリッドエリアの確認
+**🔍 ポイント解説**:
 
-3. **Responsive Design Mode**
-   - 各ブレークポイントでの表示確認
-   - タッチデバイスでの操作性確認
+- `flex` でタブヘッダーの横並び配置
+- `grid` でタブコンテンツの柔軟なレイアウト
+- `col-span-2 row-span-2` で不規則グリッドの実現
+- `aspect-square` で正方形アスペクト比の維持
+- JavaScript でインタラクティブ機能を実装
 
-### よくあるトラブルシューティング
+</details>
 
-| 問題                                | 確認点                           | 解決策                            |
-| ----------------------------------- | -------------------------------- | --------------------------------- |
-| Flex アイテムが期待通りに伸縮しない | `flex-grow`, `flex-shrink`の設定 | `flex-1`, `flex-none`等で明示指定 |
-| Grid アイテムが期待位置にない       | `grid-template-columns`の確認    | 列数・サイズ指定を見直し          |
-| モバイルでレイアウト崩れ            | ブレークポイント設定             | `md:`, `lg:`プレフィックス追加    |
-| 要素が画面外に                      | `overflow`の確認                 | `overflow-hidden`等で制御         |
-
----
-
-## 📚 参考リソース
-
-### 公式ドキュメント
-
-- [Tailwind CSS Flexbox](https://tailwindcss.com/docs/flex)
-- [Tailwind CSS Grid](https://tailwindcss.com/docs/grid-template-columns)
-- [Tailwind CSS Responsive Design](https://tailwindcss.com/docs/responsive-design)
-
-### 学習リソース
-
-- [Flexbox Froggy](https://flexboxfroggy.com/#ja) - Flexbox 学習ゲーム
-- [Grid Garden](https://cssgridgarden.com/#ja) - Grid 学習ゲーム
-- [MDN Flexbox](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_Flexible_Box_Layout)
-- [MDN Grid](https://developer.mozilla.org/ja/docs/Web/CSS/CSS_Grid_Layout)
-
----
-
-## ✅ 学習完了チェック
-
-以下の項目がすべてできるようになったら、次のステップに進んでください：
-
-### Flexbox 関連
-
-- [ ] 基本的な Flex コンテナとアイテムの概念を理解
-- [ ] `justify-content`と`align-items`の違いを説明できる
-- [ ] `flex-1`, `flex-none`の使い分けができる
-- [ ] レスポンシブでの Flexbox 方向変更ができる
-- [ ] ナビゲーション、カードレイアウトを Flexbox で実装できる
-
-### Grid 関連
-
-- [ ] 基本的な Grid コンテナとアイテムの概念を理解
-- [ ] `grid-cols-*`でカラム数を適切に指定できる
-- [ ] `col-span-*`, `row-span-*`でアイテム配置ができる
-- [ ] レスポンシブでの Grid 列数変更ができる
-- [ ] 複雑なページレイアウトを Grid で実装できる
-
-### 実践応用
-
-- [ ] Flexbox と Grid の使い分けができる
-- [ ] モバイルファーストでレスポンシブ実装ができる
-- [ ] ブラウザ DevTools でレイアウトデバッグができる
-- [ ] 実務レベルのコンポーネント実装ができる
-
----
-
-## 🎯 次のステップ
-
-Step01 で基礎を身につけたら、Step02「複雑レイアウト問題解決」で以下を学習します：
-
-- Flexbox/Grid の深層的な動作理解
-- コンテナクエリ実装の落とし穴
-- カードレイアウト・グリッドシステムの問題解決
-- レスポンシブグリッドの実装パターン
-
-**💡 重要**: 基礎をしっかり習得することで、複雑な実務問題への対応がスムーズになります！

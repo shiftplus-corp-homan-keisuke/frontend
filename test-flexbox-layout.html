@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flexboxレイアウトテスト</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <h1 class="text-2xl font-bold mb-8">Flexboxレイアウトテスト</h1>
+    
+    <!-- 学習プランの修正されたコード例 -->
+    <div class="flex flex-wrap gap-6">
+        <div class="bg-white rounded-lg shadow-md overflow-hidden flex-1 min-w-80">
+            <img
+                src="https://picsum.photos/400/300?random=1"
+                alt="画像1"
+                class="w-full h-48 object-cover"
+            />
+            <div class="p-4">
+                <h3 class="text-lg font-semibold">短いタイトル</h3>
+                <p class="text-gray-600">短い説明文</p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md overflow-hidden flex-1 min-w-80">
+            <img
+                src="https://picsum.photos/400/300?random=2"
+                alt="画像2"
+                class="w-full h-48 object-cover"
+            />
+            <div class="p-4">
+                <h3 class="text-lg font-semibold">
+                    非常に長いタイトルで複数行になる場合
+                </h3>
+                <p class="text-gray-600">
+                    長い説明文でカードの高さが不揃いになり、
+                    Flexboxレイアウトでは高さが揃わない問題が発生します。
+                    この問題により、視覚的な統一感が失われてしまいます。
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-8 p-4 bg-yellow-100 rounded-lg">
+        <h2 class="text-lg font-semibold mb-2">検証結果:</h2>
+        <p class="text-sm">
+            - 画像: object-coverにより歪まずに適切にトリミングされる<br>
+            - カードの高さ: Flexboxではテキスト量の違いにより高さが不揃いになる
+        </p>
+    </div>
+</body>
+</html>

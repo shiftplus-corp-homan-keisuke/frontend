@@ -266,35 +266,44 @@ h3 { font-size: clamp(1.25rem, 3vw, 2rem); }
 #### 問題のコード例
 
 ```html
-<div class="flex flex-wrap gap-6">
-  <div class="bg-white rounded-lg shadow-md overflow-hidden flex-1 min-w-80">
-    <!-- ❌ 固定高さで画像が歪む -->
+<!-- ❌ NG: 画像のアスペクト比が崩れる -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <!-- ❌ object-coverなしで固定サイズにより画像が歪む -->
     <img
-      src="https://picsum.photos/400/300?random=1"
-      alt="画像1"
-      class="w-full h-48 object-cover"
+      src="https://picsum.photos/400/400?random=1"
+      alt="正方形画像"
+      class="w-full h-48"
     />
     <div class="p-4">
-      <h3 class="text-lg font-semibold">短いタイトル</h3>
-      <p class="text-gray-600">短い説明文</p>
+      <h3 class="text-lg font-semibold">正方形画像</h3>
+      <p class="text-gray-600">元は正方形だが縦に引き伸ばされる</p>
     </div>
   </div>
 
-  <div class="bg-white rounded-lg shadow-md overflow-hidden flex-1 min-w-80">
+  <div class="bg-white rounded-lg shadow-md overflow-hidden">
     <img
-      src="https://picsum.photos/400/300?random=2"
-      alt="画像2"
-      class="w-full h-48 object-cover"
+      src="https://picsum.photos/800/400?random=2"
+      alt="横長画像"
+      class="w-full h-48"
     />
     <div class="p-4">
-      <h3 class="text-lg font-semibold">
-        非常に長いタイトルで複数行になる場合
-      </h3>
+      <h3 class="text-lg font-semibold">横長画像</h3>
       <p class="text-gray-600">
-        長い説明文でカードの高さが不揃いになり、
-        Flexboxレイアウトでは高さが揃わない問題が発生します。
-        この問題により、視覚的な統一感が失われてしまいます。
+        元は横長だが固定高さにより縦に圧縮される
       </p>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <img
+      src="https://picsum.photos/300/600?random=3"
+      alt="縦長画像"
+      class="w-full h-48"
+    />
+    <div class="p-4">
+      <h3 class="text-lg font-semibold">縦長画像</h3>
+      <p class="text-gray-600">元は縦長だが横に引き伸ばされる</p>
     </div>
   </div>
 </div>
@@ -302,7 +311,10 @@ h3 { font-size: clamp(1.25rem, 3vw, 2rem); }
 
 #### 🔍 問題が発生する理由
 
-1. 高さを固定することで画像のアスペクト比が変わる
+1. **固定高さの指定**: `h-48`により画像の高さが192pxに固定される
+2. **object-coverの未使用**: アスペクト比を維持する仕組みがない
+3. **異なる元画像比率**: 正方形、横長、縦長の画像が同じ枠に収められる
+4. **画像の歪み**: 元のアスペクト比が無視され、見た目が不自然になる
 
 ### NG パターン 3: 固定サイズ指定の問題
 

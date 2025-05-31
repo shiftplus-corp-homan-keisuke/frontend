@@ -113,7 +113,7 @@ button.addEventListener("click", () => {
 
 **React による解決**
 
-```typescript
+```tsx
 // ✅ React的アプローチ（宣言的で理解しやすい）
 function Counter(): JSX.Element {
   const [count, setCount] = useState(0);
@@ -172,7 +172,7 @@ const virtualDOM = {
 
 実 DOM の操作は非常にコストが高い処理です：
 
-```typescript
+```tsx
 // ❌ 実DOM操作（重い処理）
 // 1回の変更で数百ミリ秒かかることも
 document.getElementById("title").textContent = "New Title";
@@ -198,7 +198,7 @@ function UserProfile({ user }: { user: User }): JSX.Element {
 3. **差分検出（Diffing）**: 前の仮想 DOM と新しい仮想 DOM を比較
 4. **最小限の実 DOM 更新**: 変更が必要な部分のみ実 DOM に反映
 
-```typescript
+```tsx
 // React の差分検出例
 // 前の状態: <div><span>0</span><button>Click</button></div>
 // 新しい状態: <div><span>1</span><button>Click</button></div>
@@ -228,7 +228,7 @@ function Counter(): JSX.Element {
 
 UI を独立した、再利用可能な部品（コンポーネント）として設計する考え方です。従来のモノリシックな UI 設計とは根本的に異なります。
 
-```typescript
+```tsx
 // ❌ 従来のモノリシックなUI設計
 // 全てが一つの大きなファイルに混在
 function EntireApp() {
@@ -265,7 +265,7 @@ function EntireApp() {
 }
 ```
 
-```typescript
+```tsx
 // ✅ コンポーネント思考による設計
 // 各部品が独立し、責任が明確
 
@@ -365,7 +365,7 @@ function Button({
 
 **3. 単方向データフロー**
 
-```typescript
+```tsx
 // データは親から子へ一方向に流れる（TypeScript の型継承と同じ概念）
 interface AppState {
   user: User;
@@ -389,7 +389,7 @@ function App(): JSX.Element {
 
 React コンポーネントは、TypeScript の関数と同じ設計原則に従います：
 
-```typescript
+```tsx
 // 1. 純粋関数としてのコンポーネント
 // 同じ Props なら常に同じ結果を返す（副作用なし）
 function PureComponent({ name }: { name: string }): JSX.Element {
@@ -521,7 +521,7 @@ my-react-app/
 
 **1. React Developer Tools（ブラウザ拡張機能）**
 
-```typescript
+```tsx
 // コンポーネントの状態やプロパティを確認できる
 function MyComponent({ name }: { name: string }) {
   const [count, setCount] = useState(0);
@@ -537,7 +537,7 @@ function MyComponent({ name }: { name: string }) {
 
 **2. TypeScript エラーの読み方**
 
-```typescript
+```tsx
 // ❌ よくあるエラー例
 function Greeting({ name }) {
   // エラー: Parameter 'name' implicitly has an 'any' type
@@ -561,7 +561,7 @@ npm run dev -- --port 3000
 
 **問題 2: TypeScript エラーが表示される**
 
-```typescript
+```tsx
 // 問題: JSX.Element の戻り値型が不明
 function MyComponent() {
   // ❌
@@ -597,7 +597,7 @@ function MyComponent(): JSX.Element {
 
 **段階 1: 最もシンプルな JSX（15 分）**
 
-```typescript
+```tsx
 // 1. 静的なJSX要素
 function Welcome(): JSX.Element {
   return <h1>Hello, World!</h1>;
@@ -628,7 +628,7 @@ function Image(): JSX.Element {
 
 **段階 2: JavaScript 式の埋め込み（15 分）**
 
-```typescript
+```tsx
 // 1. 変数の埋め込み
 function Greeting(): JSX.Element {
   const name = "React";
@@ -675,7 +675,7 @@ function DateTime(): JSX.Element {
 
 **段階 3: 条件付きレンダリング（15 分）**
 
-```typescript
+```tsx
 // 1. 論理AND演算子を使った条件付きレンダリング
 function WelcomeMessage({ isLoggedIn }: { isLoggedIn: boolean }): JSX.Element {
   return (
@@ -721,7 +721,7 @@ function AlertMessage({
 
 #### 🎯 JSX のよくある間違いと解決方法
 
-```typescript
+```tsx
 // ❌ よくある間違い1: 閉じタグの忘れ
 function BadExample1() {
   return <img src="image.jpg">  // エラー: 閉じタグがない
@@ -781,7 +781,7 @@ function GoodExample3(): JSX.Element {
 
 **段階 1: 最もシンプルなコンポーネント（10 分）**
 
-```typescript
+```tsx
 // src/components/HelloWorld.tsx
 function HelloWorld(): JSX.Element {
   return <h1>Hello, React World!</h1>;
@@ -805,7 +805,7 @@ export default App;
 
 **段階 2: 少し複雑なコンポーネント（10 分）**
 
-```typescript
+```tsx
 // src/components/UserCard.tsx
 function UserCard(): JSX.Element {
   return (
@@ -830,7 +830,7 @@ export default UserCard;
 
 **段階 3: コンポーネントの分割（10 分）**
 
-```typescript
+```tsx
 // src/components/Avatar.tsx
 function Avatar(): JSX.Element {
   return (
@@ -927,7 +927,7 @@ src/
 
 **段階 1: 単一の Props（15 分）**
 
-```typescript
+```tsx
 // src/components/Greeting.tsx
 interface GreetingProps {
   name: string;
@@ -955,7 +955,7 @@ function App(): JSX.Element {
 
 **段階 2: 複数の Props（15 分）**
 
-```typescript
+```tsx
 // src/components/UserCard.tsx
 interface UserCardProps {
   name: string;
@@ -1010,7 +1010,7 @@ function App(): JSX.Element {
 
 **段階 3: オプショナル Props（15 分）**
 
-```typescript
+```tsx
 // src/components/Button.tsx
 interface ButtonProps {
   text: string;
@@ -1123,7 +1123,7 @@ interface ClickableCardProps {
 
 **段階 1: 最もシンプルな状態（15 分）**
 
-```typescript
+```tsx
 import { useState } from "react";
 
 // src/components/SimpleCounter.tsx
@@ -1145,7 +1145,7 @@ export default SimpleCounter;
 
 **段階 2: 複数の状態管理（15 分）**
 
-```typescript
+```tsx
 import { useState } from "react";
 
 // src/components/UserForm.tsx
@@ -1209,7 +1209,7 @@ export default UserForm;
 
 **段階 3: オブジェクト状態の管理（15 分）**
 
-```typescript
+```tsx
 import { useState } from "react";
 
 // src/components/UserProfile.tsx
@@ -1331,7 +1331,7 @@ export default UserProfile;
 
 **段階 1: 基本的なクリックイベント（15 分）**
 
-```typescript
+```tsx
 import { useState } from "react";
 
 // src/components/ClickCounter.tsx
@@ -1390,7 +1390,7 @@ export default ClickCounter;
 
 **段階 2: フォームイベントの処理（15 分）**
 
-```typescript
+```tsx
 import { useState } from "react";
 
 // src/components/ContactForm.tsx
@@ -1509,7 +1509,7 @@ export default ContactForm;
 
 **段階 3: 高度なイベント処理（15 分）**
 
-```typescript
+```tsx
 import { useState } from "react";
 
 // src/components/InteractiveCard.tsx
@@ -1610,7 +1610,7 @@ export default InteractiveCard;
 
 #### 💡 React イベントシステムの重要ポイント
 
-```typescript
+```tsx
 // 1. React のイベント型（SyntheticEvent）
 function EventExample(): JSX.Element {
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
@@ -1680,7 +1680,7 @@ function EventPropagationExample(): JSX.Element {
 - Props を使った再利用可能な設計
 - TypeScript による型安全性
 
-```typescript
+```tsx
 // src/components/ProfileCard.tsx
 interface User {
   id: number;
@@ -1722,7 +1722,7 @@ export default ProfileCard;
 - いいね済み状態の視覚的表示
 - TypeScript による型安全な状態管理
 
-```typescript
+```tsx
 // src/components/LikeButton.tsx
 interface LikeButtonProps {
   initialLikes?: number;
@@ -1752,7 +1752,7 @@ export default LikeButton;
 - 送信時の確認とリセット機能
 - エラー表示機能
 
-```typescript
+```tsx
 // src/components/DynamicForm.tsx
 interface FormData {
   name: string;
@@ -1787,7 +1787,7 @@ export default DynamicForm;
 - 残りタスク数の表示
 - ローカルストレージへの保存（オプション）
 
-```typescript
+```tsx
 // src/components/TodoApp.tsx
 interface Todo {
   id: number;
@@ -1921,7 +1921,7 @@ export default TodoApp;
 
 **💡 TypeScript 上級者なら理解しやすい Props 型設計**
 
-```typescript
+```tsx
 // 1. 基本的な Props 型定義
 interface GreetingProps {
   name: string;
@@ -2007,7 +2007,7 @@ function UserCard({ user, showEmail = true }: UserCardProps): JSX.Element {
 
 **💡 React 特有のイベント型システム**
 
-```typescript
+```tsx
 // 1. 基本的なイベントハンドラー
 function Button(): JSX.Element {
   // React.MouseEvent<HTMLButtonElement> - React 特有の型
@@ -2072,7 +2072,7 @@ function CustomButton({ onClick, children }: CustomButtonProps): JSX.Element {
 
 **💡 React の状態管理と TypeScript の型システム**
 
-```typescript
+```tsx
 import React, { useState } from 'react';
 
 // 1. 基本的な useState の型
@@ -2161,7 +2161,7 @@ function TodoList(): JSX.Element {
 
 #### 演習 4-1: カウンターアプリ（30 分）
 
-```typescript
+```tsx
 // 要件:
 // - カウンターの値を表示
 // - +1, -1, リセットボタン
@@ -2211,7 +2211,7 @@ function CounterApp({
 
 #### 演習 4-2: 簡単な Todo リスト（45 分）
 
-```typescript
+```tsx
 // 要件:
 // - Todo の追加・削除・完了切り替え
 // - 入力バリデーション
@@ -2338,7 +2338,7 @@ function SimpleTodoApp(): JSX.Element {
 
 #### 演習 4-3: 基本フォーム（15 分）
 
-```typescript
+```tsx
 // 要件:
 // - 名前、メール、年齢の入力
 // - バリデーション機能
@@ -2492,7 +2492,7 @@ onChange={() => toggleTodo(todo.id)}
 
 **💡 TypeScript の型ガードを React で活用**
 
-```typescript
+```tsx
 // 1. 基本的な条件付きレンダリング
 interface LoadingProps {
   isLoading: boolean;
@@ -2551,7 +2551,7 @@ function UserProfile({ user }: UserProfileProps): JSX.Element {
 
 #### 🚀 Hello World の作成
 
-```typescript
+```tsx
 // src/App.tsx - 最初の型安全なコンポーネント
 function App(): JSX.Element {
   return (
@@ -2682,7 +2682,7 @@ React + TypeScript プロジェクトでは、JSX の処理、モジュール解
 
 #### 🎯 React 19 の新機能と TypeScript
 
-```typescript
+```tsx
 // 1. React 19の新しいHooks
 import { use, useOptimistic, useFormStatus } from "react";
 
@@ -2736,7 +2736,7 @@ JSX の型システムを理解することは、React + TypeScript 開発の基
 - **子要素管理**: 柔軟で安全な子要素の型定義
 - **ライブラリ開発**: 他の開発者が使いやすい型定義の提供
 
-```typescript
+```tsx
 // 1. JSX要素の型定義
 // JSX.Element - 最も一般的な戻り値型
 function Welcome(): JSX.Element {
@@ -2811,7 +2811,7 @@ function ButtonGroup({ children }: ButtonGroupProps): JSX.Element {
 
 #### 🎨 HTMLAttributes の継承パターン
 
-```typescript
+```tsx
 // 5. HTML属性の継承
 interface CustomButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -2935,7 +2935,7 @@ function ContactForm(): JSX.Element {
 
 #### 🧩 コンポーネント設計パターン
 
-```typescript
+```tsx
 // 8. 条件付きレンダリングの型安全性
 interface AlertProps {
   type: "success" | "warning" | "error" | "info";
@@ -3128,7 +3128,7 @@ function Modal({
 
 ### 演習 1-1: 基本コンポーネント作成 🔰
 
-```typescript
+```tsx
 // 以下の要件を満たすコンポーネントを作成せよ
 
 // 1. Card コンポーネント
@@ -3180,7 +3180,7 @@ interface AvatarProps {
 
 ### 演習 1-2: フォームコンポーネント 🔶
 
-```typescript
+```tsx
 // 以下の要件を満たすフォームシステムを作成せよ
 
 // 1. FormField コンポーネント
@@ -3236,7 +3236,7 @@ interface UserFormData {
 
 ### 演習 1-3: 実用的なアプリケーション作成 🔥
 
-```typescript
+```tsx
 // シンプルな天気アプリを作成せよ
 
 // 1. 天気データの型定義
@@ -3328,7 +3328,7 @@ function WeatherApp(): JSX.Element {
 
 ### 次週学習内容の予習
 
-```typescript
+```tsx
 // Step 2で学習するGeneric Componentsの基礎概念
 // 以下のコードを読んで理解しておくこと
 

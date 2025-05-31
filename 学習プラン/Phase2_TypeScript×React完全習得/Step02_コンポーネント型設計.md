@@ -20,7 +20,7 @@
 
 #### 🎯 条件付き Props 型の実装
 
-```typescript
+```tsx
 // 1. 条件付きProps型の基本パターン
 type ConditionalProps<T extends boolean> = T extends true
   ? { required: true; value: string }
@@ -719,7 +719,7 @@ if (!column.sortable || !sorting) return;
       sorting.field === column.key && sorting.direction === 'asc'
         ? 'desc'
         : 'asc';
-
+    
     sorting.onChange(column.key, newDirection);
 
 };
@@ -830,7 +830,7 @@ const isSelected = selection?.selectedKeys.includes(key) || false;
           })}
         </tbody>
       </table>
-
+    
       {pagination && (
         <div className="table-pagination">
           <button

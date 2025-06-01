@@ -18,9 +18,9 @@
 
 - [ ] ユニオン型とインターセクション型の完全理解
 - [ ] 型ガードの実装パターンの習得
-- [ ] 型アサーションの適切な使用方法
 - [ ] 判別可能なユニオンの実践的活用
-- [ ] 型安全なエラーハンドリングの実装
+- [ ] API レスポンス処理での型安全性確保
+- [ ] 実用的な型ガード関数の設計と実装
 
 ## 📚 理論学習内容
 
@@ -42,7 +42,7 @@
 
 ##### 1. 基本的なユニオン型
 
-> 💡 **詳細解説**: ユニオン型の詳細と実践的な活用パターンは [Step04_補足_専門用語集.md#ユニオン型union-types](./Step04_補足_専門用語集.md#ユニオン型union-types) を見てね 🐰
+> 💡 **詳細解説**: ユニオン型の詳細と実践的な活用パターンは [Step04*補足*専門用語集.md#ユニオン型 union-types](./Step04_補足_専門用語集.md#ユニオン型union-types) を見てね 🐰
 
 ```typescript
 type StringOrNumber = string | number;
@@ -81,7 +81,7 @@ function goodExample(value: string | number): string {
 
 ##### 2. リテラル型のユニオンによる設定値管理
 
-> 💡 **詳細解説**: リテラル型の詳細と実践的な活用パターンは [Step04_補足_専門用語集.md#リテラル型literal-types](./Step04_補足_専門用語集.md#リテラル型literal-types) を見てね 🐰
+> 💡 **詳細解説**: リテラル型の詳細と実践的な活用パターンは [Step04*補足*専門用語集.md#リテラル型 literal-types](./Step04_補足_専門用語集.md#リテラル型literal-types) を見てね 🐰
 
 ```typescript
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
@@ -243,7 +243,7 @@ function formatUserProfile(profile: UserProfile): string {
 
 ##### 1. 基本的なインターセクション型
 
-> 💡 **詳細解説**: インターセクション型の詳細と実践的な活用パターンは [Step04_補足_専門用語集.md#インターセクション型intersection-types](./Step04_補足_専門用語集.md#インターセクション型intersection-types) を見てね 🐰
+> 💡 **詳細解説**: インターセクション型の詳細と実践的な活用パターンは [Step04*補足*専門用語集.md#インターセクション型 intersection-types](./Step04_補足_専門用語集.md#インターセクション型intersection-types) を見てね 🐰
 
 ```typescript
 type User = {
@@ -400,7 +400,7 @@ type PaginatedResponse<T> = ApiResponse<T[]> & {
 
 ### Section 2: 型ガードの実装パターン
 
-> 💡 **詳細解説**: 型ガードの詳細な実装パターンと活用方法は [Step04_補足_専門用語集.md#型ガードtype-guards](./Step04_補足_専門用語集.md#型ガードtype-guards) を見てね 🐰
+> 💡 **詳細解説**: 型ガードの詳細な実装パターンと活用方法は [Step04*補足*専門用語集.md#型ガード type-guards](./Step04_補足_専門用語集.md#型ガードtype-guards) を見てね 🐰
 
 #### 🔧 基本的な型ガードの実践活用
 
@@ -607,7 +607,7 @@ async function isValidUser(value: unknown): Promise<value is User> {
 
 #### 🎯 判別可能なユニオンの状態管理での実践活用
 
-> 💡 **詳細解説**: 判別可能なユニオンの詳細な設計パターンと実践的活用方法は [Step04_補足_専門用語集.md#判別可能なユニオンdiscriminated-unions](./Step04_補足_専門用語集.md#判別可能なユニオンdiscriminated-unions) を見てね 🐰
+> 💡 **詳細解説**: 判別可能なユニオンの詳細な設計パターンと実践的活用方法は [Step04*補足*専門用語集.md#判別可能なユニオン discriminated-unions](./Step04_補足_専門用語集.md#判別可能なユニオンdiscriminated-unions) を見てね 🐰
 
 **💡 なぜ判別可能なユニオンが重要なのか**
 
@@ -655,8 +655,6 @@ function handleAsyncState(state: AsyncState): string {
       return `Error ${state.code || "Unknown"}: ${state.error}`;
 
     default:
-      // 網羅性チェック
-      const _exhaustive: never = state;
       return "Unknown state";
   }
 }
@@ -749,7 +747,7 @@ function handleApiResult<T>(result: ApiResult<T>): T | null {
 
 ### Section 3: 型アサーションと高度なパターン
 
-> 💡 **詳細解説**: 型アサーションの適切な使用方法と注意点は [Step04_補足_専門用語集.md#型アサーションtype-assertion](./Step04_補足_専門用語集.md#型アサーションtype-assertion) を見てね 🐰
+> 💡 **詳細解説**: 型アサーションの適切な使用方法と注意点は [Step04*補足*専門用語集.md#型アサーション type-assertion](./Step04_補足_専門用語集.md#型アサーションtype-assertion) を見てね 🐰
 
 #### 🔧 型アサーションの適切な使用
 
@@ -854,13 +852,15 @@ function processValue(value: unknown): void {
 
 ### 演習 4-1: 型ガード実装マスター 🔰
 
+以下の要件を満たす型ガード関数を実装せよ
+
+#### 要件
+
+- 様々な型を判定する型ガード関数群
+
+#### 解答例
+
 ```typescript
-// 以下の要件を満たす型ガード関数を実装せよ
-
-// 1. 基本的な型ガード
-// 要件: 様々な型を判定する型ガード関数群
-
-// 解答例
 function isStringArray(value: unknown): value is string[] {
   return (
     Array.isArray(value) && value.every((item) => typeof item === "string")
@@ -932,298 +932,286 @@ function processApiResponse(response: unknown): Product[] {
 }
 ```
 
-### 演習 4-2: 状態管理システム 🔶
+### 演習 4-2: API レスポンス処理システム 🔶
+
+型安全な API レスポンス処理システムを実装せよ
+
+#### 要件:
+1. 成功・失敗レスポンスの型定義
+2. 型ガードを使った安全なデータ処理
+3. 複数の API エンドポイントに対応
+
+#### 解答例
 
 ```typescript
-// 型安全な状態管理システムを実装せよ
-// 要件:
-// 1. 複数の状態タイプ（loading, success, error）
-// 2. 型安全な状態遷移
-// 3. 状態に応じた適切な処理
+// 1. 具体的な API レスポンス型の定義
+type UserApiResponse =
+  | { success: true; data: User }
+  | { success: false; error: string; code?: number };
 
-// 解答例
-type RequestState<T> =
-  | { status: "idle" }
-  | { status: "loading"; progress?: number }
-  | { status: "success"; data: T; timestamp: Date }
-  | { status: "error"; error: string; retryCount: number };
+type ProductApiResponse =
+  | { success: true; data: Product }
+  | { success: false; error: string; code?: number };
 
-class StateManager<T> {
-  private state: RequestState<T> = { status: "idle" };
-  private listeners: Array<(state: RequestState<T>) => void> = [];
-
-  getState(): RequestState<T> {
-    return this.state;
-  }
-
-  setState(newState: RequestState<T>): void {
-    this.state = newState;
-    this.notifyListeners();
-  }
-
-  subscribe(listener: (state: RequestState<T>) => void): () => void {
-    this.listeners.push(listener);
-    return () => {
-      const index = this.listeners.indexOf(listener);
-      if (index > -1) {
-        this.listeners.splice(index, 1);
-      }
-    };
-  }
-
-  private notifyListeners(): void {
-    this.listeners.forEach((listener) => listener(this.state));
-  }
-
-  // 状態遷移メソッド
-  startLoading(progress?: number): void {
-    this.setState({ status: "loading", progress });
-  }
-
-  setSuccess(data: T): void {
-    this.setState({
-      status: "success",
-      data,
-      timestamp: new Date(),
-    });
-  }
-
-  setError(error: string): void {
-    const currentRetryCount =
-      this.state.status === "error" ? this.state.retryCount + 1 : 0;
-
-    this.setState({
-      status: "error",
-      error,
-      retryCount: currentRetryCount,
-    });
-  }
-
-  reset(): void {
-    this.setState({ status: "idle" });
-  }
-
-  // 状態に基づく処理
-  isLoading(): boolean {
-    return this.state.status === "loading";
-  }
-
-  hasData(): boolean {
-    return this.state.status === "success";
-  }
-
-  hasError(): boolean {
-    return this.state.status === "error";
-  }
-
-  getData(): T | null {
-    return this.state.status === "success" ? this.state.data : null;
-  }
-
-  getError(): string | null {
-    return this.state.status === "error" ? this.state.error : null;
-  }
-
-  canRetry(): boolean {
-    return this.state.status === "error" && this.state.retryCount < 3;
-  }
-}
-
-// 使用例
+// 2. データ型の定義
 interface User {
   id: string;
   name: string;
   email: string;
+  role: "admin" | "user" | "guest";
 }
 
-const userManager = new StateManager<User>();
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  category: string;
+  inStock: boolean;
+}
 
-// 状態変更の監視
-const unsubscribe = userManager.subscribe((state) => {
-  switch (state.status) {
-    case "idle":
-      console.log("Ready to load user");
-      break;
+// 3. 型ガード関数の実装
+function isUserSuccessResponse(response: UserApiResponse): response is { success: true; data: User } {
+  return response.success === true;
+}
 
-    case "loading":
-      console.log(`Loading user... ${state.progress || 0}%`);
-      break;
+function isProductSuccessResponse(response: ProductApiResponse): response is { success: true; data: Product } {
+  return response.success === true;
+}
 
-    case "success":
-      console.log(`User loaded: ${state.data.name} at ${state.timestamp}`);
-      break;
+function isUser(value: unknown): value is User {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    typeof (value as any).id === "string" &&
+    typeof (value as any).name === "string" &&
+    typeof (value as any).email === "string" &&
+    ["admin", "user", "guest"].includes((value as any).role)
+  );
+}
 
-    case "error":
-      console.log(
-        `Error loading user: ${state.error} (retry ${state.retryCount})`
-      );
-      break;
+function isProduct(value: unknown): value is Product {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    typeof (value as any).id === "string" &&
+    typeof (value as any).name === "string" &&
+    typeof (value as any).price === "number" &&
+    typeof (value as any).category === "string" &&
+    typeof (value as any).inStock === "boolean"
+  );
+}
+
+// 4. API レスポンス処理関数
+function handleUserResponse(response: UserApiResponse): string {
+  if (isUserSuccessResponse(response)) {
+    const user = response.data;
+    return `Welcome, ${user.name}! (${user.role})`;
+  } else {
+    return `Error: ${response.error}${response.code ? ` (Code: ${response.code})` : ""}`;
   }
-});
+}
 
-// 非同期データ取得
-async function fetchUser(id: string): Promise<void> {
-  userManager.startLoading();
+function handleProductResponse(response: ProductApiResponse): string {
+  if (isProductSuccessResponse(response)) {
+    const product = response.data;
+    const stockStatus = product.inStock ? "在庫あり" : "在庫切れ";
+    return `${product.name} - ¥${product.price} (${stockStatus})`;
+  } else {
+    return `商品の取得に失敗しました: ${response.error}`;
+  }
+}
 
-  try {
-    userManager.startLoading(50);
-    const response = await fetch(`/api/users/${id}`);
-    userManager.startLoading(100);
+// 5. 具体的なレスポンス処理関数（型ごとに分離）
+function processUserApiResponse(response: unknown): UserApiResponse {
+  // 基本的な構造チェック
+  if (typeof response !== "object" || response === null) {
+    return { success: false, error: "Invalid response format" };
+  }
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
+  const responseObj = response as any;
 
-    const userData = await response.json();
+  // success フィールドのチェック
+  if (typeof responseObj.success !== "boolean") {
+    return { success: false, error: "Missing success field" };
+  }
 
-    if (isUser(userData)) {
-      userManager.setSuccess(userData);
+  // 成功レスポンスの処理
+  if (responseObj.success === true) {
+    if (isUser(responseObj.data)) {
+      return { success: true, data: responseObj.data };
     } else {
-      throw new Error("Invalid user data format");
+      return { success: false, error: "Invalid user data format" };
     }
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
-    userManager.setError(errorMessage);
   }
-}
-```
 
-### 演習 4-3: 型安全なイベントシステム 🔥
-
-```typescript
-// 型安全なイベントエミッター/リスナーシステムを実装せよ
-// 要件:
-// 1. 型安全なイベント定義
-// 2. 型安全なリスナー登録
-// 3. 型安全なイベント発火
-
-// 解答例
-type EventMap = {
-  [eventName: string]: unknown[];
-};
-
-type EventListener<T extends unknown[]> = (...args: T) => void;
-
-class TypeSafeEventEmitter<TEventMap extends EventMap> {
-  private listeners: {
-    [K in keyof TEventMap]?: EventListener<TEventMap[K]>[];
-  } = {};
-
-  on<K extends keyof TEventMap>(
-    event: K,
-    listener: EventListener<TEventMap[K]>
-  ): () => void {
-    if (!this.listeners[event]) {
-      this.listeners[event] = [];
-    }
-
-    this.listeners[event]!.push(listener);
-
-    // unsubscribe function
-    return () => {
-      const listeners = this.listeners[event];
-      if (listeners) {
-        const index = listeners.indexOf(listener);
-        if (index > -1) {
-          listeners.splice(index, 1);
-        }
-      }
+  // エラーレスポンスの処理
+  if (typeof responseObj.error === "string") {
+    return {
+      success: false,
+      error: responseObj.error,
+      code: typeof responseObj.code === "number" ? responseObj.code : undefined,
     };
   }
 
-  once<K extends keyof TEventMap>(
-    event: K,
-    listener: EventListener<TEventMap[K]>
-  ): void {
-    const unsubscribe = this.on(event, (...args) => {
-      unsubscribe();
-      listener(...args);
-    });
+  return { success: false, error: "Unknown error format" };
+}
+
+function processProductApiResponse(response: unknown): ProductApiResponse {
+  // 基本的な構造チェック
+  if (typeof response !== "object" || response === null) {
+    return { success: false, error: "Invalid response format" };
   }
 
-  emit<K extends keyof TEventMap>(event: K, ...args: TEventMap[K]): void {
-    const listeners = this.listeners[event];
-    if (listeners) {
-      listeners.forEach((listener) => listener(...args));
+  const responseObj = response as any;
+
+  // success フィールドのチェック
+  if (typeof responseObj.success !== "boolean") {
+    return { success: false, error: "Missing success field" };
+  }
+
+  // 成功レスポンスの処理
+  if (responseObj.success === true) {
+    if (isProduct(responseObj.data)) {
+      return { success: true, data: responseObj.data };
+    } else {
+      return { success: false, error: "Invalid product data format" };
     }
   }
 
-  off<K extends keyof TEventMap>(
-    event: K,
-    listener?: EventListener<TEventMap[K]>
-  ): void {
-    if (!listener) {
-      delete this.listeners[event];
-      return;
-    }
-
-    const listeners = this.listeners[event];
-    if (listeners) {
-      const index = listeners.indexOf(listener);
-      if (index > -1) {
-        listeners.splice(index, 1);
-      }
-    }
+  // エラーレスポンスの処理
+  if (typeof responseObj.error === "string") {
+    return {
+      success: false,
+      error: responseObj.error,
+      code: typeof responseObj.code === "number" ? responseObj.code : undefined,
+    };
   }
 
-  removeAllListeners(): void {
-    this.listeners = {};
-  }
+  return { success: false, error: "Unknown error format" };
+}
 
-  listenerCount<K extends keyof TEventMap>(event: K): number {
-    return this.listeners[event]?.length || 0;
+// 6. 使用例とテスト
+function demonstrateApiProcessing(): void {
+  // ユーザー成功レスポンスのテスト
+  const userSuccessResponse = {
+    success: true,
+    data: {
+      id: "1",
+      name: "Alice",
+      email: "alice@example.com",
+      role: "admin",
+    },
+  };
+
+  const processedUserResponse = processUserApiResponse(userSuccessResponse);
+  console.log(handleUserResponse(processedUserResponse));
+
+  // ユーザーエラーレスポンスのテスト
+  const userErrorResponse = {
+    success: false,
+    error: "User not found",
+    code: 404,
+  };
+
+  const processedErrorResponse = processUserApiResponse(userErrorResponse);
+  console.log(handleUserResponse(processedErrorResponse));
+
+  // 商品レスポンスのテスト
+  const productResponse = {
+    success: true,
+    data: {
+      id: "p1",
+      name: "TypeScript入門書",
+      price: 3000,
+      category: "書籍",
+      inStock: true,
+    },
+  };
+
+  const processedProductResponse = processProductApiResponse(productResponse);
+  console.log(handleProductResponse(processedProductResponse));
+
+  // 不正なレスポンスのテスト
+  const invalidResponse = "invalid data";
+  const processedInvalidResponse = processUserApiResponse(invalidResponse);
+  console.log(handleUserResponse(processedInvalidResponse));
+}
+
+// 7. 実際の API 呼び出しシミュレーション
+async function fetchUserData(userId: string): Promise<UserApiResponse> {
+  try {
+    // 実際の fetch 呼び出しをシミュレート
+    const mockResponse = {
+      success: Math.random() > 0.3, // 70% の確率で成功
+      data: {
+        id: userId,
+        name: "Sample User",
+        email: "user@example.com",
+        role: "user" as const,
+      },
+      error: "Network error",
+      code: 500,
+    };
+
+    return processUserApiResponse(mockResponse);
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
   }
 }
 
-// 使用例
-interface AppEvents {
-  "user:login": [user: User];
-  "user:logout": [];
-  "data:update": [data: unknown, timestamp: Date];
-  error: [error: Error, context?: string];
-  notification: [message: string, type: "info" | "warning" | "error"];
+async function fetchProductData(productId: string): Promise<ProductApiResponse> {
+  try {
+    // 実際の fetch 呼び出しをシミュレート
+    const mockResponse = {
+      success: Math.random() > 0.2, // 80% の確率で成功
+      data: {
+        id: productId,
+        name: "Sample Product",
+        price: 1500,
+        category: "electronics",
+        inStock: true,
+      },
+      error: "Product not available",
+      code: 404,
+    };
+
+    return processProductApiResponse(mockResponse);
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
 }
 
-const eventEmitter = new TypeSafeEventEmitter<AppEvents>();
+// 使用例の実行
+demonstrateApiProcessing();
 
-// 型安全なリスナー登録
-const unsubscribeLogin = eventEmitter.on("user:login", (user) => {
-  console.log(`User ${user.name} logged in`);
+// 非同期処理の例
+fetchUserData("123").then((response) => {
+  console.log("User:", handleUserResponse(response));
 });
 
-eventEmitter.on("user:logout", () => {
-  console.log("User logged out");
+fetchProductData("p456").then((response) => {
+  console.log("Product:", handleProductResponse(response));
 });
-
-eventEmitter.on("data:update", (data, timestamp) => {
-  console.log(`Data updated at ${timestamp}:`, data);
-});
-
-eventEmitter.on("error", (error, context) => {
-  console.error(`Error in ${context || "unknown context"}:`, error.message);
-});
-
-eventEmitter.on("notification", (message, type) => {
-  console.log(`[${type.toUpperCase()}] ${message}`);
-});
-
-// 型安全なイベント発火
-eventEmitter.emit("user:login", {
-  id: "1",
-  name: "Alice",
-  email: "alice@example.com",
-});
-eventEmitter.emit("user:logout");
-eventEmitter.emit("data:update", { products: [] }, new Date());
-eventEmitter.emit("error", new Error("Something went wrong"), "user-service");
-eventEmitter.emit("notification", "Welcome to the app!", "info");
-
-// 型エラーの例（コンパイル時にキャッチされる）
-// eventEmitter.emit("user:login"); // Error: 引数が不足
-// eventEmitter.emit("user:login", "invalid"); // Error: 型が一致しない
-// eventEmitter.emit("invalid:event", "data"); // Error: 存在しないイベント
 ```
+
+**学習ポイント**:
+- **判別可能なユニオン**: `success` フィールドによる型の判別
+- **型ガード関数**: 実行時の型安全性確保
+- **実践的な応用**: 実際の API 処理での活用方法
+- **エラーハンドリング**: 型安全なエラー処理パターン
+
+**実装の特徴**:
+- **段階的な複雑さ**: 基本型定義から実用的な処理まで
+- **再利用性**: 汎用的な処理関数の設計
+- **型安全性**: すべての分岐で適切な型チェック
+- **実用性**: 実際のプロジェクトで使用できるパターン
+
 
 ## 📊 Step 4 評価基準
 
@@ -1248,7 +1236,7 @@ eventEmitter.emit("notification", "Welcome to the app!", "info");
 - [ ] 判別可能なユニオンの概念を理解している
 - [ ] 適切な判別プロパティを設計できる
 - [ ] 網羅性チェックを実装できる
-- [ ] 実用的な状態管理を実装できる
+- [ ] 実用的な API レスポンス処理を実装できる
 
 #### 型アサーション (15%)
 
@@ -1257,18 +1245,15 @@ eventEmitter.emit("notification", "Welcome to the app!", "info");
 - [ ] 型安全性を保ちながら柔軟性を確保できる
 - [ ] DOM 操作での型アサーションを適切に使用できる
 
-### 成果物チェックリスト
+### 成果物
 
-- [ ] **型ガード関数集**: 再利用可能な型ガード関数群
-- [ ] **状態管理システム**: 型安全な状態管理の実装
-- [ ] **イベントシステム**: 型安全なイベントエミッター
-- [ ] **API レスポンス処理**: 型安全なデータ処理システム
+- [ ] **APIクライアント管理システム**: Step04の学習内容を段階的に活用した4段階のAPIクライアント管理システム → [Step04成果物: APIクライアント管理システム](./Step04_成果物.md)
 
 ## 🔄 Step 5 への準備
 
 ### 次週学習内容の予習
 
-> 💡 **詳細解説**: ジェネリクスの基礎概念と実践的な活用パターンは [Step05_補足_専門用語集.md#ジェネリクスgenerics](./Step05_補足_専門用語集.md#ジェネリクスgenerics) を見てね 🐰
+> 💡 **詳細解説**: ジェネリクスの基礎概念と実践的な活用パターンは [Step05*補足*専門用語集.md#ジェネリクス generics](./Step05_補足_専門用語集.md#ジェネリクスgenerics) を見てね 🐰
 
 ```typescript
 // Step 5で学習するジェネリクスの基礎概念

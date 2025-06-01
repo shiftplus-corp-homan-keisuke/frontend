@@ -57,16 +57,17 @@ Step01_成果物/
 
 ### 🔧 技術スタック
 
-| 技術 | バージョン | 用途 |
-|------|------------|------|
-| **React** | 19.0.0 | UIライブラリ |
-| **TypeScript** | 5.6.2 | 型安全なJavaScript |
-| **Vite** | 6.0.1 | 高速開発サーバー・ビルドツール |
-| **ESLint** | 9.13.0 | コード品質チェック |
+| 技術           | バージョン | 用途                           |
+| -------------- | ---------- | ------------------------------ |
+| **React**      | 19.0.0     | UI ライブラリ                  |
+| **TypeScript** | 5.6.2      | 型安全な JavaScript            |
+| **Vite**       | 6.0.1      | 高速開発サーバー・ビルドツール |
+| **ESLint**     | 9.13.0     | コード品質チェック             |
 
 ### 📋 既存コンポーネントの概要
 
 #### 1. App.tsx（メインアプリケーション）
+
 - **役割**: アプリケーション全体の構造とレイアウト
 - **機能**:
   - ユーザーデータの管理
@@ -75,14 +76,16 @@ Step01_成果物/
 - **重要なポイント**: 課題で作成するコンポーネントがここで使用される
 
 #### 2. UserProfile.tsx（完成済み）
+
 - **役割**: ユーザー情報の表示
 - **機能**:
   - プロフィール画像、名前、メールアドレスの表示
   - 自己紹介文の表示
   - フォロワー数、フォロー数、投稿数の統計表示
-- **学習ポイント**: TypeScript型定義の実践例
+- **学習ポイント**: TypeScript 型定義の実践例
 
 #### 3. types/index.ts（型定義）
+
 - **役割**: アプリケーション全体で使用する型の定義
 - **定義済み型**:
   - `User`: ユーザー情報の型
@@ -91,9 +94,10 @@ Step01_成果物/
 
 ### 🎯 課題対象コンポーネント
 
-以下の2つのコンポーネントを実装することが課題です：
+以下の 2 つのコンポーネントを実装することが課題です：
 
 #### 📝 LikeButton.tsx（実装対象）
+
 - **期待される機能**:
   - いいね数の表示と管理
   - クリックによるいいね状態の切り替え
@@ -101,6 +105,7 @@ Step01_成果物/
   - 親コンポーネントへのコールバック
 
 #### 📝 CommentForm.tsx（実装対象）
+
 - **期待される機能**:
   - テキストエリアでのコメント入力
   - フォーム送信処理
@@ -123,10 +128,10 @@ CommentForm.tsx (課題) → callback → App.tsx
 
 ### 💡 学習のポイント
 
-1. **型安全性**: すべてのコンポーネントでTypeScriptの型定義を活用
+1. **型安全性**: すべてのコンポーネントで TypeScript の型定義を活用
 2. **状態管理**: `useState`を使った適切な状態管理
 3. **コンポーネント設計**: 再利用可能で保守しやすいコンポーネント設計
-4. **イベント処理**: TypeScriptでの型安全なイベントハンドリング
+4. **イベント処理**: TypeScript での型安全なイベントハンドリング
 
 ---
 
@@ -424,9 +429,6 @@ const handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
 
 ## 📚 参考：完成例（実装に困った場合）
 
-<details>
-<summary>⚠️ 注意：まず自分で考えてから見てください</summary>
-
 ```tsx
 // LikeButton.tsx の完成例
 import { useState } from "react";
@@ -475,7 +477,74 @@ function LikeButton({
 export default LikeButton;
 ```
 
-</details>
+```tsx
+// CommentForm.tsx の完成例
+import { useState } from "react";
+
+interface CommentFormProps {
+  onCommentSubmit: (comment: string) => void;
+}
+
+function CommentForm({ onCommentSubmit }: CommentFormProps): JSX.Element {
+  const [comment, setComment] = useState<string>("");
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
+    event.preventDefault();
+
+    if (comment.trim() === "") {
+      return;
+    }
+
+    onCommentSubmit(comment);
+    setComment("");
+  };
+
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ): void => {
+    setComment(event.target.value);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label htmlFor="comment">コメント:</label>
+        <textarea
+          id="comment"
+          value={comment}
+          onChange={handleInputChange}
+          placeholder="コメントを入力してください..."
+          rows={3}
+          style={{
+            width: "100%",
+            padding: "8px",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+            resize: "vertical",
+          }}
+        />
+      </div>
+      <button
+        type="submit"
+        disabled={comment.trim() === ""}
+        style={{
+          marginTop: "8px",
+          padding: "8px 16px",
+          backgroundColor: comment.trim() === "" ? "#ccc" : "#007bff",
+          color: "white",
+          border: "none",
+          borderRadius: "4px",
+          cursor: comment.trim() === "" ? "not-allowed" : "pointer",
+        }}
+      >
+        投稿
+      </button>
+    </form>
+  );
+}
+
+export default CommentForm;
+```
 
 ---
 

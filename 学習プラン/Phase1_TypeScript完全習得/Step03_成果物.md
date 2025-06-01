@@ -1,600 +1,447 @@
-# Step03 成果物：図書カードシステム
+# Step03 成果物：図書管理システム
 
 ---
 
-## 📝 システム概要
+## 🎯 課題の目的
 
-### 📚 基本的な図書カードシステム
+**あなたが作成するもの**: 既存のJavaScriptコードにTypeScriptのインターフェース定義を追加する
 
-**目的**: Step03で学習したインターフェースとオブジェクト型を活用して、図書カードの管理システムを実装する
+**なぜ作るのか**: Step03で学習したインターフェースとオブジェクト型を実際のコードに適用し、**既存コードを型安全にする力**を身につけるため
 
-**主要機能**:
-1. 図書カードの作成と管理
-2. 著者情報の管理
-3. 貸出状況の追跡
-4. 基本的な検索機能
-
-**使用する型システム**:
-- インターフェース: データ構造の定義
-- 継承（extends）: インターフェースの拡張
-- オプショナルプロパティ: 任意の情報の表現
-- 読み取り専用プロパティ: 不変データの保護
-- 型エイリアス: 複雑な型の簡潔な表現
+**学習目標**:
+- 既存のJavaScriptコードを読んで適切なインターフェースを設計できる
+- インターフェースの基本定義ができる
+- 継承（extends）を使ってインターフェースを拡張できる
+- オプショナルプロパティ（?）と読み取り専用プロパティ（readonly）を適切に使える
 
 ---
 
-## 🚀 段階的実装手順
+## 📋 必須提出物
 
-### Phase 1: 基本インターフェースの設計 🔰
+以下の1つのファイルのみ提出してください：
 
-#### ステップ1-1: 基本的なインターフェース定義
-
-```typescript
-// book-card.ts
-
-// 図書の状態（型エイリアス）
-type BookStatus = "available" | "borrowed" | "reserved";
-
-// 図書のカテゴリ（型エイリアス）
-type BookCategory = "fiction" | "non-fiction" | "science" | "history" | "art";
-
-// 基本的な図書情報のインターフェース
-interface Book {
-  readonly id: number;          // 図書ID（読み取り専用）
-  title: string;                // タイトル
-  author: string;               // 著者
-  isbn?: string;                // ISBN（オプショナル）
-  category: BookCategory;       // カテゴリ
-  publishedYear: number;        // 出版年
-  status: BookStatus;           // 状態
-}
-
-// 著者情報のインターフェース
-interface Author {
-  readonly id: number;          // 著者ID（読み取り専用）
-  name: string;                 // 名前
-  birthYear?: number;           // 生年（オプショナル）
-  nationality?: string;         // 国籍（オプショナル）
-  biography?: string;           // 略歴（オプショナル）
-}
-
-// 貸出記録のインターフェース
-interface BorrowRecord {
-  readonly id: number;          // 貸出ID（読み取り専用）
-  bookId: number;               // 図書ID
-  borrowerName: string;         // 借用者名
-  borrowDate: Date;             // 貸出日
-  returnDate?: Date;            // 返却日（オプショナル）
-}
-
-// 基本的な図書カード管理クラス
-class BookCardManager {
-  private books: Book[] = [];
-  private authors: Author[] = [];
-  private borrowRecords: BorrowRecord[] = [];
-  private nextBookId: number = 1;
-  private nextAuthorId: number = 1;
-  private nextBorrowId: number = 1;
-
-  // 図書の追加
-  addBook(title: string, author: string, category: BookCategory, publishedYear: number, isbn?: string): Book {
-    const book: Book = {
-      id: this.nextBookId++,
-      title,
-      author,
-      isbn,
-      category,
-      publishedYear,
-      status: "available"
-    };
-
-    this.books.push(book);
-    return book;
-  }
-
-  // 著者の追加
-  addAuthor(name: string, birthYear?: number, nationality?: string, biography?: string): Author {
-    const author: Author = {
-      id: this.nextAuthorId++,
-      name,
-      birthYear,
-      nationality,
-      biography
-    };
-
-    this.authors.push(author);
-    return author;
-  }
-
-  // 図書の検索（タイトルで）
-  findBooksByTitle(title: string): Book[] {
-    return this.books.filter(book => 
-      book.title.toLowerCase().includes(title.toLowerCase())
-    );
-  }
-
-  // 図書の検索（著者で）
-  findBooksByAuthor(author: string): Book[] {
-    return this.books.filter(book => 
-      book.author.toLowerCase().includes(author.toLowerCase())
-    );
-  }
-
-  // 図書の検索（カテゴリで）
-  findBooksByCategory(category: BookCategory): Book[] {
-    return this.books.filter(book => book.category === category);
-  }
-
-  // 全図書の取得
-  getAllBooks(): Book[] {
-    return [...this.books]; // 配列のコピーを返す
-  }
-
-  // 全著者の取得
-  getAllAuthors(): Author[] {
-    return [...this.authors]; // 配列のコピーを返す
-  }
-
-  // 利用可能な図書の取得
-  getAvailableBooks(): Book[] {
-    return this.books.filter(book => book.status === "available");
-  }
-}
+```
+📁 提出物/
+└── library-system.ts    # インターフェース定義を追加したプログラム（必須）
 ```
 
-### Phase 2: インターフェース継承と拡張 🔶
+---
 
-#### ステップ2-1: 拡張インターフェースの設計
+## ⏰ 作成手順（推奨時間配分：合計40分）
 
-```typescript
-// 詳細な図書情報（Bookインターフェースを拡張）
-interface DetailedBook extends Book {
-  description?: string;         // 説明（オプショナル）
-  pageCount?: number;           // ページ数（オプショナル）
-  publisher?: string;           // 出版社（オプショナル）
-  language: string;             // 言語
-  tags: string[];               // タグ
+### Phase 1: 既存コードの理解（10分）
+
+#### ステップ1-1: 提供されたJavaScriptコードを理解する（10分）
+
+以下のJavaScriptコードを読んで、どんなインターフェースが必要か考えてください：
+
+```javascript
+// 既存のJavaScriptコード（インターフェース定義なし）
+let books = [];
+let authors = [];
+let borrowRecords = [];
+let nextBookId = 1;
+let nextAuthorId = 1;
+let nextBorrowId = 1;
+
+function addBook(title, author, category, publishedYear, isbn) {
+  const book = {
+    id: nextBookId++,
+    title: title,
+    author: author,
+    category: category,
+    publishedYear: publishedYear,
+    isbn: isbn,
+    status: "available"
+  };
+  
+  books.push(book);
+  return book;
 }
 
-// 詳細な著者情報（Authorインターフェースを拡張）
-interface DetailedAuthor extends Author {
-  books: string[];              // 著作リスト
-  awards?: string[];            // 受賞歴（オプショナル）
-  website?: string;             // ウェブサイト（オプショナル）
-  isActive: boolean;            // 活動中かどうか
+function addAuthor(name, birthYear, nationality, biography) {
+  const author = {
+    id: nextAuthorId++,
+    name: name,
+    birthYear: birthYear,
+    nationality: nationality,
+    biography: biography
+  };
+  
+  authors.push(author);
+  return author;
 }
 
-// 拡張された貸出記録（BorrowRecordインターフェースを拡張）
-interface DetailedBorrowRecord extends BorrowRecord {
-  dueDate: Date;                // 返却予定日
-  isOverdue: boolean;           // 延滞かどうか
-  renewalCount: number;         // 更新回数
-  notes?: string;               // 備考（オプショナル）
+function borrowBook(bookId, borrowerName) {
+  const book = books.find(b => b.id === bookId);
+  
+  if (!book || book.status !== "available") {
+    return null;
+  }
+  
+  const borrowRecord = {
+    id: nextBorrowId++,
+    bookId: bookId,
+    borrowerName: borrowerName,
+    borrowDate: new Date(),
+    returnDate: null
+  };
+  
+  borrowRecords.push(borrowRecord);
+  book.status = "borrowed";
+  
+  return borrowRecord;
 }
 
-// 図書館の統計情報
-interface LibraryStats {
-  totalBooks: number;
-  availableBooks: number;
-  borrowedBooks: number;
-  totalAuthors: number;
-  booksByCategory: { [category: string]: number };
+function returnBook(borrowId) {
+  const record = borrowRecords.find(r => r.id === borrowId);
+  
+  if (!record || record.returnDate) {
+    return false;
+  }
+  
+  record.returnDate = new Date();
+  
+  const book = books.find(b => b.id === record.bookId);
+  if (book) {
+    book.status = "available";
+  }
+  
+  return true;
 }
 
-// 拡張された図書カード管理クラス
-class AdvancedBookCardManager extends BookCardManager {
-  private detailedBooks: DetailedBook[] = [];
-  private detailedAuthors: DetailedAuthor[] = [];
-  private detailedBorrowRecords: DetailedBorrowRecord[] = [];
-
-  // 詳細な図書の追加
-  addDetailedBook(
-    title: string, 
-    author: string, 
-    category: BookCategory, 
-    publishedYear: number,
-    language: string,
-    tags: string[],
-    isbn?: string,
-    description?: string,
-    pageCount?: number,
-    publisher?: string
-  ): DetailedBook {
-    const basicBook = this.addBook(title, author, category, publishedYear, isbn);
-    
-    const detailedBook: DetailedBook = {
-      ...basicBook,
-      description,
-      pageCount,
-      publisher,
-      language,
-      tags: [...tags]
-    };
-
-    this.detailedBooks.push(detailedBook);
-    return detailedBook;
-  }
-
-  // 詳細な著者の追加
-  addDetailedAuthor(
-    name: string,
-    isActive: boolean,
-    birthYear?: number,
-    nationality?: string,
-    biography?: string,
-    books: string[] = [],
-    awards?: string[],
-    website?: string
-  ): DetailedAuthor {
-    const basicAuthor = this.addAuthor(name, birthYear, nationality, biography);
-    
-    const detailedAuthor: DetailedAuthor = {
-      ...basicAuthor,
-      books: [...books],
-      awards: awards ? [...awards] : undefined,
-      website,
-      isActive
-    };
-
-    this.detailedAuthors.push(detailedAuthor);
-    return detailedAuthor;
-  }
-
-  // 図書の貸出
-  borrowBook(bookId: number, borrowerName: string): DetailedBorrowRecord | null {
-    const book = this.getAllBooks().find(b => b.id === bookId);
-    
-    if (!book || book.status !== "available") {
-      return null;
-    }
-
-    const borrowDate = new Date();
-    const dueDate = new Date();
-    dueDate.setDate(dueDate.getDate() + 14); // 2週間後
-
-    const borrowRecord: DetailedBorrowRecord = {
-      id: this.nextBorrowId++,
-      bookId,
-      borrowerName,
-      borrowDate,
-      dueDate,
-      isOverdue: false,
-      renewalCount: 0
-    };
-
-    this.detailedBorrowRecords.push(borrowRecord);
-    book.status = "borrowed";
-
-    return borrowRecord;
-  }
-
-  // 図書の返却
-  returnBook(borrowId: number): boolean {
-    const record = this.detailedBorrowRecords.find(r => r.id === borrowId);
-    
-    if (!record || record.returnDate) {
-      return false;
-    }
-
-    record.returnDate = new Date();
-    
-    const book = this.getAllBooks().find(b => b.id === record.bookId);
-    if (book) {
-      book.status = "available";
-    }
-
-    return true;
-  }
-
-  // 貸出の更新
-  renewBorrow(borrowId: number): boolean {
-    const record = this.detailedBorrowRecords.find(r => r.id === borrowId);
-    
-    if (!record || record.returnDate || record.renewalCount >= 2) {
-      return false;
-    }
-
-    record.dueDate.setDate(record.dueDate.getDate() + 14);
-    record.renewalCount++;
-    record.isOverdue = false;
-
-    return true;
-  }
-
-  // 延滞チェック
-  checkOverdueBooks(): DetailedBorrowRecord[] {
-    const today = new Date();
-    const overdueRecords: DetailedBorrowRecord[] = [];
-
-    for (const record of this.detailedBorrowRecords) {
-      if (!record.returnDate && record.dueDate < today) {
-        record.isOverdue = true;
-        overdueRecords.push(record);
-      }
-    }
-
-    return overdueRecords;
-  }
-
-  // 統計情報の取得
-  getLibraryStats(): LibraryStats {
-    const allBooks = this.getAllBooks();
-    const categoryCount: { [category: string]: number } = {};
-
-    for (const book of allBooks) {
-      categoryCount[book.category] = (categoryCount[book.category] || 0) + 1;
-    }
-
-    return {
-      totalBooks: allBooks.length,
-      availableBooks: allBooks.filter(b => b.status === "available").length,
-      borrowedBooks: allBooks.filter(b => b.status === "borrowed").length,
-      totalAuthors: this.getAllAuthors().length,
-      booksByCategory: categoryCount
-    };
-  }
-
-  // 詳細な図書の取得
-  getDetailedBooks(): DetailedBook[] {
-    return [...this.detailedBooks];
-  }
-
-  // 詳細な著者の取得
-  getDetailedAuthors(): DetailedAuthor[] {
-    return [...this.detailedAuthors];
-  }
-
-  // 貸出記録の取得
-  getBorrowRecords(): DetailedBorrowRecord[] {
-    return [...this.detailedBorrowRecords];
-  }
-
-  // 私有プロパティへのアクセス（継承のため）
-  protected get nextBorrowId(): number {
-    return this['nextBorrowId'] || 1;
-  }
-
-  protected set nextBorrowId(value: number) {
-    this['nextBorrowId'] = value;
-  }
+function findBooksByTitle(title) {
+  return books.filter(book => 
+    book.title.toLowerCase().includes(title.toLowerCase())
+  );
 }
-```
 
-### Phase 3: 実行例とテスト 🌟
+function findBooksByAuthor(author) {
+  return books.filter(book => 
+    book.author.toLowerCase().includes(author.toLowerCase())
+  );
+}
 
-#### ステップ3-1: システムのデモンストレーション
+function getAvailableBooks() {
+  return books.filter(book => book.status === "available");
+}
 
-```typescript
-// 使用例とテスト
-function demonstrateBookCardSystem(): void {
-  const library = new AdvancedBookCardManager();
+function getAllBooks() {
+  return [...books];
+}
 
-  console.log("=== 図書カードシステムのデモ ===");
+function getAllAuthors() {
+  return [...authors];
+}
 
+function runExample() {
+  console.log("=== 図書管理システムのデモ ===");
+  
   // 著者の追加
-  const author1 = library.addDetailedAuthor(
-    "夏目漱石",
-    false, // 故人のため非活動
-    1867,
-    "日本",
-    "明治時代の小説家、評論家、英文学者",
-    ["吾輩は猫である", "坊っちゃん", "こころ"],
-    ["文学博士"]
-  );
-
-  const author2 = library.addDetailedAuthor(
-    "村上春樹",
-    true, // 現在も活動中
-    1949,
-    "日本",
-    "現代日本文学の代表的作家",
-    ["ノルウェイの森", "海辺のカフカ", "1Q84"],
-    ["フランツ・カフカ賞", "エルサレム賞"]
-  );
-
-  console.log("追加された著者:", [author1, author2]);
-
+  addAuthor("夏目漱石", 1867, "日本", "明治時代の小説家");
+  addAuthor("村上春樹", 1949, "日本", "現代日本文学の代表的作家");
+  
   // 図書の追加
-  const book1 = library.addDetailedBook(
-    "吾輩は猫である",
-    "夏目漱石",
-    "fiction",
-    1905,
-    "日本語",
-    ["古典", "文学", "明治時代"],
-    "978-4-10-101001-1",
-    "猫の視点から人間社会を描いた風刺小説",
-    400,
-    "新潮社"
-  );
-
-  const book2 = library.addDetailedBook(
-    "ノルウェイの森",
-    "村上春樹",
-    "fiction",
-    1987,
-    "日本語",
-    ["現代文学", "青春小説"],
-    "978-4-06-274881-5",
-    "1960年代後半の東京を舞台にした青春小説",
-    296,
-    "講談社"
-  );
-
-  const book3 = library.addDetailedBook(
-    "相対性理論入門",
-    "アインシュタイン",
-    "science",
-    1916,
-    "日本語",
-    ["物理学", "科学", "理論"],
-    undefined,
-    "相対性理論の基本概念を解説",
-    250,
-    "岩波書店"
-  );
-
-  console.log("追加された図書:", [book1, book2, book3]);
-
+  addBook("吾輩は猫である", "夏目漱石", "fiction", 1905, "978-4-10-101001-1");
+  addBook("ノルウェイの森", "村上春樹", "fiction", 1987, "978-4-06-274881-5");
+  addBook("相対性理論入門", "アインシュタイン", "science", 1916);
+  
   // 図書の検索
-  console.log("\n--- 図書検索 ---");
-  console.log("タイトル検索（猫）:", library.findBooksByTitle("猫"));
-  console.log("著者検索（村上）:", library.findBooksByAuthor("村上"));
-  console.log("カテゴリ検索（fiction）:", library.findBooksByCategory("fiction"));
-
+  console.log("タイトル検索（猫）:", findBooksByTitle("猫"));
+  console.log("著者検索（村上）:", findBooksByAuthor("村上"));
+  
   // 図書の貸出
-  console.log("\n--- 図書貸出 ---");
-  const borrow1 = library.borrowBook(1, "田中太郎");
-  const borrow2 = library.borrowBook(2, "佐藤花子");
+  const borrow1 = borrowBook(1, "田中太郎");
+  const borrow2 = borrowBook(2, "佐藤花子");
   
   console.log("貸出記録1:", borrow1);
   console.log("貸出記録2:", borrow2);
-
+  
   // 利用可能な図書の確認
-  console.log("\n--- 利用可能な図書 ---");
-  console.log("利用可能な図書:", library.getAvailableBooks());
-
-  // 貸出の更新
-  if (borrow1) {
-    const renewed = library.renewBorrow(borrow1.id);
-    console.log("貸出更新成功:", renewed);
-  }
-
-  // 統計情報
-  console.log("\n--- 統計情報 ---");
-  const stats = library.getLibraryStats();
-  console.log("図書館統計:", stats);
-
+  console.log("利用可能な図書:", getAvailableBooks());
+  
   // 図書の返却
-  console.log("\n--- 図書返却 ---");
   if (borrow1) {
-    const returned = library.returnBook(borrow1.id);
+    const returned = returnBook(borrow1.id);
     console.log("返却成功:", returned);
   }
-
-  // 延滞チェック
-  console.log("\n--- 延滞チェック ---");
-  const overdueBooks = library.checkOverdueBooks();
-  console.log("延滞図書:", overdueBooks.length, "冊");
-}
-
-// インターフェース継承のデモ
-function demonstrateInterfaceInheritance(): void {
-  console.log("\n=== インターフェース継承のデモ ===");
-
-  // 基本的なBookとして扱う
-  const basicBook: Book = {
-    id: 1,
-    title: "基本図書",
-    author: "基本著者",
-    category: "fiction",
-    publishedYear: 2024,
-    status: "available"
-  };
-
-  // DetailedBookとして拡張
-  const detailedBook: DetailedBook = {
-    ...basicBook,
-    description: "詳細な説明",
-    pageCount: 300,
-    publisher: "出版社",
-    language: "日本語",
-    tags: ["タグ1", "タグ2"]
-  };
-
-  console.log("基本図書:", basicBook);
-  console.log("詳細図書:", detailedBook);
-
-  // 型の互換性確認
-  const bookArray: Book[] = [basicBook, detailedBook];
-  console.log("Book配列として扱える:", bookArray.length, "冊");
-
-  // オプショナルプロパティの確認
-  console.log("\n--- オプショナルプロパティ ---");
-  const books: Book[] = [
-    { id: 1, title: "本1", author: "著者1", category: "fiction", publishedYear: 2020, status: "available" },
-    { id: 2, title: "本2", author: "著者2", category: "science", publishedYear: 2021, status: "borrowed", isbn: "123-456" }
-  ];
-
-  books.forEach(book => {
-    const isbnInfo = book.isbn ? `ISBN: ${book.isbn}` : "ISBN未登録";
-    console.log(`${book.title} - ${isbnInfo}`);
-  });
-}
-
-// 型安全性のデモ
-function demonstrateTypeSafety(): void {
-  console.log("\n=== 型安全性のデモ ===");
-
-  const library = new BookCardManager();
-
-  // 正しい使用法
-  const book = library.addBook("テスト本", "テスト著者", "fiction", 2024);
-  console.log("正しい使用:", book);
-
-  // TypeScriptが防ぐエラー（コメントアウト）
-  // library.addBook("本", "著者", "invalid-category", 2024); // Error: 無効なカテゴリ
-  // book.id = 999; // Error: readonlyプロパティは変更不可
-
-  // 型ガードの例
-  function processBookStatus(status: BookStatus): string {
-    switch (status) {
-      case "available":
-        return "貸出可能";
-      case "borrowed":
-        return "貸出中";
-      case "reserved":
-        return "予約済み";
-      default:
-        // TypeScriptが全てのケースをチェック
-        throw new Error("未知の状態です");
-    }
-  }
-
-  console.log("状態処理の例:");
-  console.log("available:", processBookStatus("available"));
-  console.log("borrowed:", processBookStatus("borrowed"));
-  console.log("reserved:", processBookStatus("reserved"));
+  
+  console.log("全図書:", getAllBooks());
+  console.log("全著者:", getAllAuthors());
 }
 
 // 実行
-demonstrateBookCardSystem();
-demonstrateInterfaceInheritance();
-demonstrateTypeSafety();
+runExample();
 ```
+
+### Phase 2: インターフェース定義の追加（25分）
+
+#### ステップ2-1: 基本インターフェースの定義（15分）
+
+上記のコードを見て、以下のインターフェースを定義してください：
+
+1. **図書情報を表現するインターフェース**
+   - `addBook`関数が返すオブジェクトの型
+   - どんなプロパティが必要でしょうか？
+   - どのプロパティがオプショナル（?）でしょうか？
+   - どのプロパティが読み取り専用（readonly）でしょうか？
+
+2. **著者情報を表現するインターフェース**
+   - `addAuthor`関数が返すオブジェクトの型
+   - どんなプロパティが必要でしょうか？
+
+3. **貸出記録を表現するインターフェース**
+   - `borrowBook`関数が返すオブジェクトの型
+   - どんなプロパティが必要でしょうか？
+
+**🤔 考えてみましょう**:
+- `isbn`は必須？オプショナル？
+- `id`は変更可能？読み取り専用？
+- `returnDate`は最初からある？後から追加？
+
+#### ステップ2-2: 型エイリアスの定義（5分）
+
+```typescript
+// TODO: 以下の型エイリアスを定義してください
+// 図書の状態を表現する型（"available" | "borrowed" | "reserved"）
+// 図書のカテゴリを表現する型（"fiction" | "non-fiction" | "science" | "history"）
+```
+
+#### ステップ2-3: 変数と関数に型注釈を追加（5分）
+
+```typescript
+// TODO: 以下の変数と関数に適切な型注釈を追加してください
+let books = [];
+let authors = [];
+let borrowRecords = [];
+
+function addBook(title, author, category, publishedYear, isbn) { /* ... */ }
+function addAuthor(name, birthYear, nationality, biography) { /* ... */ }
+function borrowBook(bookId, borrowerName) { /* ... */ }
+// その他の関数...
+```
+
+### Phase 3: 動作確認（5分）
+
+#### ステップ3-1: 動作確認
+TypeScript Playgroundまたはローカル環境で実行して動作を確認
 
 ---
 
-## 🎓 学習のヒント
+## ✅ 最低合格要件
 
-### 💡 実装時のポイント
+以下の要件を**すべて満たす**ことで合格とします：
 
-1. **インターフェース設計**: 共通プロパティを基底インターフェースに定義
-2. **継承の活用**: `extends`キーワードで既存インターフェースを拡張
-3. **オプショナルプロパティ**: `?`を使用して任意のプロパティを定義
-4. **読み取り専用プロパティ**: `readonly`でデータの不変性を保証
-5. **型エイリアス**: 複雑な型に分かりやすい名前を付ける
+### 🔧 技術要件
+- [ ] TypeScriptでコンパイルエラーが発生しない
+- [ ] **インターフェースを3つ以上定義している**（最重要！）
+- [ ] **型エイリアスを2つ以上定義している**
+- [ ] すべての変数に適切な型注釈が付いている
+- [ ] すべての関数の引数と戻り値に適切な型注釈が付いている
+
+### 🎯 機能要件
+- [ ] 元のJavaScriptコードと同じ動作をする
+- [ ] 図書の追加・検索ができる
+- [ ] 著者の追加ができる
+- [ ] 図書の貸出・返却ができる
+
+### 💭 インターフェース要件
+- [ ] 図書情報のインターフェースが正しく定義されている
+- [ ] 著者情報のインターフェースが正しく定義されている
+- [ ] 貸出記録のインターフェースが正しく定義されている
+- [ ] オプショナルプロパティ（?）が適切に使われている
+- [ ] 読み取り専用プロパティ（readonly）が適切に使われている
+
+---
+
+## 📊 評価基準
+
+| 項目 | 配点 | 評価ポイント |
+|------|------|-------------|
+| **インターフェース設計力** | 50点 | 適切なインターフェースを自分で設計できている |
+| **型注釈の正確性** | 30点 | 全ての変数・関数に適切な型注釈が付いている |
+| **機能の完成度** | 20点 | 元のコードと同じ動作をする |
+
+**合格ライン**: 70点以上
+
+---
+
+## 💡 インターフェース設計のヒント
+
+### 🤔 インターフェースを考える時の質問
+
+1. **このオブジェクトにはどんな情報が含まれる？**
+   - 図書 → タイトル、著者、カテゴリ、出版年、ISBN、状態、ID
+   - 著者 → 名前、生年、国籍、略歴、ID
+   - 貸出記録 → 図書ID、借用者名、貸出日、返却日、ID
+
+2. **どの情報が必須？どの情報がオプショナル？**
+   - ISBN → 古い本にはないかも → オプショナル（?）
+   - 生年 → 不明な場合がある → オプショナル（?）
+   - 返却日 → 最初はnull → オプショナル（?）
+
+3. **どの情報が変更不可？**
+   - ID → 一度決まったら変更しない → 読み取り専用（readonly）
+
+### 📝 インターフェースの基本例
+
+```typescript
+// 基本的なインターフェース
+interface User {
+  readonly id: number;    // 読み取り専用
+  name: string;           // 必須
+  email?: string;         // オプショナル
+}
+
+// 継承を使ったインターフェース
+interface DetailedUser extends User {
+  age: number;
+  address: string;
+}
+
+// 型エイリアス
+type Status = "active" | "inactive" | "pending";
+type Role = "admin" | "user" | "guest";
+```
 
 ### ⚠️ よくある間違い
 
-- インターフェースのプロパティ名を間違える
-- オプショナルプロパティの存在チェックを忘れる
-- 読み取り専用プロパティに値を代入しようとする
-- 継承時に基底インターフェースのプロパティを忘れる
-- 型エイリアスとインターフェースの使い分けを間違える
+1. **オプショナルプロパティの見落とし**
+   ```typescript
+   // ❌ 間違い：ISBNは必須ではない
+   interface Book {
+     id: number;
+     title: string;
+     isbn: string;  // 古い本にはISBNがない場合がある
+   }
+   
+   // ✅ 正解：ISBNはオプショナル
+   interface Book {
+     readonly id: number;
+     title: string;
+     isbn?: string;  // オプショナル
+   }
+   ```
 
-### 🚀 発展課題（任意）
+2. **読み取り専用プロパティの見落とし**
+   ```typescript
+   // ❌ 間違い：IDは変更可能にすべきではない
+   interface Book {
+     id: number;  // 変更可能
+     title: string;
+   }
+   
+   // ✅ 正解：IDは読み取り専用
+   interface Book {
+     readonly id: number;  // 読み取り専用
+     title: string;
+   }
+   ```
 
-余裕がある場合は以下にも挑戦してみてください：
-
-- 図書の評価システム（星評価）
-- 予約システムの実装
-- 図書の在庫管理機能
-- 著者の詳細検索機能
-- 貸出履歴の分析機能
+3. **型エイリアスを使わない**
+   ```typescript
+   // ❌ 間違い：文字列リテラルを直接使用
+   interface Book {
+     status: "available" | "borrowed" | "reserved";
+     category: "fiction" | "non-fiction" | "science";
+   }
+   
+   // ✅ 正解：型エイリアスを使用
+   type BookStatus = "available" | "borrowed" | "reserved";
+   type BookCategory = "fiction" | "non-fiction" | "science";
+   
+   interface Book {
+     status: BookStatus;
+     category: BookCategory;
+   }
+   ```
 
 ---
 
-**📌 重要**: この成果物はStep03の学習内容の総まとめです。インターフェースから継承、オプショナルプロパティまで、TypeScriptのオブジェクト型システムを実践的に活用しながら実装しましょう。
+## 📚 参考：完成例（インターフェース定義の答えを見たい場合）
+
+<details>
+<summary>⚠️ 注意：まず自分で考えてから見てください</summary>
+
+```typescript
+// 型エイリアス
+type BookStatus = "available" | "borrowed" | "reserved";
+type BookCategory = "fiction" | "non-fiction" | "science" | "history";
+
+// インターフェース定義
+interface Book {
+  readonly id: number;
+  title: string;
+  author: string;
+  category: BookCategory;
+  publishedYear: number;
+  isbn?: string;  // オプショナル
+  status: BookStatus;
+}
+
+interface Author {
+  readonly id: number;
+  name: string;
+  birthYear?: number;  // オプショナル
+  nationality?: string;  // オプショナル
+  biography?: string;  // オプショナル
+}
+
+interface BorrowRecord {
+  readonly id: number;
+  bookId: number;
+  borrowerName: string;
+  borrowDate: Date;
+  returnDate?: Date;  // オプショナル
+}
+
+// 変数の型注釈
+let books: Book[] = [];
+let authors: Author[] = [];
+let borrowRecords: BorrowRecord[] = [];
+let nextBookId: number = 1;
+let nextAuthorId: number = 1;
+let nextBorrowId: number = 1;
+
+// 関数の型注釈
+function addBook(
+  title: string, 
+  author: string, 
+  category: BookCategory, 
+  publishedYear: number, 
+  isbn?: string
+): Book {
+  // 実装
+}
+
+function addAuthor(
+  name: string, 
+  birthYear?: number, 
+  nationality?: string, 
+  biography?: string
+): Author {
+  // 実装
+}
+
+function borrowBook(bookId: number, borrowerName: string): BorrowRecord | null {
+  // 実装
+}
+```
+
+</details>
+
+---
+
+## 🚀 発展課題（任意）
+
+余裕がある場合は以下にも挑戦してみてください：
+
+- [ ] インターフェースの継承（extends）を使った拡張
+- [ ] より詳細な図書情報のインターフェース
+- [ ] 図書館の統計情報を表現するインターフェース
+
+---
+
+**📌 重要**: この課題の目的は**既存のJavaScriptコードを読んで適切なインターフェースを設計する力**を身につけることです。TypeScriptのインターフェースとオブジェクト型システムを実践的に学習しましょう。
 
 **🌟 次のステップ**: Step04では、ユニオン型と型ガードについて学習します！

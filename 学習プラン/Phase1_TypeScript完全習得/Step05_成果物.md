@@ -1,615 +1,570 @@
-# Step05 成果物：簡単なジェネリクス学習システム
+# Step05 成果物：データ処理システム
 
 ---
 
-## 📝 システム概要
+## 🎯 課題の目的
 
-### 🔧 基本的なジェネリクス学習システム
+**あなたが作成するもの**: 既存のJavaScriptコードにTypeScriptのジェネリクスを追加する
 
-**目的**: Step05で学習したジェネリクスの基礎を、初学者にとって理解しやすい形で段階的に実装する
+**なぜ作るのか**: Step05で学習したジェネリクスの基礎を実際のコードに適用し、**既存コードを型安全で再利用可能にする力**を身につけるため
 
-**主要機能**:
-1. 基本的なジェネリック関数（身近な例）
-2. 簡単なジェネリック制約
-3. シンプルなジェネリッククラス
-4. 実用的だが理解しやすい統合例
-
-**使用するジェネリクス技術**:
-- 基本ジェネリック関数: `<T>` を使った型安全な関数
-- ジェネリック制約: `extends` キーワードによる型制限
-- ジェネリッククラス: 再利用可能なクラス設計
-- 型推論: TypeScriptの自動型推論の活用
+**学習目標**:
+- 既存のJavaScriptコードを読んで適切なジェネリクスを設計できる
+- ジェネリック関数（`<T>`）を正しく定義できる
+- ジェネリック制約（`extends`）を使って型を制限できる
+- 型推論を活用して実用的なジェネリック関数を作成できる
 
 ---
 
-## 🚀 段階的実装手順
+## 📋 必須提出物
 
-### Phase 1: 基本ジェネリック関数 🔰
+以下の1つのファイルのみ提出してください：
 
-#### ステップ1-1: 身近な例でのジェネリック関数
+```
+📁 提出物/
+└── data-processor.ts    # ジェネリクスを追加したプログラム（必須）
+```
 
-```typescript
-// generic-basics.ts
+---
 
-// 最も基本的なジェネリック関数
-// 値をそのまま返すidentity関数
-function identity<T>(value: T): T {
-  return value;
+## ⏰ 作成手順（推奨時間配分：合計50分）
+
+### Phase 1: 既存コードの理解（15分）
+
+#### ステップ1-1: 提供されたJavaScriptコードを理解する（15分）
+
+以下のJavaScriptコードを読んで、どんなジェネリクスが必要か考えてください：
+
+```javascript
+// 既存のJavaScriptコード（ジェネリクスなし）
+let items = [];
+let users = [];
+let products = [];
+
+function addItem(array, item) {
+  array.push(item);
+  return item;
 }
 
-// 配列の最初の要素を安全に取得
-function first<T>(array: T[]): T | undefined {
+function getFirst(array) {
   return array.length > 0 ? array[0] : undefined;
 }
 
-// 配列の最後の要素を安全に取得
-function last<T>(array: T[]): T | undefined {
+function getLast(array) {
   return array.length > 0 ? array[array.length - 1] : undefined;
 }
 
-// 2つの値をペアにする関数
-function makePair<T, U>(first: T, second: U): [T, U] {
-  return [first, second];
+function findItem(array, predicate) {
+  for (let i = 0; i < array.length; i++) {
+    if (predicate(array[i])) {
+      return array[i];
+    }
+  }
+  return undefined;
 }
 
-// 基本的な配列フィルタリング
-function simpleFilter<T>(array: T[], predicate: (item: T) => boolean): T[] {
-  const result: T[] = [];
-  for (const item of array) {
-    if (predicate(item)) {
-      result.push(item);
+function filterItems(array, predicate) {
+  const result = [];
+  for (let i = 0; i < array.length; i++) {
+    if (predicate(array[i])) {
+      result.push(array[i]);
     }
   }
   return result;
 }
 
-// 基本的な配列マッピング
-function simpleMap<T, U>(array: T[], transform: (item: T) => U): U[] {
-  const result: U[] = [];
-  for (const item of array) {
-    result.push(transform(item));
+function mapItems(array, transform) {
+  const result = [];
+  for (let i = 0; i < array.length; i++) {
+    result.push(transform(array[i]));
   }
   return result;
 }
 
-// 使用例とテスト
-console.log("=== Phase 1: 基本ジェネリック関数のテスト ===");
-
-// identity関数のテスト
-const numberValue = identity(42);        // number型
-const stringValue = identity("hello");   // string型
-const booleanValue = identity(true);     // boolean型
-
-console.log("Identity関数:");
-console.log(`数値: ${numberValue}`);
-console.log(`文字列: ${stringValue}`);
-console.log(`真偽値: ${booleanValue}`);
-
-// 配列操作のテスト
-const numbers = [1, 2, 3, 4, 5];
-const names = ["Alice", "Bob", "Charlie"];
-
-console.log("\n配列操作:");
-console.log(`数値配列の最初: ${first(numbers)}`);      // 1
-console.log(`数値配列の最後: ${last(numbers)}`);       // 5
-console.log(`名前配列の最初: ${first(names)}`);        // "Alice"
-console.log(`名前配列の最後: ${last(names)}`);         // "Charlie"
-
-// 空配列のテスト
-const emptyNumbers: number[] = [];
-console.log(`空配列の最初: ${first(emptyNumbers)}`);   // undefined
-
-// ペア作成のテスト
-const numberStringPair = makePair(123, "test");
-const booleanNumberPair = makePair(true, 456);
-
-console.log("\nペア作成:");
-console.log("数値と文字列のペア:", numberStringPair);
-console.log("真偽値と数値のペア:", booleanNumberPair);
-
-// フィルタリングとマッピングのテスト
-const evenNumbers = simpleFilter(numbers, (n) => n % 2 === 0);
-const doubledNumbers = simpleMap(numbers, (n) => n * 2);
-const nameLengths = simpleMap(names, (name) => name.length);
-
-console.log("\nフィルタリングとマッピング:");
-console.log("偶数のみ:", evenNumbers);
-console.log("2倍した数値:", doubledNumbers);
-console.log("名前の長さ:", nameLengths);
-```
-
-### Phase 2: 簡単なジェネリック制約 🔶
-
-#### ステップ2-1: extends制約の基本
-
-```typescript
-// generic-constraints.ts
-
-// length プロパティを持つ値の長さを取得
-function getLength<T extends { length: number }>(item: T): number {
-  return item.length;
-}
-
-// name プロパティを持つオブジェクトの情報を表示
-function printInfo<T extends { name: string }>(item: T): string {
-  return `名前: ${item.name}`;
-}
-
-// id プロパティを持つオブジェクトのIDを取得
-function getId<T extends { id: number | string }>(item: T): number | string {
-  return item.id;
-}
-
-// keyof制約を使った安全なプロパティアクセス
-function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
+function getProperty(obj, key) {
   return obj[key];
 }
 
-// オブジェクトのプロパティを安全に更新
-function updateProperty<T, K extends keyof T>(
-  obj: T, 
-  key: K, 
-  value: T[K]
-): T {
+function updateProperty(obj, key, value) {
   return {
     ...obj,
     [key]: value
   };
 }
 
-// 複数のプロパティを持つオブジェクトの情報を取得
-function getObjectInfo<T extends { name: string; age: number }>(
-  person: T
-): string {
-  return `${person.name}さんは${person.age}歳です`;
+function getLength(item) {
+  return item.length;
 }
 
-// 使用例とテスト
-console.log("=== Phase 2: ジェネリック制約のテスト ===");
-
-// length制約のテスト
-console.log("Length制約:");
-console.log(`文字列の長さ: ${getLength("hello")}`);        // 5
-console.log(`配列の長さ: ${getLength([1, 2, 3])}`);        // 3
-console.log(`配列の長さ: ${getLength(["a", "b"])}`);       // 2
-
-// 以下はエラーになる（コメントアウト）
-// console.log(getLength(123)); // Error: number doesn't have length
-
-// name制約のテスト
-const user = { name: "田中太郎", age: 30 };
-const product = { name: "商品A", price: 1000 };
-
-console.log("\nName制約:");
-console.log(printInfo(user));     // "名前: 田中太郎"
-console.log(printInfo(product));  // "名前: 商品A"
-
-// id制約のテスト
-const userWithId = { id: 1, name: "佐藤花子" };
-const productWithStringId = { id: "PROD-001", name: "商品B" };
-
-console.log("\nID制約:");
-console.log(`ユーザーID: ${getId(userWithId)}`);           // 1
-console.log(`商品ID: ${getId(productWithStringId)}`);      // "PROD-001"
-
-// keyof制約のテスト
-interface Person {
-  name: string;
-  age: number;
-  email: string;
+function getName(item) {
+  return item.name;
 }
 
-const person: Person = {
-  name: "山田次郎",
-  age: 25,
-  email: "yamada@example.com"
-};
-
-console.log("\nKeyof制約:");
-console.log(`名前: ${getProperty(person, "name")}`);       // "山田次郎"
-console.log(`年齢: ${getProperty(person, "age")}`);        // 25
-console.log(`メール: ${getProperty(person, "email")}`);    // "yamada@example.com"
-
-// 以下はエラーになる（コメントアウト）
-// console.log(getProperty(person, "invalid")); // Error: invalid property
-
-// プロパティ更新のテスト
-const updatedPerson = updateProperty(person, "age", 26);
-console.log("\nプロパティ更新:");
-console.log("更新前の年齢:", person.age);        // 25
-console.log("更新後の年齢:", updatedPerson.age); // 26
-
-// 複合制約のテスト
-const student = { name: "鈴木一郎", age: 20, grade: "A" };
-console.log("\n複合制約:");
-console.log(getObjectInfo(student)); // "鈴木一郎さんは20歳です"
-```
-
-### Phase 3: シンプルなジェネリッククラス 🔥
-
-#### ステップ3-1: 基本的なジェネリッククラス
-
-```typescript
-// generic-classes.ts
-
-// 値を包むシンプルなBoxクラス
-class Box<T> {
-  private value: T;
-
-  constructor(value: T) {
-    this.value = value;
-  }
-
-  // 値を取得
-  getValue(): T {
-    return this.value;
-  }
-
-  // 値を設定
-  setValue(newValue: T): void {
-    this.value = newValue;
-  }
-
-  // 値を変換して新しいBoxを作成
-  map<U>(transform: (value: T) => U): Box<U> {
-    return new Box(transform(this.value));
-  }
-
-  // 値の情報を文字列で取得
-  toString(): string {
-    return `Box(${this.value})`;
-  }
+function getId(item) {
+  return item.id;
 }
 
-// 2つの値を持つPairクラス
-class Pair<T, U> {
-  constructor(
-    private first: T,
-    private second: U
-  ) {}
-
-  // 最初の値を取得
-  getFirst(): T {
-    return this.first;
-  }
-
-  // 2番目の値を取得
-  getSecond(): U {
-    return this.second;
-  }
-
-  // 値を入れ替えた新しいPairを作成
-  swap(): Pair<U, T> {
-    return new Pair(this.second, this.first);
-  }
-
-  // 両方の値を変換
-  map<V, W>(
-    firstTransform: (value: T) => V,
-    secondTransform: (value: U) => W
-  ): Pair<V, W> {
-    return new Pair(
-      firstTransform(this.first),
-      secondTransform(this.second)
-    );
-  }
-
-  // 文字列表現
-  toString(): string {
-    return `Pair(${this.first}, ${this.second})`;
-  }
+function createPair(first, second) {
+  return {
+    first: first,
+    second: second
+  };
 }
 
-// 配列のラッパークラス
-class SimpleList<T> {
-  private items: T[] = [];
-
-  // アイテムを追加
-  add(item: T): void {
-    this.items.push(item);
-  }
-
-  // インデックスでアイテムを取得
-  get(index: number): T | undefined {
-    return this.items[index];
-  }
-
-  // 最初のアイテムを取得
-  first(): T | undefined {
-    return this.items[0];
-  }
-
-  // 最後のアイテムを取得
-  last(): T | undefined {
-    return this.items[this.items.length - 1];
-  }
-
-  // リストの長さを取得
-  size(): number {
-    return this.items.length;
-  }
-
-  // 条件に合うアイテムを検索
-  find(predicate: (item: T) => boolean): T | undefined {
-    return this.items.find(predicate);
-  }
-
-  // 条件に合うアイテムをすべて取得
-  filter(predicate: (item: T) => boolean): T[] {
-    return this.items.filter(predicate);
-  }
-
-  // すべてのアイテムを変換
-  map<U>(transform: (item: T) => U): U[] {
-    return this.items.map(transform);
-  }
-
-  // 配列として取得
-  toArray(): T[] {
-    return [...this.items];
-  }
-
-  // 文字列表現
-  toString(): string {
-    return `SimpleList[${this.items.join(", ")}]`;
-  }
+function swapPair(pair) {
+  return {
+    first: pair.second,
+    second: pair.first
+  };
 }
 
-// 使用例とテスト
-console.log("=== Phase 3: ジェネリッククラスのテスト ===");
-
-// Boxクラスのテスト
-console.log("Boxクラス:");
-const numberBox = new Box(42);
-const stringBox = new Box("hello");
-
-console.log(`数値Box: ${numberBox.toString()}`);
-console.log(`文字列Box: ${stringBox.toString()}`);
-
-// 値の変更
-numberBox.setValue(100);
-console.log(`変更後の数値Box: ${numberBox.toString()}`);
-
-// map操作
-const doubledBox = numberBox.map(n => n * 2);
-const upperBox = stringBox.map(s => s.toUpperCase());
-
-console.log(`2倍したBox: ${doubledBox.toString()}`);
-console.log(`大文字のBox: ${upperBox.toString()}`);
-
-// Pairクラスのテスト
-console.log("\nPairクラス:");
-const namePair = new Pair("太郎", "花子");
-const numberPair = new Pair(10, 20);
-
-console.log(`名前のペア: ${namePair.toString()}`);
-console.log(`数値のペア: ${numberPair.toString()}`);
-
-// swap操作
-const swappedNames = namePair.swap();
-console.log(`入れ替え後: ${swappedNames.toString()}`);
-
-// map操作
-const transformedPair = numberPair.map(
-  n => n * 2,      // 最初の値を2倍
-  n => n.toString() // 2番目の値を文字列に
-);
-console.log(`変換後のペア: ${transformedPair.toString()}`);
-
-// SimpleListクラスのテスト
-console.log("\nSimpleListクラス:");
-const numberList = new SimpleList<number>();
-const nameList = new SimpleList<string>();
-
-// 数値リストに追加
-numberList.add(1);
-numberList.add(2);
-numberList.add(3);
-numberList.add(4);
-numberList.add(5);
-
-console.log(`数値リスト: ${numberList.toString()}`);
-console.log(`サイズ: ${numberList.size()}`);
-console.log(`最初の要素: ${numberList.first()}`);
-console.log(`最後の要素: ${numberList.last()}`);
-
-// 名前リストに追加
-nameList.add("Alice");
-nameList.add("Bob");
-nameList.add("Charlie");
-
-console.log(`名前リスト: ${nameList.toString()}`);
-
-// 検索とフィルタリング
-const foundNumber = numberList.find(n => n > 3);
-const evenNumbers = numberList.filter(n => n % 2 === 0);
-const doubledNumbers = numberList.map(n => n * 2);
-
-console.log(`3より大きい最初の数: ${foundNumber}`);
-console.log(`偶数のみ: [${evenNumbers.join(", ")}]`);
-console.log(`2倍した数値: [${doubledNumbers.join(", ")}]`);
-
-// 名前の長さを取得
-const nameLengths = nameList.map(name => name.length);
-console.log(`名前の長さ: [${nameLengths.join(", ")}]`);
-```
-
-### Phase 4: 統合デモンストレーション 🌟
-
-#### ステップ4-1: 全機能を統合した実用例
-
-```typescript
-// integrated-demo.ts
-
-// ユーザー情報の型定義
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  age: number;
-}
-
-// 商品情報の型定義
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  category: string;
-}
-
-// データ管理クラス（統合例）
-class DataManager<T extends { id: number | string }> {
-  private items: SimpleList<T> = new SimpleList<T>();
-
-  // アイテムを追加
-  addItem(item: T): void {
-    this.items.add(item);
-  }
-
-  // IDでアイテムを検索
-  findById(id: number | string): T | undefined {
-    return this.items.find(item => item.id === id);
-  }
-
-  // 条件でアイテムを検索
-  findBy<K extends keyof T>(key: K, value: T[K]): T[] {
-    return this.items.filter(item => item[key] === value);
-  }
-
-  // すべてのアイテムを取得
-  getAllItems(): T[] {
-    return this.items.toArray();
-  }
-
-  // アイテム数を取得
-  getCount(): number {
-    return this.items.size();
-  }
-
-  // 特定のプロパティの値を一覧取得
-  getPropertyValues<K extends keyof T>(key: K): T[K][] {
-    return this.items.map(item => item[key]);
-  }
-}
-
-// 統合デモの実行
-function runIntegratedDemo(): void {
-  console.log("=== Phase 4: 統合デモンストレーション ===");
-
-  // ユーザー管理システム
-  const userManager = new DataManager<User>();
+function runExample() {
+  console.log("=== データ処理システムのデモ ===");
   
-  // ユーザーデータの追加
-  userManager.addItem({ id: 1, name: "田中太郎", email: "tanaka@example.com", age: 30 });
-  userManager.addItem({ id: 2, name: "佐藤花子", email: "sato@example.com", age: 25 });
-  userManager.addItem({ id: 3, name: "山田次郎", email: "yamada@example.com", age: 35 });
-
-  console.log("ユーザー管理システム:");
-  console.log(`総ユーザー数: ${userManager.getCount()}`);
-
-  // IDで検索
-  const user = userManager.findById(2);
-  console.log(`ID 2のユーザー:`, user);
-
-  // 年齢で検索
-  const youngUsers = userManager.findBy("age", 25);
-  console.log(`25歳のユーザー:`, youngUsers);
-
-  // すべての名前を取得
-  const allNames = userManager.getPropertyValues("name");
-  console.log(`すべてのユーザー名: [${allNames.join(", ")}]`);
-
-  // 商品管理システム
-  const productManager = new DataManager<Product>();
-
-  // 商品データの追加
-  productManager.addItem({ id: "P001", name: "ノートPC", price: 80000, category: "電子機器" });
-  productManager.addItem({ id: "P002", name: "マウス", price: 2000, category: "電子機器" });
-  productManager.addItem({ id: "P003", name: "本", price: 1500, category: "書籍" });
-
-  console.log("\n商品管理システム:");
-  console.log(`総商品数: ${productManager.getCount()}`);
-
-  // カテゴリで検索
-  const electronics = productManager.findBy("category", "電子機器");
-  console.log(`電子機器カテゴリの商品:`, electronics);
-
-  // すべての価格を取得
-  const allPrices = productManager.getPropertyValues("price");
-  console.log(`すべての商品価格: [${allPrices.join(", ")}]`);
-
-  // Boxを使った値の変換例
-  console.log("\nBoxを使った価格計算:");
-  const priceBox = new Box(80000);
-  const taxIncludedBox = priceBox.map(price => Math.floor(price * 1.1));
-  const formattedPriceBox = taxIncludedBox.map(price => `¥${price.toLocaleString()}`);
+  // ユーザーデータ
+  const userData = [
+    { id: 1, name: "田中太郎", age: 30, email: "tanaka@example.com" },
+    { id: 2, name: "佐藤花子", age: 25, email: "sato@example.com" },
+    { id: 3, name: "山田次郎", age: 35, email: "yamada@example.com" }
+  ];
   
-  console.log(`元の価格: ${priceBox.getValue()}`);
-  console.log(`税込価格: ${taxIncludedBox.getValue()}`);
-  console.log(`フォーマット済み: ${formattedPriceBox.getValue()}`);
-
-  // Pairを使った関連データの管理
-  console.log("\nPairを使った関連データ:");
-  const userProductPair = new Pair(user, productManager.findById("P001"));
-  console.log(`ユーザーと商品のペア:`, userProductPair.toString());
-
-  // 型安全な操作の例
-  console.log("\n型安全な操作の例:");
+  // 商品データ
+  const productData = [
+    { id: "P001", name: "ノートPC", price: 80000, category: "電子機器" },
+    { id: "P002", name: "マウス", price: 2000, category: "電子機器" },
+    { id: "P003", name: "本", price: 1500, category: "書籍" }
+  ];
   
-  // ジェネリック関数を使った安全な操作
-  const userEmails = simpleMap(userManager.getAllItems(), user => user.email);
-  console.log(`ユーザーのメールアドレス: [${userEmails.join(", ")}]`);
-
-  const expensiveProducts = simpleFilter(
-    productManager.getAllItems(), 
-    product => product.price > 5000
-  );
-  console.log(`高額商品:`, expensiveProducts.map(p => p.name));
-
-  // 制約を使った安全なプロパティアクセス
-  const firstUser = first(userManager.getAllItems());
+  // 数値データ
+  const numberData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  
+  // 文字列データ
+  const stringData = ["apple", "banana", "cherry", "date"];
+  
+  // 基本的な配列操作
+  console.log("最初のユーザー:", getFirst(userData));
+  console.log("最後の商品:", getLast(productData));
+  console.log("最初の数値:", getFirst(numberData));
+  console.log("最後の文字列:", getLast(stringData));
+  
+  // 検索操作
+  const youngUser = findItem(userData, user => user.age < 30);
+  const expensiveProduct = findItem(productData, product => product.price > 5000);
+  const evenNumber = findItem(numberData, num => num % 2 === 0);
+  
+  console.log("30歳未満のユーザー:", youngUser);
+  console.log("5000円以上の商品:", expensiveProduct);
+  console.log("最初の偶数:", evenNumber);
+  
+  // フィルタリング操作
+  const activeUsers = filterItems(userData, user => user.age >= 25);
+  const electronics = filterItems(productData, product => product.category === "電子機器");
+  const bigNumbers = filterItems(numberData, num => num > 5);
+  
+  console.log("25歳以上のユーザー:", activeUsers);
+  console.log("電子機器:", electronics);
+  console.log("5より大きい数値:", bigNumbers);
+  
+  // マッピング操作
+  const userNames = mapItems(userData, user => user.name);
+  const productPrices = mapItems(productData, product => product.price);
+  const doubledNumbers = mapItems(numberData, num => num * 2);
+  const upperStrings = mapItems(stringData, str => str.toUpperCase());
+  
+  console.log("ユーザー名一覧:", userNames);
+  console.log("商品価格一覧:", productPrices);
+  console.log("2倍した数値:", doubledNumbers);
+  console.log("大文字の文字列:", upperStrings);
+  
+  // プロパティアクセス
+  const firstUser = getFirst(userData);
   if (firstUser) {
-    console.log(`最初のユーザーの名前: ${getProperty(firstUser, "name")}`);
-    console.log(`最初のユーザーの年齢: ${getProperty(firstUser, "age")}`);
+    console.log("最初のユーザーの名前:", getProperty(firstUser, "name"));
+    console.log("最初のユーザーの年齢:", getProperty(firstUser, "age"));
   }
+  
+  // プロパティ更新
+  if (firstUser) {
+    const updatedUser = updateProperty(firstUser, "age", 31);
+    console.log("年齢更新前:", firstUser.age);
+    console.log("年齢更新後:", updatedUser.age);
+  }
+  
+  // 長さ取得
+  console.log("ユーザーデータの長さ:", getLength(userData));
+  console.log("文字列の長さ:", getLength("hello"));
+  console.log("配列の長さ:", getLength([1, 2, 3]));
+  
+  // 名前取得
+  console.log("ユーザーの名前:", getName(userData[0]));
+  console.log("商品の名前:", getName(productData[0]));
+  
+  // ID取得
+  console.log("ユーザーのID:", getId(userData[0]));
+  console.log("商品のID:", getId(productData[0]));
+  
+  // ペア操作
+  const userProductPair = createPair(userData[0], productData[0]);
+  console.log("ユーザーと商品のペア:", userProductPair);
+  
+  const swappedPair = swapPair(userProductPair);
+  console.log("入れ替え後のペア:", swappedPair);
+  
+  const numberStringPair = createPair(123, "test");
+  console.log("数値と文字列のペア:", numberStringPair);
 }
 
-// デモの実行
-runIntegratedDemo();
+// 実行
+runExample();
 ```
+
+### Phase 2: ジェネリクスの追加（30分）
+
+#### ステップ2-1: 基本的なジェネリック関数の定義（15分）
+
+上記のコードを見て、以下のジェネリック関数を定義してください：
+
+1. **配列操作のジェネリック関数**
+   - `getFirst`, `getLast`, `findItem`, `filterItems`, `mapItems`
+   - どんな型でも使えるようにする
+
+2. **ペア操作のジェネリック関数**
+   - `createPair`, `swapPair`
+   - 2つの異なる型を扱えるようにする
+
+**🤔 考えてみましょう**:
+- `<T>` を使って型パラメータを定義
+- `<T, U>` を使って複数の型パラメータを定義
+
+```typescript
+// TODO: 以下の関数をジェネリック関数に変換してください
+
+function getFirst(array) {
+  // ↓ ジェネリック関数に変換
+  // function getFirst<T>(array: T[]): T | undefined
+}
+
+function createPair(first, second) {
+  // ↓ ジェネリック関数に変換
+  // function createPair<T, U>(first: T, second: U): { first: T; second: U }
+}
+```
+
+#### ステップ2-2: ジェネリック制約の実装（10分）
+
+```typescript
+// TODO: 以下の関数にジェネリック制約を追加してください
+
+// length プロパティを持つ値の長さを取得
+function getLength(item) {
+  // ↓ ジェネリック制約を追加
+  // function getLength<T extends { length: number }>(item: T): number
+}
+
+// name プロパティを持つオブジェクトの名前を取得
+function getName(item) {
+  // ↓ ジェネリック制約を追加
+  // function getName<T extends { name: string }>(item: T): string
+}
+
+// keyof制約を使った安全なプロパティアクセス
+function getProperty(obj, key) {
+  // ↓ keyof制約を追加
+  // function getProperty<T, K extends keyof T>(obj: T, key: K): T[K]
+}
+```
+
+**🤔 考えてみましょう**:
+- `extends { length: number }` で length プロパティを持つ型に制限
+- `extends { name: string }` で name プロパティを持つ型に制限
+- `K extends keyof T` でオブジェクトのキーに制限
+
+#### ステップ2-3: 変数と関数に型注釈を追加（5分）
+
+```typescript
+// TODO: 以下の変数と関数に適切な型注釈を追加してください
+let items = [];
+let users = [];
+let products = [];
+
+function addItem(array, item) { /* ... */ }
+function runExample() { /* ... */ }
+```
+
+### Phase 3: 動作確認（5分）
+
+#### ステップ3-1: 動作確認
+TypeScript Playgroundまたはローカル環境で実行して動作を確認
 
 ---
 
-## 🎓 学習のヒント
+## ✅ 最低合格要件
 
-### 💡 実装時のポイント
+以下の要件を**すべて満たす**ことで合格とします：
 
-1. **ジェネリックの基本理解**: `<T>` は「型のプレースホルダー」として機能
-2. **型推論の活用**: 明示的な型指定なしでも TypeScript が適切な型を推論
-3. **制約の適切な使用**: `extends` で型の条件を指定し、安全性を確保
-4. **再利用性の重視**: 同じロジックを異なる型で使い回せる設計
-5. **段階的な学習**: 簡単な例から始めて徐々に複雑な例へ
+### 🔧 技術要件
+- [ ] TypeScriptでコンパイルエラーが発生しない
+- [ ] **ジェネリック関数を5つ以上定義している**（最重要！）
+- [ ] **ジェネリック制約を3つ以上使用している**（最重要！）
+- [ ] すべての変数に適切な型注釈が付いている
+- [ ] すべての関数の引数と戻り値に適切な型注釈が付いている
+
+### 🎯 機能要件
+- [ ] 元のJavaScriptコードと同じ動作をする
+- [ ] 配列の基本操作（取得、検索、フィルタ、マップ）ができる
+- [ ] オブジェクトのプロパティアクセスができる
+- [ ] ペアの作成と操作ができる
+
+### 💭 ジェネリクス要件
+- [ ] 基本的なジェネリック関数（`<T>`）が正しく定義されている
+- [ ] 複数の型パラメータ（`<T, U>`）が適切に使われている
+- [ ] ジェネリック制約（`extends`）が正しく実装されている
+- [ ] keyof制約が適切に使われている
+- [ ] 型推論が活用されている
+
+---
+
+## 📊 評価基準
+
+| 項目 | 配点 | 評価ポイント |
+|------|------|-------------|
+| **ジェネリック関数設計力** | 40点 | 適切なジェネリック関数を自分で設計できている |
+| **ジェネリック制約実装力** | 30点 | extends制約を正しく実装できている |
+| **型注釈の正確性** | 20点 | 全ての変数・関数に適切な型注釈が付いている |
+| **機能の完成度** | 10点 | 元のコードと同じ動作をする |
+
+**合格ライン**: 70点以上
+
+---
+
+## 💡 ジェネリクスのヒント
+
+### 🤔 ジェネリクスを考える時の質問
+
+1. **この関数はどんな型でも使える？**
+   - `getFirst` → 数値配列、文字列配列、オブジェクト配列など
+   - `mapItems` → 任意の型から任意の型への変換
+
+2. **複数の型が必要？**
+   - `createPair` → 2つの異なる型を組み合わせ
+   - `mapItems` → 入力型と出力型が異なる
+
+3. **型に制限が必要？**
+   - `getLength` → length プロパティが必要
+   - `getName` → name プロパティが必要
+
+### 📝 ジェネリクスの基本例
+
+```typescript
+// 基本的なジェネリック関数
+function identity<T>(value: T): T {
+  return value;
+}
+
+// 複数の型パラメータ
+function pair<T, U>(first: T, second: U): [T, U] {
+  return [first, second];
+}
+
+// ジェネリック制約
+function getLength<T extends { length: number }>(item: T): number {
+  return item.length;
+}
+
+// keyof制約
+function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
+  return obj[key];
+}
+
+// 配列のジェネリック関数
+function first<T>(array: T[]): T | undefined {
+  return array[0];
+}
+
+function filter<T>(array: T[], predicate: (item: T) => boolean): T[] {
+  return array.filter(predicate);
+}
+
+function map<T, U>(array: T[], transform: (item: T) => U): U[] {
+  return array.map(transform);
+}
+```
+
+### 🔍 ジェネリクスの使い方
+
+```typescript
+// 型推論を活用
+const numbers = [1, 2, 3, 4, 5];
+const firstNumber = first(numbers); // T は number として推論される
+
+const names = ["Alice", "Bob", "Charlie"];
+const firstName = first(names); // T は string として推論される
+
+// 明示的な型指定
+const result = map<number, string>(numbers, n => n.toString());
+
+// 制約を使った安全な操作
+const stringLength = getLength("hello"); // OK: string has length
+const arrayLength = getLength([1, 2, 3]); // OK: array has length
+// const numberLength = getLength(123); // Error: number doesn't have length
+
+// keyof制約を使った安全なプロパティアクセス
+const user = { name: "Alice", age: 30 };
+const userName = getProperty(user, "name"); // OK: "name" is a key of user
+const userAge = getProperty(user, "age"); // OK: "age" is a key of user
+// const invalid = getProperty(user, "invalid"); // Error: "invalid" is not a key
+```
 
 ### ⚠️ よくある間違い
 
-- ジェネリック型パラメータの命名が不適切（`T`, `U`, `K` などの慣例を守る）
-- 制約なしで存在しないプロパティにアクセスしようとする
-- 型推論に頼りすぎて、明示的な型指定が必要な場面を見逃す
-- ジェネリッククラスのインスタンス化時に型を指定し忘れる
-- 複雑すぎるジェネリック設計で可読性を損なう
+1. **ジェネリック型パラメータの定義忘れ**
+   ```typescript
+   // ❌ 間違い：型パラメータがない
+   function getFirst(array: any[]): any {
+     return array[0];
+   }
+   
+   // ✅ 正解：ジェネリック型パラメータを使用
+   function getFirst<T>(array: T[]): T | undefined {
+     return array[0];
+   }
+   ```
 
-### 🚀 発展課題（任意）
+2. **制約なしで存在しないプロパティにアクセス**
+   ```typescript
+   // ❌ 間違い：制約なしでlengthにアクセス
+   function getLength<T>(item: T): number {
+     return item.length; // Error: T doesn't have length
+   }
+   
+   // ✅ 正解：制約を使用
+   function getLength<T extends { length: number }>(item: T): number {
+     return item.length; // OK: T has length
+   }
+   ```
 
-余裕がある場合は以下にも挑戦してみてください：
-
-- より複雑な制約の組み合わせ（`T extends U & V`）
-- 条件付き型の基礎（`T extends string ? number : boolean`）
-- ユーティリティ型との組み合わせ（`Partial<T>`, `Pick<T, K>`）
-- 実際のライブラリ（lodash、Reactなど）でのジェネリクス活用例の調査
-- 自分だけのジェネリックユーティリティライブラリの作成
+3. **複数の型パラメータが必要な場面で単一の型パラメータを使用**
+   ```typescript
+   // ❌ 間違い：入力と出力が同じ型に制限される
+   function map<T>(array: T[], transform: (item: T) => T): T[] {
+     return array.map(transform);
+   }
+   
+   // ✅ 正解：入力と出力で異なる型を使用
+   function map<T, U>(array: T[], transform: (item: T) => U): U[] {
+     return array.map(transform);
+   }
+   ```
 
 ---
 
-**📌 重要**: この成果物はStep05の学習内容の総まとめです。ジェネリクスの基礎から実用的な活用まで、TypeScriptの型システムを段階的に理解しながら実装しましょう。
+## 📚 参考：完成例（ジェネリクスの答えを見たい場合）
+
+<details>
+<summary>⚠️ 注意：まず自分で考えてから見てください</summary>
+
+```typescript
+// 基本的なジェネリック関数
+function getFirst<T>(array: T[]): T | undefined {
+  return array.length > 0 ? array[0] : undefined;
+}
+
+function getLast<T>(array: T[]): T | undefined {
+  return array.length > 0 ? array[array.length - 1] : undefined;
+}
+
+function findItem<T>(array: T[], predicate: (item: T) => boolean): T | undefined {
+  for (let i = 0; i < array.length; i++) {
+    if (predicate(array[i])) {
+      return array[i];
+    }
+  }
+  return undefined;
+}
+
+function filterItems<T>(array: T[], predicate: (item: T) => boolean): T[] {
+  const result: T[] = [];
+  for (let i = 0; i < array.length; i++) {
+    if (predicate(array[i])) {
+      result.push(array[i]);
+    }
+  }
+  return result;
+}
+
+function mapItems<T, U>(array: T[], transform: (item: T) => U): U[] {
+  const result: U[] = [];
+  for (let i = 0; i < array.length; i++) {
+    result.push(transform(array[i]));
+  }
+  return result;
+}
+
+// ジェネリック制約を使った関数
+function getLength<T extends { length: number }>(item: T): number {
+  return item.length;
+}
+
+function getName<T extends { name: string }>(item: T): string {
+  return item.name;
+}
+
+function getId<T extends { id: number | string }>(item: T): number | string {
+  return item.id;
+}
+
+function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
+  return obj[key];
+}
+
+function updateProperty<T, K extends keyof T>(obj: T, key: K, value: T[K]): T {
+  return {
+    ...obj,
+    [key]: value
+  };
+}
+
+// 複数の型パラメータを使った関数
+function createPair<T, U>(first: T, second: U): { first: T; second: U } {
+  return {
+    first: first,
+    second: second
+  };
+}
+
+function swapPair<T, U>(pair: { first: T; second: U }): { first: U; second: T } {
+  return {
+    first: pair.second,
+    second: pair.first
+  };
+}
+
+// 変数の型注釈
+let items: any[] = [];
+let users: Array<{ id: number; name: string; age: number; email: string }> = [];
+let products: Array<{ id: string; name: string; price: number; category: string }> = [];
+
+function addItem<T>(array: T[], item: T): T {
+  array.push(item);
+  return item;
+}
+```
+
+</details>
+
+---
+
+## 🚀 発展課題（任意）
+
+余裕がある場合は以下にも挑戦してみてください：
+
+- [ ] より複雑なジェネリック制約の組み合わせ
+- [ ] 条件付き型の基礎的な使用
+- [ ] ジェネリッククラスの実装
+- [ ] ユーティリティ型との組み合わせ
+
+---
+
+**📌 重要**: この課題の目的は**既存のJavaScriptコードを読んで適切なジェネリクスを実装する力**を身につけることです。TypeScriptのジェネリクスシステムを実践的に学習しましょう。
 
 **🌟 次のステップ**: Step06では、ユーティリティ型を使った高度な型操作について学習します！

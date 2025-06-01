@@ -33,7 +33,7 @@ function CommentForm({
   onSubmit,
   authorPlaceholder = "名前を入力",
   contentPlaceholder = "コメントを入力",
-}: CommentFormProps): JSX.Element {
+}: CommentFormProps) {
   // TODO: ここに実装してください
   // 1. 投稿者名の状態管理
   // 2. コメント内容の状態管理

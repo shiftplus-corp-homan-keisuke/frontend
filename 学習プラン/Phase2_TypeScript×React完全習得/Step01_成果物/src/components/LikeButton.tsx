@@ -27,7 +27,7 @@ interface LikeButtonProps {
 function LikeButton({
   initialLikes = 0,
   onLikeChange,
-}: LikeButtonProps): JSX.Element {
+}: LikeButtonProps) {
   // TODO: ここに実装してください
   // 1. いいね数の状態管理
   // 2. いいね済み状態の管理

@@ -21,7 +21,7 @@ const sampleUser: User = {
 /**
  * メインアプリケーションコンポーネント
  */
-function App(): JSX.Element {
+function App() {
   const [user] = useState<User>(sampleUser);
   const [comments, setComments] = useState<Comment[]>([]);
 

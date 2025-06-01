@@ -184,7 +184,7 @@ interface LikeButtonProps {
   // いいね数変更時のコールバック（オプショナル）
 }
 
-function LikeButton(/* TODO: propsの型注釈を追加 */): JSX.Element {
+function LikeButton(/* TODO: propsの型注釈を追加 */){
   // TODO: useState でいいね数と状態を管理
   // ヒント: いいね数(number)といいね済み状態(boolean)の2つの状態が必要
 
@@ -234,7 +234,7 @@ interface CommentFormProps {
   // コメント投稿時のコールバック
 }
 
-function CommentForm(/* TODO: propsの型注釈を追加 */): JSX.Element {
+function CommentForm(/* TODO: propsの型注釈を追加 */) {
   // TODO: useState でコメント入力値を管理
 
   // TODO: フォーム送信時の処理
@@ -417,7 +417,7 @@ const handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
      initialLikes: number;
      onLikeChange: (likes: number, isLiked: boolean) => void;
    }
-
+   
    // ✅ 正解：onLikeChangeは任意
    interface LikeButtonProps {
      initialLikes?: number;
@@ -441,7 +441,7 @@ interface LikeButtonProps {
 function LikeButton({
   initialLikes = 0,
   onLikeChange,
-}: LikeButtonProps): JSX.Element {
+}: LikeButtonProps){
   const [likes, setLikes] = useState<number>(initialLikes);
   const [isLiked, setIsLiked] = useState<boolean>(false);
 
@@ -485,7 +485,7 @@ interface CommentFormProps {
   onCommentSubmit: (comment: string) => void;
 }
 
-function CommentForm({ onCommentSubmit }: CommentFormProps): JSX.Element {
+function CommentForm({ onCommentSubmit }: CommentFormProps) {
   const [comment, setComment] = useState<string>("");
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {

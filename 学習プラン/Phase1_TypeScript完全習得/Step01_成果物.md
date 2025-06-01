@@ -1,80 +1,53 @@
-# Step01 成果物：基本的な学生情報処理システム
+# Step01 成果物：学生情報処理システム
 
 ---
 
-## 📝 システム概要
+## 🎯 課題の目的
 
-### 🎓 基本的な学生情報処理システム
+**あなたが作成するもの**: 既存のJavaScriptコードにTypeScriptの型注釈を追加する
 
-**目的**: TypeScriptの型注釈を使って、学生の基本情報を安全に処理する
+**なぜ作るのか**: Step01で学習したTypeScriptの型注釈を実際のコードに適用し、**既存コードを型安全にする力**を身につけるため
 
-**主要機能**:
-1. 学生情報の作成
-2. 成績の計算（平均点）
-3. 学生情報の表示
-4. 基本的な検索・フィルタリング
-
-**使用する型**:
-- 基本型: string, number, boolean
-- 配列型: number[], string[]
-- オブジェクト型: Student型
+**学習目標**:
+- 既存のJavaScriptコードを読んで適切な型を判断できる
+- 基本的な型注釈（string、number、boolean、配列）を正しく使える
+- 関数の引数と戻り値に適切な型を付けられる
+- TypeScriptの型システムの恩恵を実感できる
 
 ---
 
-## 🚀 段階的実装手順
+## 📋 必須提出物
 
-### Phase 1: 型定義と基本関数 🔰
+以下の1つのファイルのみ提出してください：
 
-#### ステップ1-1: 学生型の定義
-
-```typescript
-// student-system.ts
-
-// 学生の基本情報を表す型
-type Student = {
-  name: string;        // 学生名
-  age: number;         // 年齢
-  grades: number[];    // 成績の配列（0-100の数値）
-  isActive: boolean;   // 在籍状況
-};
+```
+📁 提出物/
+└── student-system.ts    # 型注釈を追加したプログラム（必須）
 ```
 
-#### ステップ1-2: 学生作成関数
+---
 
-```typescript
-// 学生情報を作成する関数
-function createStudent(
-  name: string, 
-  age: number, 
-  grades: number[], 
-  isActive: boolean = true
-): Student {
+## ⏰ 作成手順（推奨時間配分：合計40分）
+
+### Phase 1: 既存コードの理解（10分）
+
+#### ステップ1-1: 提供されたJavaScriptコードを理解する（10分）
+
+以下のJavaScriptコードを読んで、どんな型が必要か考えてください：
+
+```javascript
+// 既存のJavaScriptコード（型注釈なし）
+let students = [];
+
+function createStudent(name, age, grades) {
   return {
     name: name,
     age: age,
-    grades: grades,
-    isActive: isActive
+    grades: grades
   };
 }
-```
 
-#### ステップ1-3: 基本的な表示関数
-
-```typescript
-// 学生情報を文字列で表示する関数
-function displayStudentInfo(student: Student): string {
-  const status = student.isActive ? "在籍中" : "休学中";
-  return `名前: ${student.name}, 年齢: ${student.age}歳, 状況: ${status}`;
-}
-```
-
-### Phase 2: 成績処理関数 🔶
-
-#### ステップ2-1: 平均点計算
-
-```typescript
-// 成績の平均を計算する関数
-function calculateAverage(grades: number[]): number {
+function calculateAverage(grades) {
   if (grades.length === 0) {
     return 0;
   }
@@ -82,144 +55,305 @@ function calculateAverage(grades: number[]): number {
   const sum = grades.reduce((total, grade) => total + grade, 0);
   return Math.round(sum / grades.length * 10) / 10; // 小数点第1位まで
 }
-```
 
-#### ステップ2-2: 学生の平均点取得
-
-```typescript
-// 特定の学生の平均点を取得する関数
-function getStudentAverage(student: Student): number {
-  return calculateAverage(student.grades);
+function displayStudentInfo(student) {
+  return `名前: ${student.name}, 年齢: ${student.age}歳`;
 }
-```
 
-#### ステップ2-3: 成績評価関数
-
-```typescript
-// 平均点から成績評価を返す関数
-function getGradeLevel(average: number): string {
-  if (average >= 90) return "優秀";
-  if (average >= 80) return "良好";
-  if (average >= 70) return "普通";
-  if (average >= 60) return "要努力";
-  return "要指導";
+function addStudent(name, age, grades) {
+  const student = createStudent(name, age, grades);
+  students.push(student);
+  return student;
 }
-```
 
-### Phase 3: 配列操作と検索 🔥
-
-#### ステップ3-1: 学生検索
-
-```typescript
-// 名前で学生を検索する関数
-function findStudentByName(students: Student[], name: string): Student | null {
-  const found = students.find(student => student.name === name);
-  return found || null;
+function getAllStudents() {
+  return [...students]; // 配列のコピーを返す
 }
-```
 
-#### ステップ3-2: 在籍学生フィルタ
-
-```typescript
-// 在籍中の学生のみを抽出する関数
-function getActiveStudents(students: Student[]): Student[] {
-  return students.filter(student => student.isActive);
-}
-```
-
-#### ステップ3-3: 成績上位者抽出
-
-```typescript
-// 平均点が指定値以上の学生を抽出する関数
-function getTopStudents(students: Student[], minAverage: number): Student[] {
-  return students.filter(student => {
-    const average = getStudentAverage(student);
-    return average >= minAverage;
-  });
-}
-```
-
-### Phase 4: 実行例とテスト 🧪
-
-#### ステップ4-1: サンプルデータの作成
-
-```typescript
-// サンプルデータを作成してテスト
-function runExample(): void {
-  // 学生データの作成
-  const students: Student[] = [
-    createStudent("田中太郎", 20, [85, 92, 78, 88]),
-    createStudent("佐藤花子", 19, [76, 84, 90, 82]),
-    createStudent("鈴木一郎", 21, [94, 89, 91, 87], false), // 休学中
-    createStudent("山田美咲", 20, [88, 95, 83, 91])
-  ];
-
-  // 各学生の情報表示
-  console.log("=== 学生一覧 ===");
-  students.forEach(student => {
+function runExample() {
+  console.log("=== 学生情報処理システムのデモ ===");
+  
+  // 学生データの追加
+  addStudent("田中太郎", 20, [85, 92, 78, 88]);
+  addStudent("佐藤花子", 19, [76, 84, 90, 82]);
+  addStudent("鈴木一郎", 21, [94, 89, 91, 87]);
+  
+  // 全学生の情報表示
+  console.log("\n=== 学生一覧 ===");
+  const allStudents = getAllStudents();
+  allStudents.forEach(student => {
     const info = displayStudentInfo(student);
-    const average = getStudentAverage(student);
-    const level = getGradeLevel(average);
-    console.log(`${info}, 平均点: ${average}, 評価: ${level}`);
+    const average = calculateAverage(student.grades);
+    console.log(`${info}, 平均点: ${average}`);
   });
-
-  // 在籍中の学生のみ表示
-  console.log("\n=== 在籍中の学生 ===");
-  const activeStudents = getActiveStudents(students);
-  activeStudents.forEach(student => {
-    console.log(displayStudentInfo(student));
-  });
-
-  // 成績上位者（平均85点以上）
-  console.log("\n=== 成績上位者（平均85点以上） ===");
-  const topStudents = getTopStudents(students, 85);
-  topStudents.forEach(student => {
-    const average = getStudentAverage(student);
-    console.log(`${student.name}: ${average}点`);
-  });
-
-  // 学生検索
-  console.log("\n=== 学生検索 ===");
-  const foundStudent = findStudentByName(students, "田中太郎");
-  if (foundStudent) {
-    console.log(`見つかりました: ${displayStudentInfo(foundStudent)}`);
-  } else {
-    console.log("学生が見つかりませんでした");
-  }
+  
+  // 統計情報
+  console.log("\n=== 統計情報 ===");
+  const totalStudents = allStudents.length;
+  const allGrades = allStudents.flatMap(student => student.grades);
+  const overallAverage = calculateAverage(allGrades);
+  console.log(`総学生数: ${totalStudents}人`);
+  console.log(`全体平均点: ${overallAverage}`);
 }
 
 // 実行
 runExample();
 ```
 
+### Phase 2: 型注釈の追加（25分）
+
+#### ステップ2-1: 必要な型を定義する（10分）
+
+上記のコードを見て、以下の型を定義してください：
+
+1. **学生情報を表現する型**
+   - `createStudent`関数が返すオブジェクトの型
+   - どんなプロパティが必要でしょうか？
+
+**🤔 考えてみましょう**:
+- 学生には「名前」「年齢」「成績」が必要
+- 名前は何型？年齢は何型？成績は何型？
+
+#### ステップ2-2: 変数に型注釈を追加する（5分）
+
+```typescript
+// TODO: 以下の変数に適切な型注釈を追加してください
+let students = [];
+```
+
+**🤔 考えてみましょう**:
+- `students`には何が入る？
+- 学生の配列 → 何の配列？
+
+#### ステップ2-3: 関数に型注釈を追加する（10分）
+
+各関数の引数と戻り値に適切な型注釈を追加してください：
+
+```typescript
+// TODO: 以下の関数に型注釈を追加してください
+function createStudent(name, age, grades) { /* ... */ }
+function calculateAverage(grades) { /* ... */ }
+function displayStudentInfo(student) { /* ... */ }
+function addStudent(name, age, grades) { /* ... */ }
+function getAllStudents() { /* ... */ }
+function runExample() { /* ... */ }
+```
+
+**🤔 考えてみましょう**:
+- 各関数は何を受け取って、何を返す？
+- `name` → 文字列？
+- `age` → 数値？
+- `grades` → 数値の配列？
+
+### Phase 3: 動作確認（5分）
+
+#### ステップ3-1: 動作確認
+TypeScript Playgroundまたはローカル環境で実行して動作を確認
+
 ---
 
-## 🎓 学習のヒント
+## ✅ 最低合格要件
 
-### 💡 実装時のポイント
+以下の要件を**すべて満たす**ことで合格とします：
 
-1. **型注釈を忘れずに**: すべての関数の引数と戻り値に型を付ける
-2. **エラーメッセージを読む**: TypeScriptのエラーは親切なので、よく読んで理解する
-3. **段階的に実装**: Phase 1から順番に実装し、動作確認しながら進める
-4. **console.logで確認**: 各関数が期待通りに動作するか確認する
+### 🔧 技術要件
+- [ ] TypeScriptでコンパイルエラーが発生しない
+- [ ] **学生を表現する型を1つ以上定義している**（最重要！）
+- [ ] すべての変数に適切な型注釈が付いている
+- [ ] すべての関数の引数に適切な型注釈が付いている
+- [ ] すべての関数の戻り値に適切な型注釈が付いている
+
+### 🎯 機能要件
+- [ ] 元のJavaScriptコードと同じ動作をする
+- [ ] 学生データを作成・追加できる
+- [ ] 平均点を正しく計算できる
+- [ ] 学生情報を見やすく表示できる
+- [ ] サンプルデータで動作確認ができる
+
+### 💭 型注釈要件
+- [ ] 学生情報のオブジェクトの型が正しく定義されている
+- [ ] 配列の型注釈が適切に付いている
+- [ ] 基本型（string、number、boolean）が適切に使われている
+
+---
+
+## 📊 評価基準
+
+| 項目 | 配点 | 評価ポイント |
+|------|------|-------------|
+| **型注釈の正確性** | 60点 | 全ての変数・関数に適切な型注釈が付いている |
+| **型定義の適切性** | 30点 | 学生の型が正しく定義されている |
+| **機能の完成度** | 10点 | 元のコードと同じ動作をする |
+
+**合格ライン**: 70点以上
+
+---
+
+## 💡 型注釈のヒント
+
+### 🤔 型を考える時の質問
+
+1. **この変数には何が入る？**
+   - `students` → 学生の配列が入る → `Student[]`
+   - `name` → 文字列が入る → `string`
+   - `age` → 数値が入る → `number`
+
+2. **この関数は何を受け取る？**
+   - `createStudent(name, age, grades)` → 文字列、数値、数値の配列
+   - `calculateAverage(grades)` → 数値の配列
+
+3. **この関数は何を返す？**
+   - `createStudent` → 学生オブジェクトを返す
+   - `calculateAverage` → 数値を返す
+   - `displayStudentInfo` → 文字列を返す
+
+### 📝 基本的な型注釈の例
+
+```typescript
+// 基本的な型注釈
+let studentName: string = "田中太郎";
+let studentAge: number = 20;
+let isActive: boolean = true;
+
+// 配列の型注釈
+let grades: number[] = [85, 92, 78, 88];
+let names: string[] = ["田中", "佐藤", "鈴木"];
+
+// オブジェクトの型注釈（型を定義してから使う）
+type Student = {
+  name: string;
+  age: number;
+  grades: number[];
+};
+
+let student: Student = {
+  name: "田中太郎",
+  age: 20,
+  grades: [85, 92, 78, 88]
+};
+
+// 関数の型注釈
+function greet(name: string): string {
+  return `こんにちは、${name}さん！`;
+}
+
+function add(a: number, b: number): number {
+  return a + b;
+}
+```
 
 ### ⚠️ よくある間違い
 
-- 型注釈の書き忘れ
-- 配列の空チェックを忘れる
-- null/undefinedの処理を忘れる
-- 関数の戻り値の型が実装と一致しない
+1. **配列の型注釈忘れ**
+   ```typescript
+   // ❌ 間違い
+   let students = [];
+   
+   // ✅ 正解
+   let students: Student[] = [];
+   ```
 
-### 🚀 発展課題（任意）
+2. **関数の戻り値の型注釈忘れ**
+   ```typescript
+   // ❌ 間違い
+   function createStudent(name: string, age: number, grades: number[]) {
+     return { name, age, grades };
+   }
+   
+   // ✅ 正解
+   function createStudent(name: string, age: number, grades: number[]): Student {
+     return { name, age, grades };
+   }
+   ```
 
-余裕がある場合は以下にも挑戦してみてください：
-
-- 成績の最高点・最低点を取得する関数
-- 学生の年齢でソートする関数
-- 複数の条件で学生を検索する関数
+3. **型定義を忘れる**
+   ```typescript
+   // ❌ 間違い：型を定義していない
+   function displayStudentInfo(student: { name: string; age: number; grades: number[] }): string {
+     // ...
+   }
+   
+   // ✅ 正解：型を定義してから使う
+   type Student = {
+     name: string;
+     age: number;
+     grades: number[];
+   };
+   
+   function displayStudentInfo(student: Student): string {
+     // ...
+   }
+   ```
 
 ---
 
-**📌 重要**: この成果物はStep01の学習内容の総まとめです。TypeScriptの型システムの恩恵を実感しながら、確実に基礎を身につけましょう。
+## 📚 参考：完成例（型注釈の答えを見たい場合）
 
-**🌟 次のステップ**: Step02では、より高度な型システム（Union型、インターフェース）について学習します！
+<details>
+<summary>⚠️ 注意：まず自分で考えてから見てください</summary>
+
+```typescript
+// 型定義
+type Student = {
+  name: string;
+  age: number;
+  grades: number[];
+};
+
+// 変数の型注釈
+let students: Student[] = [];
+
+// 関数の型注釈
+function createStudent(name: string, age: number, grades: number[]): Student {
+  return {
+    name: name,
+    age: age,
+    grades: grades
+  };
+}
+
+function calculateAverage(grades: number[]): number {
+  if (grades.length === 0) {
+    return 0;
+  }
+  
+  const sum = grades.reduce((total, grade) => total + grade, 0);
+  return Math.round(sum / grades.length * 10) / 10;
+}
+
+function displayStudentInfo(student: Student): string {
+  return `名前: ${student.name}, 年齢: ${student.age}歳`;
+}
+
+function addStudent(name: string, age: number, grades: number[]): Student {
+  const student = createStudent(name, age, grades);
+  students.push(student);
+  return student;
+}
+
+function getAllStudents(): Student[] {
+  return [...students];
+}
+
+function runExample(): void {
+  // 実行例のコード
+}
+```
+
+</details>
+
+---
+
+## 🚀 発展課題（任意）
+
+余裕がある場合は以下にも挑戦してみてください：
+
+- [ ] 成績評価関数（平均点から「優秀」「良好」等を返す）
+- [ ] 学生検索関数（名前で検索）
+- [ ] より詳細な学生情報の型（学籍番号、学部など）
+
+---
+
+**📌 重要**: この課題の目的は**既存のJavaScriptコードを読んで適切な型注釈を付ける力**を身につけることです。TypeScriptの基本的な型システムを実践的に学習しましょう。
+
+**🌟 次のステップ**: Step02では、より高度な型システム（基本型システムと型注釈）について学習します！

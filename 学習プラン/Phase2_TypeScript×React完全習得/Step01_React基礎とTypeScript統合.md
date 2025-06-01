@@ -12,7 +12,7 @@
 ## 📅 学習期間・目標
 
 **期間**: Step 1
-**総学習時間**: 6 時間
+**総学習時間**: 5 時間
 **学習スタイル**: 段階的理解重視 - 基礎概念 → 環境構築 → 実践 → 演習
 
 ### 🎯 Step 1 到達目標
@@ -26,30 +26,30 @@
 ## 🗺️ 学習フローマップ
 
 ```
-Phase 1: 基礎概念理解 (75分)
-├── Step 0: React とは何か (30分)
-└── Step 1: 開発環境構築 (45分)
+Phase 1: 基礎概念理解 (60分)
+├── Step 0: React とは何か (25分)
+└── Step 1: 開発環境構築 (35分)
 
-Phase 2: JSX マスター (45分)
-└── Step 2: JSX 基礎理解 (45分)
+Phase 2: JSX マスター (35分)
+└── Step 2: JSX 基礎理解 (35分)
 
-Phase 3: コンポーネント設計 (75分)
-├── Step 3: 最初のコンポーネント (30分)
-└── Step 4: Props の理解 (45分)
+Phase 3: コンポーネント設計 (60分)
+├── Step 3: 最初のコンポーネント (25分)
+└── Step 4: Props の理解 (35分)
 
-Phase 4: 動的機能 (90分)
-├── Step 5: 状態管理入門 (45分)
-└── Step 6: イベント処理 (45分)
+Phase 4: 動的機能 (75分)
+├── Step 5: 状態管理入門 (35分)
+└── Step 6: イベント処理 (40分)
 
-Phase 5: 実践演習 (90分)
-└── Step 7: 段階的演習 (90分)
+Phase 5: 実践演習 (70分)
+└── Step 7: 段階的演習 (70分)
 ```
 
 ## 📚 段階的学習内容
 
-## Phase 1: 基礎概念理解（75 分）
+## Phase 1: 基礎概念理解（60 分）
 
-### Step 0: React とは何か（30 分）
+### Step 0: React とは何か（25 分）
 
 > 💡 **学習目標**: React の基本概念を理解し、従来の DOM 操作との違いを明確にする
 
@@ -149,219 +149,47 @@ function Counter(): JSX.Element {
 
 **1. 仮想 DOM（Virtual DOM）**
 
-**💡 仮想 DOM とは何か**
-
-仮想 DOM は、実際の DOM を JavaScript オブジェクトとして表現したメモリ上の軽量なコピーです。
-
-```typescript
-// 仮想DOMの概念例
-// 実際のDOM: <div><h1>Hello</h1><p>World</p></div>
-// ↓
-// 仮想DOM（JavaScriptオブジェクト）:
-const virtualDOM = {
-  type: "div",
-  props: {},
-  children: [
-    { type: "h1", props: {}, children: ["Hello"] },
-    { type: "p", props: {}, children: ["World"] },
-  ],
-};
-```
-
-**🚀 なぜ仮想 DOM が必要なのか**
-
-実 DOM の操作は非常にコストが高い処理です：
+仮想 DOM は、実際の DOM を JavaScript オブジェクトとして表現したメモリ上の軽量なコピーです。React は仮想 DOM を使って効率的な画面更新を実現します。
 
 ```tsx
-// ❌ 実DOM操作（重い処理）
-// 1回の変更で数百ミリ秒かかることも
-document.getElementById("title").textContent = "New Title";
-document.getElementById("count").textContent = "10";
-document.getElementById("status").style.color = "red";
-
-// ✅ 仮想DOM（軽い処理）
-// メモリ上のオブジェクト操作なので高速
-function UserProfile({ user }: { user: User }): JSX.Element {
-  return (
-    <div>
-      <h1>{user.name}</h1>
-      <p>{user.email}</p>
-    </div>
-  );
-}
-```
-
-**⚙️ 仮想 DOM の動作原理（Reconciliation）**
-
-1. **状態変更**: コンポーネントの状態が変わる
-2. **新しい仮想 DOM 作成**: 新しい状態に基づいて仮想 DOM ツリーを生成
-3. **差分検出（Diffing）**: 前の仮想 DOM と新しい仮想 DOM を比較
-4. **最小限の実 DOM 更新**: 変更が必要な部分のみ実 DOM に反映
-
-```tsx
-// React の差分検出例
-// 前の状態: <div><span>0</span><button>Click</button></div>
-// 新しい状態: <div><span>1</span><button>Click</button></div>
-// → Reactは <span> の中身だけを更新（buttonは変更なし）
-
+// React の仮想DOM活用例
 function Counter(): JSX.Element {
   const [count, setCount] = useState(0);
 
   return (
     <div>
-      <span>{count}</span> {/* ここだけが更新される */}
+      <span>{count}</span> {/* 変更時、ここだけが更新される */}
       <button onClick={() => setCount(count + 1)}>Click</button>
     </div>
   );
 }
 ```
 
-**📈 パフォーマンス上のメリット**
-
-- **バッチ更新**: 複数の変更をまとめて一度に実 DOM 反映
-- **最適化**: 不要な再描画を自動的に回避
-- **予測可能性**: 開発者は「どうなってほしいか」だけを記述
+**メリット**: 高速な画面更新、自動最適化、予測可能な動作
 
 **2. コンポーネント思考**
 
-**💡 コンポーネント思考とは**
-
-UI を独立した、再利用可能な部品（コンポーネント）として設計する考え方です。従来のモノリシックな UI 設計とは根本的に異なります。
-
-```tsx
-// ❌ 従来のモノリシックなUI設計
-// 全てが一つの大きなファイルに混在
-function EntireApp() {
-  return (
-    <div>
-      {/* ヘッダー */}
-      <header>
-        <h1>My App</h1>
-        <nav>
-          <a href="/home">Home</a>
-          <a href="/about">About</a>
-        </nav>
-      </header>
-
-      {/* メインコンテンツ */}
-      <main>
-        <div>
-          <h2>User Profile</h2>
-          <img src="avatar.jpg" alt="Avatar" />
-          <p>John Doe</p>
-          <p>john@example.com</p>
-        </div>
-
-        <div>
-          <h2>Posts</h2>
-          <div>
-            <h3>Post Title 1</h3>
-            <p>Post content...</p>
-          </div>
-        </div>
-      </main>
-    </div>
-  );
-}
-```
+UI を独立した、再利用可能な部品（コンポーネント）として設計する考え方です。
 
 ```tsx
 // ✅ コンポーネント思考による設計
-// 各部品が独立し、責任が明確
-
-// 入力（Props）→ 処理 → 出力（JSX）
-type ComponentFunction<P> = (props: P) => JSX.Element;
-
-// ヘッダーコンポーネント
-interface HeaderProps {
-  title: string;
-  navigation: { label: string; href: string }[];
-}
-
-function Header({ title, navigation }: HeaderProps): JSX.Element {
-  return (
-    <header>
-      <h1>{title}</h1>
-      <nav>
-        {navigation.map((item) => (
-          <a key={item.href} href={item.href}>
-            {item.label}
-          </a>
-        ))}
-      </nav>
-    </header>
-  );
-}
-
-// ユーザープロフィールコンポーネント
-interface UserProfileProps {
-  user: {
-    name: string;
-    email: string;
-    avatar: string;
-  };
-}
-
-function UserProfile({ user }: UserProfileProps): JSX.Element {
-  return (
-    <div>
-      <h2>User Profile</h2>
-      <img src={user.avatar} alt="Avatar" />
-      <p>{user.name}</p>
-      <p>{user.email}</p>
-    </div>
-  );
-}
-
 // 再利用可能なボタンコンポーネント
 interface ButtonProps {
   text: string;
   onClick: () => void;
-  disabled?: boolean;
   variant?: "primary" | "secondary";
 }
 
-function Button({
-  text,
-  onClick,
-  disabled = false,
-  variant = "primary",
-}: ButtonProps): JSX.Element {
+function Button({ text, onClick, variant = "primary" }: ButtonProps): JSX.Element {
   return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      className={`btn btn-${variant}`}
-    >
+    <button onClick={onClick} className={`btn btn-${variant}`}>
       {text}
     </button>
   );
 }
 ```
 
-**🎯 コンポーネント思考の設計原則**
-
-1. **単一責任原則（SRP）**: 各コンポーネントは一つの責任のみを持つ
-2. **再利用性**: 異なる場所で同じコンポーネントを使用可能
-3. **合成（Composition）**: 小さなコンポーネントを組み合わせて大きな機能を作る
-4. **テスタビリティ**: 独立したコンポーネントは個別にテスト可能
-
-**📈 従来手法との比較**
-
-| 従来の UI 設計 | コンポーネント思考 |
-| -------------- | ------------------ |
-| モノリシック   | 分割・独立         |
-| 重複コード     | 再利用可能         |
-| 保守困難       | 保守しやすい       |
-| テスト困難     | テストしやすい     |
-| 責任不明確     | 責任明確           |
-
-**💼 実際の開発でのメリット**
-
-- **開発効率**: 一度作ったコンポーネントを何度でも使用
-- **保守性**: 変更が必要な時は該当コンポーネントのみ修正
-- **チーム開発**: 各メンバーが異なるコンポーネントを並行開発可能
-- **品質向上**: 小さな単位でのテストとデバッグが容易
+**メリット**: 再利用性、保守しやすさ、テストしやすさ、責任の明確化
 
 **3. 単方向データフロー**
 
@@ -424,7 +252,7 @@ function Avatar({ src }: { src: string }): JSX.Element {
 
 ---
 
-### Step 1: 開発環境構築（45 分）
+### Step 1: 開発環境構築（35 分）
 
 > 💡 **学習目標**: React 19 + TypeScript の開発環境を構築し、基本的な開発フローを理解する
 
@@ -585,9 +413,9 @@ function MyComponent(): JSX.Element {
 
 ---
 
-## Phase 2: JSX マスター（45 分）
+## Phase 2: JSX マスター（35 分）
 
-### Step 2: JSX 基礎理解（45 分）
+### Step 2: JSX 基礎理解（35 分）
 
 > 💡 **学習目標**: JSX の基本記法を理解し、TypeScript と組み合わせた型安全な記述ができるようになる
 
@@ -595,41 +423,20 @@ function MyComponent(): JSX.Element {
 
 **💡 JSX = TypeScript + XML の融合**
 
-**段階 1: 最もシンプルな JSX（15 分）**
+**段階 1: 基本的な JSX（20 分）**
 
 ```tsx
-// 1. 静的なJSX要素
+// 1. 静的なJSX要素とFragment
 function Welcome(): JSX.Element {
-  return <h1>Hello, World!</h1>;
-}
-
-// 2. 複数の要素（Fragment使用）
-function App(): JSX.Element {
   return (
     <>
-      <h1>Welcome to React</h1>
-      <p>Let's learn JSX step by step!</p>
+      <h1>Hello, World!</h1>
+      <p>Welcome to React!</p>
     </>
   );
 }
 
-// 3. 属性の指定
-function Image(): JSX.Element {
-  return (
-    <img
-      src="https://example.com/image.jpg"
-      alt="Example"
-      width={300}
-      height={200}
-    />
-  );
-}
-```
-
-**段階 2: JavaScript 式の埋め込み（15 分）**
-
-```tsx
-// 1. 変数の埋め込み
+// 2. JavaScript式の埋め込み
 function Greeting(): JSX.Element {
   const name = "React";
   const version = 19;
@@ -638,42 +445,13 @@ function Greeting(): JSX.Element {
     <div>
       <h1>Hello, {name}!</h1>
       <p>Version: {version}</p>
-    </div>
-  );
-}
-
-// 2. 計算結果の埋め込み
-function Calculator(): JSX.Element {
-  const a = 10;
-  const b = 5;
-
-  return (
-    <div>
-      <p>
-        {a} + {b} = {a + b}
-      </p>
-      <p>
-        {a} × {b} = {a * b}
-      </p>
-    </div>
-  );
-}
-
-// 3. 関数呼び出しの埋め込み
-function DateTime(): JSX.Element {
-  const getCurrentTime = (): string => {
-    return new Date().toLocaleTimeString();
-  };
-
-  return (
-    <div>
-      <p>Current time: {getCurrentTime()}</p>
+      <p>Current time: {new Date().toLocaleTimeString()}</p>
     </div>
   );
 }
 ```
 
-**段階 3: 条件付きレンダリング（15 分）**
+**段階 2: 条件付きレンダリング（15 分）**
 
 ```tsx
 // 1. 論理AND演算子を使った条件付きレンダリング
@@ -771,9 +549,9 @@ function GoodExample3(): JSX.Element {
 
 ---
 
-## Phase 3: コンポーネント設計（75 分）
+## Phase 3: コンポーネント設計（60 分）
 
-### Step 3: 最初のコンポーネント（30 分）
+### Step 3: 最初のコンポーネント（25 分）
 
 > 💡 **学習目標**: 静的なコンポーネントを作成し、コンポーネントの分割と再利用の概念を理解する
 
@@ -919,7 +697,7 @@ src/
 
 ---
 
-### Step 4: Props の理解（45 分）
+### Step 4: Props の理解（35 分）
 
 > 💡 **学習目標**: Props を使ってコンポーネントに外部からデータを渡し、再利用可能なコンポーネントを作成する
 
@@ -1113,9 +891,9 @@ interface ClickableCardProps {
 
 ---
 
-## Phase 4: 動的機能（90 分）
+## Phase 4: 動的機能（75 分）
 
-### Step 5: 状態管理入門（45 分）
+### Step 5: 状態管理入門（35 分）
 
 > 💡 **学習目標**: useState を使ってコンポーネントに状態を持たせ、動的な UI を作成する
 
@@ -1323,7 +1101,7 @@ export default UserProfile;
 
 ---
 
-### Step 6: イベント処理（45 分）
+### Step 6: イベント処理（40 分）
 
 > 💡 **学習目標**: React のイベントシステムを理解し、ユーザーの操作に応答する動的な UI を作成する
 
@@ -1666,9 +1444,9 @@ function EventPropagationExample(): JSX.Element {
 
 ---
 
-## Phase 5: 実践演習（90 分）
+## Phase 5: 実践演習（70 分）
 
-### Step 7: 段階的演習（90 分）
+### Step 7: 段階的演習（70 分）
 
 > 💡 **学習目標**: これまで学んだ知識を統合して、実用的なアプリケーションを段階的に作成する
 
@@ -1743,42 +1521,7 @@ function LikeButton({
 export default LikeButton;
 ```
 
-#### 🎯 演習 3: 動的フォーム（25 分）
-
-**要件:**
-
-- 名前、メール、メッセージの入力フィールド
-- リアルタイムバリデーション
-- 送信時の確認とリセット機能
-- エラー表示機能
-
-```tsx
-// src/components/DynamicForm.tsx
-interface FormData {
-  name: string;
-  email: string;
-  message: string;
-}
-
-interface FormErrors {
-  name?: string;
-  email?: string;
-  message?: string;
-}
-
-function DynamicForm(): JSX.Element {
-  // 実装してください
-  // ヒント:
-  // - useState でフォームデータとエラーを管理
-  // - バリデーション関数の作成
-  // - 送信ハンドラーの実装
-  // - エラーメッセージの表示
-}
-
-export default DynamicForm;
-```
-
-#### 🎯 演習 4: シンプルな Todo アプリ（20 分）
+#### 🎯 演習 3: シンプルな Todo アプリ（25 分）
 
 **要件:**
 
@@ -1841,1448 +1584,10 @@ export default TodoApp;
 
 - [ ] プロフィールカードを作成できた
 - [ ] いいねボタンの状態管理ができた
-- [ ] 動的フォームのバリデーションを実装できた
 - [ ] Todo アプリの基本機能を実装できた
 - [ ] 全ての演習で TypeScript の型安全性を保てた
 
 ---
-
-## 📊 Step 1 総合評価
-
-### 🎯 最終到達目標の確認
-
-- [ ] React の基本概念（仮想 DOM、コンポーネント思考）を理解している
-- [ ] React 19 + TypeScript 開発環境を構築できる
-- [ ] JSX 記法と型システムを統合して使用できる
-- [ ] Props を使った再利用可能なコンポーネントを設計できる
-- [ ] useState を使った状態管理ができる
-- [ ] イベント処理を適切に実装できる
-- [ ] 基礎から応用まで段階的な実践演習を完了している
-
-### 🚀 次のステップへの準備
-
-**Step 2 で学習する内容の予習:**
-
-- useEffect と副作用の管理
-- カスタムフックの作成
-- コンポーネント間の状態共有
-- Context API の基礎
-
-**推奨する追加学習:**
-
-- React Developer Tools の詳細な使い方
-- ESLint ルールの追加設定
-- Storybook を使ったコンポーネント開発
-- テスト環境の構築（Vitest + Testing Library）
-
----
-
-#### ⚙️ TypeScript 設定（React 特化・最小構成）
-
-```json
-// tsconfig.json - React 初心者向けの最小設定
-{
-  "compilerOptions": {
-    // 基本設定
-    "target": "ES2020",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-
-    // React 設定
-    "jsx": "react-jsx", // React 17+ の新しい JSX 変換
-    "allowJs": false, // TypeScript のみ使用
-    "noEmit": true, // Vite がビルドを担当
-
-    // 型チェック（段階的に厳しく）
-    "strict": true, // 厳密な型チェック
-    "noImplicitAny": true, // any 型の暗黙的使用を禁止
-    "strictNullChecks": true, // null/undefined の厳密チェック
-
-    // 開発体験向上
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-
-    // パス解決
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"]
-    }
-  },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
-}
-```
-
-#### 🎯 基本 Props 型（30 分）
-
-**💡 TypeScript 上級者なら理解しやすい Props 型設計**
-
-```tsx
-// 1. 基本的な Props 型定義
-interface GreetingProps {
-  name: string;
-  age?: number; // オプショナル型
-  isVip: boolean;
-  hobbies: string[]; // 配列型
-}
-
-function Greeting({ name, age, isVip, hobbies }: GreetingProps): JSX.Element {
-  return (
-    <div>
-      <h1>Hello, {name}!</h1>
-      {age && <p>Age: {age}</p>}
-      {isVip && <span>⭐ VIP Member</span>}
-      <ul>
-        {hobbies.map((hobby, index) => (
-          <li key={index}>{hobby}</li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-// 2. Union 型を活用した Props
-interface AlertProps {
-  type: "success" | "warning" | "error" | "info";
-  message: string;
-  dismissible?: boolean;
-}
-
-function Alert({
-  type,
-  message,
-  dismissible = false,
-}: AlertProps): JSX.Element {
-  const getIcon = (): string => {
-    switch (type) {
-      case "success":
-        return "✅";
-      case "warning":
-        return "⚠️";
-      case "error":
-        return "❌";
-      case "info":
-        return "ℹ️";
-    }
-  };
-
-  return (
-    <div className={`alert alert-${type}`}>
-      <span>{getIcon()}</span>
-      <span>{message}</span>
-      {dismissible && <button>×</button>}
-    </div>
-  );
-}
-
-// 3. オブジェクト型の Props
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  avatar?: string;
-}
-
-interface UserCardProps {
-  user: User;
-  showEmail?: boolean;
-}
-
-function UserCard({ user, showEmail = true }: UserCardProps): JSX.Element {
-  return (
-    <div className="user-card">
-      {user.avatar && <img src={user.avatar} alt={`${user.name}'s avatar`} />}
-      <h3>{user.name}</h3>
-      {showEmail && <p>{user.email}</p>}
-    </div>
-  );
-}
-```
-
-#### 🖱️ イベントハンドラー型（30 分）
-
-**💡 React 特有のイベント型システム**
-
-```tsx
-// 1. 基本的なイベントハンドラー
-function Button(): JSX.Element {
-  // React.MouseEvent<HTMLButtonElement> - React 特有の型
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
-    console.log("Button clicked!");
-    console.log("Event target:", event.target);
-    console.log("Current target:", event.currentTarget);
-  };
-
-  return <button onClick={handleClick}>Click me</button>;
-}
-
-// 2. フォームイベントの処理
-function ContactForm(): JSX.Element {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
-    event.preventDefault(); // デフォルト動作を防ぐ
-    console.log("Form submitted");
-  };
-
-  const handleInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ): void => {
-    const { name, value, type } = event.target;
-    console.log(`${name}: ${value} (${type})`);
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        name="name"
-        placeholder="Your name"
-        onChange={handleInputChange}
-      />
-      <input
-        type="email"
-        name="email"
-        placeholder="Your email"
-        onChange={handleInputChange}
-      />
-      <button type="submit">Submit</button>
-    </form>
-  );
-}
-
-// 3. カスタムイベントハンドラー型
-interface CustomButtonProps {
-  onClick: (message: string) => void; // カスタムコールバック型
-  children: React.ReactNode;
-}
-
-function CustomButton({ onClick, children }: CustomButtonProps): JSX.Element {
-  const handleClick = (): void => {
-    onClick("Custom button clicked!");
-  };
-
-  return <button onClick={handleClick}>{children}</button>;
-}
-```
-
-#### 🔄 useState 型（30 分）
-
-**💡 React の状態管理と TypeScript の型システム**
-
-```tsx
-import React, { useState } from 'react';
-
-// 1. 基本的な useState の型
-function Counter(): JSX.Element {
-  // TypeScript が自動で number 型を推論
-  const [count, setCount] = useState<number>(0);
-
-  const increment = (): void => {
-    setCount(count + 1);
-  };
-
-  const decrement = (): void => {
-    setCount(prev => prev - 1); // 関数型更新
-  };
-
-  return (
-    <div>
-      <p>Count: {count}</p>
-      <button onClick={increment}>+</button>
-      <button onClick={decrement}>-</button>
-    </div>
-  );
-}
-
-// 2. オブジェクト状態の管理
-interface FormData {
-  name: string;
-  email: string;
-  age: number;
-}
-
-function UserForm(): JSX.Element {
-  const [formData, setFormData] = useState<FormData>({
-    name: '',
-    email: '',
-    age: 0,
-  });
-
-  const updateField = (field: keyof FormData, value: string | number): void => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  return (
-    <div>
-      <input
-        type="text"
-        value={formData.name}
-        onChange={(e) => updateField('name', e.target.value)}
-        placeholder="Name"
-      />
-      <input
-        type="email"
-        value={formData.email}
-        onChange={(e) => updateField('email', e.target.value)}
-        placeholder="Email"
-      />
-      <input
-        type="number"
-        value={formData.age}
-        onChange={(e) => updateField('age', Number(e.target.value))}
-        placeholder="Age"
-      />
-    </div>
-  );
-}
-
-// 3. 配列状態の管理
-interface Todo {
-  id: number;
-  text: string;
-  completed: boolean;
-}
-
-function TodoList(): JSX.Element {
-  const [todos, setTodos] = useState<Todo[]>([]);
-  const [inputText, setInputText] = useState<string>('');
-
-  const addTodo = (): void => {
-    if (inputText.trim()) {
-      const newTodo: Todo = {
-        id: Date.now(),
-```
-
-#### 演習 4-1: カウンターアプリ（30 分）
-
-```tsx
-// 要件:
-// - カウンターの値を表示
-// - +1, -1, リセットボタン
-// - 負の値は表示しない
-// - 型安全な実装
-
-interface CounterAppProps {
-  initialValue?: number;
-  maxValue?: number;
-}
-
-function CounterApp({
-  initialValue = 0,
-  maxValue = 100,
-}: CounterAppProps): JSX.Element {
-  const [count, setCount] = useState<number>(initialValue);
-
-  const increment = (): void => {
-    setCount((prev) => Math.min(prev + 1, maxValue));
-  };
-
-  const decrement = (): void => {
-    setCount((prev) => Math.max(prev - 1, 0));
-  };
-
-  const reset = (): void => {
-    setCount(initialValue);
-  };
-
-  return (
-    <div className="counter-app">
-      <h2>Counter: {count}</h2>
-      <div>
-        <button onClick={decrement} disabled={count <= 0}>
-          -1
-        </button>
-        <button onClick={increment} disabled={count >= maxValue}>
-          +1
-        </button>
-        <button onClick={reset}>Reset</button>
-      </div>
-      {count >= maxValue && <p>Maximum value reached!</p>}
-    </div>
-  );
-}
-```
-
-#### 演習 4-2: 簡単な Todo リスト（45 分）
-
-```tsx
-// 要件:
-// - Todo の追加・削除・完了切り替え
-// - 入力バリデーション
-// - フィルタリング機能
-// - 型安全な実装
-
-interface Todo {
-  id: number;
-  text: string;
-  completed: boolean;
-  createdAt: Date;
-}
-
-type FilterType = "all" | "active" | "completed";
-
-function SimpleTodoApp(): JSX.Element {
-  const [todos, setTodos] = useState<Todo[]>([]);
-  const [inputText, setInputText] = useState<string>("");
-  const [filter, setFilter] = useState<FilterType>("all");
-
-  const addTodo = (): void => {
-    const trimmedText = inputText.trim();
-    if (trimmedText) {
-      const newTodo: Todo = {
-        id: Date.now(),
-        text: trimmedText,
-        completed: false,
-        createdAt: new Date(),
-      };
-      setTodos((prev) => [...prev, newTodo]);
-      setInputText("");
-    }
-  };
-
-  const deleteTodo = (id: number): void => {
-    setTodos((prev) => prev.filter((todo) => todo.id !== id));
-  };
-
-  const toggleTodo = (id: number): void => {
-    setTodos((prev) =>
-      prev.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
-    );
-  };
-
-  const filteredTodos = todos.filter((todo) => {
-    switch (filter) {
-      case "active":
-        return !todo.completed;
-      case "completed":
-        return todo.completed;
-      default:
-        return true;
-    }
-  });
-
-  return (
-    <div className="todo-app">
-      <h2>Simple Todo List</h2>
-
-      <div>
-        <input
-          type="text"
-          value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
-          placeholder="Add a new todo"
-          onKeyPress={(e) => e.key === "Enter" && addTodo()}
-        />
-        <button onClick={addTodo} disabled={!inputText.trim()}>
-          Add
-        </button>
-      </div>
-
-      <div>
-        <button
-          onClick={() => setFilter("all")}
-          className={filter === "all" ? "active" : ""}
-        >
-          All ({todos.length})
-        </button>
-        <button
-          onClick={() => setFilter("active")}
-          className={filter === "active" ? "active" : ""}
-        >
-          Active ({todos.filter((t) => !t.completed).length})
-        </button>
-        <button
-          onClick={() => setFilter("completed")}
-          className={filter === "completed" ? "active" : ""}
-        >
-          Completed ({todos.filter((t) => t.completed).length})
-        </button>
-      </div>
-
-      <ul>
-        {filteredTodos.map((todo) => (
-          <li key={todo.id}>
-            <input
-              type="checkbox"
-              checked={todo.completed}
-              onChange={() => toggleTodo(todo.id)}
-            />
-            <span
-              style={{
-                textDecoration: todo.completed ? "line-through" : "none",
-                opacity: todo.completed ? 0.6 : 1,
-              }}
-            >
-              {todo.text}
-            </span>
-            <button onClick={() => deleteTodo(todo.id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
-
-      {filteredTodos.length === 0 && (
-        <p>No todos {filter !== "all" ? `in ${filter}` : ""}</p>
-      )}
-    </div>
-  );
-}
-```
-
-#### 演習 4-3: 基本フォーム（15 分）
-
-```tsx
-// 要件:
-// - 名前、メール、年齢の入力
-// - バリデーション機能
-// - 送信時の型チェック
-
-interface FormData {
-  name: string;
-  email: string;
-  age: number;
-}
-
-interface FormErrors {
-  name?: string;
-  email?: string;
-  age?: string;
-}
-
-function BasicForm(): JSX.Element {
-  const [formData, setFormData] = useState<FormData>({
-    name: "",
-    email: "",
-    age: 0,
-  });
-
-  const [errors, setErrors] = useState<FormErrors>({});
-
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Email is invalid";
-    }
-
-    if (formData.age < 0 || formData.age > 120) {
-      newErrors.age = "Age must be between 0 and 120";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
-    event.preventDefault();
-
-    if (validateForm()) {
-      console.log("Form submitted:", formData);
-      alert("Form submitted successfully!");
-    }
-  };
-
-  const updateField = (field: keyof FormData, value: string | number): void => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }));
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>Name:</label>
-        <input
-          type="text"
-          value={formData.name}
-          onChange={(e) => updateField("name", e.target.value)}
-        />
-        {errors.name && <span className="error">{errors.name}</span>}
-      </div>
-
-      <div>
-        <label>Email:</label>
-        <input
-          type="email"
-          value={formData.email}
-          onChange={(e) => updateField("email", e.target.value)}
-        />
-        {errors.email && <span className="error">{errors.email}</span>}
-      </div>
-
-      <div>
-        <label>Age:</label>
-        <input
-          type="number"
-          value={formData.age}
-          onChange={(e) => updateField("age", Number(e.target.value))}
-        />
-        {errors.age && <span className="error">{errors.age}</span>}
-      </div>
-
-      <button type="submit">Submit</button>
-    </form>
-  );
-}
-```
-
-        text: inputText,
-        completed: false,
-      };
-      setTodos(prev => [...prev, newTodo]);
-      setInputText('');
-    }
-
-};
-
-const toggleTodo = (id: number): void => {
-setTodos(prev =>
-prev.map(todo =>
-todo.id === id ? { ...todo, completed: !todo.completed } : todo
-)
-);
-};
-
-return (
-
-<div>
-<input
-type="text"
-value={inputText}
-onChange={(e) => setInputText(e.target.value)}
-placeholder="Add a todo"
-/>
-<button onClick={addTodo}>Add</button>
-<ul>
-{todos.map(todo => (
-<li key={todo.id}>
-<input
-type="checkbox"
-checked={todo.completed}
-onChange={() => toggleTodo(todo.id)}
-/>
-<span style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>
-{todo.text}
-</span>
-</li>
-))}
-</ul>
-</div>
-);
-}
-
-````
-
-#### 🎨 条件付きレンダリング型（30分）
-
-**💡 TypeScript の型ガードを React で活用**
-
-```tsx
-// 1. 基本的な条件付きレンダリング
-interface LoadingProps {
-  isLoading: boolean;
-  children: React.ReactNode;
-}
-
-function LoadingWrapper({ isLoading, children }: LoadingProps): JSX.Element {
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-  return <>{children}</>;
-}
-
-// 2. Union 型を使った状態管理
-type AsyncState<T> =
-  | { status: 'idle' }
-  | { status: 'loading' }
-  | { status: 'success'; data: T }
-  | { status: 'error'; error: string };
-
-interface DataDisplayProps<T> {
-  state: AsyncState<T>;
-  renderData: (data: T) => React.ReactNode;
-}
-
-function DataDisplay<T>({ state, renderData }: DataDisplayProps<T>): JSX.Element {
-  switch (state.status) {
-    case 'idle':
-      return <div>Click to load data</div>;
-    case 'loading':
-      return <div>Loading...</div>;
-    case 'success':
-      return <div>{renderData(state.data)}</div>;
-    case 'error':
-      return <div>Error: {state.error}</div>;
-  }
-}
-
-// 3. Optional Chaining と Nullish Coalescing
-interface UserProfileProps {
-  user?: User | null;
-}
-
-function UserProfile({ user }: UserProfileProps): JSX.Element {
-  return (
-    <div>
-      <h1>{user?.name ?? 'Guest User'}</h1>
-      {user?.avatar && <img src={user.avatar} alt="Avatar" />}
-      <p>{user?.email ?? 'No email provided'}</p>
-    </div>
-  );
-}
-````
-
-### Section 4: 実践演習（1.5 時間）
-
-#### 🚀 Hello World の作成
-
-```tsx
-// src/App.tsx - 最初の型安全なコンポーネント
-function App(): JSX.Element {
-  return (
-    <div>
-      <h1>Hello, TypeScript + React!</h1>
-      <p>React 初心者（TypeScript 上級者）向け学習開始</p>
-    </div>
-  );
-}
-
-export default App;
-```
-
-### Section 3: 段階的型導入（2 時間）
-
-#### 📝 TypeScript 設定（React 特化）
-
-> 💡 **詳細解説**: tsconfig.json の各オプションの詳細は [Step01\_補足\_設定ファイル解説.md](./Step01_補足_設定ファイル解説.md) を見てね 🐰
-
-**💡 なぜこの設定が重要なのか**
-
-React + TypeScript プロジェクトでは、JSX の処理、モジュール解決、型チェックの厳密性など、React 特有の要件に合わせた TypeScript 設定が必要です。適切な設定により、開発効率と型安全性を両立できます。
-
-**🎯 どういう場面で使うのか**
-
-- **プロジェクト初期設定**: 型安全で効率的な開発環境の構築
-- **チーム開発**: 統一されたコード品質とスタイルの確保
-- **大規模アプリケーション**: スケーラブルな型システムの構築
-
-```json
-// tsconfig.json
-{
-  "compilerOptions": {
-    // 基本設定
-    "target": "ES2020", // 出力するJavaScriptのバージョン
-    "lib": ["ES2020", "DOM", "DOM.Iterable"], // 使用可能なライブラリ
-    "allowJs": false, // JavaScript ファイルの混在を禁止
-    "skipLibCheck": true, // ライブラリの型チェックをスキップ
-
-    // モジュール設定
-    "esModuleInterop": false, // CommonJS との互換性
-    "allowSyntheticDefaultImports": true, // デフォルトインポートの許可
-    "module": "ESNext", // モジュールシステム
-    "moduleResolution": "bundler", // Vite 用のモジュール解決
-    "resolveJsonModule": true, // JSON ファイルのインポート許可
-    "isolatedModules": true, // 単一ファイルでの変換対応
-
-    // React 設定
-    "jsx": "react-jsx", // React 17+ の新しい JSX 変換
-    "noEmit": true, // TypeScript はビルドしない（Vite が担当）
-
-    // 型チェック設定（段階的に厳しく）
-    "strict": true, // 厳密な型チェック
-    "noUnusedLocals": true, // 未使用のローカル変数を検出
-    "noUnusedParameters": true, // 未使用のパラメータを検出
-    "exactOptionalPropertyTypes": true, // オプショナルプロパティの厳密チェック
-    "noImplicitReturns": true, // 暗黙的な return の禁止
-    "noFallthroughCasesInSwitch": true, // switch 文の fallthrough 検出
-    "forceConsistentCasingInFileNames": true, // ファイル名の大文字小文字統一
-
-    // パス解決（開発効率向上）
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"], // src ディレクトリへのエイリアス
-      "@/components/*": ["src/components/*"], // コンポーネントへの直接アクセス
-      "@/hooks/*": ["src/hooks/*"], // カスタムフックへの直接アクセス
-      "@/types/*": ["src/types/*"] // 型定義への直接アクセス
-    }
-  },
-  "include": ["src"], // 型チェック対象ディレクトリ
-  "references": [{ "path": "./tsconfig.node.json" }] // Node.js 用設定の参照
-}
-```
-
-**📝 設定の詳細解説**
-
-- **jsx: "react-jsx"**: React 17+ の新しい JSX 変換を使用（`import React` が不要）
-- **strict: true**: 型安全性を最大化（初心者は段階的に有効化推奨）
-- **paths**: 相対パスの代わりにエイリアスを使用してインポートを簡潔に
-
-**⚠️ よくある間違いと注意点**
-
-```json
-// ❌ 間違い: 古い JSX 変換
-{
-  "jsx": "react"  // React 16 以前の方式
-}
-
-// ✅ 正解: 新しい JSX 変換
-{
-  "jsx": "react-jsx"  // React 17+ の方式
-}
-
-// ❌ 間違い: 緩い型チェック
-{
-  "strict": false,
-  "noImplicitAny": false
-}
-
-// ✅ 正解: 段階的な厳密化
-{
-  "strict": true,           // 最初は true から開始
-  "noUnusedLocals": true,   // 段階的に追加
-  "exactOptionalPropertyTypes": true
-}
-```
-
-**🚀 React 19 対応の最適化設定**
-
-```json
-{
-  "compilerOptions": {
-    // React 19 の新機能に対応
-    "target": "ES2022", // より新しい JavaScript 機能を活用
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
-
-    // パフォーマンス最適化
-    "incremental": true, // インクリメンタルコンパイル
-    "tsBuildInfoFile": ".tsbuildinfo", // ビルド情報のキャッシュ
-
-    // 開発体験の向上
-    "pretty": true, // エラーメッセージの色付け
-    "listEmittedFiles": false, // 出力ファイル一覧の非表示
-    "listFiles": false // 処理ファイル一覧の非表示
-  }
-}
-```
-
-#### 🎯 React 19 の新機能と TypeScript
-
-```tsx
-// 1. React 19の新しいHooks
-import { use, useOptimistic, useFormStatus } from "react";
-
-// use Hook - Promise/Contextの値を読み取り
-function UserProfile({ userPromise }: { userPromise: Promise<User> }) {
-  const user = use(userPromise);
-  return <div>Hello, {user.name}!</div>;
-}
-
-// useOptimistic - 楽観的更新
-function TodoList({ todos }: { todos: Todo[] }) {
-  const [optimisticTodos, addOptimisticTodo] = useOptimistic(
-    todos,
-    (state: Todo[], newTodo: Todo) => [...state, newTodo]
-  );
-
-  return (
-    <div>
-      {optimisticTodos.map((todo) => (
-        <div key={todo.id}>{todo.text}</div>
-      ))}
-    </div>
-  );
-}
-
-// useFormStatus - フォーム状態の取得
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <button type="submit" disabled={pending}>
-      {pending ? "Submitting..." : "Submit"}
-    </button>
-  );
-}
-```
-
-### Section 2: JSX の型システム理解
-
-#### 🔍 JSX 型の基本概念
-
-> 💡 **詳細解説**: JSX 型システムの詳細と応用例は [Step01\_補足\_専門用語集.md#jsx 型システム](./Step01_補足_専門用語集.md#jsx型システム) を見てね 🐰
-
-**💡 なぜこの概念が重要なのか**
-
-JSX の型システムを理解することは、React + TypeScript 開発の基盤となります。適切な型定義により、コンポーネントの入出力が明確になり、実行時エラーを防ぎ、優れた開発体験を提供します。
-
-**🎯 どういう場面で使うのか**
-
-- **コンポーネント設計**: 再利用可能で型安全なコンポーネントの作成
-- **Props 管理**: 複雑なデータ構造の型安全な受け渡し
-- **子要素管理**: 柔軟で安全な子要素の型定義
-- **ライブラリ開発**: 他の開発者が使いやすい型定義の提供
-
-```tsx
-// 1. JSX要素の型定義
-// JSX.Element - 最も一般的な戻り値型
-function Welcome(): JSX.Element {
-  return <h1>Hello, World!</h1>;
-}
-
-// ReactNode - より柔軟な型（null, undefined, string, number等も含む）
-function Wrapper({ children }: { children: React.ReactNode }): JSX.Element {
-  return <div>{children}</div>;
-}
-
-// ReactElement - 特定のReact要素型
-function createButton(): React.ReactElement<ButtonProps> {
-  return <button>Click me</button>;
-}
-
-// 2. JSX.IntrinsicElements - HTML要素の型
-type DivProps = JSX.IntrinsicElements["div"];
-type ButtonProps = JSX.IntrinsicElements["button"];
-
-function CustomDiv(props: DivProps): JSX.Element {
-  return <div {...props} />;
-}
-
-// 3. コンポーネントの型定義パターン
-// 関数コンポーネント（推奨）
-interface GreetingProps {
-  name: string;
-  age?: number;
-  onGreet?: (message: string) => void;
-}
-
-function Greeting({ name, age, onGreet }: GreetingProps): JSX.Element {
-  const handleClick = (): void => {
-    const message = `Hello, ${name}! ${age ? `You are ${age} years old.` : ""}`;
-    onGreet?.(message);
-  };
-
-  return (
-    <div>
-      <h1>Hello, {name}!</h1>
-      {age && <p>Age: {age}</p>}
-      <button onClick={handleClick}>Greet</button>
-    </div>
-  );
-}
-
-// 4. 子要素の型管理
-interface ContainerProps {
-  children: React.ReactNode;
-  title?: string;
-}
-
-function Container({ children, title }: ContainerProps): JSX.Element {
-  return (
-    <div>
-      {title && <h2>{title}</h2>}
-      <div>{children}</div>
-    </div>
-  );
-}
-
-// 特定の子要素型を指定
-interface ButtonGroupProps {
-  children: React.ReactElement<ButtonProps> | React.ReactElement<ButtonProps>[];
-}
-
-function ButtonGroup({ children }: ButtonGroupProps): JSX.Element {
-  return <div className="button-group">{children}</div>;
-}
-```
-
-#### 🎨 HTMLAttributes の継承パターン
-
-```tsx
-// 5. HTML属性の継承
-interface CustomButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant: "primary" | "secondary" | "danger";
-  size: "sm" | "md" | "lg";
-  loading?: boolean;
-}
-
-function CustomButton({
-  variant,
-  size,
-  loading = false,
-  children,
-  disabled,
-  ...props
-}: CustomButtonProps): JSX.Element {
-  const className = `btn btn-${variant} btn-${size} ${
-    loading ? "loading" : ""
-  }`;
-
-  return (
-    <button className={className} disabled={disabled || loading} {...props}>
-      {loading ? "Loading..." : children}
-    </button>
-  );
-}
-
-// 6. Input要素の型安全な拡張
-interface CustomInputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size"> {
-  label: string;
-  error?: string;
-  size: "sm" | "md" | "lg";
-}
-
-function CustomInput({
-  label,
-  error,
-  size,
-  className = "",
-  ...props
-}: CustomInputProps): JSX.Element {
-  const inputClassName = `input input-${size} ${
-    error ? "error" : ""
-  } ${className}`;
-
-  return (
-    <div className="form-field">
-      <label>{label}</label>
-      <input className={inputClassName} {...props} />
-      {error && <span className="error-message">{error}</span>}
-    </div>
-  );
-}
-
-// 7. イベントハンドラーの型安全性
-interface FormData {
-  username: string;
-  email: string;
-  age: number;
-}
-
-function ContactForm(): JSX.Element {
-  const [formData, setFormData] = React.useState<FormData>({
-    username: "",
-    email: "",
-    age: 0,
-  });
-
-  // 型安全なイベントハンドラー
-  const handleInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ): void => {
-    const { name, value, type } = event.target;
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "number" ? Number(value) : value,
-    }));
-  };
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
-    event.preventDefault();
-    console.log("Form submitted:", formData);
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <CustomInput
-        label="Username"
-        name="username"
-        value={formData.username}
-        onChange={handleInputChange}
-        size="md"
-      />
-      <CustomInput
-        label="Email"
-        name="email"
-        type="email"
-        value={formData.email}
-        onChange={handleInputChange}
-        size="md"
-      />
-      <CustomInput
-        label="Age"
-        name="age"
-        type="number"
-        value={formData.age.toString()}
-        onChange={handleInputChange}
-        size="md"
-      />
-      <CustomButton type="submit" variant="primary" size="md">
-        Submit
-      </CustomButton>
-    </form>
-  );
-}
-```
-
-### Section 3: 基本コンポーネント設計
-
-#### 🧩 コンポーネント設計パターン
-
-```tsx
-// 8. 条件付きレンダリングの型安全性
-interface AlertProps {
-  type: "success" | "warning" | "error" | "info";
-  message: string;
-  dismissible?: boolean;
-  onDismiss?: () => void;
-}
-
-function Alert({
-  type,
-  message,
-  dismissible = false,
-  onDismiss,
-}: AlertProps): JSX.Element {
-  const getIcon = (): string => {
-    switch (type) {
-      case "success":
-        return "✅";
-      case "warning":
-        return "⚠️";
-      case "error":
-        return "❌";
-      case "info":
-        return "ℹ️";
-      default:
-        return "";
-    }
-  };
-
-  return (
-    <div className={`alert alert-${type}`}>
-      <span className="alert-icon">{getIcon()}</span>
-      <span className="alert-message">{message}</span>
-      {dismissible && (
-        <button className="alert-dismiss" onClick={onDismiss}>
-          ×
-        </button>
-      )}
-    </div>
-  );
-}
-
-// 9. リスト表示の型安全なパターン
-interface ListItem {
-  id: number;
-  title: string;
-  description?: string;
-  completed?: boolean;
-}
-
-interface ListProps<T extends ListItem> {
-  items: T[];
-  renderItem: (item: T, index: number) => React.ReactNode;
-  emptyMessage?: string;
-  loading?: boolean;
-}
-
-function List<T extends ListItem>({
-  items,
-  renderItem,
-  emptyMessage = "No items found",
-  loading = false,
-}: ListProps<T>): JSX.Element {
-  if (loading) {
-    return <div className="loading">Loading...</div>;
-  }
-
-  if (items.length === 0) {
-    return <div className="empty-state">{emptyMessage}</div>;
-  }
-
-  return (
-    <ul className="list">
-      {items.map((item, index) => (
-        <li key={item.id} className="list-item">
-          {renderItem(item, index)}
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-// 使用例
-interface Todo extends ListItem {
-  dueDate?: Date;
-  priority: "low" | "medium" | "high";
-}
-
-function TodoApp(): JSX.Element {
-  const [todos] = React.useState<Todo[]>([
-    {
-      id: 1,
-      title: "Learn TypeScript",
-      description: "Complete Phase 1",
-      completed: true,
-      priority: "high",
-    },
-    {
-      id: 2,
-      title: "Learn React",
-      description: "Start Phase 2",
-      completed: false,
-      priority: "medium",
-      dueDate: new Date("2024-12-31"),
-    },
-  ]);
-
-  return (
-    <List
-      items={todos}
-      renderItem={(todo) => (
-        <div>
-          <h3>{todo.title}</h3>
-          <p>{todo.description}</p>
-          <span className={`priority priority-${todo.priority}`}>
-            {todo.priority}
-          </span>
-          {todo.dueDate && (
-            <span className="due-date">
-              Due: {todo.dueDate.toLocaleDateString()}
-            </span>
-          )}
-        </div>
-      )}
-      emptyMessage="No todos yet!"
-    />
-  );
-}
-
-// 10. モーダルコンポーネントの型設計
-interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  title?: string;
-  children: React.ReactNode;
-  size?: "sm" | "md" | "lg" | "xl";
-}
-
-function Modal({
-  isOpen,
-  onClose,
-  title,
-  children,
-  size = "md",
-}: ModalProps): JSX.Element | null {
-  // ポータルを使用する場合の型安全な実装
-  if (!isOpen) return null;
-
-  const handleBackdropClick = (
-    event: React.MouseEvent<HTMLDivElement>
-  ): void => {
-    if (event.target === event.currentTarget) {
-      onClose();
-    }
-  };
-
-  const handleEscapeKey = React.useCallback(
-    (event: KeyboardEvent): void => {
-      if (event.key === "Escape") {
-        onClose();
-      }
-    },
-    [onClose]
-  );
-
-  React.useEffect(() => {
-    document.addEventListener("keydown", handleEscapeKey);
-    return () => document.removeEventListener("keydown", handleEscapeKey);
-  }, [handleEscapeKey]);
-
-  return (
-    <div className="modal-backdrop" onClick={handleBackdropClick}>
-      <div className={`modal modal-${size}`}>
-        {title && (
-          <div className="modal-header">
-            <h2>{title}</h2>
-            <button className="modal-close" onClick={onClose}>
-              ×
-            </button>
-          </div>
-        )}
-        <div className="modal-body">{children}</div>
-      </div>
-    </div>
-  );
-}
-```
-
-## 🎯 実践演習
-
-### 演習 1-1: 基本コンポーネント作成 🔰
-
-```tsx
-// 以下の要件を満たすコンポーネントを作成せよ
-
-// 1. Card コンポーネント
-interface CardProps {
-  title: string;
-  subtitle?: string;
-  children: React.ReactNode;
-  actions?: React.ReactNode;
-  variant?: "default" | "outlined" | "elevated";
-  clickable?: boolean;
-  onClick?: () => void;
-}
-
-// 要件:
-// - title は必須、subtitle はオプション
-// - children でカード内容を表示
-// - actions でボタンなどのアクション要素を配置
-// - variant でカードのスタイルを変更
-// - clickable が true の場合、onClick イベントを処理
-
-// 2. Badge コンポーネント
-interface BadgeProps {
-  children: React.ReactNode;
-  variant: "primary" | "secondary" | "success" | "warning" | "error";
-  size?: "sm" | "md" | "lg";
-  rounded?: boolean;
-}
-
-// 要件:
-// - variant は必須（色の種類）
-// - size でバッジのサイズを制御
-// - rounded で角丸の有無を制御
-
-// 3. Avatar コンポーネント
-interface AvatarProps {
-  src?: string;
-  alt?: string;
-  name: string;
-  size?: "xs" | "sm" | "md" | "lg" | "xl";
-  fallbackColor?: string;
-}
-
-// 要件:
-// - src がある場合は画像を表示
-// - src がない場合は name の頭文字を表示
-// - size でアバターのサイズを制御
-// - fallbackColor で背景色を指定
-```
-
-### 演習 1-2: フォームコンポーネント 🔶
-
-```tsx
-// 以下の要件を満たすフォームシステムを作成せよ
-
-// 1. FormField コンポーネント
-interface FormFieldProps {
-  label: string;
-  required?: boolean;
-  error?: string;
-  helperText?: string;
-  children: React.ReactElement;
-}
-
-// 2. Select コンポーネント
-interface Option {
-  value: string | number;
-  label: string;
-  disabled?: boolean;
-}
-
-interface SelectProps {
-  options: Option[];
-  value?: string | number;
-  placeholder?: string;
-  multiple?: boolean;
-  onChange: (value: string | number | (string | number)[]) => void;
-  disabled?: boolean;
-}
-
-// 3. Checkbox コンポーネント
-interface CheckboxProps {
-  checked: boolean;
-  onChange: (checked: boolean) => void;
-  label?: string;
-  disabled?: boolean;
-  indeterminate?: boolean;
-}
-
-// 4. 統合フォーム例
-interface UserFormData {
-  name: string;
-  email: string;
-  age: number;
-  country: string;
-  interests: string[];
-  newsletter: boolean;
-}
-
-// 要件:
-// - 全てのフィールドが型安全
-// - バリデーション機能
-// - エラー表示機能
-// - 送信時の型チェック
-```
-
-### 演習 1-3: 実用的なアプリケーション作成 🔥
-
-```tsx
-// シンプルな天気アプリを作成せよ
-
-// 1. 天気データの型定義
-interface WeatherData {
-  location: string;
-  temperature: number;
-  condition: "sunny" | "cloudy" | "rainy" | "snowy";
-  humidity: number;
-  windSpeed: number;
-  forecast: DailyForecast[];
-}
-
-interface DailyForecast {
-  date: Date;
-  high: number;
-  low: number;
-  condition: WeatherData["condition"];
-}
-
-// 2. コンポーネント要件
-// - WeatherCard: 現在の天気を表示
-// - ForecastList: 週間予報を表示
-// - SearchBar: 都市名で検索
-// - LoadingSpinner: ローディング状態
-// - ErrorMessage: エラー表示
-
-// 3. 機能要件
-// - 都市名での天気検索
-// - ローディング状態の管理
-// - エラーハンドリング
-// - レスポンシブデザイン
-// - 型安全なAPI呼び出し
-
-// 実装例の骨格
-function WeatherApp(): JSX.Element {
-  const [weather, setWeather] = React.useState<WeatherData | null>(null);
-  const [loading, setLoading] = React.useState<boolean>(false);
-  const [error, setError] = React.useState<string | null>(null);
-
-  const searchWeather = async (city: string): Promise<void> => {
-    // API呼び出しの実装
-  };
-
-  return <div className="weather-app">{/* コンポーネントの実装 */}</div>;
-}
-```
 
 ## 📊 Step 1 評価基準
 
@@ -3316,13 +1621,8 @@ function WeatherApp(): JSX.Element {
 - [ ] 開発サーバーを起動できる
 - [ ] TypeScript エラーを理解し解決できる
 
-### 成果物チェックリスト
+### 成果物
 
-- [ ] **開発環境**: React 19 + TypeScript 環境の構築
-- [ ] **基本コンポーネント**: 型安全な関数コンポーネント群
-- [ ] **カウンターアプリ**: useState を使った状態管理
-- [ ] **Todo リスト**: 配列状態の管理と CRUD 操作
-- [ ] **基本フォーム**: バリデーション付きフォーム処理
 
 ## 🔄 Step 2 への準備
 

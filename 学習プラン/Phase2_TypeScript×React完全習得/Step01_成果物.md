@@ -4,21 +4,22 @@
 
 ## 🎯 課題の目的
 
-**あなたが作成するもの**: 既存のReactアプリにTypeScriptの型安全なコンポーネントを追加する
+**あなたが作成するもの**: 既存の React アプリに TypeScript の型安全なコンポーネントを追加する
 
-**なぜ作るのか**: Step01で学習したReact基礎とTypeScript統合を実際のコードに適用し、**React + TypeScriptの基本パターンを習得する力**を身につけるため
+**なぜ作るのか**: Step01 で学習した React 基礎と TypeScript 統合を実際のコードに適用し、**React + TypeScript の基本パターンを習得する力**を身につけるため
 
 **学習目標**:
-- 既存のReactアプリの構造を理解し、新しいコンポーネントを追加できる
+
+- 既存の React アプリの構造を理解し、新しいコンポーネントを追加できる
 - Props、State、イベントハンドラーを型安全に実装できる
-- useStateを使った状態管理を適切に行える
-- Reactコンポーネントの基本パターンを習得できる
+- useState を使った状態管理を適切に行える
+- React コンポーネントの基本パターンを習得できる
 
 ---
 
 ## 📋 必須提出物
 
-以下の2つのファイルを提出してください：
+以下の 2 つのファイルを提出してください：
 
 ```
 📁 提出物/
@@ -28,22 +29,24 @@
 
 ---
 
-## ⏰ 作成手順（推奨時間配分：合計40分）
+## ⏰ 作成手順（推奨時間配分：合計 40 分）
 
-### Phase 1: 既存アプリの理解（10分）
+### Phase 1: 既存アプリの理解（10 分）
 
-#### ステップ1-1: 提供されたReactアプリを理解する（10分）
+#### ステップ 1-1: 提供された React アプリを理解する（10 分）
 
 以下の手順でサンプルアプリを起動し、構造を理解してください：
 
 1. **環境構築**
+
    ```bash
-   cd Step01_サンプルアプリ
+   cd Step01_成果物
    npm install
    npm run dev
    ```
 
 2. **アプリの動作確認**
+
    - ブラウザで http://localhost:5173 にアクセス
    - 基本的なプロフィール表示を確認
 
@@ -52,21 +55,22 @@
    - `src/components/UserProfile.tsx` - ユーザープロフィール（完成済み）
    - `src/types/index.ts` - 型定義
 
-### Phase 2: コンポーネント実装（25分）
+### Phase 2: コンポーネント実装（25 分）
 
-#### ステップ2-1: いいねボタンコンポーネントの作成（12分）
+#### ステップ 2-1: いいねボタンコンポーネントの作成（12 分）
 
 `src/components/LikeButton.tsx` を作成してください：
 
 **要件:**
+
 - いいね数の表示と管理
 - ボタンクリックでいいね数を増減
 - いいね済み状態の視覚的表示
-- TypeScriptによる型安全な実装
+- TypeScript による型安全な実装
 
 ```tsx
 // src/components/LikeButton.tsx
-import { useState } from 'react';
+import { useState } from "react";
 
 // TODO: 以下の型定義を完成させてください
 interface LikeButtonProps {
@@ -88,10 +92,12 @@ function LikeButton(/* TODO: propsの型注釈を追加 */): JSX.Element {
   return (
     <button
       onClick={handleLikeClick}
-      style={{
-        // TODO: いいね済み状態に応じてスタイルを変更
-        // ヒント: backgroundColor, color を状態に応じて変更
-      }}
+      style={
+        {
+          // TODO: いいね済み状態に応じてスタイルを変更
+          // ヒント: backgroundColor, color を状態に応じて変更
+        }
+      }
     >
       {/* TODO: いいね済み状態に応じてアイコンを変更 */}
       {/* いいね数を表示 */}
@@ -102,11 +108,12 @@ function LikeButton(/* TODO: propsの型注釈を追加 */): JSX.Element {
 export default LikeButton;
 ```
 
-#### ステップ2-2: コメント投稿フォームの作成（13分）
+#### ステップ 2-2: コメント投稿フォームの作成（13 分）
 
 `src/components/CommentForm.tsx` を作成してください：
 
 **要件:**
+
 - コメント入力フィールド
 - 投稿ボタン
 - フォーム送信時の処理
@@ -114,7 +121,7 @@ export default LikeButton;
 
 ```tsx
 // src/components/CommentForm.tsx
-import { useState } from 'react';
+import { useState } from "react";
 
 // TODO: 以下の型定義を完成させてください
 interface CommentFormProps {
@@ -133,7 +140,9 @@ function CommentForm(/* TODO: propsの型注釈を追加 */): JSX.Element {
   };
 
   // TODO: 入力値変更時の処理
-  const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ): void => {
     // 入力値を状態に反映
   };
 
@@ -146,11 +155,11 @@ function CommentForm(/* TODO: propsの型注釈を追加 */): JSX.Element {
           // TODO: value, onChange, placeholder を設定
           rows={3}
           style={{
-            width: '100%',
-            padding: '8px',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            resize: 'vertical'
+            width: "100%",
+            padding: "8px",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+            resize: "vertical",
           }}
         />
       </div>
@@ -158,13 +167,13 @@ function CommentForm(/* TODO: propsの型注釈を追加 */): JSX.Element {
         type="submit"
         // TODO: 入力値が空の場合はボタンを無効化
         style={{
-          marginTop: '8px',
-          padding: '8px 16px',
-          backgroundColor: '#007bff',
-          color: 'white',
-          border: 'none',
-          borderRadius: '4px',
-          cursor: 'pointer'
+          marginTop: "8px",
+          padding: "8px 16px",
+          backgroundColor: "#007bff",
+          color: "white",
+          border: "none",
+          borderRadius: "4px",
+          cursor: "pointer",
         }}
       >
         投稿
@@ -176,14 +185,14 @@ function CommentForm(/* TODO: propsの型注釈を追加 */): JSX.Element {
 export default CommentForm;
 ```
 
-### Phase 3: 動作確認（5分）
+### Phase 3: 動作確認（5 分）
 
-#### ステップ3-1: App.tsxでの統合と動作確認
+#### ステップ 3-1: App.tsx での統合と動作確認
 
 1. `src/App.tsx` に作成したコンポーネントをインポート
-2. UserProfileコンポーネントの下に配置
+2. UserProfile コンポーネントの下に配置
 3. ブラウザで動作確認
-4. TypeScriptエラーがないことを確認
+4. TypeScript エラーがないことを確認
 
 ---
 
@@ -192,13 +201,15 @@ export default CommentForm;
 以下の要件を**すべて満たす**ことで合格とします：
 
 ### 🔧 技術要件
-- [ ] TypeScriptでコンパイルエラーが発生しない
-- [ ] **必要な型定義（interface）を2つ以上作成している**
-- [ ] すべてのPropsに適切な型注釈が付いている
-- [ ] useStateを型安全に使用している
+
+- [ ] TypeScript でコンパイルエラーが発生しない
+- [ ] **必要な型定義（interface）を 2 つ以上作成している**
+- [ ] すべての Props に適切な型注釈が付いている
+- [ ] useState を型安全に使用している
 - [ ] イベントハンドラーに適切な型注釈が付いている
 
 ### 🎯 機能要件
+
 - [ ] いいねボタンが正しく動作する（クリックで数値が増減）
 - [ ] いいね済み状態の視覚的表示ができている
 - [ ] コメントフォームで入力・送信ができる
@@ -206,7 +217,8 @@ export default CommentForm;
 - [ ] フォーム送信後に入力フィールドがクリアされる
 
 ### 💭 React パターン要件
-- [ ] useStateを適切に使用している
+
+- [ ] useState を適切に使用している
 - [ ] イベントハンドラーが正しく実装されている
 - [ ] 条件付きレンダリングを活用している
 - [ ] コンポーネントが再利用可能な設計になっている
@@ -215,13 +227,13 @@ export default CommentForm;
 
 ## 📊 評価基準
 
-| 項目 | 配点 | 評価ポイント |
-|------|------|-------------|
-| **型安全性** | 40点 | Props、State、イベントハンドラーの適切な型定義 |
-| **React パターン** | 35点 | useState、イベント処理、コンポーネント設計 |
-| **機能実装** | 25点 | 要件通りの動作、ユーザビリティ |
+| 項目               | 配点  | 評価ポイント                                   |
+| ------------------ | ----- | ---------------------------------------------- |
+| **型安全性**       | 40 点 | Props、State、イベントハンドラーの適切な型定義 |
+| **React パターン** | 35 点 | useState、イベント処理、コンポーネント設計     |
+| **機能実装**       | 25 点 | 要件通りの動作、ユーザビリティ                 |
 
-**合格ライン**: 70点以上
+**合格ライン**: 70 点以上
 
 ---
 
@@ -229,11 +241,13 @@ export default CommentForm;
 
 ### 🤔 型を考える時の質問
 
-1. **このPropsには何が入る？**
+1. **この Props には何が入る？**
+
    - `initialLikes` → 数値が入る → `number`
    - `onLikeChange` → 関数が入る → `(likes: number, isLiked: boolean) => void`
 
-2. **このStateは何を管理する？**
+2. **この State は何を管理する？**
+
    - いいね数 → `number`
    - いいね済み状態 → `boolean`
    - コメント入力値 → `string`
@@ -250,7 +264,7 @@ export default CommentForm;
 interface ButtonProps {
   text: string;
   onClick: () => void;
-  disabled?: boolean;  // オプショナル
+  disabled?: boolean; // オプショナル
 }
 
 // State の型指定
@@ -259,28 +273,30 @@ const [isActive, setIsActive] = useState<boolean>(false);
 
 // イベントハンドラーの型注釈
 const handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
-  console.log('Button clicked');
+  console.log("Button clicked");
 };
 ```
 
 ### ⚠️ よくある間違い
 
 1. **useState の型指定忘れ**
+
    ```typescript
    // ❌ 間違い
    const [likes, setLikes] = useState(0);
-   
+
    // ✅ 正解
    const [likes, setLikes] = useState<number>(0);
    ```
 
 2. **イベントハンドラーの型注釈忘れ**
+
    ```typescript
    // ❌ 間違い
    const handleSubmit = (event) => {
      event.preventDefault();
    };
-   
+
    // ✅ 正解
    const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
      event.preventDefault();
@@ -288,13 +304,14 @@ const handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
    ```
 
 3. **オプショナルプロパティの見落とし**
+
    ```typescript
    // ❌ 間違い：onLikeChangeは常に必要ではない
    interface LikeButtonProps {
      initialLikes: number;
      onLikeChange: (likes: number, isLiked: boolean) => void;
    }
-   
+
    // ✅ 正解：onLikeChangeは任意
    interface LikeButtonProps {
      initialLikes?: number;
@@ -311,16 +328,16 @@ const handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
 
 ```tsx
 // LikeButton.tsx の完成例
-import { useState } from 'react';
+import { useState } from "react";
 
 interface LikeButtonProps {
   initialLikes?: number;
   onLikeChange?: (likes: number, isLiked: boolean) => void;
 }
 
-function LikeButton({ 
-  initialLikes = 0, 
-  onLikeChange 
+function LikeButton({
+  initialLikes = 0,
+  onLikeChange,
 }: LikeButtonProps): JSX.Element {
   const [likes, setLikes] = useState<number>(initialLikes);
   const [isLiked, setIsLiked] = useState<boolean>(false);
@@ -328,10 +345,10 @@ function LikeButton({
   const handleLikeClick = (): void => {
     const newIsLiked = !isLiked;
     const newLikes = newIsLiked ? likes + 1 : likes - 1;
-    
+
     setIsLiked(newIsLiked);
     setLikes(newLikes);
-    
+
     if (onLikeChange) {
       onLikeChange(newLikes, newIsLiked);
     }
@@ -341,15 +358,15 @@ function LikeButton({
     <button
       onClick={handleLikeClick}
       style={{
-        padding: '8px 16px',
-        backgroundColor: isLiked ? '#ff6b6b' : '#f8f9fa',
-        color: isLiked ? 'white' : '#333',
-        border: '1px solid #ddd',
-        borderRadius: '4px',
-        cursor: 'pointer'
+        padding: "8px 16px",
+        backgroundColor: isLiked ? "#ff6b6b" : "#f8f9fa",
+        color: isLiked ? "white" : "#333",
+        border: "1px solid #ddd",
+        borderRadius: "4px",
+        cursor: "pointer",
       }}
     >
-      {isLiked ? '❤️' : '🤍'} {likes}
+      {isLiked ? "❤️" : "🤍"} {likes}
     </button>
   );
 }
@@ -372,6 +389,6 @@ export default LikeButton;
 
 ---
 
-**📌 重要**: この課題の目的は**React + TypeScriptの基本パターンを習得する力**を身につけることです。実際の開発現場でよく使用されるパターンを体験しましょう。
+**📌 重要**: この課題の目的は**React + TypeScript の基本パターンを習得する力**を身につけることです。実際の開発現場でよく使用されるパターンを体験しましょう。
 
-**🌟 次のステップ**: Step02では、より高度なコンポーネント型設計について学習します！
+**🌟 次のステップ**: Step02 では、より高度なコンポーネント型設計について学習します！

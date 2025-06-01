@@ -47,7 +47,7 @@
 - **設定オブジェクト**: アプリケーション設定やライブラリオプションの型定義
 - **サービス層の契約**: ビジネスロジック層でのインターフェース定義
 
-> 💡 **詳細解説**: インターフェースの詳細と実践的な活用パターンは [Step03_補足_専門用語集.md#インターフェースinterface](./Step03_補足_専門用語集.md#インターフェースinterface) を見てね 🐰
+> 💡 **詳細解説**: インターフェースの詳細と実践的な活用パターンは [Step03*補足*専門用語集.md#インターフェース interface](./Step03_補足_専門用語集.md#インターフェースinterface) を見てね 🐰
 
 ```typescript
 // Java: interface User { String getName(); }
@@ -179,7 +179,7 @@ async function searchProducts(query: string): Promise<Product[]> {
 - **段階的データ入力**: ウィザード形式での入力プロセス
 - **プロフィール情報**: 公開/非公開を選択できる項目
 
-> 💡 **詳細解説**: オプショナルプロパティの詳細と実践的な活用パターンは [Step02_補足_専門用語集.md#オプショナルプロパティoptional-properties](./Step02_補足_専門用語集.md#オプショナルプロパティoptional-properties) を見てね 🐰
+> 💡 **詳細解説**: オプショナルプロパティの詳細と実践的な活用パターンは [Step02*補足*専門用語集.md#オプショナルプロパティ optional-properties](./Step02_補足_専門用語集.md#オプショナルプロパティoptional-properties) を見てね 🐰
 
 ```typescript
 interface CreateUserRequest {
@@ -321,7 +321,7 @@ function createArticle(data: CreateArticleRequest): Promise<Article> {
 - **計算結果**: 他のプロパティから算出される値で、直接変更されるべきでないもの
 - **外部システムからの情報**: 外部 API から取得した、変更権限のないデータ
 
-> 💡 **詳細解説**: 読み取り専用型の詳細と実践的な活用パターンは [Step02_補足_専門用語集.md#読み取り専用型readonly-types](./Step02_補足_専門用語集.md#読み取り専用型readonly-types) を見てね 🐰
+> 💡 **詳細解説**: 読み取り専用型の詳細と実践的な活用パターンは [Step02*補足*専門用語集.md#読み取り専用型 readonly-types](./Step02_補足_専門用語集.md#読み取り専用型readonly-types) を見てね 🐰
 
 ```typescript
 interface ReadonlyUser {
@@ -464,7 +464,7 @@ function updateUser(
 - **キャッシュシステム**: 任意のキーでデータを保存するキャッシュ
 - **メタデータ**: オブジェクトに付加される任意の属性情報
 
-> 💡 **詳細解説**: インデックスシグネチャの詳細と実践的な活用パターンは [Step02_補足_専門用語集.md#インデックスシグネチャindex-signatures](./Step02_補足_専門用語集.md#インデックスシグネチャindex-signatures) を見てね 🐰
+> 💡 **詳細解説**: インデックスシグネチャの詳細と実践的な活用パターンは [Step02*補足*専門用語集.md#インデックスシグネチャ index-signatures](./Step02_補足_専門用語集.md#インデックスシグネチャindex-signatures) を見てね 🐰
 
 ```typescript
 interface StringDictionary {
@@ -1317,15 +1317,18 @@ namespace ECommerce {
 
 ### 演習 3-1: インターフェース設計マスター 🔰
 
-```typescript
-// ブログシステムのデータモデルを設計せよ
-// 要件:
-// - 記事（タイトル、内容、作成者、タグ、公開状態）
-// - 作成者（名前、メール、プロフィール、ソーシャルリンク）
-// - コメント（内容、作成者、返信機能）
-// - カテゴリ（階層構造対応）
+ブログシステムのデータモデルを設計せよ
 
-// 解答例
+#### 要件
+
+- 共通の基本プロパティ（ID、作成日時、更新日時）を持つ BaseEntity
+- 継承を活用した設計
+- 記事、作成者、カテゴリ、タグ、コメントのインターフェース
+- 適切なオプショナルプロパティの使用
+
+#### 解答例
+
+```typescript
 interface BaseEntity {
   readonly id: string;
   readonly createdAt: Date;
@@ -1390,156 +1393,108 @@ interface Comment extends BaseEntity {
 }
 ```
 
-### 演習 3-2: 型安全な API 設計 🔶
+### 演習 3-2: ユーザー管理システム 🔰
+
+ユーザー管理システムのインターフェースを設計せよ
+
+#### 要件
+
+- ユーザー情報（名前、メール、年齢、プロフィール）
+- 管理者権限の表現（`"admin" | "user" | "guest"`）
+- オプショナルプロパティの活用
+- ユーザー作成・更新用の型定義
+
+#### 解答例
 
 ```typescript
-// RESTful APIの型安全なクライアントを設計せよ
+// ユーザー権限の定義
+type UserRole = "admin" | "user" | "guest";
 
-interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: {
-    code: string;
-    message: string;
-    details?: Record<string, unknown>;
+// 基本ユーザー情報
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  age?: number; // オプショナル
+  role: UserRole;
+  profile?: {
+    bio?: string;
+    avatar?: string;
+    website?: string;
   };
-  meta?: {
-    timestamp: Date;
-    requestId: string;
-    version: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// ユーザー作成用の型（IDと日時は自動生成）
+interface CreateUserRequest {
+  name: string;
+  email: string;
+  age?: number;
+  role: UserRole;
+  profile?: {
+    bio?: string;
+    avatar?: string;
+    website?: string;
   };
 }
 
-interface PaginatedData<T> {
-  items: T[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-    hasNext: boolean;
-    hasPrev: boolean;
+// ユーザー更新用の型（必要な項目のみ）
+interface UpdateUserRequest {
+  name?: string;
+  email?: string;
+  age?: number;
+  profile?: {
+    bio?: string;
+    avatar?: string;
+    website?: string;
   };
 }
 
-interface ApiClient {
-  get<T>(path: string, params?: Record<string, any>): Promise<ApiResponse<T>>;
-  post<T, U>(path: string, body: T): Promise<ApiResponse<U>>;
-  put<T, U>(path: string, body: T): Promise<ApiResponse<U>>;
-  delete<T>(path: string): Promise<ApiResponse<T>>;
-}
-
-class TypeSafeApiClient implements ApiClient {
-  constructor(
-    private baseUrl: string,
-    private defaultHeaders: Record<string, string> = {}
-  ) {}
-
-  async get<T>(
-    path: string,
-    params?: Record<string, any>
-  ): Promise<ApiResponse<T>> {
-    const url = new URL(path, this.baseUrl);
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        url.searchParams.append(key, String(value));
-      });
-    }
-
-    try {
-      const response = await fetch(url.toString(), {
-        method: "GET",
-        headers: this.defaultHeaders,
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        return {
-          success: false,
-          error: {
-            code: `HTTP_${response.status}`,
-            message: data.message || response.statusText,
-          },
-        };
-      }
-
-      return {
-        success: true,
-        data,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: {
-          code: "NETWORK_ERROR",
-          message: error instanceof Error ? error.message : "Unknown error",
-        },
-      };
-    }
-  }
-
-  async post<T, U>(path: string, body: T): Promise<ApiResponse<U>> {
-    try {
-      const response = await fetch(`${this.baseUrl}${path}`, {
-        method: "POST",
-        headers: {
-          ...this.defaultHeaders,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        return {
-          success: false,
-          error: {
-            code: `HTTP_${response.status}`,
-            message: data.message || response.statusText,
-          },
-        };
-      }
-
-      return {
-        success: true,
-        data,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: {
-          code: "NETWORK_ERROR",
-          message: error instanceof Error ? error.message : "Unknown error",
-        },
-      };
-    }
-  }
-
-  async put<T, U>(path: string, body: T): Promise<ApiResponse<U>> {
-    // POST と同様の実装
-    return this.post(path, body);
-  }
-
-  async delete<T>(path: string): Promise<ApiResponse<T>> {
-    // GET と同様の実装（bodyなし）
-    return this.get(path);
-  }
+// ユーザー一覧表示用（機密情報を除外）
+interface PublicUser {
+  id: string;
+  name: string;
+  role: UserRole;
+  profile?: {
+    bio?: string;
+    avatar?: string;
+    website?: string;
+  };
 }
 
 // 使用例
-const apiClient = new TypeSafeApiClient("https://api.example.com");
+const newUser: CreateUserRequest = {
+  name: "田中太郎",
+  email: "tanaka@example.com",
+  age: 25,
+  role: "user",
+  profile: {
+    bio: "フロントエンドエンジニアです",
+    avatar: "https://example.com/avatar.jpg",
+  },
+};
 
-async function fetchArticles(): Promise<Article[]> {
-  const response = await apiClient.get<PaginatedData<Article>>("/articles");
+const updateData: UpdateUserRequest = {
+  age: 26,
+  profile: {
+    bio: "シニアフロントエンドエンジニアです",
+  },
+};
 
-  if (response.success) {
-    return response.data.items;
-  } else {
-    console.error("Error:", response.error?.message);
-    return [];
-  }
+// 管理者チェック関数
+function isAdmin(user: User): boolean {
+  return user.role === "admin";
+}
+
+// ユーザー情報の公開用変換
+function toPublicUser(user: User): PublicUser {
+  return {
+    id: user.id,
+    name: user.name,
+    role: user.role,
+    profile: user.profile,
+  };
 }
 ```
 
@@ -1573,7 +1528,7 @@ async function fetchArticles(): Promise<Article[]> {
 - [ ] ドメインモデルを型安全に設計できる → [実践コード例: ドメインモデル設計](./Step03_補足_実践コード例.md#ドメインモデル設計)
 - [ ] 関連性を適切に表現できる → [専門用語集: オブジェクト関連](./Step03_補足_専門用語集.md#オブジェクト関連)
 - [ ] 拡張性を考慮した設計ができる → [実践コード例: 拡張可能な設計パターン](./Step03_補足_実践コード例.md#拡張可能な設計パターン)
-- [ ] 実用的な API インターフェースを設計できる → [実践コード例: API設計パターン](./Step03_補足_実践コード例.md#API設計パターン)
+- [ ] 実用的な API インターフェースを設計できる → [実践コード例: API 設計パターン](./Step03_補足_実践コード例.md#API設計パターン)
 
 #### 実践応用 (20%)
 
@@ -1584,28 +1539,19 @@ async function fetchArticles(): Promise<Article[]> {
 
 ### 成果物チェックリスト
 
-> 💡 **成果物作成ガイド**: 以下の補足資料を参考に高品質な成果物を作成しましょう
->
-> - 💻 [実践コード例](./Step03_補足_実践コード例.md) - 成果物作成の参考コード
-> - 📖 [専門用語集](./Step03_補足_専門用語集.md) - 正確な型定義のための用語確認
-> - 🚨 [トラブルシューティング](./Step03_補足_トラブルシューティング.md) - 開発中のエラー解決
-
-- [ ] **ブログシステム**: 完全なデータモデル設計 → [実践コード例: ブログシステム設計](./Step03_補足_実践コード例.md#ブログシステム設計)を参考
-- [ ] **API クライアント**: 型安全な REST クライアント → [実践コード例: API クライアント設計](./Step03_補足_実践コード例.md#APIクライアント設計)を参考
-- [ ] **ドメインモデル**: EC サイトのデータモデル → [実践コード例: ドメインモデル設計](./Step03_補足_実践コード例.md#ドメインモデル設計)を参考
-- [ ] **インターフェース集**: 再利用可能なインターフェース群 → [専門用語集](./Step03_補足_専門用語集.md)の各インターフェース定義を参考
+- [ ] **学校管理システム**: Step03の学習内容を段階的に活用した3段階の学校管理システム → [Step03成果物: 学校管理システム](./Step03_成果物.md)
 
 ## 🔄 Step 4 への準備
 
 > 💡 **Step 4 準備サポート**: 次のステップに向けた準備に役立つ補足資料
 >
 > - 🛠️ [開発環境ガイド](./Step01_補足_開発環境ガイド.md) - 環境設定の詳細手順
-> - ⚙️ [設定ファイル解説](./Step01_補足_設定ファイル解説.md) - tsconfig.json等の設定方法
+> - ⚙️ [設定ファイル解説](./Step01_補足_設定ファイル解説.md) - tsconfig.json 等の設定方法
 > - 📚 [参考リソース](./Step03_補足_参考リソース.md) - 継続学習のためのリソース集
 
 ### 次週学習内容の予習
 
-> 💡 **詳細解説**: ユニオン型の詳細と実践的な活用パターンは [Step04_補足_専門用語集.md#ユニオン型union-types](./Step04_補足_専門用語集.md#ユニオン型union-types) を見てね 🐰
+> 💡 **詳細解説**: ユニオン型の詳細と実践的な活用パターンは [Step04*補足*専門用語集.md#ユニオン型 union-types](./Step04_補足_専門用語集.md#ユニオン型union-types) を見てね 🐰
 
 ```typescript
 // Step 4で学習するユニオン型と型ガードの基礎概念

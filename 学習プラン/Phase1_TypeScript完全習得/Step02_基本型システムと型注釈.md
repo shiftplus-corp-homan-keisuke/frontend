@@ -447,214 +447,6 @@ function getEffectiveTheme(settings: AppSettings): "light" | "dark" {
 }
 ```
 
-##### 5. symbol 型 - 一意識別子の活用
-
-> 💡 **詳細解説**: symbol 型の詳細と実践的な使い方は [Step02*補足*専門用語集.md#プリミティブ型 primitive-types](./Step02_補足_専門用語集.md#プリミティブ型primitive-types) を見てね 🐰
-
-**💡 なぜこの型が重要なのか**
-
-symbol 型は、一意性が保証された識別子を作成するための型です。オブジェクトのプロパティキーとして使用することで、名前の衝突を避けることができます。特に、ライブラリ開発、メタデータの管理、プライベートプロパティの実現において重要な役割を果たします。
-
-**🎯 どういう場面で使うのか**
-
-- **ライブラリ開発**: 外部からアクセスされたくないプロパティの作成
-- **メタデータ管理**: オブジェクトに追加情報を安全に付与
-- **列挙型の代替**: 一意性が重要な定数の定義
-- **プロトコル実装**: 特定のインターフェースの実装マーカー
-
-```typescript
-// 基本的な symbol の使用
-const uniqueId: symbol = Symbol("uniqueId");
-const anotherUniqueId: symbol = Symbol("uniqueId");
-console.log(uniqueId === anotherUniqueId); // false（常に一意）
-
-// オブジェクトのプライベートプロパティとして活用
-const PRIVATE_DATA = Symbol("privateData");
-
-class User {
-  public name: string;
-  public email: string;
-  [PRIVATE_DATA]: {
-    hashedPassword: string;
-    sessionToken: string;
-  };
-
-  constructor(name: string, email: string, password: string) {
-    this.name = name;
-    this.email = email;
-    this[PRIVATE_DATA] = {
-      hashedPassword: this.hashPassword(password),
-      sessionToken: this.generateSessionToken(),
-    };
-  }
-
-  private hashPassword(password: string): string {
-    return `hashed_${password}`;
-  }
-
-  private generateSessionToken(): string {
-    return Math.random().toString(36).substring(2);
-  }
-
-  validatePassword(password: string): boolean {
-    return this[PRIVATE_DATA].hashedPassword === this.hashPassword(password);
-  }
-}
-```
-
-**📝 コードの詳細解説**
-
-- **一意性保証**: 同じ説明文字列でも異なる symbol が生成される
-- **プライベートプロパティ**: 外部からアクセスしにくいプロパティの実現
-- **メタデータ管理**: オブジェクトに追加情報を安全に付与
-- **型安全性**: symbol をキーとするプロパティも型安全に管理
-
-**⚠️ よくある間違いと注意点**
-
-```typescript
-// ❌ 間違い: symbol の比較
-const sym1 = Symbol("test");
-const sym2 = Symbol("test");
-console.log(sym1 === sym2); // false（常に異なる）
-
-// ✅ 正解: グローバル symbol の使用（必要な場合）
-const globalSym1 = Symbol.for("test");
-const globalSym2 = Symbol.for("test");
-console.log(globalSym1 === globalSym2); // true
-
-// ❌ 間違い: symbol の文字列変換
-const sym = Symbol("test");
-console.log("Symbol: " + sym); // Error: Cannot convert a Symbol value to a string
-
-// ✅ 正解: 適切な文字列変換
-console.log("Symbol: " + sym.toString()); // "Symbol: Symbol(test)"
-```
-
-**🚀 実際の開発での活用例**
-
-```typescript
-// イベントシステム
-const EVENT_LISTENERS = Symbol("eventListeners");
-
-class EventEmitter {
-  [EVENT_LISTENERS]: Map<string, Function[]> = new Map();
-
-  on(event: string, listener: Function): void {
-    if (!this[EVENT_LISTENERS].has(event)) {
-      this[EVENT_LISTENERS].set(event, []);
-    }
-    this[EVENT_LISTENERS].get(event)!.push(listener);
-  }
-
-  emit(event: string, ...args: unknown[]): void {
-    const listeners = this[EVENT_LISTENERS].get(event) || [];
-    listeners.forEach((listener) => listener(...args));
-  }
-}
-```
-
-##### 6. bigint 型 - 大きな整数の安全な処理
-
-**💡 なぜこの型が重要なのか**
-
-bigint 型は、JavaScript の number 型では表現できない大きな整数を安全に扱うための型です。暗号化、ID 生成、大きな数値計算において、精度を失わずに計算を行うことができます。特に、金融システムや科学計算において重要です。
-
-**🎯 どういう場面で使うのか**
-
-- **暗号化**: 大きな素数や暗号鍵の処理
-- **ID 生成**: 64bit 整数の ID やタイムスタンプ
-- **金融計算**: 高精度が必要な金額計算
-- **科学計算**: 大きな数値を扱う数学的計算
-
-```typescript
-// 基本的な bigint の使用
-let largeNumber: bigint = 123456789012345678901234567890n;
-let anotherBig: bigint = BigInt("123456789012345678901234567890");
-
-// ID 生成での活用
-function generateUniqueId(): bigint {
-  const timestamp = BigInt(Date.now());
-  const random = BigInt(Math.floor(Math.random() * 1000000));
-  return timestamp * 1000000n + random;
-}
-
-// 大きな数値の計算
-function factorial(n: bigint): bigint {
-  if (n <= 1n) return 1n;
-  return n * factorial(n - 1n);
-}
-
-console.log(factorial(50n)); // 非常に大きな数値も正確に計算
-```
-
-**📝 コードの詳細解説**
-
-- **リテラル記法**: 数値の後に `n` を付けて bigint リテラルを作成
-- **BigInt 関数**: 文字列や number から bigint を生成
-- **型安全性**: number と bigint の混在を防ぐ
-- **高精度計算**: 精度を失わない大きな数値の計算
-
-**⚠️ よくある間違いと注意点**
-
-```typescript
-// ❌ 間違い: number と bigint の混在
-let big: bigint = 123n;
-let normal: number = 456;
-let result = big + normal; // Error: Operator '+' cannot be applied to types 'bigint' and 'number'
-
-// ✅ 正解: 適切な型変換
-let result = big + BigInt(normal); // bigint
-let result2 = Number(big) + normal; // number（精度に注意）
-
-// ❌ 間違い: JSON シリアライゼーション
-let big = 123n;
-JSON.stringify({ value: big }); // Error: Do not know how to serialize a BigInt
-
-// ✅ 正解: 文字列変換してからシリアライゼーション
-JSON.stringify({ value: big.toString() });
-```
-
-**🚀 実際の開発での活用例**
-
-```typescript
-// 高精度タイマー
-class PrecisionTimer {
-  private startTime: bigint = 0n;
-
-  start(): void {
-    this.startTime = process.hrtime.bigint();
-  }
-
-  getElapsedNanoseconds(): bigint {
-    return process.hrtime.bigint() - this.startTime;
-  }
-
-  getElapsedMilliseconds(): number {
-    return Number(this.getElapsedNanoseconds() / 1000000n);
-  }
-}
-
-// 大きな数値の暗号化処理
-function modularExponentiation(
-  base: bigint,
-  exponent: bigint,
-  modulus: bigint
-): bigint {
-  let result = 1n;
-  base = base % modulus;
-
-  while (exponent > 0n) {
-    if (exponent % 2n === 1n) {
-      result = (result * base) % modulus;
-    }
-    exponent = exponent / 2n;
-    base = (base * base) % modulus;
-  }
-
-  return result;
-}
-```
-
 ### Section 2: 型推論の完全理解
 
 #### 🎯 型推論の詳細メカニズムと実践活用
@@ -686,31 +478,44 @@ function modularExponentiation(
 - **簡単な計算**: 演算結果の型を推論
 
 ```typescript
-// 基本的な型推論
+// 基本的な型推論（let使用）
 let inferredString = "Hello TypeScript"; // string型として推論
 let inferredNumber = 42; // number型として推論
 let inferredBoolean = true; // boolean型として推論
 
-// より具体的な推論例
-let userName = "Alice"; // string型
-let userAge = 25; // number型
-let isActive = true; // boolean型
+// constによる厳密な型推論（リテラル型推論）
+const userName = "Alice"; // "Alice"型（文字列リテラル型）
+const userAge = 25; // 25型（数値リテラル型）
+const isActive = true; // true型（真偽値リテラル型）
 
-// 計算結果の推論
-let total = 100 + 50; // number型として推論
-let message = `User: ${userName}`; // string型として推論
+// let vs const の型推論の違い
+let mutableStatus = "pending"; // string型（再代入可能）
+const immutableStatus = "pending"; // "pending"型（厳密なリテラル型）
+
+// 実践的な推論例
+const config = {
+  apiUrl: "https://api.example.com",
+  timeout: 5000,
+  retryCount: 3,
+}; // { apiUrl: string; timeout: number; retryCount: number; }型として推論
 
 // 配列の推論
-let numbers = [1, 2, 3, 4, 5]; // number[]型として推論
-let names = ["Alice", "Bob", "Charlie"]; // string[]型として推論
+const numbers = [1, 2, 3, 4, 5]; // readonly [1, 2, 3, 4, 5]型として推論
+const names = ["Alice", "Bob", "Charlie"] as const; // readonly ["Alice", "Bob", "Charlie"]型
+
+// 計算結果の推論
+const total = 100 + 50; // 150型（リテラル型）
+const message = `User: ${userName}`; // `User: Alice`型（テンプレートリテラル型）
 ```
 
 **📝 コードの詳細解説**
 
-- **リテラル値からの推論**: 文字列、数値、真偽値から基本型を推論
-- **演算結果の推論**: 計算や文字列結合の結果型を自動推論
-- **配列の推論**: 要素の型から配列全体の型を推論
-- **一貫性の保証**: 推論された型に基づく後続の型チェック
+- **let vs const の型推論の違い**: `let`は広い型（string, number）、`const`は厳密なリテラル型を推論
+- **リテラル型推論**: `const`で定義された値は具体的な値そのものが型になる
+- **オブジェクトの型推論**: プロパティの型から全体の構造を自動推論
+- **as const アサーション**: 配列やオブジェクトを読み取り専用のリテラル型として推論
+- **テンプレートリテラル型**: 文字列テンプレートから具体的な文字列型を推論
+- **実用性の向上**: 型推論により冗長な型注釈を削減しつつ型安全性を確保
 
 **⚠️ よくある間違いと注意点**
 
@@ -749,6 +554,7 @@ function processConfig(config: typeof appConfig) {
   // configの型は自動的に推論される
   console.log(`API URL: ${config.apiUrl}`);
   console.log(`Timeout: ${config.timeout}ms`);
+  config.apiUrl = 1; // ERROR Type 'number' is not assignable to type 'string'.
 }
 
 // API レスポンスの推論
@@ -854,8 +660,7 @@ const eventHandlers = [
   {
     type: "keydown",
     handler: (e: KeyboardEvent) => console.log("Key pressed"),
-  },
-  { type: "resize", handler: (e: UIEvent) => console.log("Resized") },
+  }
 ]; // 型が自動推論される
 
 // データ変換パイプラインでの活用
@@ -3319,258 +3124,349 @@ function mystery2(arr) {
   // パラメータの型は？
   return arr.map((x) => x * 2);
 }
-
-// 解答例と解説
-/*
-a: number
-b: string  
-c: boolean
-d: number[]
-e: string[]
-f: (string | number | boolean)[]
-g: { name: string; age: number; }
-h: { id: number; name: string; }[]
-
-mystery1: パラメータはany型（型推論不可）
-mystery2: パラメータはany型（型推論不可）
-*/
 ```
 
-### 演習 2-2: 配列・タプル操作マスター 🔶
+#### 解答例と解説
+
+- a: number
+- b: string
+- c: boolean
+- d: number[]
+- e: string[]
+- f: (string | number | boolean)[]
+- g: { name: string; age: number; }
+- h: { id: number; name: string; }[]
+- mystery1: パラメータはany型（型推論不可）
+- mystery2: パラメータはany型（型推論不可）
+
+### 演習 2-2: 商品管理システム 🔥
+
+身近な商品管理システムを段階的に実装し、Step02で学習した型システムを総合的に活用せよ
+
+#### 学習目標:
+- Step02で学習した基本型システムの総合活用
+- 実用的なデータ構造設計の体験
+- 型安全なCRUD操作の実装
+- 段階的な機能拡張の経験
+
+#### Phase 1: 基本構造設計 (初学者レベル)
+
+**要件:**
+- 商品情報の型定義
+- 基本的なCRUD操作の実装
+- 型安全なデータ管理
 
 ```typescript
-// 以下の要件を満たすTypeScriptコードを作成せよ
-
-// 1. 座標計算システム
-// 要件:
-// - 2D座標をタプルで表現
-// - 座標間の距離計算
-// - 座標の移動・回転機能
-// - 複数座標の重心計算
-
-type Point2D = [x: number, y: number];
-type Point3D = [x: number, y: number, z: number];
-
-// 解答例
-function distance2D([x1, y1]: Point2D, [x2, y2]: Point2D): number {
-  return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+// 商品情報の型定義
+interface Product {
+  readonly id: number;        // 商品ID（変更不可）
+  name: string;              // 商品名
+  price: number;             // 価格
+  category: string;          // カテゴリ
+  inStock: boolean;          // 在庫状況
+  description?: string;      // 商品説明（オプショナル）
 }
 
-function movePoint([x, y]: Point2D, [dx, dy]: Point2D): Point2D {
-  return [x + dx, y + dy];
-}
-
-function rotatePoint([x, y]: Point2D, angle: number): Point2D {
-  const cos = Math.cos(angle);
-  const sin = Math.sin(angle);
-  return [x * cos - y * sin, x * sin + y * cos];
-}
-
-function centroid(points: Point2D[]): Point2D {
-  const sum = points.reduce(([sumX, sumY], [x, y]) => [sumX + x, sumY + y], [
-    0, 0,
-  ] as Point2D);
-  return [sum[0] / points.length, sum[1] / points.length];
-}
-
-// 2. データ変換パイプライン
-// 要件:
-// - 文字列配列を数値配列に変換
-// - 無効な値のフィルタリング
-// - 統計情報の計算
-
-function parseNumbers(strings: string[]): number[] {
-  return strings.map((str) => parseFloat(str)).filter((num) => !isNaN(num));
-}
-
-function calculateStats(numbers: number[]): {
-  count: number;
-  sum: number;
-  average: number;
-  min: number;
-  max: number;
-} {
-  if (numbers.length === 0) {
-    return { count: 0, sum: 0, average: 0, min: 0, max: 0 };
-  }
-
-  const sum = numbers.reduce((acc, num) => acc + num, 0);
-  return {
-    count: numbers.length,
-    sum,
-    average: sum / numbers.length,
-    min: Math.min(...numbers),
-    max: Math.max(...numbers),
-  };
-}
-
-// 使用例
-const coordinates: Point2D[] = [
-  [0, 0],
-  [3, 4],
-  [6, 8],
-];
-console.log("重心:", centroid(coordinates));
-
-const stringNumbers = ["1", "2.5", "invalid", "3.7", ""];
-const validNumbers = parseNumbers(stringNumbers);
-console.log("統計:", calculateStats(validNumbers));
-```
-
-### 演習 2-3: 型安全なデータ管理システム 🔥
-
-```typescript
-// 学生管理システムを型安全に実装せよ
-// 要件:
-// 1. 学生情報の管理（名前、年齢、成績、履修科目）
-// 2. 成績の統計計算
-// 3. 履修科目の管理
-// 4. 検索・フィルタリング機能
-
-// 解答例
-type Subject = "math" | "science" | "english" | "history" | "art";
-
-type Grade = {
-  subject: Subject;
-  score: number;
-  semester: 1 | 2;
-  year: number;
-};
-
-type Student = {
-  readonly id: number;
-  name: string;
-  age: number;
-  grades: Grade[];
-  enrolledSubjects: Subject[];
-};
-
-class StudentManager {
-  private students: Student[] = [];
+// 商品管理クラス
+class ProductManager {
+  private products: Product[] = [];
   private nextId: number = 1;
 
-  addStudent(name: string, age: number, subjects: Subject[]): Student {
-    const newStudent: Student = {
+  // 商品追加
+  addProduct(
+    name: string,
+    price: number,
+    category: string,
+    description?: string
+  ): Product {
+    const newProduct: Product = {
       id: this.nextId++,
       name,
-      age,
-      grades: [],
-      enrolledSubjects: [...subjects],
+      price,
+      category,
+      inStock: true,
+      description,
     };
 
-    this.students.push(newStudent);
-    return newStudent;
+    this.products.push(newProduct);
+    return newProduct;
   }
 
-  addGrade(
-    studentId: number,
-    grade: Omit<Grade, "subject"> & { subject: Subject }
-  ): boolean {
-    const student = this.students.find((s) => s.id === studentId);
-    if (student && student.enrolledSubjects.includes(grade.subject)) {
-      student.grades.push(grade);
+  // 商品削除
+  removeProduct(id: number): boolean {
+    const index = this.products.findIndex(product => product.id === id);
+    if (index !== -1) {
+      this.products.splice(index, 1);
       return true;
     }
     return false;
   }
 
-  getStudentAverage(studentId: number, subject?: Subject): number {
-    const student = this.students.find((s) => s.id === studentId);
-    if (!student) return 0;
-
-    const relevantGrades = subject
-      ? student.grades.filter((g) => g.subject === subject)
-      : student.grades;
-
-    if (relevantGrades.length === 0) return 0;
-
-    const sum = relevantGrades.reduce((acc, grade) => acc + grade.score, 0);
-    return sum / relevantGrades.length;
+  // 商品更新
+  updateProduct(id: number, updates: Partial<Omit<Product, 'id'>>): boolean {
+    const product = this.products.find(p => p.id === id);
+    if (product) {
+      Object.assign(product, updates);
+      return true;
+    }
+    return false;
   }
 
-  getTopStudents(subject: Subject, limit: number = 5): Student[] {
-    return this.students
-      .filter((student) => student.enrolledSubjects.includes(subject))
-      .map((student) => ({
-        ...student,
-        average: this.getStudentAverage(student.id, subject),
-      }))
-      .sort((a, b) => b.average - a.average)
-      .slice(0, limit);
+  // 全商品取得
+  getAllProducts(): readonly Product[] {
+    return [...this.products]; // イミュータブルなコピーを返す
   }
+}
+```
 
-  getStudentsByAge(minAge: number, maxAge: number): Student[] {
-    return this.students.filter(
-      (student) => student.age >= minAge && student.age <= maxAge
+#### Phase 2: 検索・フィルタ機能 (中級レベル)
+
+**要件:**
+- カテゴリ別検索
+- 価格範囲検索
+- 在庫状況検索
+- 名前による部分検索
+
+```typescript
+class ProductManager {
+  // ... Phase 1のメソッドに加えて
+
+  // カテゴリ別検索
+  findProductsByCategory(category: string): Product[] {
+    return this.products.filter(product =>
+      product.category.toLowerCase() === category.toLowerCase()
     );
   }
 
-  getSubjectStatistics(subject: Subject): {
-    totalStudents: number;
-    averageScore: number;
-    highestScore: number;
-    lowestScore: number;
-  } {
-    const relevantGrades = this.students
-      .flatMap((student) => student.grades)
-      .filter((grade) => grade.subject === subject);
+  // 価格範囲検索
+  findProductsByPriceRange(minPrice: number, maxPrice: number): Product[] {
+    return this.products.filter(product =>
+      product.price >= minPrice && product.price <= maxPrice
+    );
+  }
 
-    if (relevantGrades.length === 0) {
+  // 在庫状況検索
+  findProductsInStock(): Product[] {
+    return this.products.filter(product => product.inStock);
+  }
+
+  findProductsOutOfStock(): Product[] {
+    return this.products.filter(product => !product.inStock);
+  }
+
+  // 名前による部分検索
+  searchProductsByName(searchTerm: string): Product[] {
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    return this.products.filter(product =>
+      product.name.toLowerCase().includes(lowerSearchTerm)
+    );
+  }
+
+  // 複合検索（複数条件）
+  searchProducts(criteria: {
+    category?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    inStock?: boolean;
+    nameSearch?: string;
+  }): Product[] {
+    return this.products.filter(product => {
+      // カテゴリ条件
+      if (criteria.category &&
+          product.category.toLowerCase() !== criteria.category.toLowerCase()) {
+        return false;
+      }
+
+      // 価格条件
+      if (criteria.minPrice !== undefined && product.price < criteria.minPrice) {
+        return false;
+      }
+      if (criteria.maxPrice !== undefined && product.price > criteria.maxPrice) {
+        return false;
+      }
+
+      // 在庫条件
+      if (criteria.inStock !== undefined && product.inStock !== criteria.inStock) {
+        return false;
+      }
+
+      // 名前検索条件
+      if (criteria.nameSearch &&
+          !product.name.toLowerCase().includes(criteria.nameSearch.toLowerCase())) {
+        return false;
+      }
+
+      return true;
+    });
+  }
+}
+```
+
+#### Phase 3: 高度機能 (上級レベル)
+
+**要件:**
+- カテゴリ別統計
+- 在庫総額計算
+- 最高価格・最低価格商品検索
+- 商品数カウント
+
+```typescript
+// 統計情報の型定義
+interface CategoryStats {
+  category: string;
+  totalProducts: number;
+  averagePrice: number;
+  totalValue: number;
+  inStockCount: number;
+}
+
+interface InventoryStats {
+  total: number;
+  inStock: number;
+  outOfStock: number;
+  totalValue: number;
+  averagePrice: number;
+}
+
+class ProductManager {
+  // ... Phase 1, 2のメソッドに加えて
+
+  // カテゴリ別統計
+  getCategoryStatistics(): CategoryStats[] {
+    const categories = [...new Set(this.products.map(p => p.category))];
+    
+    return categories.map(category => {
+      const categoryProducts = this.products.filter(p => p.category === category);
+      const inStockProducts = categoryProducts.filter(p => p.inStock);
+      
       return {
-        totalStudents: 0,
-        averageScore: 0,
-        highestScore: 0,
-        lowestScore: 0,
+        category,
+        totalProducts: categoryProducts.length,
+        averagePrice: categoryProducts.length > 0
+          ? categoryProducts.reduce((sum, p) => sum + p.price, 0) / categoryProducts.length
+          : 0,
+        totalValue: categoryProducts.reduce((sum, p) => sum + p.price, 0),
+        inStockCount: inStockProducts.length,
       };
-    }
+    });
+  }
 
-    const scores = relevantGrades.map((grade) => grade.score);
-    const sum = scores.reduce((acc, score) => acc + score, 0);
+  // 在庫総額計算
+  getTotalInventoryValue(): number {
+    return this.products
+      .filter(product => product.inStock)
+      .reduce((total, product) => total + product.price, 0);
+  }
 
+  // 最高価格商品
+  getMostExpensiveProduct(): Product | null {
+    if (this.products.length === 0) return null;
+    
+    return this.products.reduce((max, current) =>
+      current.price > max.price ? current : max
+    );
+  }
+
+  // 最低価格商品
+  getCheapestProduct(): Product | null {
+    if (this.products.length === 0) return null;
+    
+    return this.products.reduce((min, current) =>
+      current.price < min.price ? current : min
+    );
+  }
+
+  // 商品数カウント
+  getInventoryStats(): InventoryStats {
+    const inStockProducts = this.products.filter(p => p.inStock);
+    const outOfStockProducts = this.products.filter(p => !p.inStock);
+    
     return {
-      totalStudents: new Set(
-        relevantGrades.map(
-          (g) => this.students.find((s) => s.grades.includes(g))?.id
-        )
-      ).size,
-      averageScore: sum / scores.length,
-      highestScore: Math.max(...scores),
-      lowestScore: Math.min(...scores),
+      total: this.products.length,
+      inStock: inStockProducts.length,
+      outOfStock: outOfStockProducts.length,
+      totalValue: this.getTotalInventoryValue(),
+      averagePrice: this.products.length > 0
+        ? this.products.reduce((sum, p) => sum + p.price, 0) / this.products.length
+        : 0,
     };
+  }
+
+  // 価格帯別商品数
+  getPriceRangeDistribution(ranges: [number, number][]): Record<string, number> {
+    const distribution: Record<string, number> = {};
+    
+    ranges.forEach(([min, max]) => {
+      const key = `${min}-${max}`;
+      distribution[key] = this.products.filter(
+        p => p.price >= min && p.price <= max
+      ).length;
+    });
+    
+    return distribution;
   }
 }
 
 // 使用例
-const manager = new StudentManager();
+const productManager = new ProductManager();
 
-// 学生追加
-const alice = manager.addStudent("Alice", 20, ["math", "science"]);
-const bob = manager.addStudent("Bob", 19, ["math", "english"]);
+// Phase 1: 基本操作
+const laptop = productManager.addProduct(
+  "MacBook Pro",
+  200000,
+  "Electronics",
+  "高性能ノートパソコン"
+);
+const book = productManager.addProduct("TypeScript入門", 3000, "Books");
+const headphones = productManager.addProduct("ワイヤレスヘッドホン", 15000, "Electronics");
 
-// 成績追加
-manager.addGrade(alice.id, {
-  subject: "math",
-  score: 95,
-  semester: 1,
-  year: 2024,
-});
-manager.addGrade(alice.id, {
-  subject: "science",
-  score: 88,
-  semester: 1,
-  year: 2024,
-});
-manager.addGrade(bob.id, {
-  subject: "math",
-  score: 82,
-  semester: 1,
-  year: 2024,
-});
+// Phase 2: 検索機能
+console.log("Electronics商品:", productManager.findProductsByCategory("Electronics"));
+console.log("1万円以下の商品:", productManager.findProductsByPriceRange(0, 10000));
+console.log("在庫あり商品:", productManager.findProductsInStock());
 
-// 統計情報
-console.log("数学の統計:", manager.getSubjectStatistics("math"));
-console.log("数学のトップ学生:", manager.getTopStudents("math", 3));
+// 複合検索
+const searchResults = productManager.searchProducts({
+  category: "Electronics",
+  maxPrice: 50000,
+  inStock: true
+});
+console.log("Electronics、5万円以下、在庫あり:", searchResults);
+
+// Phase 3: 統計・分析
+console.log("カテゴリ別統計:", productManager.getCategoryStatistics());
+console.log("在庫総額:", productManager.getTotalInventoryValue());
+console.log("最高価格商品:", productManager.getMostExpensiveProduct());
+console.log("在庫統計:", productManager.getInventoryStats());
+
+// 価格帯別分布
+const priceRanges: [number, number][] = [
+  [0, 5000],
+  [5001, 20000],
+  [20001, 100000],
+  [100001, Infinity]
+];
+console.log("価格帯別商品数:", productManager.getPriceRangeDistribution(priceRanges));
 ```
+
+#### 📝 学習ポイント
+
+**Phase 1で学ぶこと:**
+- `interface`による型定義
+- `readonly`プロパティの活用
+- オプショナルプロパティ（`?`）
+- `Partial`型と`Omit`型の基本的な使用
+
+**Phase 2で学ぶこと:**
+- 配列の`filter`メソッドと型安全性
+- 複雑な条件分岐の型安全な実装
+- オブジェクトの型定義と活用
+
+**Phase 3で学ぶこと:**
+- より高度な型定義（`Record`型など）
+- 統計計算の型安全な実装
+- 配列の`reduce`メソッドの活用
+- 複雑なデータ変換処理
 
 ## 📊 Step 2 評価基準
 
@@ -3611,15 +3507,9 @@ console.log("数学のトップ学生:", manager.getTopStudents("math", 3));
 - [ ] オプショナルプロパティを活用できる → [専門用語集: オプショナルパラメータ](./Step02_補足_専門用語集.md#オプショナルパラメータoptional-parameters)
 - [ ] 高階関数の型を正しく定義できる → [実践コード例: 高度な関数型パターン](./Step02_補足_実践コード例.md#高度な関数型パターン)
 
-### 成果物チェックリスト
+### 成果物
 
-> 💡 **成果物作成ガイド**: 以下の補足資料を参考に高品質な成果物を作成しましょう
->
-> - 💻 [実践コード例](./Step02_補足_実践コード例.md) - 成果物作成の参考コード
-> - 📖 [専門用語集](./Step02_補足_専門用語集.md) - 正確な型定義のための用語確認
-> - 🚨 [トラブルシューティング](./Step02_補足_トラブルシューティング.md) - 開発中のエラー解決
-
-- [ ] **データ管理システム**: 学生管理システム → [実践コード例: 型安全なタスク管理システム](./Step02_補足_実践コード例.md#ステップ6-型安全なタスク管理システム)を参考
+- [ ] **図書管理システム**: Step02の学習内容を段階的に活用した4段階の図書管理システム → [Step02成果物: 図書管理システム](./Step02_成果物.md)
 
 ## 🔄 Step 3 への準備
 

@@ -335,17 +335,6 @@ async function fetchUserProfile(userId) {
   // 必要なデータのみを抽出して使用
   return { user, preferences, status };
 }
-
-// React コンポーネントでの props の分割代入
-function UserCard({ name, age, avatar, isOnline = false }) {
-  return (
-    <div className={`user-card ${isOnline ? "online" : "offline"}`}>
-      <img src={avatar} alt={name} />
-      <h3>{name}</h3>
-      <p>Age: {age}</p>
-    </div>
-  );
-}
 ```
 
 ###### スプレッド演算子
@@ -1014,9 +1003,6 @@ function createUser(name, age, email) {
 }
 ```
 
-<details>
-<summary>💡 解答例を表示</summary>
-
 ```typescript
 // TypeScript版（解答例）
 function calculateBMI(weight: number, height: number): number {
@@ -1050,8 +1036,6 @@ function createUser(
 }
 ```
 
-</details>
-
 ### 演習 1-2: 配列とオブジェクトの型注釈 🔶
 
 > 💡 **詳細解説**: より発展的な練習問題と解答例は [Step01\_補足\_実践コード例.md](./Step01_補足_実践コード例.md) を参考にしてね 🐰
@@ -1065,9 +1049,6 @@ function createUser(
 // - 学生の平均点を計算する関数
 // - 学生のリストから特定の条件で検索する関数
 ```
-
-<details>
-<summary>💡 解答例を表示</summary>
 
 ```typescript
 // 解答例
@@ -1109,8 +1090,6 @@ console.log("20歳以上の学生:", findStudentsByMinAge(students, 20));
 console.log("トップ学生:", getTopStudent(students));
 ```
 
-</details>
-
 ### 演習 1-3: 実用的なアプリケーション作成 🔥
 
 ```typescript
@@ -1120,9 +1099,6 @@ console.log("トップ学生:", getTopStudent(students));
 // 2. タスクの一覧表示
 // 3. 完了済みタスクのフィルタリング
 ```
-
-<details>
-<summary>💡 解答例を表示</summary>
 
 ```typescript
 // 解答例
@@ -1201,8 +1177,6 @@ console.log("完了済み:", taskManager.getCompletedTasks());
 console.log("未完了:", taskManager.getPendingTasks());
 ```
 
-</details>
-
 ## 📊 Step 1 評価基準
 
 > 💡 **詳細解説**: 学習の進め方とトラブルシューティングは [Step01\_補足\_参考リソース.md](./Step01_補足_参考リソース.md) にもまとめてあるよ 🐰
@@ -1237,15 +1211,9 @@ console.log("未完了:", taskManager.getPendingTasks());
 - [ ] 基本的なアプリケーションを作成できる
 - [ ] TypeScript の利点と基本概念を説明できる
 
-### 成果物チェックリスト
+### 成果物
 
-> 💡 **成果物作成ガイド**: 以下の補足資料を参考に高品質な成果物を作成しましょう
->
-> - 💻 [実践コード例](./Step01_補足_実践コード例.md) - 成果物作成の参考コード
-> - 📖 [専門用語集](./Step01_補足_専門用語集.md) - 正確な型定義のための用語確認
-> - 🚨 [トラブルシューティング](./Step01_補足_トラブルシューティング.md) - 開発中のエラー解決
-
-- [ ] **学生管理システム**: 型安全な CRUD アプリケーション → [実践コード例: 学生管理システム](./Step01_補足_実践コード例.md#より実践的な例)を参考
+- [ ] **基本的な学生情報処理システム**: 型注釈練習に特化した初学者向けプロジェクト → [Step01 成果物](./Step01_成果物.md)で詳細確認
 
 ## 🔄 Step 2 への準備
 

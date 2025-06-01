@@ -7,6 +7,7 @@
 2. [型エイリアスとの使い分け](#型エイリアスとの使い分け)
 3. [継承とコンポジションの実践](#継承とコンポジションの実践)
 4. [実用的なデータモデル設計](#実用的なデータモデル設計)
+5. [ブログシステム設計](#ブログシステム設計)
 
 ---
 
@@ -861,6 +862,374 @@ console.log("Sample Cart:", JSON.stringify(sampleData.cart, null, 2));
 - 実用的なサービスインターフェース設計
 - 型安全なデータ構造
 
+## ブログシステム設計
+
+**実装要件**:
+- ユーザー管理（認証・役割管理）
+- 記事CRUD操作（作成・更新・削除・取得）
+- カテゴリ・タグ管理
+- コメント機能（ネスト構造対応）
+- 検索・フィルタリング機能
+- ページネーション対応
+- 型安全なAPI設計
+
+```typescript
+// blog-system.ts
+
+// 基本エンティティ
+interface BaseEntity {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// ユーザー関連
+interface User extends BaseEntity {
+  username: string;
+  email: string;
+  displayName: string;
+  bio?: string;
+  avatar?: string;
+  role: UserRole;
+  isActive: boolean;
+}
+
+type UserRole = "admin" | "editor" | "author" | "subscriber";
+
+// ブログ記事関連
+interface BlogPost extends BaseEntity {
+  title: string;
+  slug: string;
+  content: string;
+  excerpt?: string;
+  featuredImage?: string;
+  status: PostStatus;
+  publishedAt?: Date;
+  author: User;
+  categories: Category[];
+  tags: Tag[];
+  comments: Comment[];
+  metadata: PostMetadata;
+}
+
+type PostStatus = "draft" | "published" | "archived" | "scheduled";
+
+interface PostMetadata {
+  viewCount: number;
+  likeCount: number;
+  shareCount: number;
+  readingTime: number; // 分単位
+  seoTitle?: string;
+  seoDescription?: string;
+  seoKeywords?: string[];
+}
+
+// カテゴリとタグ
+interface Category extends BaseEntity {
+  name: string;
+  slug: string;
+  description?: string;
+  parentId?: string;
+  color?: string;
+  postCount: number;
+}
+
+interface Tag extends BaseEntity {
+  name: string;
+  slug: string;
+  color?: string;
+  postCount: number;
+}
+
+// コメント関連
+interface Comment extends BaseEntity {
+  content: string;
+  author: CommentAuthor;
+  postId: string;
+  parentId?: string; // 返信コメントの場合
+  status: CommentStatus;
+  replies?: Comment[];
+}
+
+type CommentStatus = "pending" | "approved" | "spam" | "trash";
+
+interface CommentAuthor {
+  name: string;
+  email: string;
+  website?: string;
+  isRegistered: boolean;
+  userId?: string;
+}
+
+// ブログサービスインターフェース
+interface BlogService {
+  // 記事管理
+  createPost(data: CreatePostRequest): Promise<BlogPost>;
+  updatePost(id: string, data: UpdatePostRequest): Promise<BlogPost>;
+  deletePost(id: string): Promise<boolean>;
+  getPost(id: string): Promise<BlogPost | null>;
+  getPostBySlug(slug: string): Promise<BlogPost | null>;
+  
+  // 記事一覧
+  getPosts(options: GetPostsOptions): Promise<PaginatedResult<BlogPost>>;
+  getPostsByCategory(categoryId: string, options: PaginationOptions): Promise<PaginatedResult<BlogPost>>;
+  getPostsByTag(tagId: string, options: PaginationOptions): Promise<PaginatedResult<BlogPost>>;
+  getPostsByAuthor(authorId: string, options: PaginationOptions): Promise<PaginatedResult<BlogPost>>;
+  
+  // 検索
+  searchPosts(query: string, options: SearchOptions): Promise<PaginatedResult<BlogPost>>;
+}
+
+// リクエスト・レスポンス型
+interface CreatePostRequest {
+  title: string;
+  content: string;
+  excerpt?: string;
+  featuredImage?: string;
+  status: PostStatus;
+  publishedAt?: Date;
+  categoryIds: string[];
+  tagNames: string[];
+  metadata?: Partial<PostMetadata>;
+}
+
+interface UpdatePostRequest extends Partial<CreatePostRequest> {
+  slug?: string;
+}
+
+interface GetPostsOptions extends PaginationOptions {
+  status?: PostStatus;
+  authorId?: string;
+  categoryId?: string;
+  tagId?: string;
+  sortBy?: "createdAt" | "publishedAt" | "title" | "viewCount";
+  sortOrder?: "asc" | "desc";
+}
+
+interface SearchOptions extends PaginationOptions {
+  fields?: ("title" | "content" | "excerpt")[];
+  categoryIds?: string[];
+  tagIds?: string[];
+  authorIds?: string[];
+}
+
+interface PaginationOptions {
+  page: number;
+  limit: number;
+}
+
+interface PaginatedResult<T> {
+  data: T[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}
+
+// 実装例
+class BlogServiceImpl implements BlogService {
+  constructor(
+    private postRepository: Repository<BlogPost>,
+    private userRepository: Repository<User>,
+    private categoryRepository: Repository<Category>,
+    private tagRepository: Repository<Tag>
+  ) {}
+
+  async createPost(data: CreatePostRequest): Promise<BlogPost> {
+    // スラッグ生成
+    const slug = this.generateSlug(data.title);
+    
+    // カテゴリとタグの取得・作成
+    const categories = await this.getOrCreateCategories(data.categoryIds);
+    const tags = await this.getOrCreateTags(data.tagNames);
+    
+    // 記事作成
+    const post: BlogPost = {
+      id: this.generateId(),
+      title: data.title,
+      slug,
+      content: data.content,
+      excerpt: data.excerpt || this.generateExcerpt(data.content),
+      featuredImage: data.featuredImage,
+      status: data.status,
+      publishedAt: data.publishedAt,
+      author: await this.getCurrentUser(),
+      categories,
+      tags,
+      comments: [],
+      metadata: {
+        viewCount: 0,
+        likeCount: 0,
+        shareCount: 0,
+        readingTime: this.calculateReadingTime(data.content),
+        ...data.metadata
+      },
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    return await this.postRepository.save(post);
+  }
+
+  async getPosts(options: GetPostsOptions): Promise<PaginatedResult<BlogPost>> {
+    const query = this.buildQuery(options);
+    const posts = await this.postRepository.findMany(query);
+    const total = await this.postRepository.count(query);
+
+    return {
+      data: posts,
+      pagination: this.buildPagination(options, total)
+    };
+  }
+
+  async searchPosts(query: string, options: SearchOptions): Promise<PaginatedResult<BlogPost>> {
+    const searchQuery = this.buildSearchQuery(query, options);
+    const posts = await this.postRepository.search(searchQuery);
+    const total = await this.postRepository.countSearch(searchQuery);
+
+    return {
+      data: posts,
+      pagination: this.buildPagination(options, total)
+    };
+  }
+
+  // ヘルパーメソッド
+  private generateSlug(title: string): string {
+    return title
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .trim();
+  }
+
+  private generateExcerpt(content: string, maxLength: number = 160): string {
+    const plainText = content.replace(/<[^>]*>/g, '');
+    return plainText.length > maxLength 
+      ? plainText.substring(0, maxLength) + '...'
+      : plainText;
+  }
+
+  private calculateReadingTime(content: string): number {
+    const wordsPerMinute = 200;
+    const wordCount = content.split(/\s+/).length;
+    return Math.ceil(wordCount / wordsPerMinute);
+  }
+
+  private async getOrCreateCategories(categoryIds: string[]): Promise<Category[]> {
+    // カテゴリの取得・作成ロジック
+    return [];
+  }
+
+  private async getOrCreateTags(tagNames: string[]): Promise<Tag[]> {
+    // タグの取得・作成ロジック
+    return [];
+  }
+
+  private async getCurrentUser(): Promise<User> {
+    // 現在のユーザー取得ロジック
+    return {} as User;
+  }
+
+  private generateId(): string {
+    return Math.random().toString(36).substring(2, 15);
+  }
+
+  private buildQuery(options: GetPostsOptions): any {
+    // クエリ構築ロジック
+    return {};
+  }
+
+  private buildSearchQuery(query: string, options: SearchOptions): any {
+    // 検索クエリ構築ロジック
+    return {};
+  }
+
+  private buildPagination(options: PaginationOptions, total: number): any {
+    const totalPages = Math.ceil(total / options.limit);
+    return {
+      page: options.page,
+      limit: options.limit,
+      total,
+      totalPages,
+      hasNext: options.page < totalPages,
+      hasPrev: options.page > 1
+    };
+  }
+}
+
+// 使用例
+async function demonstrateBlogSystem() {
+  const blogService = new BlogServiceImpl(
+    {} as Repository<BlogPost>,
+    {} as Repository<User>,
+    {} as Repository<Category>,
+    {} as Repository<Tag>
+  );
+
+  // 新しい記事を作成
+  const newPost = await blogService.createPost({
+    title: "TypeScriptでブログシステムを作る",
+    content: "TypeScriptを使用してブログシステムを構築する方法について説明します...",
+    excerpt: "TypeScriptでブログシステムを構築する実践的なガイド",
+    status: "published",
+    categoryIds: ["tech", "typescript"],
+    tagNames: ["TypeScript", "ブログ", "開発"]
+  });
+
+  console.log("作成された記事:", newPost);
+
+  // 記事一覧を取得
+  const posts = await blogService.getPosts({
+    page: 1,
+    limit: 10,
+    status: "published",
+    sortBy: "publishedAt",
+    sortOrder: "desc"
+  });
+
+  console.log("記事一覧:", posts);
+
+  // 記事を検索
+  const searchResults = await blogService.searchPosts("TypeScript", {
+    page: 1,
+    limit: 5,
+    fields: ["title", "content"]
+  });
+
+  console.log("検索結果:", searchResults);
+}
+
+// Repository インターフェース（参考）
+interface Repository<T> {
+  save(entity: T): Promise<T>;
+  findById(id: string): Promise<T | null>;
+  findMany(query: any): Promise<T[]>;
+  count(query: any): Promise<number>;
+  search(query: any): Promise<T[]>;
+  countSearch(query: any): Promise<number>;
+  update(id: string, data: Partial<T>): Promise<T>;
+  delete(id: string): Promise<boolean>;
+}
+```
+
+**学習ポイント**:
+- 複雑なドメインモデルの設計
+- エンティティ間の関係性の表現
+- サービス層のインターフェース設計
+- 型安全なAPI設計
+- ページネーションとソート機能
+- 検索機能の型定義
+- 実用的なヘルパーメソッドの実装
+
+**設計の特徴**:
+- **単一責任の原則**: 各インターフェースが明確な責任を持つ
+- **拡張性**: 新しい機能を追加しやすい設計
+- **型安全性**: すべての操作が型チェックされる
+- **実用性**: 実際のブログシステムで使用できるレベルの設計
 ---
 
 ## 🎯 実行とテストの方法

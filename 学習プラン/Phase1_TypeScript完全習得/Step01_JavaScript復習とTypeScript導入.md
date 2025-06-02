@@ -41,9 +41,6 @@ JavaScript には `var`、`let`、`const` の 3 つの変数宣言方法があ�
 - **var**: 現代の開発では使用しない（レガシーコードでのみ遭遇）
 
 ```javascript
-// var: 関数スコープ、巻き上げあり（非推奨）
-var oldStyle = "古い書き方";
-
 // let: ブロックスコープ、再代入可能
 let userName = "Alice";
 userName = "Bob"; // 再代入可能
@@ -105,107 +102,7 @@ userName = 123; // エラー！型が一致しない
 - 再代入が必要な場合のみ `let` を使用
 - `var` は使用しない
 
-##### 2. スコープとクロージャ
-
-> 💡 **詳細解説**: クロージャの詳細と実践例は [Step01\_補足\_専門用語集.md#クロージャ](./Step01_補足_専門用語集.md#クロージャ) を見てね 🐰
-
-**💡 なぜこの概念が重要なのか**
-
-スコープとクロージャは JavaScript の核心的な概念です。スコープは変数がアクセス可能な範囲を決定し、クロージャは関数が定義された時の環境を「記憶」する仕組みです。これらを理解することで、予期しないバグを防ぎ、より安全で保守性の高いコードが書けるようになります。
-
-**🎯 どういう場面で使うのか**
-
-- **スコープ**: 変数の衝突を防ぎ、適切なカプセル化を実現
-- **クロージャ**: プライベート変数の実現、モジュールパターン、イベントハンドラーでの状態保持
-
-```javascript
-// ブロックスコープの例
-function demonstrateScope() {
-  const outerVariable = "外側の変数";
-
-  if (true) {
-    const innerVariable = "内側の変数";
-    console.log(outerVariable); // アクセス可能
-    console.log(innerVariable); // アクセス可能
-  }
-
-  console.log(outerVariable); // アクセス可能
-  // console.log(innerVariable); // エラー！スコープ外
-}
-
-// クロージャの実用例
-function createCounter() {
-  let count = 0; // プライベート変数
-
-  return {
-    increment: () => ++count,
-    decrement: () => --count,
-    getCount: () => count,
-    reset: () => {
-      count = 0;
-    },
-  };
-}
-
-const counter = createCounter();
-console.log(counter.increment()); // 1
-console.log(counter.increment()); // 2
-console.log(counter.getCount()); // 2
-counter.reset();
-console.log(counter.getCount()); // 0
-```
-
-**📝 コードの詳細解説**
-
-- **ブロックスコープ**: `{}` で囲まれた範囲内でのみ変数がアクセス可能
-- **クロージャ**: `createCounter` 関数が終了しても、返された関数は `count` 変数にアクセス可能
-- **プライベート変数**: 外部から直接 `count` にアクセスできず、提供されたメソッドを通してのみ操作可能
-
-**⚠️ よくある間違いと注意点**
-
-```javascript
-// ❌ 間違い: グローバル変数の乱用
-var globalCounter = 0; // どこからでもアクセス可能（危険）
-
-function increment() {
-  globalCounter++; // 他の関数からも変更される可能性
-}
-
-// ✅ 正解: クロージャを使ったカプセル化
-const safeCounter = (() => {
-  let count = 0; // 外部からアクセス不可
-  return {
-    increment: () => ++count,
-    getCount: () => count,
-  };
-})();
-```
-
-**🚀 TypeScript での改善点**
-
-TypeScript では、クロージャ内の変数にも型注釈を付けることで、より安全なコードが書けます：
-
-```typescript
-function createTypedCounter(): {
-  increment: () => number;
-  decrement: () => number;
-  getCount: () => number;
-  reset: () => void;
-} {
-  let count: number = 0; // 型注釈により意図が明確
-
-  return {
-    increment: (): number => ++count,
-    decrement: (): number => --count,
-    getCount: (): number => count,
-    reset: (): void => {
-      count = 0;
-    },
-  };
-}
-```
-
-##### 3. ES6+ モダン構文
+##### 2. ES6+ モダン構文
 
 ###### 分割代入（Destructuring）
 
@@ -321,25 +218,21 @@ const coordinates: [number, number] = [10, 20];
 const [x, y]: [number, number] = coordinates;
 ```
 
-**実際の開発での活用例**
-
-```javascript
-// API レスポンスの処理
-async function fetchUserProfile(userId) {
-  const response = await fetch(`/api/users/${userId}`);
-  const {
-    data: { user, preferences },
-    status,
-  } = await response.json();
-
-  // 必要なデータのみを抽出して使用
-  return { user, preferences, status };
-}
-```
-
 ###### スプレッド演算子
 
 > 💡 **詳細解説**: スプレッド演算子の詳細と活用パターンは [Step01\_補足\_専門用語集.md#スプレッド演算子 spread-operator](./Step01_補足_専門用語集.md#スプレッド演算子spread-operator) を見てね 🐰
+
+**💡 なぜこの概念が重要なのか**
+
+スプレッド演算子（`...`）は、配列やオブジェクトを「展開」する強力な構文です。従来の方法と比べて、コードが簡潔で読みやすくなり、イミュータブル（不変）な操作を簡単に実現できます。特に React や Vue などのフレームワークでは、状態の更新時に元のデータを変更せずに新しいデータを作成する際に必須の技術です。
+
+**🎯 どういう場面で使うのか**
+
+- **配列の結合**: 複数の配列を一つにまとめる（API レスポンスの統合など）
+- **配列のコピー**: 元の配列を変更せずに新しい配列を作成（状態管理）
+- **オブジェクトのマージ**: 設定オブジェクトの組み合わせ（環境設定、テーマ設定）
+- **関数の引数展開**: 配列の要素を個別の引数として渡す（数学計算、API 呼び出し）
+- **プロパティの上書き**: デフォルト設定に個別設定を適用
 
 ```javascript
 // 配列のスプレッド
@@ -377,6 +270,19 @@ console.log(sum(...numbers)); // 6
 
 > 💡 **詳細解説**: テンプレートリテラルの詳細と高度な使い方は [Step01\_補足\_専門用語集.md#テンプレートリテラル template-literals](./Step01_補足_専門用語集.md#テンプレートリテラルtemplate-literals) を見てね 🐰
 
+**💡 なぜこの概念が重要なのか**
+
+テンプレートリテラル（バッククォート `` ` `` を使用）は、従来の文字列連結と比べて格段に読みやすく、保守しやすい動的文字列を作成できます。変数や式を `${}` で直接埋め込めるため、複雑な文字列操作が直感的になります。特に HTML テンプレート、SQL クエリ、ログメッセージの生成において、エラーが起きにくく可読性の高いコードが書けます。
+
+**🎯 どういう場面で使うのか**
+
+- **動的メッセージ生成**: ユーザー向けの通知、エラーメッセージ、挨拶文
+- **HTML テンプレート**: 動的な HTML 要素の生成（React、Vue 等でも活用）
+- **URL の構築**: API エンドポイント、クエリパラメータ付き URL
+- **SQL クエリ**: 動的な検索条件やフィルタリング
+- **ログ出力**: デバッグ情報、エラーログの詳細記録
+- **設定ファイル**: 環境変数を含む設定値の組み立て
+
 ```javascript
 const name = "Alice";
 const age = 30;
@@ -409,9 +315,22 @@ const price = 1234567;
 const priceMessage = `Price: ${formatCurrency(price)}`;
 ```
 
-##### 4. 関数型プログラミングの基礎
+##### 3. 関数型プログラミングの基礎
 
 > 💡 **詳細解説**: 高階関数とイミュータブル操作について [Step01\_補足\_専門用語集.md#高階関数](./Step01_補足_専門用語集.md#高階関数) を見てね 🐰
+
+**💡 なぜこの概念が重要なのか**
+
+関数型プログラミングの手法（`map`、`filter`、`reduce`など）は、データの変換を安全で予測可能な方法で行えます。元のデータを変更せず（イミュータブル）、副作用のない純粋な関数を使うことで、バグが起きにくく、テストしやすいコードが書けます。TypeScript では、これらの操作で型推論が正確に働き、より安全なデータ処理が可能になります。
+
+**🎯 どういう場面で使うのか**
+
+- **データ変換**: API レスポンスの整形、表示用データの加工
+- **フィルタリング**: 検索機能、条件に基づくデータ抽出
+- **集計処理**: 合計、平均、最大値などの計算
+- **リスト操作**: ユーザー一覧、商品一覧の表示・操作
+- **状態管理**: React の状態更新、Redux の reducer
+- **バリデーション**: フォーム入力値のチェック、エラー収集
 
 ```javascript
 // 高階関数の例
@@ -456,9 +375,22 @@ const userNames = users.map((user) => user.name);
 console.log(userNames); // ["Alice", "Bob", "Charlie", "Diana"]
 ```
 
-##### 5. 非同期プログラミング
+##### 4. 非同期プログラミング
 
 > 💡 **詳細解説**: JavaScript の非同期プログラミングについて [Step01\_補足\_専門用語集.md#promise](./Step01_補足_専門用語集.md#promise) および [Step01\_補足\_専門用語集.md#asyncawait](./Step01_補足_専門用語集.md#asyncawait) を見てね 🐰
+
+**💡 なぜこの概念が重要なのか**
+
+非同期プログラミングは、時間のかかる処理（API 通信、ファイル読み込み、データベースアクセス）を行う際に、アプリケーションをブロックせずに他の処理を継続できる重要な技術です。Promise と Async/Await を理解することで、コールバック地獄を避け、読みやすく保守しやすい非同期コードが書けるようになります。
+
+**🎯 どういう場面で使うのか**
+
+- **API 通信**: サーバーからのデータ取得、POST/PUT/DELETE 操作
+- **ファイル操作**: 画像アップロード、CSV ダウンロード、ファイル読み込み
+- **ユーザーインタラクション**: ボタンクリック後の処理、フォーム送信
+- **タイマー処理**: 遅延実行、定期実行、アニメーション
+- **データベース操作**: 検索、挿入、更新、削除
+- **外部サービス連携**: 決済処理、メール送信、通知システム
 
 ###### Promise の基礎
 
@@ -610,92 +542,11 @@ mixedArray.forEach((item) => {
 });
 ```
 
-### Section 2: TypeScript 導入と環境構築
-
-#### 🛠️ 開発環境構築
-
-> 💡 **詳細解説**: 完全な環境構築手順は [Step01\_補足\_開発環境ガイド.md](./Step01_補足_開発環境ガイド.md) を見てね 🐰
-
-##### 1. Node.js 確認（LTS 版推奨）
-
-> 💡 **詳細解説**: Node.js のインストール方法と LTS 版について [Step01\_補足\_開発環境ガイド.md#nodejs-lts 版について](./Step01_補足_開発環境ガイド.md#nodejs-lts版について) を見てね 🐰
-
-```bash
-node --version  # v18.x.x以上
-```
-
-##### 2. TypeScript グローバルインストール
-
-> 💡 **詳細解説**: TypeScript のインストール方法とトラブルシューティングは [Step01\_補足\_トラブルシューティング.md](./Step01_補足_トラブルシューティング.md) を見てね 🐰
-
-```bash
-npm install -g typescript
-tsc --version   # 5.x.x以上
-```
-
-##### 3. プロジェクト初期化
-
-```bash
-mkdir typescript-learning
-cd typescript-learning
-npm init -y
-```
-
-##### 4. TypeScript 設定
-
-```bash
-npm install -D typescript @types/node ts-node
-npx tsc --init
-```
-
-##### 5. 開発用ツール
-
-> 💡 **詳細解説**: 開発用ツールの設定と推奨拡張機能は [Step01\_補足\_開発環境ガイド.md#vs-code 拡張機能の推奨設定](./Step01_補足_開発環境ガイド.md#vs-code拡張機能の推奨設定) を見てね 🐰
-
-```bash
-npm install -D eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin
-npm install -D prettier
-npm install -D nodemon
-```
-
-#### 📝 tsconfig.json 設定（初心者向け）
-
-> 💡 **詳細解説**: tsconfig.json の各オプションの詳細は [Step01\_補足\_設定ファイル解説.md#tsconfigjson 設定詳細](./Step01_補足_設定ファイル解説.md#tsconfigjson設定詳細) を見てね 🐰
-
-```json
-{
-  "compilerOptions": {
-    // 基本設定
-    "target": "ES2020", // 出力するJavaScriptのバージョン
-    "module": "commonjs", // モジュールシステム
-    "lib": ["ES2020", "DOM"], // 使用可能なライブラリ
-    "outDir": "./dist", // 出力ディレクトリ
-    "rootDir": "./src", // ソースディレクトリ
-
-    // 型チェック設定（段階的に厳しく）
-    "strict": false, // Week1は緩い設定から開始
-    "noImplicitAny": true, // any型の暗黙的使用を禁止
-    "strictNullChecks": false, // Week2で有効化予定
-    "strictFunctionTypes": false, // Week3で有効化予定
-
-    // モジュール解決
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-
-    // 開発支援
-    "sourceMap": true, // デバッグ用ソースマップ
-    "declaration": true, // 型定義ファイル生成
-    "removeComments": false, // コメント保持
-    "skipLibCheck": true // ライブラリの型チェックスキップ
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
-}
-```
+### Section 2: TypeScript 導入
 
 #### 🎯 TypeScript の基本概念
+
+TypeScript の型システムは、JavaScript の柔軟性を保ちながら、型安全性を提供する革新的な仕組みです。型注釈により、変数や関数の期待される型を明示的に宣言でき、開発時にエラーを早期発見できます。これにより、ランタイムエラーを大幅に減らし、リファクタリングやチーム開発での安全性が向上します。
 
 ##### 1. 型注釈の基本
 
@@ -709,8 +560,9 @@ let message: string = "Hello World";
 
 ##### 2. 型推論の活用
 
+> 💡 **詳細解説**: 型推論 → [Step01*補足*専門用語集.md#型推論 type-inference](./Step01_補足_専門用語集.md#型推論type-inference)
+
 ```typescript
-// 💡 詳細解説: 型推論 → [Step01_補足_専門用語集.md#型推論type-inference](./Step01_補足_専門用語集.md#型推論type-inference)
 let inferredString = "Hello"; // string型として推論
 let inferredNumber = 42; // number型として推論
 let inferredBoolean = true; // boolean型として推論
@@ -728,6 +580,31 @@ let userData: null = null;
 let notDefined: undefined = undefined;
 ```
 
+### 🎯 練習問題 1: 基本型の型注釈（5 分）
+
+以下の変数に適切な型注釈を追加してください。
+
+```typescript
+// 以下の変数に型注釈を追加してください
+let userName = "太郎";
+let userAge = 25;
+let isActive = true;
+let score = 85.5;
+let message = "こんにちは";
+
+// 答えは下にスクロール ↓
+```
+
+回答例
+
+```typescript
+let userName: string = "太郎";
+let userAge: number = 25;
+let isActive: boolean = true;
+let score: number = 85.5;
+let message: string = "こんにちは";
+```
+
 ##### 4. 配列の型注釈
 
 > 💡 **詳細解説**: 配列とタプルの詳細は [Step02\_基本型システムと型注釈.md](./Step02_基本型システムと型注釈.md) で学習するよ 🐰
@@ -741,6 +618,27 @@ let flags: boolean[] = [true, false, true];
 let scores: Array<number> = [85, 92, 78, 96];
 ```
 
+### 🎯 練習問題 2: 配列の型注釈（5 分）
+
+以下の配列に適切な型注釈を追加してください。
+
+```typescript
+// 以下の配列に型注釈を追加してください
+let fruits = ["りんご", "バナナ", "オレンジ"];
+let numbers = [1, 2, 3, 4, 5];
+let flags = [true, false, true];
+
+// 答えは下にスクロール ↓
+```
+
+回答例
+
+```typescript
+let fruits: string[] = ["りんご", "バナナ", "オレンジ"];
+let numbers: number[] = [1, 2, 3, 4, 5];
+let flags: boolean[] = [true, false, true];
+```
+
 ##### 5. オブジェクトの型注釈
 
 ```typescript
@@ -752,6 +650,51 @@ let user: {
   name: "Alice",
   age: 30,
   email: "alice@example.com",
+};
+```
+
+### 🎯 練習問題 3: オブジェクトの型注釈（10 分）
+
+以下のオブジェクトに適切な型注釈を追加してください。
+
+```typescript
+// 以下のオブジェクトに型注釈を追加してください
+let user = {
+  name: "太郎",
+  age: 25,
+  email: "taro@example.com",
+};
+
+let product = {
+  name: "ノートパソコン",
+  price: 80000,
+  inStock: true,
+};
+
+// 答えは下にスクロール ↓
+```
+
+回答例
+
+```typescript
+let user: {
+  name: string;
+  age: number;
+  email: string;
+} = {
+  name: "太郎",
+  age: 25,
+  email: "taro@example.com",
+};
+
+let product: {
+  name: string;
+  price: number;
+  inStock: boolean;
+} = {
+  name: "ノートパソコン",
+  price: 80000,
+  inStock: true,
 };
 ```
 
@@ -778,9 +721,48 @@ const multiply = (a: number, b: number): number => a * b;
 const isEven = (num: number): boolean => num % 2 === 0;
 ```
 
+### 🎯 練習問題 4: 関数の型注釈（10 分）
+
+以下の関数に適切な型注釈を追加してください。
+
+```typescript
+// 以下の関数に型注釈を追加してください
+function greet(name) {
+  return `こんにちは、${name}さん！`;
+}
+
+function add(a, b) {
+  return a + b;
+}
+
+function isEven(num) {
+  return num % 2 === 0;
+}
+
+// 答えは下にスクロール ↓
+```
+
+回答例
+
+```typescript
+function greet(name: string): string {
+  return `こんにちは、${name}さん！`;
+}
+
+function add(a: number, b: number): number {
+  return a + b;
+}
+
+function isEven(num: number): boolean {
+  return num % 2 === 0;
+}
+```
+
 ### Section 3: 実践的な TypeScript 活用
 
 #### 🔧 型安全なプログラミングの実践
+
+型安全なプログラミングは、TypeScript の最大の利点を活用する実践的なアプローチです。型エイリアス、インターフェース、ジェネリクスなどの機能を適切に使用することで、コードの可読性、保守性、安全性が大幅に向上します。特に大規模なアプリケーションでは、型システムがドキュメントとしても機能し、チーム開発の効率を高めます。
 
 ##### 1. 型エイリアスの活用
 
@@ -817,158 +799,6 @@ const user: User = {
 function processUser(user: User): string {
   return `Processing user: ${user.name} (ID: ${user.id})`;
 }
-```
-
-##### 2. インターフェースの基礎
-
-> 💡 **詳細解説**: インターフェースの詳細と応用例は [Step03\_インターフェースとオブジェクト型.md](./Step03_インターフェースとオブジェクト型.md) で学習するよ 🐰
-
-```typescript
-// インターフェースの定義
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  category: string;
-  inStock: boolean;
-}
-
-// インターフェースの使用
-const laptop: Product = {
-  id: 1,
-  name: "MacBook Pro",
-  price: 200000,
-  category: "Electronics",
-  inStock: true,
-};
-
-// オプショナルプロパティ
-interface UserProfile {
-  name: string;
-  age: number;
-  email: string;
-  avatar?: string; // オプショナル
-  bio?: string; // オプショナル
-}
-
-const profile: UserProfile = {
-  name: "Bob",
-  age: 25,
-  email: "bob@example.com",
-  // avatarとbioは省略可能
-};
-
-// メソッドを含むインターフェース
-interface Calculator {
-  add(a: number, b: number): number;
-  subtract(a: number, b: number): number;
-  multiply(a: number, b: number): number;
-  divide(a: number, b: number): number;
-}
-
-const calc: Calculator = {
-  add: (a, b) => a + b,
-  subtract: (a, b) => a - b,
-  multiply: (a, b) => a * b,
-  divide: (a, b) => a / b,
-};
-```
-
-##### 3. Union 型の基礎
-
-> 💡 **詳細解説**: Union 型と型ガードについては [Step04\_ユニオン型と型ガード.md](./Step04_ユニオン型と型ガード.md) を見てね 🐰
-
-```typescript
-// 基本的なUnion型
-type Status = "pending" | "approved" | "rejected";
-type ID = string | number;
-
-function processStatus(status: Status): string {
-  switch (status) {
-    case "pending":
-      return "処理中です";
-    case "approved":
-      return "承認されました";
-    case "rejected":
-      return "拒否されました";
-    default:
-      return "不明なステータス";
-  }
-}
-
-// Union型を使った柔軟な関数
-function formatID(id: ID): string {
-  if (typeof id === "string") {
-    return `ID: ${id.toUpperCase()}`;
-  } else {
-    return `ID: ${id.toString().padStart(6, "0")}`;
-  }
-}
-
-console.log(formatID("abc123")); // "ID: ABC123"
-console.log(formatID(123)); // "ID: 000123"
-```
-
-##### 4. 実用的なアプリケーション例
-
-> 💡 **詳細解説**: より実践的なコード例は [Step01\_補足\_実践コード例.md](./Step01_補足_実践コード例.md) で確認できるよ 🐰
-
-```typescript
-// タスク管理システムの例
-type TaskStatus = "todo" | "in-progress" | "done";
-
-interface Task {
-  id: number;
-  title: string;
-  description: string;
-  status: TaskStatus;
-  createdAt: Date;
-  dueDate?: Date;
-}
-
-class TaskManager {
-  private tasks: Task[] = [];
-  private nextId: number = 1;
-
-  addTask(title: string, description: string, dueDate?: Date): Task {
-    const newTask: Task = {
-      id: this.nextId++,
-      title,
-      description,
-      status: "todo",
-      createdAt: new Date(),
-      dueDate,
-    };
-
-    this.tasks.push(newTask);
-    return newTask;
-  }
-
-  updateTaskStatus(id: number, status: TaskStatus): boolean {
-    const task = this.tasks.find((t) => t.id === id);
-    if (task) {
-      task.status = status;
-      return true;
-    }
-    return false;
-  }
-
-  getTasksByStatus(status: TaskStatus): Task[] {
-    return this.tasks.filter((task) => task.status === status);
-  }
-
-  getAllTasks(): Task[] {
-    return [...this.tasks]; // イミュータブルなコピーを返す
-  }
-}
-
-// 使用例
-const taskManager = new TaskManager();
-const task1 = taskManager.addTask("TypeScript学習", "基本的な型システムを学ぶ");
-const task2 = taskManager.addTask("演習問題", "実践的なコードを書く");
-
-taskManager.updateTaskStatus(task1.id, "in-progress");
-console.log("進行中のタスク:", taskManager.getTasksByStatus("in-progress"));
 ```
 
 ## 🎯 実践演習
@@ -1036,146 +866,87 @@ function createUser(
 }
 ```
 
-### 演習 1-2: 配列とオブジェクトの型注釈 🔶
-
-> 💡 **詳細解説**: より発展的な練習問題と解答例は [Step01\_補足\_実践コード例.md](./Step01_補足_実践コード例.md) を参考にしてね 🐰
+### 演習 1-2: 簡単なユーザー情報管理 🔶
 
 ```typescript
 // 以下の要件を満たすTypeScriptコードを作成してください
 
-// 1. 学生情報を管理するシステム
-// 要件:
-// - 学生は名前、年齢、成績（数値の配列）を持つ
-// - 学生の平均点を計算する関数
-// - 学生のリストから特定の条件で検索する関数
+// 1. ユーザー情報を表す型を定義
+// 2. ユーザーの挨拶メッセージを作成する関数
+// 3. ユーザーのリストから名前で検索する関数
 ```
 
+解答例
+
 ```typescript
-// 解答例
-type Student = {
+// 1. ユーザー情報の型定義
+type User = {
   name: string;
   age: number;
-  grades: number[];
+  email: string;
 };
 
-function calculateAverage(grades: number[]): number {
-  if (grades.length === 0) return 0;
-  const sum = grades.reduce((acc, grade) => acc + grade, 0);
-  return sum / grades.length;
+// 2. 挨拶メッセージを作成する関数
+function createGreeting(user: User): string {
+  return `こんにちは、${user.name}さん！年齢は${user.age}歳ですね。`;
 }
 
-function findStudentsByMinAge(students: Student[], minAge: number): Student[] {
-  return students.filter((student) => student.age >= minAge);
-}
-
-function getTopStudent(students: Student[]): Student | null {
-  if (students.length === 0) return null;
-
-  return students.reduce((topStudent, currentStudent) => {
-    const currentAvg = calculateAverage(currentStudent.grades);
-    const topAvg = calculateAverage(topStudent.grades);
-    return currentAvg > topAvg ? currentStudent : topStudent;
-  });
+// 3. 名前で検索する関数
+function findUserByName(users: User[], name: string): User | null {
+  const user = users.find((user) => user.name === name);
+  return user || null;
 }
 
 // 使用例
-const students: Student[] = [
-  { name: "Alice", age: 20, grades: [85, 92, 78, 96] },
-  { name: "Bob", age: 19, grades: [76, 84, 88, 92] },
-  { name: "Charlie", age: 21, grades: [94, 89, 91, 87] },
+const users: User[] = [
+  { name: "太郎", age: 25, email: "taro@example.com" },
+  { name: "花子", age: 30, email: "hanako@example.com" },
+  { name: "次郎", age: 28, email: "jiro@example.com" },
 ];
 
-console.log("平均点:", calculateAverage(students[0].grades));
-console.log("20歳以上の学生:", findStudentsByMinAge(students, 20));
-console.log("トップ学生:", getTopStudent(students));
+console.log(createGreeting(users[0]));
+console.log(findUserByName(users, "花子"));
 ```
 
-### 演習 1-3: 実用的なアプリケーション作成 🔥
+
+### 演習 1-3: 簡単な計算機能 🔥
 
 ```typescript
-// シンプルなタスク管理アプリケーションを作成してください
-// 要件:
-// 1. タスクの追加、完了、削除機能
-// 2. タスクの一覧表示
-// 3. 完了済みタスクのフィルタリング
+// 以下の要件を満たすTypeScriptコードを作成してください
+
+// 1. 数値の配列から合計を計算する関数
+// 2. 数値の配列から平均を計算する関数
+// 3. 数値の配列から最大値を見つける関数
 ```
 
+解答例
+
 ```typescript
-// 解答例
-type Task = {
-  id: number;
-  title: string;
-  description: string;
-  completed: boolean;
-  createdAt: Date;
-};
+// 1. 合計を計算する関数
+function calculateSum(numbers: number[]): number {
+  return numbers.reduce((sum, num) => sum + num, 0);
+}
 
-class TaskManager {
-  private tasks: Task[] = [];
-  private nextId: number = 1;
+// 2. 平均を計算する関数
+function calculateAverage(numbers: number[]): number {
+  if (numbers.length === 0) return 0;
+  return calculateSum(numbers) / numbers.length;
+}
 
-  addTask(title: string, description: string): Task {
-    const newTask: Task = {
-      id: this.nextId++,
-      title: title,
-      description: description,
-      completed: false,
-      createdAt: new Date(),
-    };
-
-    this.tasks.push(newTask);
-    return newTask;
-  }
-
-  completeTask(id: number): boolean {
-    const task = this.tasks.find((t) => t.id === id);
-    if (task) {
-      task.completed = true;
-      return true;
-    }
-    return false;
-  }
-
-  deleteTask(id: number): boolean {
-    const index = this.tasks.findIndex((t) => t.id === id);
-    if (index !== -1) {
-      this.tasks.splice(index, 1);
-      return true;
-    }
-    return false;
-  }
-
-  getAllTasks(): Task[] {
-    return [...this.tasks];
-  }
-
-  getCompletedTasks(): Task[] {
-    return this.tasks.filter((task) => task.completed);
-  }
-
-  getPendingTasks(): Task[] {
-    return this.tasks.filter((task) => !task.completed);
-  }
-
-  getTaskById(id: number): Task | null {
-    return this.tasks.find((task) => task.id === id) || null;
-  }
+// 3. 最大値を見つける関数
+function findMax(numbers: number[]): number | null {
+  if (numbers.length === 0) return null;
+  return Math.max(...numbers);
 }
 
 // 使用例
-const taskManager = new TaskManager();
+const scores: number[] = [85, 92, 78, 96, 88];
 
-// タスク追加
-taskManager.addTask("TypeScript学習", "Week1の内容を完了する");
-taskManager.addTask("演習問題", "基本的な型注釈の練習");
-taskManager.addTask("環境構築", "開発環境のセットアップ");
-
-// タスク操作
-taskManager.completeTask(1);
-console.log("全タスク:", taskManager.getAllTasks());
-console.log("完了済み:", taskManager.getCompletedTasks());
-console.log("未完了:", taskManager.getPendingTasks());
+console.log("合計:", calculateSum(scores));
+console.log("平均:", calculateAverage(scores));
+console.log("最大値:", findMax(scores));
 ```
+
 
 ## 📊 Step 1 評価基準
 
@@ -1215,53 +986,7 @@ console.log("未完了:", taskManager.getPendingTasks());
 
 - [ ] **基本的な学生情報処理システム**: 型注釈練習に特化した初学者向けプロジェクト → [Step01 成果物](./Step01_成果物.md)で詳細確認
 
-## 🔄 Step 2 への準備
-
-> 💡 **詳細解説**: 次のステップでの学習内容について [Step02\_基本型システムと型注釈.md](./Step02_基本型システムと型注釈.md) の概要を先に確認しておくとスムーズに学習を進められるよ 🐰
-
-### 次週学習内容の予習
-
-```typescript
-// Step 2で学習する内容の基礎概念
-// 以下のコードを読んで理解しておくこと
-
-// 1. より詳細な型システム
-let value: string | number = "hello"; // Union型
-value = 42; // OK
-
-// 2. オプショナルプロパティ
-interface User {
-  name: string;
-  age?: number; // オプショナル
-}
-
-// 3. 型エイリアス
-type ID = string | number;
-type UserRole = "admin" | "user" | "guest";
-
-// 4. 関数オーバーロード
-function format(value: string): string;
-function format(value: number): string;
-function format(value: string | number): string {
-  return String(value);
-}
-```
-
-### 環境準備
-
-- [ ] VS Code TypeScript 拡張機能の設定
-- [ ] ESLint 設定の確認
-- [ ] Prettier 設定の確認
-- [ ] Git リポジトリの初期化
-
-### 学習継続のコツ
-
-1. **毎日コードを書く**: 理論だけでなく実際にコードを書く
-2. **エラーを恐れない**: エラーメッセージから学ぶ
-3. **段階的学習**: 基本から応用へ順序立てて学習
-4. **小さく始める**: 複雑な機能より基本の確実な理解
-
----
+------
 
 **📌 重要**: Step 1 は TypeScript の基礎固めの重要な期間です。JavaScript の基本をしっかり復習し、TypeScript の型システムの恩恵を実感できるようになります。焦らず確実に基礎を身につけましょう。
 

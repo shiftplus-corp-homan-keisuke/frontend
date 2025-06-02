@@ -1,5 +1,36 @@
 # Step 3: インターフェースとオブジェクト型
 
+> 🚀 **2025年改良版**: 他言語経験者向け・講師サポート付き学習に最適化されました！
+
+## 📋 学習方式の選択
+
+### 🎯 推奨：3セッション分割学習（他言語経験者・講師サポート付き）
+
+**対象**: 他言語経験者（JavaScript基礎・TypeScript基本型知識あり）
+**形式**: 講師サポート付き学習
+**総時間**: 240分（4時間）
+
+#### 📚 セッション構成
+
+- 🔰 **[Session1: インターフェース理論と基本実践](./Step03_Session1_インターフェース理論と基本実践.md)** (90分)
+  - インターフェース基本概念・オプショナル・読み取り専用プロパティ・基本設計
+- 🔧 **[Session2: 継承と型設計実践](./Step03_Session2_継承と型設計実践.md)** (90分)
+  - インターフェース継承・型エイリアス使い分け・学生管理システム実装
+- 🎯 **[Session3: データモデル設計完成](./Step03_Session3_データモデル設計完成.md)** (60分)
+  - プロジェクト完成・デバッグ・成果発表・Step04準備
+
+#### 👨‍🏫 講師向けリソース
+
+- 📖 **[講師用ガイド](./Step03_講師用ガイド.md)** - 詳細な指導方法・評価基準・よくある質問
+
+---
+
+### 📖 従来版：一括学習（自習・復習用）
+
+**対象**: 自習者・復習者
+**形式**: 個人学習
+**総時間**: 3時間
+
 > 💡 **補足資料**: 詳細な解説は以下の補足資料を見てね 🐰
 >
 > - 📖 [専門用語集](./Step03_補足_専門用語集.md) - インターフェース・オブジェクト型設計の重要な概念と用語の詳細解説
@@ -8,7 +39,7 @@
 > - 📚 [参考リソース](./Step03_補足_参考リソース.md) - 学習に役立つリンク集
 > - 📋 [補足資料](./Step03_補足資料.md) - その他の重要な補足情報
 
-## 📅 学習期間・目標
+## 📅 学習期間・目標（従来版）
 
 **期間**: Step 3  
 **総学習時間**: 3 時間  
@@ -62,15 +93,30 @@ interface User {
 }
 
 // 実際のAPI設計での活用例
-interface ApiResponse<T> {
+interface ApiResponse {
   success: boolean;
-  data: T;
+  data: any; // Step03では具体的な型を指定するか、anyを使用
+  message?: string;
+  timestamp: Date;
+}
+
+// より型安全な方法：具体的なレスポンス型を定義
+interface UserApiResponse {
+  success: boolean;
+  data: User;
+  message?: string;
+  timestamp: Date;
+}
+
+interface ProductApiResponse {
+  success: boolean;
+  data: Product;
   message?: string;
   timestamp: Date;
 }
 
 // ユーザー情報取得APIのレスポンス型
-type UserApiResponse = ApiResponse<User>;
+type UserApiResponse = ApiResponse;
 ```
 
 **📝 設計の詳細解説**
@@ -360,8 +406,8 @@ interface AppConfig {
 **📝 設計の詳細解説**
 
 - **readonly の適用範囲**: プロパティレベルでの読み取り専用指定
-- **深い読み取り専用**: ネストしたオブジェクトの読み取り専用化には `Readonly<T>` ユーティリティ型を使用
-- **配列の読み取り専用**: `readonly T[]` または `ReadonlyArray<T>` を使用
+- **深い読み取り専用**: ネストしたオブジェクトの読み取り専用化は個別にreadonlyプロパティを定義
+- **配列の読み取り専用**: `readonly string[]` のように具体的な型で使用
 
 **⚠️ よくある設計ミスと注意点**
 
@@ -559,8 +605,8 @@ interface ConsistentTypes {
 
 ```typescript
 // APIレスポンスのメタデータ処理
-interface ApiResponseWithMeta<T> {
-  data: T;
+interface ApiResponseWithMeta {
+  data: any; // Step03では具体的な型を指定するか、anyを使用
   success: boolean;
   message?: string;
 
@@ -665,7 +711,11 @@ interface UserService {
 
   // メソッドシグネチャ
   createUser(data: CreateUserRequest): Promise<User>;
-  updateUser(id: number, data: Partial<User>): Promise<User>;
+  updateUser(id: number, data: {
+    name?: string;
+    email?: string;
+    age?: number;
+  }): Promise<User>;
   deleteUser(id: number): Promise<boolean>;
 }
 
@@ -674,20 +724,24 @@ class UserServiceImpl implements UserService {
   constructor(private apiClient: ApiClient) {}
 
   getUser = async (id: number): Promise<User> => {
-    const response = await this.apiClient.get<User>(`/users/${id}`);
+    const response = await this.apiClient.get(`/users/${id}`);
     return response.data;
   };
 
   async createUser(data: CreateUserRequest): Promise<User> {
-    const response = await this.apiClient.post<CreateUserRequest, User>(
+    const response = await this.apiClient.post(
       "/users",
       data
     );
     return response.data;
   }
 
-  async updateUser(id: number, data: Partial<User>): Promise<User> {
-    const response = await this.apiClient.put<Partial<User>, User>(
+  async updateUser(id: number, data: {
+    name?: string;
+    email?: string;
+    age?: number;
+  }): Promise<User> {
+    const response = await this.apiClient.put(
       `/users/${id}`,
       data
     );
@@ -758,12 +812,12 @@ class BadEventHandler implements EventHandlerInterface {
 // イベント管理システムでの活用
 interface EventManager {
   // イベントリスナー管理（関数型プロパティ）
-  addEventListener: <T>(event: string, handler: (data: T) => void) => void;
+  addEventListener: (event: string, handler: (data: any) => void) => void;
   removeEventListener: (event: string, handler: Function) => void;
 
   // イベント発火（メソッドシグネチャ）
-  emit<T>(event: string, data: T): void;
-  once<T>(event: string, handler: (data: T) => void): void;
+  emit(event: string, data: any): void;
+  once(event: string, handler: (data: any) => void): void;
 }
 
 // データ処理パイプラインでの活用
@@ -773,8 +827,8 @@ interface DataProcessor<T, U> {
   validate: (data: T) => boolean;
 
   // 処理メソッド（メソッドシグネチャ）
-  process(input: T[]): Promise<U[]>;
-  processStream(input: AsyncIterable<T>): AsyncIterable<U>;
+  process(input: any[]): Promise<any[]>;
+  processStream(input: any): any;
 }
 
 class UserDataProcessor implements DataProcessor<RawUserData, User> {
@@ -795,7 +849,7 @@ class UserDataProcessor implements DataProcessor<RawUserData, User> {
     return input.filter(this.validate).map(this.transform);
   }
 
-  async *processStream(input: AsyncIterable<RawUserData>): AsyncIterable<User> {
+  async *processStream(input: any): any {
     for await (const rawData of input) {
       if (this.validate(rawData)) {
         yield this.transform(rawData);
@@ -807,18 +861,18 @@ class UserDataProcessor implements DataProcessor<RawUserData, User> {
 // API クライアントでの活用
 interface RestApiClient {
   // HTTP メソッド（関数型プロパティ）
-  get: <T>(url: string, config?: RequestConfig) => Promise<ApiResponse<T>>;
-  post: <T, U>(
+  get: (url: string, config?: RequestConfig) => Promise<ApiResponse>;
+  post: (
     url: string,
-    data: T,
+    data: any,
     config?: RequestConfig
-  ) => Promise<ApiResponse<U>>;
-  put: <T, U>(
+  ) => Promise<ApiResponse>;
+  put: (
     url: string,
-    data: T,
+    data: any,
     config?: RequestConfig
-  ) => Promise<ApiResponse<U>>;
-  delete: <T>(url: string, config?: RequestConfig) => Promise<ApiResponse<T>>;
+  ) => Promise<ApiResponse>;
+  delete: (url: string, config?: RequestConfig) => Promise<ApiResponse>;
 
   // 設定管理（メソッドシグネチャ）
   setBaseURL(url: string): void;
@@ -1058,9 +1112,9 @@ interface Duck extends Animal, Flyable, Swimmable {
 ```typescript
 interface Repository<T, K> {
   findById(id: K): Promise<T | null>;
-  findAll(): Promise<T[]>;
-  create(entity: Omit<T, "id">): Promise<T>;
-  update(id: K, entity: Partial<T>): Promise<T>;
+  findAll(): Promise<any[]>;
+  create(entity: any): Promise<any>;
+  update(id: any, entity: any): Promise<any>;
   delete(id: K): Promise<boolean>;
 }
 
@@ -1083,12 +1137,20 @@ class ProductRepository implements Repository<Product, string> {
     return [];
   }
 
-  async create(entity: Omit<Product, "id">): Promise<Product> {
+  async create(entity: {
+    name: string;
+    price: number;
+    description: string;
+  }): Promise<Product> {
     // 実装
     return { id: "generated-id", ...entity };
   }
 
-  async update(id: string, entity: Partial<Product>): Promise<Product> {
+  async update(id: string, entity: {
+    name?: string;
+    price?: number;
+    description?: string;
+  }): Promise<Product> {
     // 実装
     throw new Error("Not implemented");
   }

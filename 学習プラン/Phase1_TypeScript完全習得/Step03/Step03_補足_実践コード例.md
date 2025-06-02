@@ -342,9 +342,9 @@ interface Logger {
 }
 
 interface Database {
-  save<T>(collection: string, data: T): Promise<string>;
-  find<T>(collection: string, id: string): Promise<T | null>;
-  update<T>(collection: string, id: string, data: Partial<T>): Promise<boolean>;
+  save(collection: string, data: any): Promise<string>;
+  find(collection: string, id: string): Promise<any | null>;
+  update(collection: string, id: string, data: any): Promise<boolean>;
   delete(collection: string, id: string): Promise<boolean>;
 }
 
@@ -352,12 +352,12 @@ interface EmailService {
   sendEmail(to: string, subject: string, body: string): Promise<boolean>;
 }
 
-interface Validator<T> {
-  validate(data: T): { isValid: boolean; errors: string[] };
+interface UserValidator {
+  validate(data: CreateUserRequest): { isValid: boolean; errors: string[] };
 }
 
 // ユーザーバリデーター
-class UserValidator implements Validator<CreateUserRequest> {
+class UserValidatorImpl implements UserValidator {
   validate(data: CreateUserRequest): { isValid: boolean; errors: string[] } {
     const errors: string[] = [];
 
@@ -386,7 +386,7 @@ class CompositeUserService {
     private logger: Logger,
     private database: Database,
     private emailService: EmailService,
-    private validator: Validator<CreateUserRequest>
+    private validator: UserValidator
   ) {}
 
   async createUser(request: CreateUserRequest): Promise<User | null> {
@@ -440,7 +440,7 @@ class ConsoleLogger implements Logger {
 class MemoryDatabase implements Database {
   private data = new Map<string, Map<string, any>>();
 
-  async save<T>(collection: string, data: T): Promise<string> {
+  async save(collection: string, data: any): Promise<string> {
     if (!this.data.has(collection)) {
       this.data.set(collection, new Map());
     }
@@ -450,12 +450,12 @@ class MemoryDatabase implements Database {
     return id;
   }
 
-  async find<T>(collection: string, id: string): Promise<T | null> {
+  async find(collection: string, id: string): Promise<any | null> {
     const collectionData = this.data.get(collection);
     return collectionData?.get(id) || null;
   }
 
-  async update<T>(collection: string, id: string, data: Partial<T>): Promise<boolean> {
+  async update(collection: string, id: string, data: any): Promise<boolean> {
     const collectionData = this.data.get(collection);
     const existing = collectionData?.get(id);
     if (existing) {
@@ -971,13 +971,13 @@ interface BlogService {
   getPostBySlug(slug: string): Promise<BlogPost | null>;
   
   // 記事一覧
-  getPosts(options: GetPostsOptions): Promise<PaginatedResult<BlogPost>>;
-  getPostsByCategory(categoryId: string, options: PaginationOptions): Promise<PaginatedResult<BlogPost>>;
-  getPostsByTag(tagId: string, options: PaginationOptions): Promise<PaginatedResult<BlogPost>>;
-  getPostsByAuthor(authorId: string, options: PaginationOptions): Promise<PaginatedResult<BlogPost>>;
-  
+  getPosts(options: GetPostsOptions): Promise<BlogPostPaginatedResult>;
+  getPostsByCategory(categoryId: string, options: PaginationOptions): Promise<BlogPostPaginatedResult>;
+  getPostsByTag(tagId: string, options: PaginationOptions): Promise<BlogPostPaginatedResult>;
+  getPostsByAuthor(authorId: string, options: PaginationOptions): Promise<BlogPostPaginatedResult>;
+
   // 検索
-  searchPosts(query: string, options: SearchOptions): Promise<PaginatedResult<BlogPost>>;
+  searchPosts(query: string, options: SearchOptions): Promise<BlogPostPaginatedResult>;
 }
 
 // リクエスト・レスポンス型
@@ -990,10 +990,26 @@ interface CreatePostRequest {
   publishedAt?: Date;
   categoryIds: string[];
   tagNames: string[];
-  metadata?: Partial<PostMetadata>;
+  metadata?: {
+    description?: string;
+    keywords?: string[];
+    ogImage?: string;
+    canonicalUrl?: string;
+  };
 }
 
-interface UpdatePostRequest extends Partial<CreatePostRequest> {
+interface UpdatePostRequest {
+  title?: string;
+  content?: string;
+  excerpt?: string;
+  categoryId?: string;
+  tagNames?: string[];
+  metadata?: {
+    description?: string;
+    keywords?: string[];
+    ogImage?: string;
+    canonicalUrl?: string;
+  };
   slug?: string;
 }
 
@@ -1018,8 +1034,8 @@ interface PaginationOptions {
   limit: number;
 }
 
-interface PaginatedResult<T> {
-  data: T[];
+interface BlogPostPaginatedResult {
+  data: BlogPost[];
   pagination: {
     page: number;
     limit: number;
@@ -1033,10 +1049,10 @@ interface PaginatedResult<T> {
 // 実装例
 class BlogServiceImpl implements BlogService {
   constructor(
-    private postRepository: Repository<BlogPost>,
-    private userRepository: Repository<User>,
-    private categoryRepository: Repository<Category>,
-    private tagRepository: Repository<Tag>
+    private postRepository: BlogPostRepository,
+    private userRepository: UserRepository,
+    private categoryRepository: CategoryRepository,
+    private tagRepository: TagRepository
   ) {}
 
   async createPost(data: CreatePostRequest): Promise<BlogPost> {
@@ -1075,7 +1091,7 @@ class BlogServiceImpl implements BlogService {
     return await this.postRepository.save(post);
   }
 
-  async getPosts(options: GetPostsOptions): Promise<PaginatedResult<BlogPost>> {
+  async getPosts(options: GetPostsOptions): Promise<BlogPostPaginatedResult> {
     const query = this.buildQuery(options);
     const posts = await this.postRepository.findMany(query);
     const total = await this.postRepository.count(query);
@@ -1086,7 +1102,7 @@ class BlogServiceImpl implements BlogService {
     };
   }
 
-  async searchPosts(query: string, options: SearchOptions): Promise<PaginatedResult<BlogPost>> {
+  async searchPosts(query: string, options: SearchOptions): Promise<BlogPostPaginatedResult> {
     const searchQuery = this.buildSearchQuery(query, options);
     const posts = await this.postRepository.search(searchQuery);
     const total = await this.postRepository.countSearch(searchQuery);
@@ -1164,10 +1180,10 @@ class BlogServiceImpl implements BlogService {
 // 使用例
 async function demonstrateBlogSystem() {
   const blogService = new BlogServiceImpl(
-    {} as Repository<BlogPost>,
-    {} as Repository<User>,
-    {} as Repository<Category>,
-    {} as Repository<Tag>
+    {} as BlogPostRepository,
+    {} as UserRepository,
+    {} as CategoryRepository,
+    {} as TagRepository
   );
 
   // 新しい記事を作成
@@ -1204,14 +1220,15 @@ async function demonstrateBlogSystem() {
 }
 
 // Repository インターフェース（参考）
-interface Repository<T> {
-  save(entity: T): Promise<T>;
-  findById(id: string): Promise<T | null>;
-  findMany(query: any): Promise<T[]>;
+// 汎用Repositoryインターフェース（参考）
+interface GenericRepository {
+  save(entity: any): Promise<any>;
+  findById(id: string): Promise<any | null>;
+  findMany(query: any): Promise<any[]>;
   count(query: any): Promise<number>;
-  search(query: any): Promise<T[]>;
+  search(query: any): Promise<any[]>;
   countSearch(query: any): Promise<number>;
-  update(id: string, data: Partial<T>): Promise<T>;
+  update(id: string, data: any): Promise<any>;
   delete(id: string): Promise<boolean>;
 }
 ```

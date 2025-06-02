@@ -488,36 +488,36 @@ dog.makeSound(); // "Woof!"
 
 #### オブザーバーパターン（Observer Pattern）
 ```typescript
-interface Observer<T> {
-  update(data: T): void;
+interface UserObserver {
+  update(data: User): void;
 }
 
-class Subject<T> {
-  private observers: Observer<T>[] = [];
+class UserSubject {
+  private observers: UserObserver[] = [];
   
-  subscribe(observer: Observer<T>): void {
+  subscribe(observer: UserObserver): void {
     this.observers.push(observer);
   }
   
-  unsubscribe(observer: Observer<T>): void {
+  unsubscribe(observer: UserObserver): void {
     const index = this.observers.indexOf(observer);
     if (index > -1) {
       this.observers.splice(index, 1);
     }
   }
   
-  notify(data: T): void {
+  notify(data: User): void {
     this.observers.forEach(observer => observer.update(data));
   }
 }
 
-class UserNotifier implements Observer<User> {
+class UserNotifier implements UserObserver {
   update(user: User): void {
     console.log(`User ${user.name} has been updated`);
   }
 }
 
-const userSubject = new Subject<User>();
+const userSubject = new UserSubject();
 const notifier = new UserNotifier();
 userSubject.subscribe(notifier);
 ```

@@ -49,7 +49,12 @@ interface User {
 }
 
 // 解決方法3: Partialユーティリティ型を使用
-const partialUser: Partial<User> = {
+const partialUser: {
+  id?: number;
+  name?: string;
+  email?: string;
+  age?: number;
+} = {
   id: 1,
   name: "Alice"
   // emailは省略可能
@@ -173,9 +178,9 @@ type Node = {
 };
 
 // 解決方法3: 再帰的な型定義を明示的に行う
-type TreeNode<T> = {
-  value: T;
-  children?: TreeNode<T>[];
+type UserTreeNode = {
+  value: User;
+  children?: UserTreeNode[];
 };
 ```
 
@@ -406,7 +411,11 @@ interface Animal {
 }
 
 // 解決方法3: Partialを使用
-const partialDog: Partial<Dog> = {
+const partialDog: {
+  name?: string;
+  breed?: string;
+  age?: number;
+} = {
   name: "Buddy",
   breed: "Golden Retriever"
 };
@@ -675,10 +684,8 @@ const result = definitelyWrongCode();
 ### 1. 型情報の確認
 ```typescript
 // 型を確認するヘルパー
-type TypeOf<T> = T;
-
-// 使用例
-type UserType = TypeOf<User>; // Userの型を確認
+// 型を確認するヘルパー（具体的な型で定義）
+type UserType = User; // Userの型を確認
 
 // コンパイラに型を表示させる
 const user: User = {} as any;

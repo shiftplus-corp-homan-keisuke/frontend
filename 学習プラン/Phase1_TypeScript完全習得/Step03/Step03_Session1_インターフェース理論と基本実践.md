@@ -1,0 +1,379 @@
+# Session1: インターフェース理論と基本実践（90分）
+
+> 💡 **対象**: 他言語経験者（JavaScript基礎・TypeScript基本型知識あり）  
+> 🎯 **形式**: 講師サポート付き学習  
+> ⏰ **時間**: 90分（休憩含む）
+
+## 📅 セッション概要
+
+**学習目標**:
+- [ ] インターフェースの基本概念と設計原則の理解
+- [ ] オプショナルプロパティ・読み取り専用プロパティの習得
+- [ ] 基本的なインターフェース設計の実践
+- [ ] 型安全なオブジェクト操作の実装
+
+**前提知識**:
+- Step01: JavaScript基礎、TypeScript基本型注釈
+- Step02: 基本型システム、型推論、型エイリアス
+
+---
+
+## ⏰ 詳細タイムテーブル
+
+| 時間 | 内容 | 講師の役割 | 学習者の活動 | 成果物 |
+|------|------|------------|--------------|--------|
+| **0-10分** | 前Step復習・今回目標 | 復習確認・目標提示 | 振り返り・質問 | 理解確認 |
+| **10-50分** | インターフェース理論学習 | 実演・解説 | 理解・メモ | 基本知識 |
+| **50-80分** | 基本実践・練習問題 | 個別サポート | ハンズオン | 基本コード |
+| **80-90分** | 振り返り・次回予告 | まとめ・予告 | 質問・確認 | 学習計画 |
+
+---
+
+## 📚 学習内容
+
+### Section 1: 前Step復習（要点のみ）
+
+#### 🔍 Step02の重要ポイント確認
+
+**基本型システムの復習**
+
+```typescript
+// Step02で学習した基本型
+let userName: string = "Alice";
+let userAge: number = 30;
+let isActive: boolean = true;
+
+// 型エイリアス
+type UserId = number;
+type UserStatus = "active" | "inactive" | "pending";
+
+// 配列とオブジェクトの型注釈
+let scores: number[] = [85, 92, 78];
+let user: {
+  id: UserId;
+  name: string;
+  status: UserStatus;
+} = {
+  id: 1,
+  name: "Alice",
+  status: "active"
+};
+```
+
+**💡 今日学ぶインターフェースとの関係**
+
+インターフェースは、オブジェクトの型注釈をより構造化・再利用可能にする仕組みです。
+
+---
+
+### Section 2: インターフェースの基本概念
+
+#### 🎯 インターフェースとは何か
+
+**💡 なぜインターフェースが重要なのか**
+
+インターフェースは、TypeScriptにおける「契約」の概念です。オブジェクトがどのような形状（プロパティとメソッド）を持つべきかを定義することで、以下の価値を提供します：
+
+- **型安全性の確保**: コンパイル時にオブジェクトの構造をチェック
+- **コードの可読性向上**: オブジェクトの期待される形状が明確
+- **チーム開発での契約**: API設計やコンポーネント間の連携で明確な仕様を共有
+- **リファクタリングの安全性**: 構造変更時に影響範囲を正確に把握
+
+#### 1. 基本的なインターフェース定義
+
+```typescript
+// Step02のオブジェクト型注釈
+let user: {
+  id: number;
+  name: string;
+  email: string;
+} = {
+  id: 1,
+  name: "Alice",
+  email: "alice@example.com"
+};
+
+// ↓ インターフェースで改善
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+let user: User = {
+  id: 1,
+  name: "Alice",
+  email: "alice@example.com"
+};
+
+// 再利用可能
+let anotherUser: User = {
+  id: 2,
+  name: "Bob",
+  email: "bob@example.com"
+};
+```
+
+**🚀 実際のプロジェクトでの活用例**
+
+```typescript
+// 商品情報の型定義
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  category: string;
+}
+
+// 商品一覧の表示
+function displayProducts(products: Product[]): void {
+  products.forEach(product => {
+    console.log(`${product.name}: ¥${product.price}`);
+  });
+}
+
+// 商品検索
+function findProduct(products: Product[], id: number): Product | undefined {
+  return products.find(product => product.id === id);
+}
+```
+
+#### 2. オプショナルプロパティ
+
+**💡 なぜオプショナルプロパティが重要なのか**
+
+実際のアプリケーション開発では、「必須ではないデータ」を型安全に扱う必要があります。
+
+```typescript
+interface UserProfile {
+  id: number;
+  name: string;
+  email: string;
+  age?: number; // オプショナル
+  bio?: string; // オプショナル
+  avatar?: string; // オプショナル
+}
+
+// 必須フィールドのみでも有効
+let basicUser: UserProfile = {
+  id: 1,
+  name: "Alice",
+  email: "alice@example.com"
+};
+
+// オプショナルフィールドありでも有効
+let detailedUser: UserProfile = {
+  id: 2,
+  name: "Bob",
+  email: "bob@example.com",
+  age: 25,
+  bio: "Web developer"
+};
+```
+
+**🎯 実践的な使用例**
+
+```typescript
+// ユーザー登録フォームでの活用
+interface CreateUserRequest {
+  name: string;
+  email: string;
+  password: string;
+  age?: number; // 任意項目
+  newsletter?: boolean; // 任意項目
+}
+
+function createUser(userData: CreateUserRequest): User {
+  return {
+    id: generateId(),
+    name: userData.name,
+    email: userData.email,
+    age: userData.age || 0, // デフォルト値
+    newsletter: userData.newsletter || false
+  };
+}
+```
+
+#### 3. 読み取り専用プロパティ
+
+**💡 なぜ読み取り専用プロパティが重要なのか**
+
+データの不変性を保証し、意図しない変更を防ぐための重要な仕組みです。
+
+```typescript
+interface ReadonlyUser {
+  readonly id: number; // 変更不可
+  readonly createdAt: Date; // 変更不可
+  name: string; // 変更可能
+  email: string; // 変更可能
+}
+
+let user: ReadonlyUser = {
+  id: 1,
+  createdAt: new Date(),
+  name: "Alice",
+  email: "alice@example.com"
+};
+
+// user.id = 2; // エラー！readonlyプロパティは変更不可
+user.name = "Alice Smith"; // OK: 変更可能
+```
+
+**🚀 実際のプロジェクトでの活用例**
+
+```typescript
+// 注文情報の型定義
+interface Order {
+  readonly id: string;
+  readonly orderNumber: string;
+  readonly customerId: string;
+  readonly createdAt: Date;
+  readonly totalAmount: number; // 注文後は変更不可
+
+  // 変更可能なプロパティ
+  status: "pending" | "confirmed" | "shipped" | "delivered";
+  notes?: string;
+}
+
+// 注文ステータス更新（安全な更新）
+function updateOrderStatus(
+  order: Order, 
+  newStatus: Order["status"]
+): Order {
+  return {
+    ...order,
+    status: newStatus
+    // id, orderNumber等は自動的に保持される（readonly）
+  };
+}
+```
+
+---
+
+## 🎯 練習問題
+
+### 練習問題 1: 基本的なインターフェース設計 🔰
+
+**要件**:
+学生情報を管理するシステムの型定義を作成してください。
+
+```typescript
+// TODO: 以下の要件を満たすStudentインターフェースを定義してください
+// - id: 数値（変更不可）
+// - studentNumber: 文字列（変更不可）
+// - name: 文字列
+// - email: 文字列
+// - grade: 数値（1-4年生）
+// - club: 文字列（任意）
+
+// ここにStudentインターフェースを定義
+
+// 使用例
+const student1: Student = {
+  id: 1,
+  studentNumber: "S2024001",
+  name: "田中太郎",
+  email: "tanaka@university.ac.jp",
+  grade: 2
+};
+
+const student2: Student = {
+  id: 2,
+  studentNumber: "S2024002", 
+  name: "佐藤花子",
+  email: "sato@university.ac.jp",
+  grade: 3,
+  club: "プログラミング研究会"
+};
+```
+
+### 練習問題 2: 関数との組み合わせ 🔰
+
+**要件**:
+学生情報を操作する関数を作成してください。
+
+```typescript
+// TODO: 以下の関数を実装してください
+
+// 1. 学生一覧を表示する関数
+function displayStudents(students: Student[]): void {
+  // 実装してください
+}
+
+// 2. 学生IDで検索する関数
+function findStudentById(students: Student[], id: number): Student | undefined {
+  // 実装してください
+}
+
+// 3. 学年でフィルタリングする関数
+function filterStudentsByGrade(students: Student[], grade: number): Student[] {
+  // 実装してください
+}
+```
+
+---
+
+## 📝 解答例
+
+### 練習問題 1 解答
+
+```typescript
+interface Student {
+  readonly id: number;
+  readonly studentNumber: string;
+  name: string;
+  email: string;
+  grade: number;
+  club?: string;
+}
+```
+
+### 練習問題 2 解答
+
+```typescript
+function displayStudents(students: Student[]): void {
+  students.forEach(student => {
+    const clubInfo = student.club ? ` (${student.club})` : '';
+    console.log(`${student.name} (${student.grade}年生)${clubInfo}`);
+  });
+}
+
+function findStudentById(students: Student[], id: number): Student | undefined {
+  return students.find(student => student.id === id);
+}
+
+function filterStudentsByGrade(students: Student[], grade: number): Student[] {
+  return students.filter(student => student.grade === grade);
+}
+```
+
+---
+
+## 🔄 Session2への準備
+
+### 次回学習内容の予告
+
+**Session2で学ぶこと**:
+- インターフェースの継承
+- 型エイリアスとの使い分け
+- より複雑なデータモデル設計
+- 学生管理システムの拡張実装
+
+### 今日の振り返り
+
+**確認ポイント**:
+- [ ] インターフェースの基本概念を理解できた
+- [ ] オプショナルプロパティの使い方を習得した
+- [ ] 読み取り専用プロパティの重要性を理解した
+- [ ] 基本的なインターフェース設計ができるようになった
+
+### 質疑応答
+
+**よくある質問**:
+- Q: 「型エイリアスとインターフェースの違いは？」
+- A: 「次回Session2で詳しく学習します。基本的にはオブジェクト型にはインターフェースを使用することが推奨されます」
+
+---
+
+**📌 重要**: Session1で学習した内容は、Session2でより実践的な設計に発展させます。基本概念をしっかりと理解して次回に臨みましょう！

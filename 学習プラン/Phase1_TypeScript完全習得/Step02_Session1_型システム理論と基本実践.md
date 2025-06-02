@@ -1,0 +1,344 @@
+# Session1: 型システム理論と基本実践（90分）
+
+> 💡 **対象**: 他言語経験者（静的型付け言語の経験推奨）  
+> 🎯 **形式**: 講師サポート付き学習  
+> ⏰ **時間**: 90分（休憩含む）
+
+## 📅 セッション概要
+
+**学習目標**:
+- [ ] TypeScriptの基本型システムの完全理解
+- [ ] 型推論の仕組みと活用方法の習得
+- [ ] プリミティブ型の実践的活用
+
+**前提知識**:
+- JavaScript基本構文の理解
+- 他言語での型システム経験（Java、C#、Python等）
+- Step01の完了
+
+---
+
+## ⏰ 詳細タイムテーブル
+
+| 時間 | 内容 | 講師の役割 | 学習者の活動 | 成果物 |
+|------|------|------------|--------------|--------|
+| **0-10分** | 前Step復習・今回目標設定 | 復習確認・目標提示 | 振り返り・質問 | 理解確認 |
+| **10-50分** | 型システム理論学習 | 実演・解説・個別サポート | 理解・メモ・質問 | 理論理解 |
+| **50-80分** | 基本実践・練習問題 | 巡回サポート・ヒント | ハンズオン・実践 | 基本コード |
+| **80-90分** | 振り返り・次回予告 | まとめ・予告 | 質問・確認 | 学習計画 |
+
+---
+
+## 📚 学習内容
+
+### Section 1: TypeScript型システムの基礎理解
+
+#### 🔍 プリミティブ型の完全理解
+
+**💡 なぜ型システムが重要なのか**
+
+他言語経験者の皆さんはすでに型システムの価値を理解されていると思います。TypeScriptの型システムは、JavaScriptの動的な性質に静的型チェックを追加し、開発時にエラーを検出できます。
+
+**🎯 TypeScript特有の特徴**
+
+- **構造的型付け**: 名前ではなく構造で型を判定
+- **型推論**: 明示的な型注釈なしでも型を推論
+- **Union型**: 複数の型を組み合わせ可能
+- **リテラル型**: 具体的な値そのものを型として使用
+
+##### 1. string型 - 文字列の型安全な管理
+
+```typescript
+// 基本的なstring型
+let userName: string = "Alice";
+let welcomeMessage: string = `Welcome, ${userName}!`;
+
+// 文字列リテラル型（より厳密な型制御）
+type Status = "pending" | "approved" | "rejected";
+let orderStatus: Status = "pending";
+
+// API レスポンスでの活用例
+interface ApiResponse {
+  message: string;
+  status: Status;
+  userId: string;
+}
+
+function processApiResponse(response: ApiResponse): string {
+  return `Status: ${response.status}, Message: ${response.message}`;
+}
+```
+
+**🚀 実践的な活用例**
+
+```typescript
+// 設定管理
+type Environment = "development" | "staging" | "production";
+const API_ENDPOINTS: Record<Environment, string> = {
+  development: "http://localhost:3000/api",
+  staging: "https://staging-api.example.com",
+  production: "https://api.example.com",
+};
+
+function getApiEndpoint(env: Environment): string {
+  return API_ENDPOINTS[env];
+}
+```
+
+##### 2. number型 - 数値の型安全な処理
+
+```typescript
+// 基本的なnumber型
+let age: number = 25;
+let price: number = 99.99;
+let discount: number = 0.15; // 15%割引
+
+// 数値リテラル型
+type DiceValue = 1 | 2 | 3 | 4 | 5 | 6;
+let diceRoll: DiceValue = 3;
+
+// 実用的な数値処理
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  taxRate: number;
+}
+
+function calculateTotalPrice(product: Product, quantity: number): number {
+  const subtotal = product.price * quantity;
+  const tax = subtotal * product.taxRate;
+  return Math.round((subtotal + tax) * 100) / 100; // 小数点以下2桁で丸め
+}
+```
+
+##### 3. boolean型 - 論理値の明確な管理
+
+```typescript
+// 状態管理での活用
+interface UserState {
+  isLoggedIn: boolean;
+  isAdmin: boolean;
+  hasNotifications: boolean;
+  isDarkMode: boolean;
+}
+
+function updateUserInterface(state: UserState): void {
+  if (state.isLoggedIn) {
+    showUserDashboard();
+    if (state.isAdmin) {
+      showAdminPanel();
+    }
+  } else {
+    showLoginForm();
+  }
+
+  if (state.hasNotifications) {
+    showNotificationBadge();
+  }
+
+  applyTheme(state.isDarkMode ? "dark" : "light");
+}
+```
+
+##### 4. null と undefined - 値の不在の適切な管理
+
+```typescript
+// null と undefined の使い分け
+let explicitlyEmpty: null = null; // 意図的に空の値
+let notYetInitialized: undefined = undefined; // まだ初期化されていない
+
+// Union型での活用
+let userName: string | null = null; // ユーザー名が設定されていない
+let userAge: number | undefined = undefined; // 年齢が不明
+
+// API レスポンスでの活用
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  avatar?: string; // オプショナル（undefined の可能性）
+  lastLoginAt: Date | null; // 明示的に null の可能性
+}
+
+async function fetchUser(id: number): Promise<User | null> {
+  try {
+    const response = await fetch(`/api/users/${id}`);
+    if (!response.ok) {
+      return null; // ユーザーが見つからない場合
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Failed to fetch user:", error);
+    return null;
+  }
+}
+```
+
+### Section 2: 型推論の理解と活用
+
+#### 🎯 型推論の基本メカニズム
+
+**💡 なぜ型推論が重要なのか**
+
+型推論により、冗長な型注釈を書かずに型安全性を確保できます。他言語（Java、C#等）と比較して、TypeScriptの型推論は非常に強力です。
+
+##### 1. 基本的な型推論
+
+```typescript
+// 基本的な型推論（let使用）
+let inferredString = "Hello TypeScript"; // string型として推論
+let inferredNumber = 42; // number型として推論
+let inferredBoolean = true; // boolean型として推論
+
+// constによる厳密な型推論（リテラル型推論）
+const userName = "Alice"; // "Alice"型（文字列リテラル型）
+const userAge = 25; // 25型（数値リテラル型）
+const isActive = true; // true型（真偽値リテラル型）
+
+// let vs const の型推論の違い
+let mutableStatus = "pending"; // string型（再代入可能）
+const immutableStatus = "pending"; // "pending"型（厳密なリテラル型）
+```
+
+##### 2. オブジェクトと配列の型推論
+
+```typescript
+// オブジェクトの型推論
+const config = {
+  apiUrl: "https://api.example.com",
+  timeout: 5000,
+  retryCount: 3,
+}; // { apiUrl: string; timeout: number; retryCount: number; }型として推論
+
+// 配列の推論
+const numbers = [1, 2, 3, 4, 5]; // number[]型として推論
+const names = ["Alice", "Bob", "Charlie"] as const; // readonly ["Alice", "Bob", "Charlie"]型
+
+// 混合配列での最適共通型
+let mixedArray = [1, "hello", true]; // (string | number | boolean)[]
+```
+
+##### 3. 関数の戻り値推論
+
+```typescript
+// 関数の戻り値推論
+function add(a: number, b: number) {
+  return a + b; // number型として推論
+}
+
+function greet(name: string) {
+  return `Hello, ${name}!`; // string型として推論
+}
+
+// 条件分岐での型推論
+function getValue(condition: boolean) {
+  return condition ? "success" : 404; // string | number として推論
+}
+```
+
+---
+
+## 🎯 実践演習
+
+### 演習 1: 基本型の実践（20分）
+
+以下の要件に従って、型安全なコードを作成してください：
+
+```typescript
+// TODO: 以下の型定義を完成させてください
+
+// 1. ユーザーの基本情報を表す型
+interface UserInfo {
+  // ユーザーID（数値）
+  // ユーザー名（文字列）
+  // メールアドレス（文字列）
+  // アクティブ状態（真偽値）
+  // 最終ログイン日時（Date型またはnull）
+}
+
+// 2. ユーザーの役割を表すリテラル型
+type UserRole = // "admin" | "user" | "guest" のいずれか
+
+// 3. 設定情報を表す型
+interface AppSettings {
+  // テーマ（"light" | "dark" | null）
+  // 言語（string | undefined）
+  // 通知設定（boolean）
+}
+
+// 4. 以下の関数の型注釈を追加してください
+function createUser(name, email, role) {
+  return {
+    id: Math.floor(Math.random() * 1000),
+    name: name,
+    email: email,
+    role: role,
+    isActive: true,
+    lastLoginAt: null,
+  };
+}
+
+function validateEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+```
+
+### 演習 2: 型推論の活用（10分）
+
+以下のコードで型推論がどのように働くかを確認し、コメントを追加してください：
+
+```typescript
+// 型推論の確認
+const userConfig = {
+  theme: "dark",
+  fontSize: 14,
+  autoSave: true,
+}; // 型: ?
+
+const statusList = ["pending", "approved", "rejected"] as const; // 型: ?
+
+function processStatus(status: typeof statusList[number]) {
+  // statusの型: ?
+  return `Processing: ${status}`;
+}
+
+let result = processStatus("pending"); // resultの型: ?
+```
+
+---
+
+## 📝 学習ポイント
+
+### ✅ 今回のセッションで習得すべきこと
+
+1. **プリミティブ型の理解**: string, number, boolean, null, undefined の適切な使い分け
+2. **リテラル型の活用**: より厳密な型制御の方法
+3. **型推論の仕組み**: let vs const、オブジェクト・配列での推論
+4. **Union型の基礎**: 複数の型を組み合わせる方法
+
+### 🔄 次回Session2への準備
+
+- 配列型とタプル型の詳細
+- オブジェクト型の高度な活用
+- 関数型注釈の実践
+- より複雑な型推論パターン
+
+---
+
+## 💡 講師向けメモ
+
+### 重点サポート箇所
+- 他言語との型システムの違い（構造的型付け vs 名前的型付け）
+- 型推論の強力さの体感（Java/C#との比較）
+- null/undefined の使い分け（他言語のnullとの違い）
+
+### よくある質問
+- **Q**: 「JavaのStringとTypeScriptのstringの違いは？」
+- **A**: 「TypeScriptのstringはプリミティブ型で、より軽量。リテラル型も使用可能」
+
+### 時間管理のコツ
+- 理論説明は簡潔に、実践時間を多く確保
+- 演習中は積極的に巡回サポート
+- 型推論の体感を重視した説明

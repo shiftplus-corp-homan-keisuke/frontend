@@ -883,5 +883,464 @@ function createMultiValidator<T>(
 
     for (let validator of validators) {
       let result = validator(value);
-      if (!result.isValid &&
+      if (!result.isValid && result.error) {
+        errors.push(result.error);
+      }
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors: errors,
+    };
+  };
+}
+
+// 使用例
+const userValidator = createMultiValidator(
+  (user: { name: string; age: number; email: string }) => ({
+    isValid: user.name.length > 0,
+    error: user.name.length > 0 ? undefined : "名前は必須です",
+  }),
+  (user: { name: string; age: number; email: string }) => ({
+    isValid: user.age >= 0 && user.age <= 120,
+    error: user.age >= 0 && user.age <= 120 ? undefined : "年齢は0-120の範囲で入力してください",
+  }),
+  (user: { name: string; age: number; email: string }) => ({
+    isValid: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.email),
+    error: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.email) ? undefined : "有効なメールアドレスを入力してください",
+  })
+);
+
+const testUser = { name: "", age: 25, email: "invalid-email" };
+const validationResult = userValidator(testUser);
+console.log(validationResult);
+// { isValid: false, errors: ["名前は必須です", "有効なメールアドレスを入力してください"] }
 ```
+
+</details>
+
+## 🎯 実践演習
+
+> 💡 **演習サポート**: 演習中に困った時は以下の補足資料を活用してください
+>
+> - 🚨 [トラブルシューティング](./Step02_補足_トラブルシューティング.md) - エラーが発生した場合の解決方法
+> - 💻 [実践コード例](./Step02_補足_実践コード例.md) - より詳細なコード例とパターン
+> - 📖 [専門用語集](./Step02_補足_専門用語集.md) - 分からない用語の確認
+
+### 演習 2-1: 型推論マスター 🔰
+
+```typescript
+// 以下のコードの型推論結果を予測し、実際に確認せよ
+
+// 1. 基本的な型推論
+let a = 42; // 型は？
+let b = "hello"; // 型は？
+let c = true; // 型は？
+let d = [1, 2, 3]; // 型は？
+let e = ["a", "b", "c"]; // 型は？
+
+// 2. 複雑な型推論
+let f = [1, "hello", true]; // 型は？
+let g = { name: "Alice", age: 30 }; // 型は？
+let h = [{ id: 1, name: "Bob" }]; // 型は？
+
+// 3. 関数の型推論
+function mystery1(x, y) {
+  // パラメータの型は？
+  return x + y;
+}
+
+function mystery2(arr) {
+  // パラメータの型は？
+  return arr.map((x) => x * 2);
+}
+```
+
+#### 解答例と解説
+
+- a: number
+- b: string
+- c: boolean
+- d: number[]
+- e: string[]
+- f: (string | number | boolean)[]
+- g: { name: string; age: number; }
+- h: { id: number; name: string; }[]
+- mystery1: パラメータはany型（型推論不可）
+- mystery2: パラメータはany型（型推論不可）
+
+### 演習 2-2: 商品管理システム 🔥
+
+身近な商品管理システムを段階的に実装し、Step02で学習した型システムを総合的に活用せよ
+
+#### 学習目標:
+- Step02で学習した基本型システムの総合活用
+- 実用的なデータ構造設計の体験
+- 型安全なCRUD操作の実装
+- 段階的な機能拡張の経験
+
+#### Phase 1: 基本構造設計 (初学者レベル)
+
+**要件:**
+- 商品情報の型定義
+- 基本的なCRUD操作の実装
+- 型安全なデータ管理
+
+```typescript
+// 商品情報の型定義
+interface Product {
+  readonly id: number;        // 商品ID（変更不可）
+  name: string;              // 商品名
+  price: number;             // 価格
+  category: string;          // カテゴリ
+  inStock: boolean;          // 在庫状況
+  description?: string;      // 商品説明（オプショナル）
+}
+
+// 商品管理クラス
+class ProductManager {
+  private products: Product[] = [];
+  private nextId: number = 1;
+
+  // 商品追加
+  addProduct(
+    name: string,
+    price: number,
+    category: string,
+    description?: string
+  ): Product {
+    const newProduct: Product = {
+      id: this.nextId++,
+      name,
+      price,
+      category,
+      inStock: true,
+      description,
+    };
+
+    this.products.push(newProduct);
+    return newProduct;
+  }
+
+  // 商品削除
+  removeProduct(id: number): boolean {
+    const index = this.products.findIndex(product => product.id === id);
+    if (index !== -1) {
+      this.products.splice(index, 1);
+      return true;
+    }
+    return false;
+  }
+
+  // 商品更新
+  updateProduct(id: number, updates: Partial<Omit<Product, 'id'>>): boolean {
+    const product = this.products.find(p => p.id === id);
+    if (product) {
+      Object.assign(product, updates);
+      return true;
+    }
+    return false;
+  }
+
+  // 全商品取得
+  getAllProducts(): readonly Product[] {
+    return [...this.products]; // イミュータブルなコピーを返す
+  }
+}
+```
+
+#### Phase 2: 検索・フィルタ機能 (中級レベル)
+
+**要件:**
+- カテゴリ別検索
+- 価格範囲検索
+- 在庫状況検索
+- 名前による部分検索
+
+```typescript
+class ProductManager {
+  // ... Phase 1のメソッドに加えて
+
+  // カテゴリ別検索
+  findProductsByCategory(category: string): Product[] {
+    return this.products.filter(product =>
+      product.category.toLowerCase() === category.toLowerCase()
+    );
+  }
+
+  // 価格範囲検索
+  findProductsByPriceRange(minPrice: number, maxPrice: number): Product[] {
+    return this.products.filter(product =>
+      product.price >= minPrice && product.price <= maxPrice
+    );
+  }
+
+  // 在庫状況検索
+  findProductsInStock(): Product[] {
+    return this.products.filter(product => product.inStock);
+  }
+
+  findProductsOutOfStock(): Product[] {
+    return this.products.filter(product => !product.inStock);
+  }
+
+  // 名前による部分検索
+  searchProductsByName(searchTerm: string): Product[] {
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    return this.products.filter(product =>
+      product.name.toLowerCase().includes(lowerSearchTerm)
+    );
+  }
+
+  // 複合検索（複数条件）
+  searchProducts(criteria: {
+    category?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    inStock?: boolean;
+    nameSearch?: string;
+  }): Product[] {
+    return this.products.filter(product => {
+      // カテゴリ条件
+      if (criteria.category &&
+          product.category.toLowerCase() !== criteria.category.toLowerCase()) {
+        return false;
+      }
+
+      // 価格条件
+      if (criteria.minPrice !== undefined && product.price < criteria.minPrice) {
+        return false;
+      }
+      if (criteria.maxPrice !== undefined && product.price > criteria.maxPrice) {
+        return false;
+      }
+
+      // 在庫条件
+      if (criteria.inStock !== undefined && product.inStock !== criteria.inStock) {
+        return false;
+      }
+
+      // 名前検索条件
+      if (criteria.nameSearch &&
+          !product.name.toLowerCase().includes(criteria.nameSearch.toLowerCase())) {
+        return false;
+      }
+
+      return true;
+    });
+  }
+}
+```
+
+#### Phase 3: 高度機能 (上級レベル)
+
+**要件:**
+- カテゴリ別統計
+- 在庫総額計算
+- 最高価格・最低価格商品検索
+- 商品数カウント
+
+```typescript
+// 統計情報の型定義
+interface CategoryStats {
+  category: string;
+  totalProducts: number;
+  averagePrice: number;
+  totalValue: number;
+  inStockCount: number;
+}
+
+interface InventoryStats {
+  total: number;
+  inStock: number;
+  outOfStock: number;
+  totalValue: number;
+  averagePrice: number;
+}
+
+class ProductManager {
+  // ... Phase 1, 2のメソッドに加えて
+
+  // カテゴリ別統計
+  getCategoryStatistics(): CategoryStats[] {
+    const categories = [...new Set(this.products.map(p => p.category))];
+    
+    return categories.map(category => {
+      const categoryProducts = this.products.filter(p => p.category === category);
+      const inStockProducts = categoryProducts.filter(p => p.inStock);
+      
+      return {
+        category,
+        totalProducts: categoryProducts.length,
+        averagePrice: categoryProducts.length > 0
+          ? categoryProducts.reduce((sum, p) => sum + p.price, 0) / categoryProducts.length
+          : 0,
+        totalValue: categoryProducts.reduce((sum, p) => sum + p.price, 0),
+        inStockCount: inStockProducts.length,
+      };
+    });
+  }
+
+  // 在庫総額計算
+  getTotalInventoryValue(): number {
+    return this.products
+      .filter(product => product.inStock)
+      .reduce((total, product) => total + product.price, 0);
+  }
+
+  // 最高価格商品
+  getMostExpensiveProduct(): Product | null {
+    if (this.products.length === 0) return null;
+    
+    return this.products.reduce((max, current) =>
+      current.price > max.price ? current : max
+    );
+  }
+
+  // 最低価格商品
+  getCheapestProduct(): Product | null {
+    if (this.products.length === 0) return null;
+    
+    return this.products.reduce((min, current) =>
+      current.price < min.price ? current : min
+    );
+  }
+
+  // 商品数カウント
+  getInventoryStats(): InventoryStats {
+    const inStockProducts = this.products.filter(p => p.inStock);
+    const outOfStockProducts = this.products.filter(p => !p.inStock);
+    
+    return {
+      total: this.products.length,
+      inStock: inStockProducts.length,
+      outOfStock: outOfStockProducts.length,
+      totalValue: this.getTotalInventoryValue(),
+      averagePrice: this.products.length > 0
+        ? this.products.reduce((sum, p) => sum + p.price, 0) / this.products.length
+        : 0,
+    };
+  }
+
+  // 価格帯別商品数
+  getPriceRangeDistribution(ranges: [number, number][]): Record<string, number> {
+    const distribution: Record<string, number> = {};
+    
+    ranges.forEach(([min, max]) => {
+      const key = `${min}-${max}`;
+      distribution[key] = this.products.filter(
+        p => p.price >= min && p.price <= max
+      ).length;
+    });
+    
+    return distribution;
+  }
+}
+
+// 使用例
+const productManager = new ProductManager();
+
+// Phase 1: 基本操作
+const laptop = productManager.addProduct(
+  "MacBook Pro",
+  200000,
+  "Electronics",
+  "高性能ノートパソコン"
+);
+const book = productManager.addProduct("TypeScript入門", 3000, "Books");
+const headphones = productManager.addProduct("ワイヤレスヘッドホン", 15000, "Electronics");
+
+// Phase 2: 検索機能
+console.log("Electronics商品:", productManager.findProductsByCategory("Electronics"));
+console.log("1万円以下の商品:", productManager.findProductsByPriceRange(0, 10000));
+console.log("在庫あり商品:", productManager.findProductsInStock());
+
+// 複合検索
+const searchResults = productManager.searchProducts({
+  category: "Electronics",
+  maxPrice: 50000,
+  inStock: true
+});
+console.log("Electronics、5万円以下、在庫あり:", searchResults);
+
+// Phase 3: 統計・分析
+console.log("カテゴリ別統計:", productManager.getCategoryStatistics());
+console.log("在庫総額:", productManager.getTotalInventoryValue());
+console.log("最高価格商品:", productManager.getMostExpensiveProduct());
+console.log("在庫統計:", productManager.getInventoryStats());
+
+// 価格帯別分布
+const priceRanges: [number, number][] = [
+  [0, 5000],
+  [5001, 20000],
+  [20001, 100000],
+  [100001, Infinity]
+];
+console.log("価格帯別商品数:", productManager.getPriceRangeDistribution(priceRanges));
+```
+
+#### 📝 学習ポイント
+
+**Phase 1で学ぶこと:**
+- `interface`による型定義
+- `readonly`プロパティの活用
+- オプショナルプロパティ（`?`）
+- `Partial`型と`Omit`型の基本的な使用
+
+**Phase 2で学ぶこと:**
+- 配列の`filter`メソッドと型安全性
+- 複雑な条件分岐の型安全な実装
+- オブジェクトの型定義と活用
+
+**Phase 3で学ぶこと:**
+- より高度な型定義（`Record`型など）
+- 統計計算の型安全な実装
+- 配列の`reduce`メソッドの活用
+- 複雑なデータ変換処理
+
+## 📊 Step 2 評価基準
+
+> 💡 **学習サポート**: 各評価項目の詳細な解説は以下の補足資料で確認できます
+>
+> - 📖 [専門用語集](./Step02_補足_専門用語集.md) - 型システム関連の重要な概念と用語
+> - 💻 [実践コード例](./Step02_補足_実践コード例.md) - 段階的な学習用コード集
+> - 🚨 [トラブルシューティング](./Step02_補足_トラブルシューティング.md) - よくあるエラーと解決方法
+> - 📚 [参考リソース](./Step02_補足_参考リソース.md) - さらなる学習リソース
+
+### 理解度チェックリスト
+
+#### プリミティブ型 (25%)
+
+- [ ] 基本型（string, number, boolean 等）を正しく使用できる → [専門用語集: プリミティブ型](./Step02_補足_専門用語集.md#プリミティブ型primitive-types)
+- [ ] リテラル型の概念を理解している → [専門用語集: リテラル型](./Step02_補足_専門用語集.md#リテラル型literal-types)
+- [ ] null/undefined の違いを説明できる → [トラブルシューティング: null/undefined 関連のエラー](./Step02_補足_トラブルシューティング.md#nullundefined関連のエラー)
+- [ ] 他言語との型システムの違いを理解している → [参考リソース: 型システム学習サイト](./Step02_補足_参考リソース.md#型システム学習サイト)
+
+#### 型推論 (25%)
+
+- [ ] TypeScript の型推論メカニズムを理解している → [専門用語集: 型推論](./Step02_補足_専門用語集.md#型推論type-inference)
+- [ ] 型推論の限界を把握している → [実践コード例: 型推論の活用例](./Step02_補足_実践コード例.md#型推論の活用例)
+- [ ] 適切な場面で明示的型注釈を使用できる → [トラブルシューティング: 型推論関連の問題](./Step02_補足_トラブルシューティング.md#型推論関連の問題)
+- [ ] 文脈的型推論を活用できる → [専門用語集: 型の絞り込み](./Step02_補足_専門用語集.md#型の絞り込みtype-narrowing)
+
+#### 配列・タプル (25%)
+
+- [ ] 配列型を適切に定義・使用できる → [専門用語集: 配列型](./Step02_補足_専門用語集.md#配列型array-types)
+- [ ] タプル型の特徴と用途を理解している → [専門用語集: タプル型](./Step02_補足_専門用語集.md#タプル型tuple-types)
+- [ ] 読み取り専用配列を活用できる → [専門用語集: 読み取り専用型](./Step02_補足_専門用語集.md#読み取り専用型readonly-types)
+- [ ] 配列操作の型安全性を確保できる → [実践コード例: 配列・タプル操作の実践](./Step02_補足_実践コード例.md#配列タプル操作の実践)
+
+#### オブジェクト・関数型 (25%)
+
+- [ ] オブジェクト型を詳細に定義できる → [実践コード例: オブジェクト型の活用例](./Step02_補足_実践コード例.md#オブジェクト型の活用例)
+- [ ] 関数の型注釈を適切に設定できる → [専門用語集: 関数型](./Step02_補足_専門用語集.md#関数型function-types)
+- [ ] オプショナルプロパティを活用できる → [専門用語集: オプショナルパラメータ](./Step02_補足_専門用語集.md#オプショナルパラメータoptional-parameters)
+- [ ] 高階関数の型を正しく定義できる → [実践コード例: 高度な関数型パターン](./Step02_補足_実践コード例.md#高度な関数型パターン)
+
+### 成果物
+
+- [ ] **商品管理システム**: Step02の学習内容を段階的に活用した3段階の商品管理システム → [Step02成果物: 商品管理システム](./Step02_成果物.md)
+
+**📌 重要**: Step 2 は TypeScript の型システムの基礎を固める重要な期間です。型推論の仕組みを理解し、配列・オブジェクト・関数の型注釈を確実に身につけましょう。
+
+**🌟 次週は、インターフェースとオブジェクト型設計について詳しく学習します！**

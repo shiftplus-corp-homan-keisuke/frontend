@@ -1,26 +1,68 @@
-# Step 4: ユニオン型と型ガード
+# Step04: ユニオン型と型ガード
 
-> 💡 **補足資料**: 詳細な解説は以下の補足資料を見てね 🐰
->
-> - 📖 [専門用語集](./Step04_補足_専門用語集.md) - ユニオン型・型ガード・エラーハンドリングの重要な概念と用語の詳細解説
-> - 💻 [実践コード例](./Step04_補足_実践コード例.md) - 段階的な学習用コード集
-> - 🚨 [トラブルシューティング](./Step04_補足_トラブルシューティング.md) - よくあるエラーと解決方法
-> - 📚 [参考リソース](./Step04_補足_参考リソース.md) - 学習に役立つリンク集
-> - 📋 [補足資料](./Step04_補足資料.md) - その他の重要な補足情報
+> 🚀 **2025 年改良版**: 他言語経験者向け・講師サポート付き学習に最適化されました！
 
-## 📅 学習期間・目標
+## 📋 学習方式の選択
 
-**期間**: Step 4  
-**総学習時間**: 3 時間  
+### 🎯 推奨：3 セッション分割学習（他言語経験者・講師サポート付き）
+
+**対象**: 他言語経験者（TypeScript 基本型・インターフェース知識あり）
+**形式**: 講師サポート付き学習
+**総時間**: 240 分（4 時間）
+
+#### 📚 セッション構成
+
+- 🔰 **[Session1: ユニオン型理論と基本実践](./Step04_Session1_ユニオン型理論と基本実践.md)** (90 分)
+
+  - ユニオン型・インターセクション型の基本概念
+  - 基本的な型ガード（typeof, instanceof）の実装
+  - Step01-03 の知識を活用した型安全なコード作成
+
+- 🔧 **[Session2: 型ガード実践演習](./Step04_Session2_型ガード実践演習.md)** (90 分)
+
+  - in 演算子による型ガードの実装
+  - 判別可能なユニオンの基本パターン
+  - 実践的なフォーム処理・API レスポンス処理
+
+- 🎯 **[Session3: プロジェクト完成](./Step04_Session3_プロジェクト完成.md)** (60 分)
+  - 総合プロジェクト: ユーザー管理システムの型設計
+  - 複数の型ガードを組み合わせた実践的な実装
+  - Step05 への準備と Step04 の総復習
+
+#### 👨‍🏫 講師向けリソース
+
+- 📖 **[講師用ガイド](./Step04_講師用ガイド.md)** - 詳細な指導方法・評価基準
+
+---
+
+### 📖 従来版：一括学習（自習・復習用）
+
+**対象**: 自習者・復習者
+**形式**: 個人学習
+**総時間**: 3 時間
+
+#### 🎯 Step04 到達目標
+
+- [ ] ユニオン型とインターセクション型の基本理解
+- [ ] 型ガード（typeof, instanceof, in 演算子）の実装
+- [ ] 判別可能なユニオンの基本パターンの習得
+- [ ] Step01-03 の知識を統合した型安全なコード作成
+
+#### 💡 補足資料
+
+詳細な解説は以下の補足資料をご参照ください：
+
+- 📖 [専門用語集](./Step04_補足_専門用語集.md) - ユニオン型・型ガード関連の重要概念
+- 💻 [実践コード例](./Step04_補足_実践コード例.md) - 段階的な学習用コード集
+- 🚨 [トラブルシューティング](./Step04_補足_トラブルシューティング.md) - よくあるエラーと解決方法
+- 📚 [参考リソース](./Step04_補足_参考リソース.md) - 学習に役立つリンク集
+- 📋 [補足資料](./Step04_補足資料.md) - その他の重要な補足情報
+
+## 📅 学習期間・目標（従来版）
+
+**期間**: Step04
+**総学習時間**: 3 時間
 **学習スタイル**: 理論 20% + 実践コード 50% + 演習 30%
-
-### 🎯 Step 4 到達目標
-
-- [ ] ユニオン型とインターセクション型の完全理解
-- [ ] 型ガードの実装パターンの習得
-- [ ] 判別可能なユニオンの実践的活用
-- [ ] API レスポンス処理での型安全性確保
-- [ ] 実用的な型ガード関数の設計と実装
 
 ## 📚 理論学習内容
 
@@ -937,6 +979,7 @@ function processApiResponse(response: unknown): Product[] {
 型安全な API レスポンス処理システムを実装せよ
 
 #### 要件:
+
 1. 成功・失敗レスポンスの型定義
 2. 型ガードを使った安全なデータ処理
 3. 複数の API エンドポイントに対応
@@ -970,11 +1013,15 @@ interface Product {
 }
 
 // 3. 型ガード関数の実装
-function isUserSuccessResponse(response: UserApiResponse): response is { success: true; data: User } {
+function isUserSuccessResponse(
+  response: UserApiResponse
+): response is { success: true; data: User } {
   return response.success === true;
 }
 
-function isProductSuccessResponse(response: ProductApiResponse): response is { success: true; data: Product } {
+function isProductSuccessResponse(
+  response: ProductApiResponse
+): response is { success: true; data: Product } {
   return response.success === true;
 }
 
@@ -1007,7 +1054,9 @@ function handleUserResponse(response: UserApiResponse): string {
     const user = response.data;
     return `Welcome, ${user.name}! (${user.role})`;
   } else {
-    return `Error: ${response.error}${response.code ? ` (Code: ${response.code})` : ""}`;
+    return `Error: ${response.error}${
+      response.code ? ` (Code: ${response.code})` : ""
+    }`;
   }
 }
 
@@ -1162,7 +1211,9 @@ async function fetchUserData(userId: string): Promise<UserApiResponse> {
   }
 }
 
-async function fetchProductData(productId: string): Promise<ProductApiResponse> {
+async function fetchProductData(
+  productId: string
+): Promise<ProductApiResponse> {
   try {
     // 実際の fetch 呼び出しをシミュレート
     const mockResponse = {
@@ -1201,17 +1252,18 @@ fetchProductData("p456").then((response) => {
 ```
 
 **学習ポイント**:
+
 - **判別可能なユニオン**: `success` フィールドによる型の判別
 - **型ガード関数**: 実行時の型安全性確保
 - **実践的な応用**: 実際の API 処理での活用方法
 - **エラーハンドリング**: 型安全なエラー処理パターン
 
 **実装の特徴**:
+
 - **段階的な複雑さ**: 基本型定義から実用的な処理まで
 - **再利用性**: 汎用的な処理関数の設計
 - **型安全性**: すべての分岐で適切な型チェック
 - **実用性**: 実際のプロジェクトで使用できるパターン
-
 
 ## 📊 Step 4 評価基準
 
@@ -1247,7 +1299,7 @@ fetchProductData("p456").then((response) => {
 
 ### 成果物
 
-- [ ] **APIクライアント管理システム**: Step04の学習内容を段階的に活用した4段階のAPIクライアント管理システム → [Step04成果物: APIクライアント管理システム](./Step04_成果物.md)
+- [ ] **API クライアント管理システム**: Step04 の学習内容を段階的に活用した 4 段階の API クライアント管理システム → [Step04 成果物: API クライアント管理システム](./Step04_成果物.md)
 
 ## 🔄 Step 5 への準備
 

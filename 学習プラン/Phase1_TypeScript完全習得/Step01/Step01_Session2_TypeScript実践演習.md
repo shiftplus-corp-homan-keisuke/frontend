@@ -1,37 +1,53 @@
-# Session2: TypeScript実践演習（90分）
+# Session2: TypeScript 実践演習（90 分）
 
-> 💡 **対象**: Session1完了者（基本型注釈理解済み）  
-> 🎯 **形式**: 講師サポート付き実践学習  
-> ⏰ **時間**: 90分
+> 💡 **対象**: Session1 完了者（基本型注釈理解済み）
+> 🎯 **形式**: 講師サポート付き実践学習
+> ⏰ **時間**: 90 分
+
+## 📚 関連補足資料
+
+このセッションの学習をサポートする補足資料をご用意しています：
+
+- 💻 **[実践コード例](./Step01_補足_実践コード例.md)** - より実践的な例とシステム実装
+- 📖 **[専門用語集](./Step01_補足_専門用語集.md)** - 型エイリアス、オプショナルプロパティなどの詳細解説
+- 🚨 **[トラブルシューティング](./Step01_補足_トラブルシューティング.md)** - TypeScript エラーの対処法
+- 🌐 **[参考リソース](./Step01_補足_参考リソース.md)** - さらなる学習のためのリソース
+- 🔧 **[開発環境ガイド](./Step01_補足_開発環境ガイド.md)** - 開発効率を上げる設定
+
+> 💡 **活用方法**: 実装中に疑問が生じた際や、エラーが発生した場合にご参照ください。
 
 ## 📅 セッション概要
 
 **学習目標**:
+
 - [ ] 関数・オブジェクトの型注釈の実践
 - [ ] 型エイリアスの活用
-- [ ] 実用的なTypeScriptコードの作成
+- [ ] 実用的な TypeScript コードの作成
 - [ ] 学生情報システムの実装
 
 **前提知識**:
-- Session1の内容（基本型注釈）
+
+- Session1 の内容（基本型注釈）
 - JavaScript ES6+構文の理解
 
 ---
 
 ## ⏰ 詳細タイムテーブル
 
-| 時間 | 内容 | 講師の役割 | 学習者の活動 | 成果物 |
-|------|------|------------|--------------|--------|
-| **0-10分** | 前回復習・今回目標 | 復習確認・目標提示 | 振り返り・質問 | 理解確認 |
-| **10-50分** | 関数・オブジェクト型実践 | 実演・個別指導 | ハンズオン・実践 | 実践コード |
-| **50-80分** | 学生情報システム演習 | コードレビュー・助言 | 個人開発 | システム実装 |
-| **80-90分** | 成果共有・質疑応答 | ファシリテート | 発表・討論 | 学習成果 |
+| 時間         | 内容                     | 講師の役割           | 学習者の活動     | 成果物       |
+| ------------ | ------------------------ | -------------------- | ---------------- | ------------ |
+| **0-10 分**  | 前回復習・今回目標       | 復習確認・目標提示   | 振り返り・質問   | 理解確認     |
+| **10-50 分** | 関数・オブジェクト型実践 | 実演・個別指導       | ハンズオン・実践 | 実践コード   |
+| **50-80 分** | 学生情報システム演習     | コードレビュー・助言 | 個人開発         | システム実装 |
+| **80-90 分** | 成果共有・質疑応答       | ファシリテート       | 発表・討論       | 学習成果     |
 
 ---
 
 ## 📚 学習内容
 
 ### Section 1: 関数の型注釈（実践編）
+
+> 📚 **関連資料**: [実践コード例 - 関数の型注釈](./Step01_補足_実践コード例.md#ステップ4-4-統計検索機能の実装) | [専門用語集 - 関数型](./Step01_補足_専門用語集.md#typescript関連用語)
 
 #### 🔍 より実用的な関数の型注釈
 
@@ -67,7 +83,7 @@ const subtract: Calculator = (a, b) => a - b;
 const multiply: Calculator = (a, b) => a * b;
 ```
 
-#### 🎯 練習問題 1: 関数の型注釈（15分）
+#### 🎯 練習問題 1: 関数の型注釈（15 分）
 
 以下の要件を満たす関数を作成してください：
 
@@ -82,6 +98,8 @@ const multiply: Calculator = (a, b) => a * b;
 ---
 
 ### Section 2: オブジェクトの型注釈（実践編）
+
+> 📚 **関連資料**: [実践コード例 - 学生管理システム](./Step01_補足_実践コード例.md#ステップ4-学生管理システム) | [専門用語集 - 型注釈](./Step01_補足_専門用語集.md#型注釈type-annotation)
 
 #### 🔍 型エイリアスの活用
 
@@ -103,8 +121,8 @@ type User = {
 // オプショナルプロパティ
 type UserProfile = {
   user: User;
-  bio?: string;           // オプショナル
-  avatar?: string;        // オプショナル
+  bio?: string; // オプショナル
+  avatar?: string; // オプショナル
   lastLogin: Date;
 };
 
@@ -149,19 +167,19 @@ type Students = Student[];
 
 // 関数での使用例
 function findStudentById(students: Students, id: number): Student | null {
-  const student = students.find(s => s.id === id);
+  const student = students.find((s) => s.id === id);
   return student || null;
 }
 
 function calculateAverageGrade(student: Student): number {
   if (student.grades.length === 0) return 0;
-  
+
   const total = student.grades.reduce((sum, grade) => sum + grade.score, 0);
   return total / student.grades.length;
 }
 ```
 
-#### 🎯 練習問題 2: オブジェクト型の設計（20分）
+#### 🎯 練習問題 2: オブジェクト型の設計（20 分）
 
 以下の要件を満たす型定義を作成してください：
 
@@ -177,9 +195,11 @@ function calculateAverageGrade(student: Student): number {
 
 ### Section 3: 学生情報システム実装
 
+> 📚 **サポート資料**: [実践コード例 - 学生管理システム完全版](./Step01_補足_実践コード例.md#ステップ4-学生管理システム) | [トラブルシューティング - TypeScript エラー対処](./Step01_補足_トラブルシューティング.md#typescriptコンパイルエラー)
+
 #### 🎯 メイン演習: 学生情報処理システム
 
-以下のJavaScriptコードにTypeScriptの型注釈を追加し、型安全なシステムを作成してください。
+以下の JavaScript コードに TypeScript の型注釈を追加し、型安全なシステムを作成してください。
 
 ```typescript
 // 既存のJavaScriptコード（型注釈を追加してください）
@@ -187,7 +207,7 @@ function calculateAverageGrade(student: Student): number {
 // 学生データの型定義
 // TODO: Student型を定義してください
 
-// 成績データの型定義  
+// 成績データの型定義
 // TODO: Grade型を定義してください
 
 // 学生リスト
@@ -200,7 +220,7 @@ function createStudent(name, age, email) {
     name: name,
     age: age,
     email: email,
-    grades: []
+    grades: [],
   };
 }
 
@@ -213,28 +233,28 @@ function addStudent(name, age, email) {
 
 // 成績を追加する関数
 function addGrade(studentId, subject, score) {
-  const student = students.find(s => s.id === studentId);
+  const student = students.find((s) => s.id === studentId);
   if (!student) {
     throw new Error("Student not found");
   }
-  
+
   const grade = {
     subject: subject,
     score: score,
-    date: new Date()
+    date: new Date(),
   };
-  
+
   student.grades.push(grade);
   return grade;
 }
 
 // 平均点を計算する関数
 function calculateAverage(studentId) {
-  const student = students.find(s => s.id === studentId);
+  const student = students.find((s) => s.id === studentId);
   if (!student || student.grades.length === 0) {
     return 0;
   }
-  
+
   const total = student.grades.reduce((sum, grade) => sum + grade.score, 0);
   return total / student.grades.length;
 }
@@ -246,14 +266,14 @@ function getAllStudents() {
 
 // 学生を検索する関数
 function findStudentByName(name) {
-  return students.filter(student => 
+  return students.filter((student) =>
     student.name.toLowerCase().includes(name.toLowerCase())
   );
 }
 
 // 成績優秀者を取得する関数（平均80点以上）
 function getTopStudents() {
-  return students.filter(student => {
+  return students.filter((student) => {
     const average = calculateAverage(student.id);
     return average >= 80;
   });
@@ -290,26 +310,28 @@ console.log("成績優秀者:", getTopStudents());
 
 1. **型定義から始める**: まず必要な型を定義してから関数に適用
 2. **段階的に進める**: 一つずつ関数に型注釈を追加
-3. **エラーを確認**: TypeScriptコンパイラのエラーメッセージを読む
+3. **エラーを確認**: TypeScript コンパイラのエラーメッセージを読む
 4. **テストしながら進める**: 各関数が正しく動作することを確認
 
 ---
 
-## 👨‍🏫 講師サポートポイント
+## 👨‍🏫 学習ポイント
+
+> 📚 **講師向け資料**: [トラブルシューティング - エラーメッセージの読み方](./Step01_補足_トラブルシューティング.md#エラーメッセージの読み方) | [専門用語集 - TypeScript 関連用語](./Step01_補足_専門用語集.md#typescript関連用語)
 
 ### 🔍 重点サポート箇所
 
 1. **型エイリアスの理解**: いつ使うべきか、どう命名するか
 2. **オプショナルプロパティ**: `?` の使い方と意味
 3. **配列とオブジェクトの組み合わせ**: ネストした型の扱い
-4. **エラーメッセージの読み方**: TypeScriptエラーの解釈
+4. **エラーメッセージの読み方**: TypeScript エラーの解釈
 
 ### 🤔 よくある質問と回答
 
 **Q: 型エイリアスはいつ使うべきですか？**
 A: 同じ型を複数箇所で使う場合、複雑な型を簡潔に表現したい場合、型に意味のある名前を付けたい場合に使用します。
 
-**Q: オプショナルプロパティとundefinedの違いは？**
+**Q: オプショナルプロパティと undefined の違いは？**
 A: オプショナルプロパティ（`?`）はプロパティ自体が存在しない可能性があることを示し、`undefined`は値が未定義であることを示します。
 
 **Q: 配列の型注釈で `Array<T>` と `T[]` の違いは？**
@@ -331,23 +353,25 @@ A: 機能的には同じですが、`T[]` の方が簡潔で一般的です。�
 - [ ] 関数の型注釈を適切に書ける
 - [ ] オブジェクトの型注釈を設計できる
 - [ ] 型エイリアスを効果的に使える
-- [ ] 実用的なTypeScriptコードを作成できる
-- [ ] TypeScriptエラーを読んで修正できる
+- [ ] 実用的な TypeScript コードを作成できる
+- [ ] TypeScript エラーを読んで修正できる
 
 ### 成果物
 
-- [ ] 練習問題1の完成（関数の型注釈）
-- [ ] 練習問題2の完成（オブジェクト型設計）
+- [ ] 練習問題 1 の完成（関数の型注釈）
+- [ ] 練習問題 2 の完成（オブジェクト型設計）
 - [ ] 学生情報システムの型安全化
 
 ### 次回への準備
 
+> 📚 **準備資料**: [開発環境ガイド](./Step01_補足_開発環境ガイド.md) | [参考リソース - 継続学習](./Step01_補足_参考リソース.md#学習継続のコツ)
+
 - [ ] 作成したコードの動作確認
 - [ ] 理解できなかった部分の整理
-- [ ] Session3で完成させるプロジェクトの構想
+- [ ] Session3 で完成させるプロジェクトの構想
 
 ---
 
-**📌 重要**: Session2では実践的なコーディングを通じてTypeScriptの型システムを体感します。完璧を目指さず、まずは動くコードを作ることを重視しましょう。
+**📌 重要**: Session2 では実践的なコーディングを通じて TypeScript の型システムを体感します。完璧を目指さず、まずは動くコードを作ることを重視しましょう。
 
 **🌟 次回（Session3）は、プロジェクトの完成と学習の総括を行います！**

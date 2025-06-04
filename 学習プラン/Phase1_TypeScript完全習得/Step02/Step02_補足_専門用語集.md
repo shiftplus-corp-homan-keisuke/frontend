@@ -5,8 +5,12 @@
 ## 📋 目次
 1. [型システム関連用語](#型システム関連用語)
 2. [型推論関連用語](#型推論関連用語)
-3. [配列・タプル関連用語](#配列タプル関連用語)
+3. [配列・タプル関連用語](#配列・タプル関連用語)
 4. [関数型関連用語](#関数型関連用語)
+5. [オブジェクト・インターフェース関連用語](#オブジェクトインターフェース関連用語)
+6. [型定義関連用語](#型定義関連用語)
+7. [統計・分析関連用語](#統計分析関連用語)
+8. [API・サービス関連用語](#APIサービス関連用語)
 
 ---
 
@@ -542,6 +546,495 @@ const isPositive = createValidator<number>(x => x > 0);
 - [TypeScript Handbook - Basic Types](https://www.typescriptlang.org/docs/handbook/basic-types.html)
 - [TypeScript Handbook - Type Inference](https://www.typescriptlang.org/docs/handbook/type-inference.html)
 - [TypeScript Handbook - Functions](https://www.typescriptlang.org/docs/handbook/functions.html)
+---
+
+## オブジェクト・インターフェース関連用語
+
+### インターフェース（Interface）
+**定義**: オブジェクトの構造を定義する契約
+
+**基本的な使用例**:
+```typescript
+// 基本的なインターフェース
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+// インターフェースを使用した変数宣言
+const user: User = {
+  id: 1,
+  name: "Alice",
+  email: "alice@example.com"
+};
+
+// 関数の引数としてインターフェースを使用
+function greetUser(user: User): string {
+  return `Hello, ${user.name}!`;
+}
+```
+
+**他言語との比較**:
+- **Java**: interface キーワードで定義、実装が必要
+- **C#**: interface キーワードで定義、実装が必要
+- **Go**: interface は暗黙的に実装される
+- **TypeScript**: 構造的型付けで、形が合えば互換性がある
+
+### オプショナルプロパティ（Optional Properties）
+**定義**: 存在しなくても良いプロパティ
+
+**コード例**:
+```typescript
+interface UserProfile {
+  id: number;
+  name: string;
+  email: string;
+  avatar?: string; // オプショナルプロパティ
+  bio?: string; // オプショナルプロパティ
+  socialLinks?: {
+    twitter?: string;
+    github?: string;
+  };
+}
+
+// 使用例
+const user1: UserProfile = {
+  id: 1,
+  name: "Alice",
+  email: "alice@example.com"
+  // avatar, bio, socialLinks は省略可能
+};
+
+const user2: UserProfile = {
+  id: 2,
+  name: "Bob",
+  email: "bob@example.com",
+  avatar: "avatar.jpg",
+  bio: "Developer"
+};
+```
+
+### 読み取り専用プロパティ（Readonly Properties）
+**定義**: 初期化後に変更できないプロパティ
+
+**コード例**:
+```typescript
+interface ReadonlyUser {
+  readonly id: number;
+  readonly createdAt: Date;
+  name: string; // 変更可能
+  email: string; // 変更可能
+}
+
+const user: ReadonlyUser = {
+  id: 1,
+  createdAt: new Date(),
+  name: "Alice",
+  email: "alice@example.com"
+};
+
+// user.id = 2; // Error: Cannot assign to 'id' because it is a read-only property
+user.name = "Alice Smith"; // OK
+```
+
+### インデックスシグネチャ（Index Signatures）
+**定義**: 動的なプロパティ名を持つオブジェクトの型定義
+
+**コード例**:
+```typescript
+// 文字列インデックスシグネチャ
+interface StringDictionary {
+  [key: string]: string;
+}
+
+const translations: StringDictionary = {
+  hello: "こんにちは",
+  goodbye: "さようなら",
+  thanks: "ありがとう"
+};
+
+// 数値インデックスシグネチャ
+interface NumberArray {
+  [index: number]: number;
+}
+
+const scores: NumberArray = [85, 92, 78, 96];
+
+// 混合インデックスシグネチャ
+interface MixedObject {
+  name: string; // 固定プロパティ
+  [key: string]: string | number; // 動的プロパティ
+}
+```
+
+---
+
+## 型定義関連用語
+
+### 型定義（Type Definition）
+**定義**: 新しい型を作成すること
+
+**基本パターン**:
+```typescript
+// 型エイリアス
+type UserID = string;
+type UserAge = number;
+
+// オブジェクト型の定義
+type User = {
+  id: UserID;
+  name: string;
+  age: UserAge;
+};
+
+// ユニオン型の定義
+type Status = "pending" | "approved" | "rejected";
+
+// 関数型の定義
+type EventHandler = (event: Event) => void;
+```
+
+### 型宣言（Type Declaration）
+**定義**: 既存の値に対する型情報の宣言
+
+**コード例**:
+```typescript
+// 外部ライブラリの型宣言
+declare module "my-library" {
+  export function doSomething(value: string): number;
+  export const VERSION: string;
+}
+
+// グローバル変数の型宣言
+declare global {
+  interface Window {
+    myCustomProperty: string;
+  }
+}
+
+// 環境変数の型宣言
+declare namespace NodeJS {
+  interface ProcessEnv {
+    NODE_ENV: "development" | "production" | "test";
+    API_URL: string;
+  }
+}
+```
+
+### 型合成（Type Composition）
+**定義**: 既存の型を組み合わせて新しい型を作成すること
+
+**コード例**:
+```typescript
+// インターセクション型による合成
+type Name = { name: string };
+type Age = { age: number };
+type Person = Name & Age; // { name: string; age: number; }
+
+// ユニオン型による合成
+type StringOrNumber = string | number;
+
+// 条件付き型による合成
+type NonNullable<T> = T extends null | undefined ? never : T;
+
+// マップ型による合成
+type Partial<T> = {
+  [P in keyof T]?: T[P];
+};
+```
+
+### 型の互換性（Type Compatibility）
+**定義**: 異なる型同士が代入可能かどうかの関係
+
+**コード例**:
+```typescript
+// 構造的型付けによる互換性
+interface Point2D {
+  x: number;
+  y: number;
+}
+
+interface Point3D {
+  x: number;
+  y: number;
+  z: number;
+}
+
+let point2D: Point2D = { x: 1, y: 2 };
+let point3D: Point3D = { x: 1, y: 2, z: 3 };
+
+// Point3D は Point2D と互換性がある（より多くのプロパティを持つ）
+point2D = point3D; // OK
+
+// Point2D は Point3D と互換性がない（z プロパティが不足）
+// point3D = point2D; // Error
+```
+
+---
+
+## 統計・分析関連用語
+
+### 統計型（Statistics Types）
+**定義**: 統計計算に使用される型定義
+
+**コード例**:
+```typescript
+// 基本統計データ型
+interface BasicStatistics {
+  count: number;
+  sum: number;
+  mean: number;
+  median: number;
+  mode: number[];
+  min: number;
+  max: number;
+  range: number;
+  variance: number;
+  standardDeviation: number;
+}
+
+// 統計計算関数の型
+type StatisticsCalculator<T> = (data: T[]) => BasicStatistics;
+
+// 数値配列用の統計計算
+const calculateNumberStats: StatisticsCalculator<number> = (numbers) => {
+  const sorted = [...numbers].sort((a, b) => a - b);
+  const sum = numbers.reduce((acc, num) => acc + num, 0);
+  const mean = sum / numbers.length;
+  
+  return {
+    count: numbers.length,
+    sum,
+    mean,
+    median: sorted[Math.floor(sorted.length / 2)],
+    mode: [], // 実装省略
+    min: Math.min(...numbers),
+    max: Math.max(...numbers),
+    range: Math.max(...numbers) - Math.min(...numbers),
+    variance: 0, // 実装省略
+    standardDeviation: 0 // 実装省略
+  };
+};
+```
+
+### 集計型（Aggregation Types）
+**定義**: データの集計処理に使用される型
+
+**コード例**:
+```typescript
+// 集計結果の型
+interface AggregationResult<T> {
+  groupBy: string;
+  data: T[];
+  count: number;
+  aggregatedValue: number;
+}
+
+// 集計関数の型
+type AggregationFunction<T, K extends keyof T> = (
+  data: T[],
+  groupByKey: K,
+  aggregateKey: keyof T
+) => AggregationResult<T>[];
+
+// 売上データの集計例
+interface SalesData {
+  date: string;
+  product: string;
+  amount: number;
+  quantity: number;
+}
+
+const aggregateSales: AggregationFunction<SalesData, 'product'> = (
+  data,
+  groupByKey,
+  aggregateKey
+) => {
+  // 実装省略
+  return [];
+};
+```
+
+### 分析データ型（Analytics Data Types）
+**定義**: データ分析に特化した型定義
+
+**コード例**:
+```typescript
+// 時系列データ型
+interface TimeSeriesData {
+  timestamp: Date;
+  value: number;
+  metadata?: Record<string, unknown>;
+}
+
+// 分析結果型
+interface AnalysisResult {
+  trend: "increasing" | "decreasing" | "stable";
+  correlation: number;
+  seasonality: boolean;
+  anomalies: TimeSeriesData[];
+  forecast: TimeSeriesData[];
+}
+
+// 分析器の型
+interface DataAnalyzer<T> {
+  analyze(data: T[]): AnalysisResult;
+  predict(data: T[], periods: number): T[];
+  detectAnomalies(data: T[], threshold: number): T[];
+}
+```
+
+---
+
+## API・サービス関連用語
+
+### APIレスポンス型（API Response Types）
+**定義**: API からのレスポンスデータの型定義
+
+**コード例**:
+```typescript
+// 基本的なAPIレスポンス型
+interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  message?: string;
+  statusCode: number;
+  timestamp: Date;
+}
+
+// ページネーション付きレスポンス
+interface PaginatedResponse<T> {
+  data: T[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}
+
+// 使用例
+type UserListResponse = ApiResponse<PaginatedResponse<User>>;
+type UserDetailResponse = ApiResponse<User>;
+```
+
+### サービス層型（Service Layer Types）
+**定義**: サービス層で使用される型定義
+
+**コード例**:
+```typescript
+// サービスインターフェース
+interface UserService {
+  getUser(id: string): Promise<ApiResponse<User>>;
+  createUser(userData: CreateUserRequest): Promise<ApiResponse<User>>;
+  updateUser(id: string, userData: UpdateUserRequest): Promise<ApiResponse<User>>;
+  deleteUser(id: string): Promise<ApiResponse<void>>;
+  listUsers(params: ListUsersParams): Promise<UserListResponse>;
+}
+
+// リクエスト型
+interface CreateUserRequest {
+  name: string;
+  email: string;
+  password: string;
+}
+
+interface UpdateUserRequest {
+  name?: string;
+  email?: string;
+}
+
+interface ListUsersParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  sortBy?: keyof User;
+  sortOrder?: "asc" | "desc";
+}
+```
+
+### HTTPステータス型（HTTP Status Types）
+**定義**: HTTPステータスコードの型定義
+
+**コード例**:
+```typescript
+// HTTPステータスコード型
+type HttpStatusCode = 
+  | 200 // OK
+  | 201 // Created
+  | 204 // No Content
+  | 400 // Bad Request
+  | 401 // Unauthorized
+  | 403 // Forbidden
+  | 404 // Not Found
+  | 409 // Conflict
+  | 422 // Unprocessable Entity
+  | 500 // Internal Server Error
+  | 502 // Bad Gateway
+  | 503; // Service Unavailable
+
+// ステータス別レスポンス型
+interface HttpResponse<T = unknown> {
+  status: HttpStatusCode;
+  data?: T;
+  headers: Record<string, string>;
+}
+
+// エラーレスポンス型
+interface ErrorResponse {
+  error: {
+    code: string;
+    message: string;
+    details?: Record<string, unknown>;
+  };
+}
+```
+
+### リクエスト・レスポンス型（Request/Response Types）
+**定義**: HTTP リクエストとレスポンスの型定義
+
+**コード例**:
+```typescript
+// 基本リクエスト型
+interface BaseRequest {
+  headers?: Record<string, string>;
+  params?: Record<string, string>;
+  query?: Record<string, string>;
+}
+
+// POST リクエスト型
+interface PostRequest<T> extends BaseRequest {
+  body: T;
+}
+
+// GET リクエスト型
+interface GetRequest extends BaseRequest {
+  // body は不要
+}
+
+// API エンドポイント型
+interface ApiEndpoint<TRequest, TResponse> {
+  method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+  path: string;
+  request: TRequest;
+  response: TResponse;
+}
+
+// 使用例
+type CreateUserEndpoint = ApiEndpoint<
+  PostRequest<CreateUserRequest>,
+  ApiResponse<User>
+>;
+
+type GetUserEndpoint = ApiEndpoint<
+  GetRequest & { params: { id: string } },
+  ApiResponse<User>
+>;
+```
 - [MDN - JavaScript Data Types](https://developer.mozilla.org/ja/docs/Web/JavaScript/Data_structures)
 
 ---

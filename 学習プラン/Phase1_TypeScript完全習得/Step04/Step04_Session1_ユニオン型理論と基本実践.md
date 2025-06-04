@@ -426,3 +426,9 @@ function processData(data: string | number | boolean): string {
 - [ ] typeof 型ガードを使って型を絞り込める
 - [ ] instanceof 型ガードの基本的な使い方を理解している
 - [ ] Step01-03 の知識と組み合わせて型定義ができる
+
+---
+
+**📌 重要**: Session1 はユニオン型の基礎固めです。焦らず確実に基本概念を理解しましょう。
+
+**🌟 次回（Session2）は、より実践的な型ガードコードの作成に挑戦します！**

@@ -499,3 +499,7 @@ function getPermissionLevel(user: SystemUser): number {
 - [ ] Session3で完成させるプロジェクトの構想
 
 **📌 重要**: Session2では実践的なコーディングを通じて型ガードの活用を体感します。完璧を目指さず、まずは動くコードを作ることを重視しましょう。
+
+---
+
+**🌟 次回（Session3）は、プロジェクトの完成と学習の総括を行います！**

@@ -7,6 +7,7 @@
 2. [型ガードの実装パターン](#型ガードの実装パターン)
 3. [判別可能なユニオンの実践](#判別可能なユニオンの実践)
 4. [実用的なエラーハンドリング](#実用的なエラーハンドリング)
+5. [ユーザー管理システム完全版](#ユーザー管理システム完全版)
 
 ---
 
@@ -981,3 +982,601 @@ npm run dev
 ---
 
 **📌 重要**: これらのコード例は実際のプロジェクトで使用できる実用的なパターンです。ユニオン型と型ガードを組み合わせることで、型安全で保守性の高いコードを書けるようになります。
+---
+
+## ユーザー管理システム完全版
+
+### Session3 最終プロジェクト: 統合ユーザー管理システム
+
+Step01-04で学習した全ての概念を統合した実用的なユーザー管理システムの完全実装例です。
+
+```typescript
+// user-management-system.ts
+
+// Step02で学んだ型エイリアス
+type UserId = number;
+type UserRole = "admin" | "editor" | "viewer";
+type UserStatus = "active" | "inactive" | "pending";
+
+// Step03で学んだインターフェース継承
+interface BaseUser {
+  id: UserId;
+  name: string;
+  email: string;
+  status: UserStatus;
+  createdAt: Date;
+}
+
+interface AdminUser extends BaseUser {
+  role: "admin";
+  permissions: string[];
+  lastLogin: Date;
+}
+
+interface EditorUser extends BaseUser {
+  role: "editor";
+  editableResources: string[];
+  department: string;
+}
+
+interface ViewerUser extends BaseUser {
+  role: "viewer";
+  accessLevel: number;
+}
+
+// Step04で学んだユニオン型
+type User = AdminUser | EditorUser | ViewerUser;
+
+// Step04で学んだ判別可能なユニオン（API レスポンス）
+interface SuccessResponse<T> {
+  status: "success";
+  data: T;
+  message: string;
+}
+
+interface ErrorResponse {
+  status: "error";
+  message: string;
+  code: number;
+}
+
+type ApiResponse<T> = SuccessResponse<T> | ErrorResponse;
+type UserResponse = ApiResponse<User>;
+type UserListResponse = ApiResponse<User[]>;
+
+// ユーザー作成用の型（IDは自動生成のため除外）
+type CreateUserRequest = Omit<User, "id" | "createdAt">;
+
+// ユーザー更新用の型
+type UpdateUserRequest = Partial<Pick<User, "name" | "email" | "status">>;
+
+// Step04で学んだ型ガード関数群
+function isSuccessResponse<T>(response: ApiResponse<T>): response is SuccessResponse<T> {
+  return response.status === "success";
+}
+
+function isErrorResponse<T>(response: ApiResponse<T>): response is ErrorResponse {
+  return response.status === "error";
+}
+
+function isAdminUser(user: User): user is AdminUser {
+  return user.role === "admin";
+}
+
+function isEditorUser(user: User): user is EditorUser {
+  return user.role === "editor";
+}
+
+function isViewerUser(user: User): user is ViewerUser {
+  return user.role === "viewer";
+}
+
+// ユーザー管理システムのメインクラス
+class UserManagementSystem {
+  private users: User[] = [];
+  private nextId: UserId = 1;
+
+  // ユーザー登録
+  registerUser(userData: CreateUserRequest): UserResponse {
+    try {
+      const newUser: User = {
+        id: this.nextId++,
+        createdAt: new Date(),
+        ...userData
+      };
+
+      // バリデーション
+      if (!this.validateUser(newUser)) {
+        return {
+          status: "error",
+          message: "無効なユーザーデータです",
+          code: 400
+        };
+      }
+
+      // 重複チェック
+      if (this.findUserByEmail(newUser.email)) {
+        return {
+          status: "error",
+          message: "このメールアドレスは既に使用されています",
+          code: 409
+        };
+      }
+
+      this.users.push(newUser);
+
+      return {
+        status: "success",
+        data: newUser,
+        message: "ユーザーが正常に登録されました"
+      };
+    } catch (error) {
+      return {
+        status: "error",
+        message: "ユーザー登録中にエラーが発生しました",
+        code: 500
+      };
+    }
+  }
+
+  // ユーザー検索（ID）
+  findUserById(id: UserId): UserResponse {
+    const user = this.users.find(u => u.id === id);
+    
+    if (!user) {
+      return {
+        status: "error",
+        message: "ユーザーが見つかりません",
+        code: 404
+      };
+    }
+
+    return {
+      status: "success",
+      data: user,
+      message: "ユーザーが見つかりました"
+    };
+  }
+
+  // ユーザー検索（メール）
+  findUserByEmail(email: string): User | undefined {
+    return this.users.find(u => u.email === email);
+  }
+
+  // 全ユーザー取得
+  getAllUsers(): UserListResponse {
+    return {
+      status: "success",
+      data: [...this.users],
+      message: `${this.users.length}人のユーザーが見つかりました`
+    };
+  }
+
+  // アクティブユーザーのフィルタリング
+  getActiveUsers(): UserListResponse {
+    const activeUsers = this.users.filter(user => user.status === "active");
+    
+    return {
+      status: "success",
+      data: activeUsers,
+      message: `${activeUsers.length}人のアクティブユーザーが見つかりました`
+    };
+  }
+
+  // ロール別ユーザー取得
+  getUsersByRole<T extends User>(
+    roleGuard: (user: User) => user is T
+  ): T[] {
+    return this.users.filter(roleGuard);
+  }
+
+  // ユーザー更新
+  updateUser(id: UserId, updates: UpdateUserRequest): UserResponse {
+    const userIndex = this.users.findIndex(u => u.id === id);
+    
+    if (userIndex === -1) {
+      return {
+        status: "error",
+        message: "ユーザーが見つかりません",
+        code: 404
+      };
+    }
+
+    // 更新実行
+    this.users[userIndex] = {
+      ...this.users[userIndex],
+      ...updates
+    };
+
+    return {
+      status: "success",
+      data: this.users[userIndex],
+      message: "ユーザー情報が更新されました"
+    };
+  }
+
+  // ユーザー削除
+  deleteUser(id: UserId): ApiResponse<null> {
+    const userIndex = this.users.findIndex(u => u.id === id);
+    
+    if (userIndex === -1) {
+      return {
+        status: "error",
+        message: "ユーザーが見つかりません",
+        code: 404
+      };
+    }
+
+    this.users.splice(userIndex, 1);
+
+    return {
+      status: "success",
+      data: null,
+      message: "ユーザーが削除されました"
+    };
+  }
+
+  // 権限レベル取得
+  getUserPermissionLevel(user: User): number {
+    switch (user.role) {
+      case "admin":
+        return 3;
+      case "editor":
+        return 2;
+      case "viewer":
+        return 1;
+    }
+  }
+
+  // リソースアクセス権限チェック
+  canUserAccessResource(user: User, resource: string): boolean {
+    switch (user.role) {
+      case "admin":
+        return true; // 管理者は全リソースアクセス可能
+      case "editor":
+        return user.editableResources.includes(resource);
+      case "viewer":
+        return false; // 閲覧者はアクセス不可
+    }
+  }
+
+  // ユーザー情報フォーマット
+  formatUserInfo(user: User): string {
+    let info = `${user.name} (${user.email}) - ${user.role} [${user.status}]`;
+    info += `\n作成日: ${user.createdAt.toLocaleDateString()}`;
+
+    switch (user.role) {
+      case "admin":
+        info += `\n権限: ${user.permissions.join(", ")}`;
+        info += `\n最終ログイン: ${user.lastLogin.toLocaleDateString()}`;
+        break;
+      case "editor":
+        info += `\n部署: ${user.department}`;
+        info += `\n編集可能リソース: ${user.editableResources.join(", ")}`;
+        break;
+      case "viewer":
+        info += `\nアクセスレベル: ${user.accessLevel}`;
+        break;
+    }
+
+    return info;
+  }
+
+  // 更新可能フィールド取得
+  getUpdatableFields(user: User): string[] {
+    const baseFields = ["name", "email"];
+
+    switch (user.role) {
+      case "admin":
+        return [...baseFields, "permissions"];
+      case "editor":
+        return [...baseFields, "department"];
+      case "viewer":
+        return baseFields;
+    }
+  }
+
+  // ユーザー統計
+  getUserStatistics(): {
+    total: number;
+    byRole: Record<UserRole, number>;
+    byStatus: Record<UserStatus, number>;
+  } {
+    const stats = {
+      total: this.users.length,
+      byRole: { admin: 0, editor: 0, viewer: 0 } as Record<UserRole, number>,
+      byStatus: { active: 0, inactive: 0, pending: 0 } as Record<UserStatus, number>
+    };
+
+    this.users.forEach(user => {
+      stats.byRole[user.role]++;
+      stats.byStatus[user.status]++;
+    });
+
+    return stats;
+  }
+
+  // バリデーション
+  private validateUser(user: User): boolean {
+    // 基本バリデーション
+    if (!user.name || !user.email || !user.role) {
+      return false;
+    }
+
+    // メール形式チェック
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(user.email)) {
+      return false;
+    }
+
+    // ロール固有のバリデーション
+    switch (user.role) {
+      case "admin":
+        return Array.isArray(user.permissions) && user.lastLogin instanceof Date;
+      case "editor":
+        return Array.isArray(user.editableResources) && typeof user.department === "string";
+      case "viewer":
+        return typeof user.accessLevel === "number" && user.accessLevel > 0;
+    }
+  }
+}
+
+// 使用例とテストケース
+function demonstrateUserManagementSystem(): void {
+  const userSystem = new UserManagementSystem();
+
+  console.log("=== ユーザー管理システム デモ ===\n");
+
+  // 1. ユーザー登録
+  console.log("1. ユーザー登録");
+  
+  const adminData: CreateUserRequest = {
+    role: "admin",
+    name: "田中太郎",
+    email: "tanaka@example.com",
+    status: "active",
+    permissions: ["user_management", "system_config"],
+    lastLogin: new Date()
+  };
+
+  const editorData: CreateUserRequest = {
+    role: "editor",
+    name: "佐藤花子",
+    email: "sato@example.com",
+    status: "active",
+    editableResources: ["articles", "images"],
+    department: "編集部"
+  };
+
+  const viewerData: CreateUserRequest = {
+    role: "viewer",
+    name: "鈴木一郎",
+    email: "suzuki@example.com",
+    status: "inactive",
+    accessLevel: 1
+  };
+
+  const adminResult = userSystem.registerUser(adminData);
+  const editorResult = userSystem.registerUser(editorData);
+  const viewerResult = userSystem.registerUser(viewerData);
+
+  console.log("Admin登録:", processResponse(adminResult));
+  console.log("Editor登録:", processResponse(editorResult));
+  console.log("Viewer登録:", processResponse(viewerResult));
+
+  // 2. ユーザー検索
+  console.log("\n2. ユーザー検索");
+  const foundUser = userSystem.findUserById(1);
+  console.log("ID=1のユーザー:", processResponse(foundUser));
+
+  // 3. 権限チェック
+  console.log("\n3. 権限チェック");
+  const allUsersResponse = userSystem.getAllUsers();
+  if (isSuccessResponse(allUsersResponse)) {
+    allUsersResponse.data.forEach(user => {
+      const level = userSystem.getUserPermissionLevel(user);
+      const canEditArticles = userSystem.canUserAccessResource(user, "articles");
+      console.log(`${user.name}: 権限レベル=${level}, 記事編集=${canEditArticles}`);
+    });
+  }
+
+  // 4. ユーザー情報表示
+  console.log("\n4. ユーザー情報詳細");
+  if (isSuccessResponse(allUsersResponse)) {
+    allUsersResponse.data.forEach(user => {
+      console.log(userSystem.formatUserInfo(user));
+      console.log("---");
+    });
+  }
+
+  // 5. フィルタリング
+  console.log("\n5. アクティブユーザー一覧");
+  const activeUsers = userSystem.getActiveUsers();
+  console.log(processResponse(activeUsers));
+
+  // 6. ロール別取得
+  console.log("\n6. ロール別ユーザー");
+  const admins = userSystem.getUsersByRole(isAdminUser);
+  const editors = userSystem.getUsersByRole(isEditorUser);
+  console.log(`管理者: ${admins.length}人`);
+  console.log(`編集者: ${editors.length}人`);
+
+  // 7. 統計情報
+  console.log("\n7. ユーザー統計");
+  const stats = userSystem.getUserStatistics();
+  console.log("総ユーザー数:", stats.total);
+  console.log("ロール別:", stats.byRole);
+  console.log("ステータス別:", stats.byStatus);
+
+  // 8. ユーザー更新
+  console.log("\n8. ユーザー更新");
+  const updateResult = userSystem.updateUser(1, { name: "田中太郎（更新済み）" });
+  console.log("更新結果:", processResponse(updateResult));
+}
+
+// レスポンス処理ヘルパー関数
+function processResponse<T>(response: ApiResponse<T>): string {
+  if (isSuccessResponse(response)) {
+    return `成功: ${response.message}`;
+  } else {
+    return `エラー[${response.code}]: ${response.message}`;
+  }
+}
+
+// エラーハンドリングの実践例
+function safeUserOperation<T>(
+  operation: () => ApiResponse<T>,
+  operationName: string
+): void {
+  try {
+    const result = operation();
+    
+    if (isSuccessResponse(result)) {
+      console.log(`✅ ${operationName} 成功: ${result.message}`);
+    } else {
+      console.error(`❌ ${operationName} 失敗[${result.code}]: ${result.message}`);
+    }
+  } catch (error) {
+    console.error(`💥 ${operationName} 例外:`, error);
+  }
+}
+
+// 高度な使用例
+function advancedUserManagementDemo(): void {
+  const userSystem = new UserManagementSystem();
+
+  console.log("\n=== 高度なユーザー管理デモ ===\n");
+
+  // バッチユーザー登録
+  const usersToCreate: CreateUserRequest[] = [
+    {
+      role: "admin",
+      name: "システム管理者",
+      email: "admin@company.com",
+      status: "active",
+      permissions: ["all"],
+      lastLogin: new Date()
+    },
+    {
+      role: "editor",
+      name: "コンテンツ編集者",
+      email: "editor@company.com",
+      status: "active",
+      editableResources: ["articles", "images", "videos"],
+      department: "コンテンツ部"
+    },
+    {
+      role: "viewer",
+      name: "一般ユーザー",
+      email: "user@company.com",
+      status: "pending",
+      accessLevel: 2
+    }
+  ];
+
+  // 安全なバッチ処理
+  usersToCreate.forEach((userData, index) => {
+    safeUserOperation(
+      () => userSystem.registerUser(userData),
+      `ユーザー${index + 1}登録`
+    );
+  });
+
+  // 複雑な検索とフィルタリング
+  const allUsers = userSystem.getAllUsers();
+  if (isSuccessResponse(allUsers)) {
+    // 高権限ユーザーの抽出
+    const highPrivilegeUsers = allUsers.data.filter(user => 
+      userSystem.getUserPermissionLevel(user) >= 2
+    );
+
+    console.log(`\n高権限ユーザー (${highPrivilegeUsers.length}人):`);
+    highPrivilegeUsers.forEach(user => {
+      console.log(`- ${user.name} (${user.role})`);
+    });
+
+    // 部門別編集者の抽出
+    const editors = userSystem.getUsersByRole(isEditorUser);
+    const departmentGroups = editors.reduce((groups, editor) => {
+      const dept = editor.department;
+      if (!groups[dept]) groups[dept] = [];
+      groups[dept].push(editor);
+      return groups;
+    }, {} as Record<string, EditorUser[]>);
+
+    console.log("\n部門別編集者:");
+    Object.entries(departmentGroups).forEach(([dept, editors]) => {
+      console.log(`${dept}: ${editors.map(e => e.name).join(", ")}`);
+    });
+  }
+}
+
+// デモ実行
+if (require.main === module) {
+  demonstrateUserManagementSystem();
+  advancedUserManagementDemo();
+}
+
+export {
+  UserManagementSystem,
+  User,
+  AdminUser,
+  EditorUser,
+  ViewerUser,
+  ApiResponse,
+  UserResponse,
+  UserListResponse,
+  isSuccessResponse,
+  isErrorResponse,
+  isAdminUser,
+  isEditorUser,
+  isViewerUser
+};
+```
+
+### 実行方法
+
+```bash
+# TypeScriptファイルを直接実行
+npx ts-node user-management-system.ts
+
+# またはコンパイルしてから実行
+npx tsc user-management-system.ts
+node user-management-system.js
+```
+
+### 学習ポイント
+
+この完全版では以下の概念を統合的に活用しています：
+
+#### Step01-02の基礎概念
+- **基本型注釈**: `UserId`, `UserRole`, `UserStatus`
+- **型エイリアス**: 可読性と保守性の向上
+- **型推論**: TypeScriptの自動型推論を活用
+
+#### Step03のインターフェース設計
+- **インターフェース継承**: `BaseUser`を継承した各ロール
+- **オプショナルプロパティ**: 柔軟なデータ構造
+- **読み取り専用プロパティ**: データの不変性保証
+
+#### Step04のユニオン型と型ガード
+- **ユニオン型**: `User = AdminUser | EditorUser | ViewerUser`
+- **判別可能なユニオン**: `role`プロパティによる型判別
+- **型ガード関数**: `isAdminUser`, `isEditorUser`, `isViewerUser`
+- **API レスポンス型**: `ApiResponse<T>`の活用
+
+#### 実践的なパターン
+- **エラーハンドリング**: 型安全なエラー処理
+- **バリデーション**: 実行時型チェック
+- **ジェネリクス**: 再利用可能な型定義
+- **ユーティリティ型**: `Omit`, `Partial`, `Pick`の活用
+
+### 拡張課題
+
+1. **認証機能の追加**: パスワードハッシュ化とJWT実装
+2. **データベース連携**: 永続化レイヤーの実装
+3. **ロールベースアクセス制御**: より細かい権限管理
+4. **監査ログ**: ユーザー操作の記録機能
+5. **バッチ処理**: 大量ユーザーの効率的な処理
+
+この実装例を通じて、TypeScriptの型システムを活用した実用的なアプリケーション開発の基礎を習得できます。

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>プロフィールカードアプリ - 完成デモ</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+          sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        color: white;
+        padding: 24px;
+        text-align: center;
+      }
+
+      .avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        font-weight: bold;
+        margin: 0 auto 16px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .profile-content {
+        padding: 32px;
+      }
+
+      .info-section {
+        margin-bottom: 32px;
+      }
+
+      .info-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+        padding: 12px;
+        background: #f8fafc;
+        border-radius: 8px;
+      }
+
+      .info-icon {
+        margin-right: 12px;
+        font-size: 18px;
+      }
+
+      .bio {
+        background: #f1f5f9;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 32px;
+        border-left: 4px solid #4f46e5;
+      }
+
+      .skills-section h3 {
+        margin-bottom: 16px;
+        color: #1e293b;
+        font-size: 18px;
+      }
+
+      .skill-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 16px;
+        margin-bottom: 8px;
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        transition: all 0.2s;
+      }
+
+      .skill-item:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .skill-level {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+
+      .level-beginner {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
+      .level-intermediate {
+        background: #dbeafe;
+        color: #1e40af;
+      }
+
+      .level-advanced {
+        background: #d1fae5;
+        color: #065f46;
+      }
+
+      .edit-btn {
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-top: 24px;
+      }
+
+      .edit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
+      }
+
+      .demo-note {
+        background: #fffbeb;
+        border: 1px solid #fbbf24;
+        border-radius: 8px;
+        padding: 16px;
+        margin: 20px;
+        text-align: center;
+        color: #92400e;
+      }
+
+      .demo-note strong {
+        color: #78350f;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .edit-form {
+        padding: 32px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #374151;
+      }
+
+      .form-group input,
+      .form-group textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: border-color 0.2s;
+      }
+
+      .form-group input:focus,
+      .form-group textarea:focus {
+        outline: none;
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+      }
+
+      .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+      }
+
+      .btn {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .btn-primary {
+        background: #4f46e5;
+        color: white;
+      }
+
+      .btn-secondary {
+        background: #f3f4f6;
+        color: #374151;
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="demo-note">
+      <strong>📱 完成デモ</strong><br />
+      これが実践プロジェクトで作成するプロフィールカードアプリの完成イメージです。<br />
+      「編集」ボタンをクリックして編集機能も体験してみてください！
+    </div>
+
+    <div class="container">
+      <!-- 表示モード -->
+      <div id="viewMode">
+        <div class="header">
+          <div class="avatar" id="avatar">田</div>
+          <h1 id="displayName">田中太郎</h1>
+          <p id="displayEmail">📧 tanaka@example.com</p>
+        </div>
+
+        <div class="profile-content">
+          <div class="info-section">
+            <div class="info-item">
+              <span class="info-icon">📍</span>
+              <span id="displayLocation">東京都</span>
+            </div>
+          </div>
+
+          <div class="bio">
+            <h3>自己紹介</h3>
+            <p id="displayBio">
+              フロントエンド開発者として3年の経験があります。React、TypeScript、Next.jsを使用したWebアプリケーション開発を得意としています。ユーザー体験を重視した、使いやすく美しいインターフェースの作成に情熱を注いでいます。
+            </p>
+          </div>
+
+          <div class="skills-section">
+            <h3>スキル</h3>
+            <div id="skillsList">
+              <div class="skill-item">
+                <span>JavaScript</span>
+                <span class="skill-level level-advanced">上級</span>
+              </div>
+              <div class="skill-item">
+                <span>React</span>
+                <span class="skill-level level-intermediate">中級</span>
+              </div>
+              <div class="skill-item">
+                <span>TypeScript</span>
+                <span class="skill-level level-intermediate">中級</span>
+              </div>
+              <div class="skill-item">
+                <span>CSS</span>
+                <span class="skill-level level-advanced">上級</span>
+              </div>
+              <div class="skill-item">
+                <span>Node.js</span>
+                <span class="skill-level level-beginner">初級</span>
+              </div>
+            </div>
+          </div>
+
+          <button class="edit-btn" onclick="showEditMode()">編集</button>
+        </div>
+      </div>
+
+      <!-- 編集モード -->
+      <div id="editMode" class="hidden">
+        <div class="header">
+          <div class="avatar">田</div>
+          <h1>プロフィール編集</h1>
+        </div>
+
+        <div class="edit-form">
+          <div class="form-group">
+            <label for="editName">名前</label>
+            <input type="text" id="editName" value="田中太郎" />
+          </div>
+
+          <div class="form-group">
+            <label for="editEmail">メールアドレス</label>
+            <input type="email" id="editEmail" value="tanaka@example.com" />
+          </div>
+
+          <div class="form-group">
+            <label for="editLocation">居住地</label>
+            <input type="text" id="editLocation" value="東京都" />
+          </div>
+
+          <div class="form-group">
+            <label for="editBio">自己紹介</label>
+            <textarea id="editBio" rows="4">
+フロントエンド開発者として3年の経験があります。React、TypeScript、Next.jsを使用したWebアプリケーション開発を得意としています。ユーザー体験を重視した、使いやすく美しいインターフェースの作成に情熱を注いでいます。</textarea
+            >
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn-primary" onclick="saveProfile()">
+              保存
+            </button>
+            <button class="btn btn-secondary" onclick="cancelEdit()">
+              キャンセル
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function showEditMode() {
+        document.getElementById("viewMode").classList.add("hidden");
+        document.getElementById("editMode").classList.remove("hidden");
+      }
+
+      function cancelEdit() {
+        document.getElementById("editMode").classList.add("hidden");
+        document.getElementById("viewMode").classList.remove("hidden");
+      }
+
+      function saveProfile() {
+        // 入力値を取得
+        const name = document.getElementById("editName").value;
+        const email = document.getElementById("editEmail").value;
+        const location = document.getElementById("editLocation").value;
+        const bio = document.getElementById("editBio").value;
+
+        // 表示を更新
+        document.getElementById("displayName").textContent = name;
+        document.getElementById("displayEmail").textContent = `📧 ${email}`;
+        document.getElementById("displayLocation").textContent = location;
+        document.getElementById("displayBio").textContent = bio;
+        document.getElementById("avatar").textContent = name.charAt(0);
+
+        // 表示モードに戻る
+        cancelEdit();
+
+        // 保存完了のフィードバック
+        alert("プロフィールが保存されました！");
+      }
+    </script>
+  </body>
+</html>

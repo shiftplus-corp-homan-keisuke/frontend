@@ -88,25 +88,28 @@ const multiply: Calculator = (a, b) => a * b;
 
 #### 🎯 練習問題 1: 関数の型注釈（15 分）
 
-以下の要件を満たす関数を作成してください：
+以下の要件を満たす関数に引数と型注釈をつけてください：
 
 ```typescript
 // 1. ユーザーの年齢から成人かどうかを判定する isAdult 関数をつくりましょう
+function isAdult(){}
 
 // 2. 配列の平均値を計算する mean 関数をつくりましょう
+function mean(){}
 
 // 3. 文字列を指定回数繰り返す repeatString 関数をつくりましょう
+function repeatString(){}
 
 // 4. repeatString 関数の繰り返す回数を指定しなかった場合デフォルトで3回繰り返すように変更しましょう
+function repeatStringWithDefault(){}
 
 // 5. 引数として渡された複数の数値の中から、最も大きい数値を返す findMax 関数をつくりましょう。引数が1つも渡されなかった場合は undefined を返すようにしましょう。
+function findMax(){}
 
 // 6. ユーザーのプロフィールを作成する関数 createProfile を作成してください。名前は必須ですが、年齢と国は任意（オプショナル）とします。この関数は、受け取った情報からプロフィールオブジェクトを返します。
-type UserProfile = {
-  name: string;
-  age?: number;
-  country?: string;
-};
+type UserProfile = {};
+
+function createProfile() {}
 
 // 7. 学習内容で定義した Calculator 型を利用して、四則演算を行う operate 関数を作成してください。この関数は2つの数値と、演算の種類を表す文字列（'add', 'subtract', 'multiply'）を受け取り、対応する計算結果を返します。
 type Calculator = (a: number, b: number) => number;
@@ -116,6 +119,7 @@ const multiply: Calculator = (a, b) => a * b;
 
 type Operation = 'add' | 'subtract' | 'multiply';
 
+function operate() {}
 ```
 
 ---

@@ -388,24 +388,23 @@ function processData(data: string | number | boolean): string | number | boolean
 }
 
 // 高階関数
-type Predicate<T> = (item: T) => boolean;
-type Transformer<T, U> = (item: T) => U;
-
-function filterAndMap<T, U>(
-  items: T[],
-  predicate: Predicate<T>,
-  transformer: Transformer<T, U>
-): U[] {
-  return items.filter(predicate).map(transformer);
+// 1. 関数を引数として受け取る
+function applyOperation(
+  numbers: number[],
+  operation: (num: number) => number
+): number[] {
+  return numbers.map(operation);
 }
 
-// 使用例
-const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-const evenDoubled = filterAndMap(
-  numbers,
-  (n) => n % 2 === 0, // 偶数のみ
-  (n) => n * 2 // 2倍にする
-);
+const doubled = applyOperation([1, 2, 3], x => x * 2);
+
+// 2. 関数を戻り値として返す
+function createMultiplier(factor: number): (num: number) => number {
+  return (num: number) => num * factor;
+}
+
+const double = createMultiplier(2);
+const triple = createMultiplier(3);
 ```
 
 ---

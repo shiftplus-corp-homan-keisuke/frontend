@@ -529,63 +529,7 @@ Tailwind では **モバイルファースト** のアプローチを採用し�
         <p class="text-center">&copy; 2025 サンプルサイト. All rights reserved.</p>
     </div>
 </footer>
-    <!-- ヘッダー -->
-    <header class="bg-white shadow-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <!-- ロゴ -->
-                <div class="flex items-center">
-                    <div class="text-xl font-bold text-gray-900">Logo</div>
-                </div>
 
-                <!-- デスクトップナビゲーション -->
-                <nav class="hidden md:flex space-x-8">
-                    <a href="#" class="text-gray-700 hover:text-blue-600">ホーム</a>
-                    <a href="#" class="text-gray-700 hover:text-blue-600">サービス</a>
-                    <a href="#" class="text-gray-700 hover:text-blue-600">会社情報</a>
-                    <a href="#" class="text-gray-700 hover:text-blue-600">お問い合わせ</a>
-                </nav>
-
-                <!-- ハンバーガーメニュー（モバイル） -->
-                <button class="md:hidden text-gray-700">
-                    <span class="text-2xl">三</span>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- メインコンテンツ -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h1 class="text-3xl font-bold text-center mb-12">特徴セクション</h1>
-
-        <!-- カードグリッド -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <div class="w-12 h-12 bg-blue-500 rounded-lg mb-4"></div>
-                <h3 class="text-xl font-semibold mb-2">特徴 1</h3>
-                <p class="text-gray-600">ここに特徴の説明が入ります。</p>
-            </div>
-
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <div class="w-12 h-12 bg-green-500 rounded-lg mb-4"></div>
-                <h3 class="text-xl font-semibold mb-2">特徴 2</h3>
-                <p class="text-gray-600">ここに特徴の説明が入ります。</p>
-            </div>
-
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <div class="w-12 h-12 bg-purple-500 rounded-lg mb-4"></div>
-                <h3 class="text-xl font-semibold mb-2">特徴 3</h3>
-                <p class="text-gray-600">ここに特徴の説明が入ります。</p>
-            </div>
-        </div>
-    </main>
-
-    <!-- フッター -->
-    <footer class="bg-gray-800 text-white py-8 mt-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <p class="text-center">&copy; 2025 サンプルサイト. All rights reserved.</p>
-        </div>
-    </footer>
 </body>
 </html>
 ```

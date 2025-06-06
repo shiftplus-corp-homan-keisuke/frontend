@@ -432,21 +432,21 @@ Tailwind では **モバイルファースト** のアプローチを採用し�
 
 #### Flexbox 実装時
 
-- [ ] コンテナに`flex`クラスを指定
-- [ ] 必要に応じて方向指定（`flex-col`, `flex-row`）
-- [ ] アイテムの配置指定（`justify-center`, `items-center`等）
-- [ ] アイテムの伸縮性指定（`flex-1`, `flex-none`等）
-- [ ] レスポンシブ対応（`md:flex-row`等）
-- [ ] 適切な`gap`で間隔調整
+- [x] コンテナに`flex`クラスを指定
+- [x] 必要に応じて方向指定（`flex-col`, `flex-row`）
+- [x] アイテムの配置指定（`justify-center`, `items-center`等）
+- [x] アイテムの伸縮性指定（`flex-1`, `flex-none`等）
+- [x] レスポンシブ対応（`md:flex-row`等）
+- [x] 適切な`gap`で間隔調整
 
 #### Grid 実装時
 
-- [ ] コンテナに`grid`クラスを指定
-- [ ] 列数指定（`grid-cols-1`, `grid-cols-3`等）
-- [ ] 必要に応じて行数指定（`grid-rows-3`等）
-- [ ] レスポンシブな列数変更（`md:grid-cols-2`等）
-- [ ] `gap`で要素間隔調整
-- [ ] 必要に応じて要素の配置指定（`col-span-2`等）
+- [x] コンテナに`grid`クラスを指定
+- [x] 列数指定（`grid-cols-1`, `grid-cols-3`等）
+- [x] 必要に応じて行数指定（`grid-rows-3`等）
+- [x] レスポンシブな列数変更（`md:grid-cols-2`等）
+- [x] `gap`で要素間隔調整
+- [x] 必要に応じて要素の配置指定（`col-span-2`等）
 
 ## 🛠️ 実践課題
 

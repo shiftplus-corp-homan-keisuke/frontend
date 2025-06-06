@@ -116,8 +116,6 @@ const multiply: Calculator = (a, b) => a * b;
 
 type Operation = 'add' | 'subtract' | 'multiply';
 
-// ここに実装してください。ただし型定義のみで実装はしなくてOKです。
-
 ```
 
 ---
@@ -234,10 +232,25 @@ function calculateAverageGrade(student: Student): number {
 
 ```typescript
 // 1. 商品情報を表す型（ID、名前、価格、在庫数、カテゴリ）
-// 2. 注文情報を表す型（注文ID、商品リスト、合計金額、注文日）
-// 3. 商品を検索する関数（名前またはカテゴリで検索）
+type Product = ;
 
-// ここに実装してください
+// 2. 注文情報を表す型（注文ID、商品リスト、合計金額、注文日）
+type Order = ;
+
+// 3. 商品を検索する関数（名前またはカテゴリで検索）
+function searchProducts(){}
+
+// 4. ユーザーのショッピングカートの型(ユーザーID、カート内のアイテム（Productと数量のペアの配列）)
+type CartItem = ;
+type ShoppingCart = ;
+
+// 5. 商品レビューの型(レビューID、商品ID、ユーザーID、評価（1-5の数値）、コメント（オプショナル）、レビュー日)
+type Rating = ; // 評価は1から5までの数値に限定
+type ProductReview = ;
+
+// 6. 特定のユーザーのレビューを取得する関数(ProductReview型の配列とユーザーIDを受け取り、そのユーザーが書いたレビューのリストを返す)
+function getReviewsByUserId(){}
+
 ```
 
 ---

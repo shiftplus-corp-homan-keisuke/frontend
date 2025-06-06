@@ -13,8 +13,8 @@
   - JavaScript要点復習・TypeScript基本型注釈・練習問題
 - 🔧 **[Session2: TypeScript実践演習](./Step01_Session2_TypeScript実践演習.md)** (90分)
   - 関数・オブジェクト型・型エイリアス・学生情報システム実装
-- 🎯 **[Session3: プロジェクト完成](./Step01_Session3_プロジェクト完成.md)** (60分)
-  - システム完成・デバッグ・成果発表・学習振り返り
+- 🎯 **[Session3: 型の総合演習](./Step01_Session3_型の総合演習.md)** (60分)
+  - 型エイリアス応用・型安全性体験・型エラー修正・学習振り返り
 
 ---
 

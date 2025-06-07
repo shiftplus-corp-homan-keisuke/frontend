@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ピザメニュー - 完成形デモ</title>
+    <style>
+      /* グローバルなCSSリセットや基本スタイル */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        font-size: 62.5%; /* 1rem = 10px */
+      }
+
+      body {
+        font-family: sans-serif;
+        line-height: 1.5;
+        background-color: #f4f4f4;
+        color: #333;
+      }
+
+      .container {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      header {
+        background-color: #a00;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      header h1 {
+        margin: 0;
+        font-size: 2.5em;
+      }
+
+      main {
+        padding: 20px 0;
+      }
+
+      footer {
+        margin-top: 6rem;
+        padding: 2rem;
+        background-color: #eee;
+        text-align: center;
+      }
+
+      .order {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+      }
+
+      .order p {
+        font-size: 1.8rem;
+        font-weight: 500;
+      }
+
+      .btn {
+        color: #fff;
+        background-color: #a00;
+        font-size: 1.8rem;
+        font-weight: bold;
+        padding: 1.2rem 2.4rem;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .btn:hover {
+        background-color: #c00;
+      }
+
+      .btn:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+
+      .menu {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4rem;
+      }
+
+      .pizzas {
+        list-style: none;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+      }
+
+      .pizza {
+        display: flex;
+        gap: 3.2rem;
+        align-items: center;
+      }
+
+      .pizza img {
+        width: 10rem;
+        aspect-ratio: 1;
+        align-self: flex-start;
+      }
+
+      .pizza div {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+      }
+
+      .pizza h3 {
+        font-size: 2rem;
+        font-weight: 300;
+      }
+
+      .pizza p {
+        font-size: 1.4rem;
+        font-weight: 300;
+      }
+
+      .pizza span {
+        display: block;
+        font-size: 1.6rem;
+        font-weight: bold;
+      }
+
+      /* 売り切れピザのスタイル */
+      .pizza.sold-out {
+        color: #888; /* 文字色をグレーに */
+      }
+
+      .pizza.sold-out img {
+        filter: grayscale(100%); /* 画像をモノクロに */
+        opacity: 0.8; /* 透明度を下げる */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header Component -->
+      <header>
+        <h1>ピザメニュー</h1>
+      </header>
+
+      <!-- Main Content -->
+      <main>
+        <!-- Menu Component -->
+        <div class="menu">
+          <h2>Our Menu</h2>
+
+          <!-- Pizza List -->
+          <ul class="pizzas">
+            <!-- Pizza Component 1 -->
+            <li class="pizza">
+              <img
+                src="https://picsum.photos/100/100?random=1"
+                alt="マルゲリータ"
+              />
+              <div>
+                <h3>マルゲリータ</h3>
+                <p>トマト、モッツァレラ、バジル</p>
+                <span>$12</span>
+              </div>
+            </li>
+
+            <!-- Pizza Component 2 -->
+            <li class="pizza">
+              <img
+                src="https://picsum.photos/100/100?random=2"
+                alt="ペパロニ"
+              />
+              <div>
+                <h3>ペパロニ</h3>
+                <p>トマト、モッツァレラ、ペパロニ</p>
+                <span>$15</span>
+              </div>
+            </li>
+
+            <!-- Pizza Component 3 -->
+            <li class="pizza">
+              <img
+                src="https://picsum.photos/100/100?random=3"
+                alt="ハワイアン"
+              />
+              <div>
+                <h3>ハワイアン</h3>
+                <p>トマト、モッツァレラ、ハム、パイナップル</p>
+                <span>$16</span>
+              </div>
+            </li>
+
+            <!-- Pizza Component 4 (Sold Out) -->
+            <li class="pizza sold-out">
+              <img
+                src="https://picsum.photos/100/100?random=4"
+                alt="クワトロフォルマッジ"
+              />
+              <div>
+                <h3>クワトロフォルマッジ</h3>
+                <p>4種類のチーズ</p>
+                <span>SOLD OUT</span>
+              </div>
+            </li>
+
+            <!-- Pizza Component 5 -->
+            <li class="pizza">
+              <img
+                src="https://picsum.photos/100/100?random=5"
+                alt="ベジタリアン"
+              />
+              <div>
+                <h3>ベジタリアン</h3>
+                <p>トマト、モッツァレラ、野菜各種</p>
+                <span>$13</span>
+              </div>
+            </li>
+
+            <!-- Pizza Component 6 -->
+            <li class="pizza">
+              <img
+                src="https://picsum.photos/100/100?random=6"
+                alt="スパイシー"
+              />
+              <div>
+                <h3>スパイシー</h3>
+                <p>トマト、モッツァレラ、スパイシーサラミ、唐辛子</p>
+                <span>$17</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </main>
+
+      <!-- Footer Component -->
+      <footer>
+        <div class="order">
+          <p id="status-message">
+            現在開店中！ 12:00 から 22:00 まで営業しています。
+          </p>
+          <button class="btn" id="order-button">今すぐ注文</button>
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      // 営業時間の判定ロジック
+      function updateStoreStatus() {
+        const hour = new Date().getHours();
+        const openHour = 12;
+        const closeHour = 22;
+        const isOpen = hour >= openHour && hour <= closeHour;
+
+        const statusMessage = document.getElementById("status-message");
+        const orderButton = document.getElementById("order-button");
+
+        if (isOpen) {
+          statusMessage.textContent = `現在開店中！ ${openHour}:00 から ${closeHour}:00 まで営業しています。`;
+          orderButton.style.display = "block";
+        } else {
+          statusMessage.textContent = `現在閉店中。 ${openHour}:00 に開店します。`;
+          orderButton.style.display = "none";
+        }
+      }
+
+      // ページ読み込み時に営業状況を更新
+      updateStoreStatus();
+
+      // 1分ごとに営業状況を更新
+      setInterval(updateStoreStatus, 60000);
+
+      // 注文ボタンのクリックイベント
+      document
+        .getElementById("order-button")
+        .addEventListener("click", function () {
+          alert("注文機能は実装されていません。これはデモです。");
+        });
+    </script>
+  </body>
+</html>

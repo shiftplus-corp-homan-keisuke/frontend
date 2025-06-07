@@ -14,7 +14,7 @@
 - 🌐 **[参考リソース](./Step04_補足_参考リソース.md)** - さらなる学習のためのリソース
 - 🔧 **[開発環境ガイド](./Step04_補足_開発環境ガイド.md)** - 開発効率を上げる設定
 
-> 💡 **活用方法**: 実装中に疑問が生じた際や、エラーが発生した場合にご参照ください。
+> 💡 **活用方法**: 学習中に疑問が生じた際や、より深く理解したい場合に参照してね 🐰
 
 ## � セッション概要
 
@@ -199,6 +199,34 @@ function displayProfile(profile: Profile): string {
 
 ---
 
+### 練習問題 2.3: オプショナルプロパティと `in` 演算子 🔰
+
+以下のインターフェースとユニオン型を使って、オプショナルプロパティと `in` 演算子を組み合わせた型ガードを実装してください。
+
+```typescript
+interface UserProfile {
+  id: number;
+  name: string;
+  email?: string; // オプショナル
+  phone?: string; // オプショナル
+}
+
+// 要件: `UserProfile` 型を受け取り、`email` または `phone` プロパティが存在するかどうかで
+// 連絡先情報を表示する関数 `displayContactInfo` を実装してください。
+function displayContactInfo(profile: UserProfile): string {
+  let contact = `${profile.name} (ID: ${profile.id})`;
+  if ('email' in profile && profile.email) {
+    contact += `, Email: ${profile.email}`;
+  }
+  if ('phone' in profile && profile.phone) {
+    contact += `, Phone: ${profile.phone}`;
+  }
+  return contact;
+}
+```
+
+---
+
 ### Section 3: 判別可能なユニオンの基本パターン
 
 > 📚 **関連資料**: [実践コード例 - 判別可能なユニオン完全版](./Step04_補足_実践コード例.md#判別可能なユニオン完全版) | [専門用語集 - 判別可能なユニオン](./Step04_補足_専門用語集.md#判別可能なユニオン)
@@ -293,7 +321,57 @@ function getInputDisplay(input: FormInput): string {
 
 ---
 
-### Section 4: 実践演習
+### 練習問題 2.1: in 演算子 🔰
+
+以下のインターフェースとユニオン型を使って、`in` 演算子を用いた型ガードを実装してください。
+
+```typescript
+interface Car {
+  type: "car";
+  brand: string;
+  drive(): void;
+}
+
+interface Bicycle {
+  type: "bicycle";
+  gears: number;
+  pedal(): void;
+}
+
+type Vehicle = Car | Bicycle;
+
+// 要件: `Vehicle` 型を受け取り、`drive()` または `pedal()` メソッドを呼び出す関数 `startVehicle` を実装してください。
+function startVehicle(vehicle: Vehicle): void {
+  /* ここを実装 */
+}
+```
+
+### 練習問題 2.2: 判別可能なユニオン 🔰
+
+以下の判別可能なユニオン型を使って、`switch` 文を用いた型ガードを実装してください。
+
+```typescript
+interface SuccessResult {
+  status: "success";
+  data: any;
+}
+
+interface ErrorResult {
+  status: "error";
+  message: string;
+}
+
+type Result = SuccessResult | ErrorResult;
+
+// 要件: `Result` 型を受け取り、`status` に応じて異なるメッセージを返す関数 `processResult` を実装してください。
+function processResult(result: Result): string {
+  /* ここを実装 */
+}
+```
+
+---
+
+### Section 4: 実践演習プロジェクト
 
 > 📚 **サポート資料**: [実践コード例 - 型ガード演習完全版](./Step04_補足_実践コード例.md#型ガード演習完全版) | [トラブルシューティング - 型ガードエラー対処](./Step04_補足_トラブルシューティング.md#型ガードエラー対処)
 
@@ -478,6 +556,18 @@ function getPermissionLevel(user: SystemUser): number {
   }
 }
 ```
+
+---
+
+## 👨‍🏫 学習ポイント
+
+### 🤔 よくある質問と回答
+
+**Q: `in` 演算子と判別可能なユニオンは、どのような場合に使い分けるべきですか？**
+A: `in` 演算子は、オブジェクトに特定のプロパティが存在するかどうかで型を絞り込む場合に便利です。一方、判別可能なユニオンは、共通の「判別プロパティ」（例: `type` や `status`）の値に基づいて型を絞り込む場合に非常に強力です。特に、複数の異なる型のオブジェクトを扱う際に、`switch` 文と組み合わせることでコードの可読性と安全性が向上します。
+
+**Q: 型ガードを自作することはできますか？**
+A: はい、TypeScriptではユーザー定義型ガードを作成できます。これは、関数が特定の条件を満たす場合に、その引数の型をより具体的な型に絞り込むことをTypeScriptコンパイラに伝える機能です。`parameterName is Type` の形式で戻り値の型を宣言することで実現できます。
 
 ---
 

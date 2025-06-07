@@ -243,7 +243,40 @@ const fullUser: UserWithContact = {
 
 ---
 
-### Section 4: 基本的な型ガード
+### 練習問題 1.1: ユニオン型 🔰
+
+以下の要件を満たすユニオン型を定義し、それを使用する簡単な関数を実装してください。
+
+```typescript
+// 要件: 文字列または数値を受け取る型 `StringOrNumber` を定義し、
+// その型を受け取り、値を文字列として返す関数 `convertToString` を実装してください。
+type StringOrNumber = /* ここを実装 */;
+
+function convertToString(value: StringOrNumber): string {
+  /* ここを実装 */
+}
+```
+
+### 練習問題 1.2: インターセクション型 🔰
+
+以下のインターフェースを組み合わせて、新しいインターセクション型を定義してください。
+
+```typescript
+interface HasId {
+  id: number;
+}
+
+interface HasName {
+  name: string;
+}
+
+// 要件: `HasId` と `HasName` の両方のプロパティを持つ型 `IdentifiableNamedObject` を定義してください。
+type IdentifiableNamedObject = /* ここを実装 */;
+```
+
+---
+
+### Section 2: 基本的な型ガード実践
 
 > 📚 **関連資料**: [専門用語集 - 型ガード](./Step04_補足_専門用語集.md#型ガード) | [実践コード例 - 型ガードの実践](./Step04_補足_実践コード例.md#型ガードの実践)
 
@@ -414,6 +447,18 @@ function processData(data: string | number | boolean): string {
   }
 }
 ```
+
+---
+
+## 👨‍🏫 学習ポイント
+
+### 🤔 よくある質問
+
+**Q: ユニオン型とインターセクション型の使い分けが難しいです。**
+A: ユニオン型は「いずれかの型」を表現し、インターセクション型は「すべての型を兼ね備える」を表現します。例えば、`string | number` は文字列か数値のどちらかを受け入れますが、`User & Timestamps` はUserとTimestampsの両方のプロパティを持つオブジェクトを意味します。
+
+**Q: 型ガードはなぜ必要なのですか？**
+A: ユニオン型の変数にアクセスする際、TypeScriptは共通のプロパティしか保証しません。型ガードを使うことで、特定の型に絞り込み、その型固有のプロパティやメソッドに安全にアクセスできるようになります。
 
 ---
 

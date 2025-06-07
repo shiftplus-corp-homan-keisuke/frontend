@@ -1,6 +1,6 @@
 import React from "react";
 
-const Footer: React.FC = () => {
+function Footer() {
   const hour = new Date().getHours();
   const openHour = 12;
   const closeHour = 22;
@@ -23,6 +23,6 @@ const Footer: React.FC = () => {
       </div>
     </footer>
   );
-};
+}
 
 export default Footer;

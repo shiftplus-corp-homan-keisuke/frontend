@@ -2,7 +2,7 @@ import React from "react";
 import Pizza from "./Pizza";
 import { pizzaData } from "../data/pizzaData";
 
-const Menu: React.FC = () => {
+function Menu() {
   const numPizzas = pizzaData.length;
 
   return (
@@ -20,6 +20,6 @@ const Menu: React.FC = () => {
       )}
     </main>
   );
-};
+}
 
 export default Menu;

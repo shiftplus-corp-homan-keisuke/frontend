@@ -1,59 +1,52 @@
-export interface Pizza {
-  id: number;
-  name: string;
-  ingredients: string;
-  price: number;
-  photoName: string;
-  soldOut: boolean;
-}
+import type { Pizza } from '../types';
 
 export const pizzaData: Pizza[] = [
   {
     id: 1,
-    name: "Focaccia",
-    ingredients: "Bread with italian olive oil and rosemary",
-    price: 6,
-    photoName: "pizzas/focaccia.jpg",
+    name: "マルゲリータ",
+    ingredients: "トマト、モッツァレラ、バジル",
+    price: 12,
+    photoName: "https://picsum.photos/100/100?random=1",
     soldOut: false,
   },
   {
     id: 2,
-    name: "Pizza Margherita",
-    ingredients: "Tomato and mozarella",
-    price: 10,
-    photoName: "pizzas/margherita.jpg",
+    name: "ペパロニ",
+    ingredients: "トマト、モッツァレラ、ペパロニ",
+    price: 15,
+    photoName: "https://picsum.photos/100/100?random=2",
     soldOut: false,
   },
   {
     id: 3,
-    name: "Pizza Spinaci",
-    ingredients: "Tomato, mozarella, spinach, and ricotta cheese",
-    price: 12,
-    photoName: "pizzas/spinaci.jpg",
+    name: "ハワイアン",
+    ingredients: "トマト、モッツァレラ、ハム、パイナップル",
+    price: 16,
+    photoName: "https://picsum.photos/100/100?random=3",
     soldOut: false,
   },
   {
     id: 4,
-    name: "Pizza Funghi",
-    ingredients: "Tomato, mozarella, mushrooms, and onion",
-    price: 12,
-    photoName: "pizzas/funghi.jpg",
-    soldOut: false,
-  },
-  {
-    id: 5,
-    name: "Pizza Salamino",
-    ingredients: "Tomato, mozarella, and pepperoni",
-    price: 15,
-    photoName: "pizzas/salamino.jpg",
+    name: "クワトロフォルマッジ",
+    ingredients: "4種類のチーズ",
+    price: 18,
+    photoName: "https://picsum.photos/100/100?random=4",
     soldOut: true,
   },
   {
+    id: 5,
+    name: "ベジタリアン",
+    ingredients: "トマト、モッツァレラ、野菜各種",
+    price: 13,
+    photoName: "https://picsum.photos/100/100?random=5",
+    soldOut: false,
+  },
+  {
     id: 6,
-    name: "Pizza Prosciutto",
-    ingredients: "Tomato, mozarella, ham, aragula, and burrata cheese",
-    price: 18,
-    photoName: "pizzas/prosciutto.jpg",
+    name: "スパイシー",
+    ingredients: "トマト、モッツァレラ、スパイシーサラミ、唐辛子",
+    price: 17,
+    photoName: "https://picsum.photos/100/100?random=6",
     soldOut: false,
   },
 ];

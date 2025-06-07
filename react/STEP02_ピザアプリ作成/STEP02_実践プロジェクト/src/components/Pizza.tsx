@@ -1,11 +1,11 @@
 import React from "react";
-import { Pizza as PizzaType } from "../data/pizzaData";
+import type { Pizza as PizzaType } from "../types";
 
 interface PizzaProps {
   pizzaObj: PizzaType;
 }
 
-const Pizza: React.FC<PizzaProps> = ({ pizzaObj }) => {
+function Pizza({ pizzaObj }: PizzaProps) {
   const pizzaClassName = pizzaObj.soldOut ? "pizza sold-out" : "pizza";
 
   return (
@@ -18,6 +18,6 @@ const Pizza: React.FC<PizzaProps> = ({ pizzaObj }) => {
       </div>
     </li>
   );
-};
+}
 
 export default Pizza;

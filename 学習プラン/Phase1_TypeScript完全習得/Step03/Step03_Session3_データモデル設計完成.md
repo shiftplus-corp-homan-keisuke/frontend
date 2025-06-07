@@ -55,7 +55,7 @@ Session1-2 で学習した内容を統合し、実用的な学生管理システ
 #### 1. 基本型定義の実装（Session2 からの継続）
 
 ```typescript
-// Session2で学習した型定義をかくにんしてく
+// Session2で学習した型定義を確認してください
 interface Person {
   readonly id: number;
   name: string;
@@ -65,6 +65,18 @@ interface Person {
 
 interface Student extends Person {
   readonly studentNumber: string;
+  grade: number;
+  major: string;
+  advisor: string;
+  club?: string;
+}
+
+// 学生登録用のインターフェース（idを除く）
+interface CreateStudentRequest {
+  studentNumber: string;
+  name: string;
+  email: string;
+  birthDate: Date;
   grade: number;
   major: string;
   advisor: string;
@@ -91,7 +103,7 @@ class StudentManagementSystem {
   private nextId: number = 1;
 
   // 学生登録
-  registerStudent(studentData: Omit<Student, "id">): Student {
+  registerStudent(studentData: CreateStudentRequest): Student {
     // TODO: 実装してください
   }
 
@@ -100,10 +112,15 @@ class StudentManagementSystem {
     // TODO: 実装してください
   }
 
-  // 成績追加
-  addGrade(
-    gradeData: Omit<Grade, "studentId"> & { studentNumber: string }
-  ): boolean {
+  // 成績追加（学生番号で指定）
+  addGrade(gradeData: {
+    studentNumber: string;
+    courseCode: string;
+    courseName: string;
+    score: number;
+    semester: string;
+    year: number;
+  }): boolean {
     // TODO: 実装してください
   }
 
@@ -118,13 +135,13 @@ class StudentManagementSystem {
 
 ```typescript
 // 型安全なエラーハンドリングを実装してください
-type StudentError = {
+interface StudentError {
   type: "NOT_FOUND" | "INVALID_DATA" | "DUPLICATE";
   message: string;
-};
+}
 
 function registerStudentSafe(
-  studentData: Omit<Student, "id">
+  studentData: CreateStudentRequest
 ): Student | StudentError {
   // バリデーション処理を実装してください
 }
@@ -156,7 +173,7 @@ function registerStudentSafe(
 ### 振り返りと次ステップ（残り時間）
 
 - 今回学習したインターフェース・継承の理解度確認
-- Step04（ユニオン型と型ガード）の学習準備
+- Step04以降の学習準備（より高度な型機能の学習）
 - 質疑応答
 
 ---
@@ -206,4 +223,4 @@ function registerStudentSafe(
 
 **📌 重要**: Session3 ではデータモデル設計の総仕上げとして、実践的なプロジェクトを完成させます。これまでの学習を活かして、自信を持って取り組みましょう。
 
-🚀 次の Step04 では、より高度なユニオン型と型ガードと実践的な開発手法を学習します！
+🚀 次の Step04 では、より高度な型機能と実践的な開発手法を学習します！

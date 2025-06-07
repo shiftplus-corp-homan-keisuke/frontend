@@ -1,39 +1,53 @@
-# Session1: インターフェース理論と基本実践（90分）
+# Session1: インターフェース理論と基本実践（90 分）
 
-> 💡 **対象**: 他言語経験者（JavaScript基礎・TypeScript基本型知識あり）  
+> 💡 **対象**: 他言語経験者（JavaScript 基礎・TypeScript 基本型知識あり）  
 > 🎯 **形式**: 講師サポート付き学習  
-> ⏰ **時間**: 90分（休憩含む）
+> ⏰ **時間**: 90 分（休憩含む）
+
+## 📚 関連補足資料
+
+このセッションの学習をサポートする補足資料をご用意しています：
+
+- 📖 **[専門用語集](./Step03_補足_専門用語集.md)** - インターフェース・型設計の詳細解説
+- 💻 **[実践コード例](./Step03_補足_実践コード例.md)** - 段階的な実装例とベストプラクティス
+- 🚨 **[トラブルシューティング](./Step03_補足_トラブルシューティング.md)** - インターフェース関連のエラー解決ガイド
+- 🌐 **[参考リソース](./Step03_補足_参考リソース.md)** - TypeScript 型システム学習リソース集
+- 📋 **[補足資料](./Step03_補足資料.md)** - その他の重要な補足情報
+
+> 💡 **活用方法**: 学習中に疑問が生じた際や、より深く理解したい場合に参照してね 🐰
 
 ## 📅 セッション概要
 
 **学習目標**:
+
 - [ ] インターフェースの基本概念と設計原則の理解
 - [ ] オプショナルプロパティ・読み取り専用プロパティの習得
 - [ ] 基本的なインターフェース設計の実践
 - [ ] 型安全なオブジェクト操作の実装
 
 **前提知識**:
-- Step01: JavaScript基礎、TypeScript基本型注釈
+
+- Step01: JavaScript 基礎、TypeScript 基本型注釈
 - Step02: 基本型システム、型推論、型エイリアス
 
 ---
 
 ## ⏰ 詳細タイムテーブル
 
-| 時間 | 内容 | 講師の役割 | 学習者の活動 | 成果物 |
-|------|------|------------|--------------|--------|
-| **0-10分** | 前Step復習・今回目標 | 復習確認・目標提示 | 振り返り・質問 | 理解確認 |
-| **10-50分** | インターフェース理論学習 | 実演・解説 | 理解・メモ | 基本知識 |
-| **50-80分** | 基本実践・練習問題 | 個別サポート | ハンズオン | 基本コード |
-| **80-90分** | 振り返り・次回予告 | まとめ・予告 | 質問・確認 | 学習計画 |
+| 時間         | 内容                     | 講師の役割         | 学習者の活動   | 成果物     |
+| ------------ | ------------------------ | ------------------ | -------------- | ---------- |
+| **0-10 分**  | 前 Step 復習・今回目標   | 復習確認・目標提示 | 振り返り・質問 | 理解確認   |
+| **10-50 分** | インターフェース理論学習 | 実演・解説         | 理解・メモ     | 基本知識   |
+| **50-80 分** | 基本実践・練習問題       | 個別サポート       | ハンズオン     | 基本コード |
+| **80-90 分** | 振り返り・次回予告       | まとめ・予告       | 質問・確認     | 学習計画   |
 
 ---
 
 ## 📚 学習内容
 
-### Section 1: 前Step復習（要点のみ）
+### Section 1: 前 Step 復習（要点のみ）
 
-#### 🔍 Step02の重要ポイント確認
+#### 🔍 Step02 の重要ポイント確認
 
 **基本型システムの復習**
 
@@ -56,7 +70,7 @@ let user: {
 } = {
   id: 1,
   name: "Alice",
-  status: "active"
+  status: "active",
 };
 ```
 
@@ -68,15 +82,17 @@ let user: {
 
 ### Section 2: インターフェースの基本概念
 
+> 📚 **関連資料**: [専門用語集 - インターフェース基礎概念](./Step03_補足_専門用語集.md#インターフェース基礎概念) | [実践コード例 - 基本的なインターフェース設計](./Step03_補足_実践コード例.md#基本的なインターフェース設計)
+
 #### 🎯 インターフェースとは何か
 
 **💡 なぜインターフェースが重要なのか**
 
-インターフェースは、TypeScriptにおける「契約」の概念です。オブジェクトがどのような形状（プロパティとメソッド）を持つべきかを定義することで、以下の価値を提供します：
+インターフェースは、TypeScript における「契約」の概念です。オブジェクトがどのような形状（プロパティとメソッド）を持つべきかを定義することで、以下の価値を提供します：
 
 - **型安全性の確保**: コンパイル時にオブジェクトの構造をチェック
 - **コードの可読性向上**: オブジェクトの期待される形状が明確
-- **チーム開発での契約**: API設計やコンポーネント間の連携で明確な仕様を共有
+- **チーム開発での契約**: API 設計やコンポーネント間の連携で明確な仕様を共有
 - **リファクタリングの安全性**: 構造変更時に影響範囲を正確に把握
 
 #### 1. 基本的なインターフェース定義
@@ -90,7 +106,7 @@ let user: {
 } = {
   id: 1,
   name: "Alice",
-  email: "alice@example.com"
+  email: "alice@example.com",
 };
 
 // ↓ インターフェースで改善
@@ -104,14 +120,14 @@ interface User {
 let user: User = {
   id: 1,
   name: "Alice",
-  email: "alice@example.com"
+  email: "alice@example.com",
 };
 
 // 再利用可能
 let anotherUser: User = {
   id: 2,
   name: "Bob",
-  email: "bob@example.com"
+  email: "bob@example.com",
 };
 ```
 
@@ -128,14 +144,14 @@ interface Product {
 
 // 商品一覧の表示
 function displayProducts(products: Product[]): void {
-  products.forEach(product => {
+  products.forEach((product) => {
     console.log(`${product.name}: ¥${product.price}`);
   });
 }
 
 // 商品検索
 function findProduct(products: Product[], id: number): Product | undefined {
-  return products.find(product => product.id === id);
+  return products.find((product) => product.id === id);
 }
 ```
 
@@ -159,7 +175,7 @@ interface UserProfile {
 let basicUser: UserProfile = {
   id: 1,
   name: "Alice",
-  email: "alice@example.com"
+  email: "alice@example.com",
 };
 
 // オプショナルフィールドありでも有効
@@ -168,7 +184,7 @@ let detailedUser: UserProfile = {
   name: "Bob",
   email: "bob@example.com",
   age: 25,
-  bio: "Web developer"
+  bio: "Web developer",
 };
 ```
 
@@ -190,7 +206,7 @@ function createUser(userData: CreateUserRequest): User {
     name: userData.name,
     email: userData.email,
     age: userData.age || 0, // デフォルト値
-    newsletter: userData.newsletter || false
+    newsletter: userData.newsletter || false,
   };
 }
 ```
@@ -213,7 +229,7 @@ let user: ReadonlyUser = {
   id: 1,
   createdAt: new Date(),
   name: "Alice",
-  email: "alice@example.com"
+  email: "alice@example.com",
 };
 
 // user.id = 2; // エラー！readonlyプロパティは変更不可
@@ -237,13 +253,10 @@ interface Order {
 }
 
 // 注文ステータス更新（安全な更新）
-function updateOrderStatus(
-  order: Order, 
-  newStatus: Order["status"]
-): Order {
+function updateOrderStatus(order: Order, newStatus: Order["status"]): Order {
   return {
     ...order,
-    status: newStatus
+    status: newStatus,
     // id, orderNumber等は自動的に保持される（readonly）
   };
 }
@@ -252,6 +265,8 @@ function updateOrderStatus(
 ---
 
 ## 🎯 練習問題
+
+> 💻 **実践サポート**: [実践コード例 - 練習問題の解法例](./Step03_補足_実践コード例.md#練習問題の解法例) | [トラブルシューティング - よくあるエラー](./Step03_補足_トラブルシューティング.md#よくあるエラー)
 
 ### 練習問題 1: 基本的なインターフェース設計 🔰
 
@@ -275,16 +290,16 @@ const student1: Student = {
   studentNumber: "S2024001",
   name: "田中太郎",
   email: "tanaka@university.ac.jp",
-  grade: 2
+  grade: 2,
 };
 
 const student2: Student = {
   id: 2,
-  studentNumber: "S2024002", 
+  studentNumber: "S2024002",
   name: "佐藤花子",
   email: "sato@university.ac.jp",
   grade: 3,
-  club: "プログラミング研究会"
+  club: "プログラミング研究会",
 };
 ```
 
@@ -333,18 +348,18 @@ interface Student {
 
 ```typescript
 function displayStudents(students: Student[]): void {
-  students.forEach(student => {
-    const clubInfo = student.club ? ` (${student.club})` : '';
+  students.forEach((student) => {
+    const clubInfo = student.club ? ` (${student.club})` : "";
     console.log(`${student.name} (${student.grade}年生)${clubInfo}`);
   });
 }
 
 function findStudentById(students: Student[], id: number): Student | undefined {
-  return students.find(student => student.id === id);
+  return students.find((student) => student.id === id);
 }
 
 function filterStudentsByGrade(students: Student[], grade: number): Student[] {
-  return students.filter(student => student.grade === grade);
+  return students.filter((student) => student.grade === grade);
 }
 ```
 
@@ -353,6 +368,7 @@ function filterStudentsByGrade(students: Student[], grade: number): Student[] {
 ### 振り返り
 
 **確認ポイント**:
+
 - [ ] インターフェースの基本概念を理解できた
 - [ ] オプショナルプロパティの使い方を習得した
 - [ ] 読み取り専用プロパティの重要性を理解した
@@ -361,28 +377,12 @@ function filterStudentsByGrade(students: Student[], grade: number): Student[] {
 ### 質疑応答
 
 **よくある質問**:
+
 - Q: 「型エイリアスとインターフェースの違いは？」
-- A: 「次回Session2で詳しく学習します。基本的にはオブジェクト型にはインターフェースを使用することが推奨されます」
+- A: 「次回 Session2 で詳しく学習します。基本的にはオブジェクト型にはインターフェースを使用することが推奨されます」
 
 ---
 
-## 📚 関連補足資料
-
-学習をサポートする補足資料をご用意しています：
-
-- 💻 **[実践コード例](./Step03_補足_実践コード例.md)** - 基本的なインターフェース設計の段階的学習
-- 🔤 **[専門用語集](./Step03_補足_専門用語集.md)** - インターフェース・構造的型付けの詳細解説
-- 🚨 **[トラブルシューティング](./Step03_補足_トラブルシューティング.md)** - よくあるエラーと解決方法
-
-> 💡 **活用方法**: 学習中に分からない概念が出てきた際にご参照ください。
-
----
-
-**� 重要**: Session1で学習した内容は、Session2でより実践的な設計に発展させます。基本概念をしっかりと理解して次回に臨みましょう！
+**❗ 重要**: Session1 で学習した内容は、Session2 でより実践的な設計に発展させます。基本概念をしっかりと理解して次回に臨みましょう！
 
 **🌟 次回（Session2）は、インターフェース継承と型設計実践に挑戦します！**
----
-
-**📌 重要**: Session1 はインターフェースの基礎固めです。焦らず確実に基本概念を理解しましょう。
-
-**🌟 次回（Session2）は、より実践的なインターフェース設計コードの作成に挑戦します！**

@@ -1,31 +1,45 @@
-# Session2: 継承と型設計実践（90分）
+# Session2: 継承と型設計実践（90 分）
 
-> 💡 **対象**: 他言語経験者（Session1完了者）  
+> 💡 **対象**: 他言語経験者（Session1 完了者）  
 > 🎯 **形式**: 講師サポート付き学習  
-> ⏰ **時間**: 90分（休憩含む）
+> ⏰ **時間**: 90 分（休憩含む）
+
+## 📚 関連補足資料
+
+このセッションの学習をサポートする補足資料をご用意しています：
+
+- 📖 **[専門用語集](./Step03_補足_専門用語集.md)** - 継承・型設計の詳細解説
+- 💻 **[実践コード例](./Step03_補足_実践コード例.md)** - 継承とコンポジションの実践パターン
+- 🚨 **[トラブルシューティング](./Step03_補足_トラブルシューティング.md)** - 継承・実装関連のエラー解決ガイド
+- 🌐 **[参考リソース](./Step03_補足_参考リソース.md)** - 設計パターン・SOLID 原則の学習リソース
+- 📋 **[補足資料](./Step03_補足資料.md)** - その他の重要な補足情報
+
+> 💡 **活用方法**: 学習中に疑問が生じた際や、より深く理解したい場合に参照してね 🐰
 
 ## 📅 セッション概要
 
 **学習目標**:
+
 - [ ] インターフェース継承の理解と実践
 - [ ] 型エイリアスとインターフェースの使い分け習得
 - [ ] 複合的なデータモデル設計の実践
 - [ ] 学生管理システムの型設計実装
 
 **継続知識**:
+
 - Session1: インターフェース基本概念、オプショナル・読み取り専用プロパティ
-- Step01-02: TypeScript基本型、型推論、型エイリアス
+- Step01-02: TypeScript 基本型、型推論、型エイリアス
 
 ---
 
 ## ⏰ 詳細タイムテーブル
 
-| 時間 | 内容 | 講師の役割 | 学習者の活動 | 成果物 |
-|------|------|------------|--------------|--------|
-| **0-10分** | 前回復習・今回目標 | 復習確認・目標提示 | 振り返り・質問 | 理解確認 |
-| **10-50分** | 継承と型設計の実践演習 | 実演・個別指導 | ハンズオン・実践 | 継承コード |
-| **50-80分** | 学生管理システム実装 | コードレビュー・助言 | 個人開発 | システム設計 |
-| **80-90分** | 成果共有・質疑応答 | ファシリテート | 発表・討論 | 学習成果 |
+| 時間         | 内容                   | 講師の役割           | 学習者の活動     | 成果物       |
+| ------------ | ---------------------- | -------------------- | ---------------- | ------------ |
+| **0-10 分**  | 前回復習・今回目標     | 復習確認・目標提示   | 振り返り・質問   | 理解確認     |
+| **10-50 分** | 継承と型設計の実践演習 | 実演・個別指導       | ハンズオン・実践 | 継承コード   |
+| **50-80 分** | 学生管理システム実装   | コードレビュー・助言 | 個人開発         | システム設計 |
+| **80-90 分** | 成果共有・質疑応答     | ファシリテート       | 発表・討論       | 学習成果     |
 
 ---
 
@@ -33,7 +47,7 @@
 
 ### Section 1: 前回復習（要点確認）
 
-#### 🔍 Session1の重要ポイント確認
+#### 🔍 Session1 の重要ポイント確認
 
 ```typescript
 // Session1で学習した基本インターフェース
@@ -52,6 +66,8 @@ interface Student {
 ---
 
 ### Section 2: インターフェース継承
+
+> 📚 **関連資料**: [専門用語集 - 継承と拡張](./Step03_補足_専門用語集.md#継承と拡張) | [実践コード例 - 継承パターン](./Step03_補足_実践コード例.md#継承パターン)
 
 #### 🎯 継承の基本概念
 
@@ -103,18 +119,18 @@ const student: Student = {
   studentNumber: "S2024001",
   grade: 2,
   major: "情報工学",
-  club: "プログラミング研究会"
+  club: "プログラミング研究会",
 };
 
 const teacher: Teacher = {
   id: 101,
   name: "佐藤教授",
-  email: "sato@university.ac.jp", 
+  email: "sato@university.ac.jp",
   birthDate: new Date("1975-08-20"),
   employeeNumber: "T2020001",
   department: "情報工学科",
   position: "professor",
-  courses: ["TypeScript入門", "Web開発実践"]
+  courses: ["TypeScript入門", "Web開発実践"],
 };
 ```
 
@@ -165,6 +181,8 @@ interface AdminUser extends BaseUser {
 ---
 
 ### Section 3: 型エイリアスとの使い分け
+
+> 📚 **関連資料**: [専門用語集 - 型エイリアス vs インターフェース](./Step03_補足_専門用語集.md#型エイリアス-vs-インターフェース) | [実践コード例 - 使い分けパターン](./Step03_補足_実践コード例.md#使い分けパターン)
 
 #### 🎯 使い分けのガイドライン
 
@@ -224,199 +242,23 @@ interface OrderItem {
 
 ---
 
-## 🎯 実践演習
+### 🤔 よくある質問と回答
 
-### 演習 1: 学生管理システムの型設計 🔧
+**Q: インターフェースの継承と型エイリアスの交差型（&）の違いは何ですか？**
+A: インターフェースは`extends`キーワードで継承でき、同じインターフェース名を複数回宣言することでプロパティをマージできます。一方、型エイリアスは`&`で型を結合しますが、マージの概念はなく、新しい型を作成します。オブジェクトの型定義にはインターフェース、ユニオン型やプリミティブ型の別名には型エイリアスを使うのが一般的です。
 
-**要件**:
-大学の学生管理システムの型定義を設計してください。
-
-```typescript
-// TODO: 以下の要件を満たす型定義を作成してください
-
-// 1. 基本的な人物情報（Person）
-// - id: 数値（変更不可）
-// - name: 文字列
-// - email: 文字列
-// - birthDate: 日付
-
-// 2. 連絡先情報（ContactInfo）
-// - phone: 文字列（任意）
-// - address: 文字列（任意）
-// - emergencyContactName: 文字列（任意）
-// - emergencyContactPhone: 文字列（任意）
-
-// 3. 学生情報（Student）
-// - Personを継承
-// - ContactInfoを継承
-// - studentNumber: 文字列（変更不可）
-// - grade: 数値（1-4）
-// - major: 文字列
-// - advisor: 文字列（指導教員名）
-// - club: 文字列（任意）
-
-// 4. 成績情報（Grade）
-// - studentId: 数値
-// - courseCode: 文字列
-// - courseName: 文字列
-// - score: 数値（0-100）
-// - semester: 文字列
-// - year: 数値
-
-// ここに型定義を作成してください
-```
-
-### 演習 2: システム操作関数の実装 🔧
-
-**要件**:
-学生管理システムの基本操作を実装してください。
-
-```typescript
-// TODO: 以下の関数を実装してください
-
-// 1. 学生登録関数
-function registerStudent(studentData: /* 適切な型 */): Student {
-  // 実装してください
-}
-
-// 2. 学生検索関数（学籍番号）
-function findStudentByNumber(
-  students: Student[], 
-  studentNumber: string
-): Student | undefined {
-  // 実装してください
-}
-
-// 3. 学年別学生一覧取得
-function getStudentsByGrade(students: Student[], grade: number): Student[] {
-  // 実装してください
-}
-
-// 4. 学生の成績追加
-function addGrade(
-  grades: Grade[], 
-  newGrade: Grade
-): Grade[] {
-  // 実装してください
-}
-
-// 5. 学生のGPA計算
-function calculateGPA(grades: Grade[], studentId: number): number {
-  // 実装してください（100点満点を4.0満点に変換）
-}
-```
+**Q: 継承を使うとコードが複雑になりませんか？**
+A: 適切に使えばコードの再利用性と保守性を高めますが、過度な継承は「継承の階層が深くなる問題」を引き起こす可能性があります。その場合は、コンポジション（オブジェクトの組み合わせ）を検討することも重要です。
 
 ---
 
-## 📝 解答例
+### Section 4: 学生管理システム実装（メイン演習）
 
-### 演習 1 解答
+> 📚 **サポート資料**: [実践コード例 - 学生管理システム完全版](./Step03_補足_実践コード例.md#学生管理システム完全版) | [トラブルシューティング - デバッグガイド](./Step03_補足_トラブルシューティング.md#デバッグガイド)
 
-```typescript
-// 基本的な人物情報
-interface Person {
-  readonly id: number;
-  name: string;
-  email: string;
-  birthDate: Date;
-}
+#### 🎯 メイン演習: 学生管理システム
 
-// 連絡先情報
-interface ContactInfo {
-  phone?: string;
-  address?: string;
-  emergencyContactName?: string;
-  emergencyContactPhone?: string;
-}
-
-// 学生情報
-interface Student extends Person, ContactInfo {
-  readonly studentNumber: string;
-  grade: number;
-  major: string;
-  advisor: string;
-  club?: string;
-}
-
-// 成績情報
-interface Grade {
-  studentId: number;
-  courseCode: string;
-  courseName: string;
-  score: number;
-  semester: string;
-  year: number;
-}
-
-// 学生登録用の型（IDは自動生成のため除外）
-interface CreateStudentRequest {
-  studentNumber: string;
-  name: string;
-  email: string;
-  birthDate: Date;
-  grade: number;
-  major: string;
-  advisor: string;
-  phone?: string;
-  address?: string;
-  emergencyContactName?: string;
-  emergencyContactPhone?: string;
-  club?: string;
-}
-```
-
-### 演習 2 解答
-
-```typescript
-function registerStudent(studentData: CreateStudentRequest): Student {
-  return {
-    id: generateId(), // ID自動生成
-    ...studentData
-  };
-}
-
-function findStudentByNumber(
-  students: Student[], 
-  studentNumber: string
-): Student | undefined {
-  return students.find(student => student.studentNumber === studentNumber);
-}
-
-function getStudentsByGrade(students: Student[], grade: number): Student[] {
-  return students.filter(student => student.grade === grade);
-}
-
-function addGrade(grades: Grade[], newGrade: Grade): Grade[] {
-  return [...grades, newGrade];
-}
-
-function calculateGPA(grades: Grade[], studentId: number): number {
-  const studentGrades = grades.filter(grade => grade.studentId === studentId);
-  
-  if (studentGrades.length === 0) return 0;
-  
-  const totalPoints = studentGrades.reduce((sum, grade) => {
-    // 100点満点を4.0満点に変換
-    const gpaPoint = (grade.score / 100) * 4.0;
-    return sum + gpaPoint;
-  }, 0);
-  
-  return Math.round((totalPoints / studentGrades.length) * 100) / 100;
-}
-
-// ヘルパー関数
-function generateId(): number {
-  return Math.floor(Math.random() * 10000) + 1;
-}
-```
-
----
-
-## 🚀 ミニプロジェクト: 学生管理システム実装
-
-### プロジェクト概要
-
-Session1-2で学習した内容を活用して、実際に動作する学生管理システムを作成します。
+Session1-2 で学習した内容を活用して、実際に動作する学生管理システムを作成します。
 
 ```typescript
 // システムの使用例
@@ -433,7 +275,7 @@ const newStudent = registerStudent({
   major: "情報工学",
   advisor: "佐藤教授",
   phone: "090-1234-5678",
-  club: "プログラミング研究会"
+  club: "プログラミング研究会",
 });
 
 students.push(newStudent);
@@ -445,7 +287,7 @@ const grade1 = {
   courseName: "TypeScript入門",
   score: 95,
   semester: "春学期",
-  year: 2024
+  year: 2024,
 };
 
 grades.push(grade1);
@@ -464,6 +306,7 @@ console.log("2年生一覧:", secondYearStudents);
 ### 振り返り
 
 **確認ポイント**:
+
 - [ ] インターフェース継承を理解し実践できた
 - [ ] 型エイリアスとの使い分けを習得した
 - [ ] 複合的なデータモデルを設計できた
@@ -471,24 +314,7 @@ console.log("2年生一覧:", secondYearStudents);
 
 ---
 
-## 📚 実践サポート資料
-
-継承と型設計の実践をサポートする資料：
-
-- 💻 **[継承とコンポジションの実践](./Step03_補足_実践コード例.md#継承とコンポジションの実践)** - 具体的な実装例とパターン
-- 🚨 **[継承・実装関連のエラー](./Step03_補足_トラブルシューティング.md#継承実装関連のエラー)** - エラー解決ガイド
-- 🔤 **[SOLID原則](./Step03_補足_専門用語集.md#SOLID原則)** - 設計原則の詳細解説
-- 📚 **[参考リソース](./Step03_補足_参考リソース.md)** - 継続学習のためのリソース集
-
-> 💡 **活用方法**: 実装中に困った際や、より深く学習したい場合にご参照ください。
-
----
-
-**� 重要**: Session2で学習した継承と型設計の概念は、Session3でより実践的なシステム完成に発展させます。今日の内容をしっかりと理解して次回に臨みましょう！
-
-**🌟 次回（Session3）は、学生管理システムの完成とデバッグに挑戦します！**
----
-
 **📌 重要**: Session2 では実践的なコーディングを通じてインターフェース継承の活用を体感します。完璧を目指さず、まずは動くコードを作ることを重視しましょう。
 
 **🌟 次回（Session3）は、プロジェクトの完成と学習の総括を行います！**
+

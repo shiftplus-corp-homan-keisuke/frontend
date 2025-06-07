@@ -29,6 +29,418 @@ STEP01 の成功パターンを継承し、STEP02 以降の学習ファイルを
 
 12. `STEP0X_実践プロジェクト/` フォルダ（React+TypeScript+Vite プロジェクト）
 
+## 🏗️ 実践プロジェクト構築ガイド
+
+### 📋 プロジェクト構造テンプレート
+
+実践プロジェクトは以下の構造で構築してください：
+
+```
+STEP0X_実践プロジェクト/
+├── package.json                    # 依存関係とスクリプト定義
+├── tsconfig.json                   # TypeScript基本設定
+├── tsconfig.app.json              # アプリケーション用TypeScript設定
+├── tsconfig.node.json             # Node.js用TypeScript設定
+├── vite.config.ts                 # Vite設定（React + TailwindCSS統合）
+├── eslint.config.js               # ESLint設定（React Hooks対応）
+├── index.html                     # エントリーポイント
+├── README.md                      # 実装手順ガイド
+├── src/
+│   ├── main.tsx                   # Reactアプリケーションエントリーポイント
+│   ├── App.tsx                    # メインアプリケーションコンポーネント（学習者実装）
+│   ├── demo.html                  # 完成形デモファイル（視覚的参考）
+│   ├── types/
+│   │   └── index.ts              # TypeScript型定義（事前実装）
+│   ├── data/
+│   │   └── sampleData.ts         # サンプルデータ（事前実装）
+│   ├── components/               # 学習者実装コンポーネント
+│   │   ├── ProfileCard.tsx       # プロフィールカードコンポーネント
+│   │   ├── SkillList.tsx         # スキルリストコンポーネント
+│   │   └── ProfileEditor.tsx     # プロフィール編集コンポーネント
+│   └── styles/                   # スタイルファイル（必要に応じて）
+└── public/                       # 静的ファイル
+```
+
+### ⚙️ 設定ファイル完全版
+
+#### 1. package.json
+```json
+{
+  "name": "step0x-実践プロジェクト名",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.8",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "tailwindcss": "^4.1.8"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.25.0",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react": "^4.4.1",
+    "eslint": "^9.25.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.0.0",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.30.1",
+    "vite": "^6.3.5"
+  }
+}
+```
+
+#### 2. tsconfig.app.json
+```json
+{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true
+  },
+  "include": ["src"]
+}
+```
+
+#### 3. vite.config.ts
+```typescript
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+});
+```
+
+#### 4. eslint.config.js
+```javascript
+import js from '@eslint/js'
+import globals from 'globals'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
+import tseslint from 'typescript-eslint'
+
+export default tseslint.config(
+  { ignores: ['dist'] },
+  {
+    extends: [js.configs.recommended, ...tseslint.configs.recommended],
+    files: ['**/*.{ts,tsx}'],
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: globals.browser,
+    },
+    plugins: {
+      'react-hooks': reactHooks,
+      'react-refresh': reactRefresh,
+    },
+    rules: {
+      ...reactHooks.configs.recommended.rules,
+      'react-refresh/only-export-components': [
+        'warn',
+        { allowConstantExport: true },
+      ],
+    },
+  },
+)
+```
+
+### 📁 事前実装ファイル群
+
+#### 1. 型定義ファイル（src/types/index.ts）
+```typescript
+// ユーザープロフィールの型定義
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  bio: string;
+  avatar?: string;
+  location?: string;
+  joinDate: Date;
+}
+
+// スキルの型定義
+export interface Skill {
+  id: string;
+  name: string;
+  level: 'beginner' | 'intermediate' | 'advanced';
+  category: 'frontend' | 'backend' | 'design';
+}
+
+// 完全なプロフィールデータの型定義
+export interface CompleteProfile extends UserProfile {
+  skills: Skill[];
+}
+
+// プロフィール編集フォームの型定義
+export interface ProfileFormData {
+  name: string;
+  email: string;
+  bio: string;
+  location: string;
+}
+
+// フォームエラーの型定義
+export interface FormErrors {
+  name?: string;
+  email?: string;
+  bio?: string;
+  location?: string;
+}
+```
+
+#### 2. サンプルデータファイル（src/data/sampleData.ts）
+```typescript
+import type { CompleteProfile, Skill } from '../types';
+
+// サンプルスキルデータ
+export const sampleSkills: Skill[] = [
+  {
+    id: '1',
+    name: 'React',
+    level: 'intermediate',
+    category: 'frontend'
+  },
+  {
+    id: '2',
+    name: 'TypeScript',
+    level: 'beginner',
+    category: 'frontend'
+  },
+  {
+    id: '3',
+    name: 'CSS',
+    level: 'intermediate',
+    category: 'frontend'
+  },
+  {
+    id: '4',
+    name: 'Node.js',
+    level: 'beginner',
+    category: 'backend'
+  },
+  {
+    id: '5',
+    name: 'Figma',
+    level: 'intermediate',
+    category: 'design'
+  }
+];
+
+// デフォルトユーザープロフィール
+export const defaultProfile: CompleteProfile = {
+  id: '1',
+  name: '山田太郎',
+  email: 'yamada.taro@example.com',
+  bio: 'フロントエンド開発を学習中です。React と TypeScript に興味があります。',
+  location: '東京, 日本',
+  joinDate: new Date('2024-01-15'),
+  skills: sampleSkills
+};
+
+// スキルレベルの表示用ラベル
+export const skillLevelLabels = {
+  beginner: '初級',
+  intermediate: '中級',
+  advanced: '上級'
+} as const;
+
+// スキルカテゴリの表示用ラベル
+export const skillCategoryLabels = {
+  frontend: 'フロントエンド',
+  backend: 'バックエンド',
+  design: 'デザイン'
+} as const;
+
+// スキルレベルの色設定
+export const skillLevelColors = {
+  beginner: '#fbbf24',    // 黄色
+  intermediate: '#3b82f6', // 青色
+  advanced: '#10b981'      // 緑色
+} as const;
+```
+
+#### 3. 完成形デモファイル（src/demo.html）
+```html
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>プロフィールカードアプリ - 完成デモ</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+          sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        color: white;
+        padding: 24px;
+        text-align: center;
+      }
+
+      .avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        font-weight: bold;
+        margin: 0 auto 16px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+      }
+
+      /* 以下、完成形のスタイルが続く... */
+    </style>
+  </head>
+  <body>
+    <!-- 完成形のHTMLマークアップ -->
+    <div class="container">
+      <div class="header">
+        <div class="avatar">山</div>
+        <h1>山田太郎</h1>
+        <p>yamada.taro@example.com</p>
+      </div>
+      <!-- 以下、完成形のコンテンツが続く... -->
+    </div>
+  </body>
+</html>
+```
+
+### 🤖 生成AI向け自動生成指示
+
+#### プロジェクト自動生成テンプレート
+```markdown
+以下の手順で実践プロジェクトを生成してください：
+
+1. **プロジェクトディレクトリ作成**
+   - `STEP0X_実践プロジェクト/` フォルダを作成
+
+2. **設定ファイル生成**
+   - package.json（上記の依存関係を使用）
+   - TypeScript設定ファイル群（tsconfig.json, tsconfig.app.json, tsconfig.node.json）
+   - Vite設定（React + TailwindCSS統合）
+   - ESLint設定（React Hooks対応）
+
+3. **事前実装ファイル生成**
+   - 型定義ファイル（src/types/index.ts）
+   - サンプルデータファイル（src/data/sampleData.ts）
+   - 完成形デモファイル（src/demo.html）
+
+4. **学習者実装ファイル準備**
+   - 空のコンポーネントファイル（ProfileCard.tsx, SkillList.tsx, ProfileEditor.tsx）
+   - 基本的なApp.tsxテンプレート
+   - main.tsxエントリーポイント
+
+5. **README.md作成**
+   - 実装手順ガイド
+   - 段階的な実装ステップ
+   - 完成目標の明示
+```
+
+#### STEPごとのカスタマイズポイント
+```markdown
+各STEPに応じて以下をカスタマイズしてください：
+
+**STEP02（State管理）**
+- useState, useEffectを使用したコンポーネント
+- フォーム入力とバリデーション
+- 条件付きレンダリング
+
+**STEP03（イベント処理）**
+- クリックイベント、フォームイベント
+- カスタムイベントハンドラー
+- イベント伝播の制御
+
+**STEP04（コンポーネント設計）**
+- Props設計とコンポーネント分割
+- 再利用可能なコンポーネント
+- コンポーネント間の通信
+
+**STEP05（カスタムHooks）**
+- ロジックの抽象化
+- 状態管理の分離
+- 副作用の管理
+
+**STEP06（パフォーマンス最適化）**
+- React.memo, useMemo, useCallback
+- 仮想化とレンダリング最適化
+- バンドルサイズ最適化
+```
+
+### 📝 実装品質チェックリスト
+
+#### 技術要件
+- [ ] React 19.1.0 + TypeScript 5.8.3 + Vite 6.3.5 + TailwindCSS 4.1.8の使用
+- [ ] 厳密なTypeScript設定（strict mode有効）
+- [ ] ESLint設定（React Hooks対応）
+- [ ] 適切なコンポーネント分割
+- [ ] 型安全性の確保
+
+#### 学習効果
+- [ ] 段階的な実装手順の提供
+- [ ] 完成形デモによる目標の可視化
+- [ ] 事前実装ファイルによる学習支援
+- [ ] 実践的なプロジェクト構造の体験
+
+#### 品質保証
+- [ ] エラーハンドリングの実装
+- [ ] アクセシビリティの考慮
+- [ ] レスポンシブデザインの対応
+- [ ] パフォーマンスの最適化
+
 ## 🏗️ 各ファイルの構造テンプレート
 
 ### 📝 メインファイル構造（`STEP0X_[テーマ名]_基礎とTypeScript統合.md`）
@@ -64,8 +476,8 @@ STEP01 の成功パターンを継承し、STEP02 以降の学習ファイルを
 
 **前提知識**:
 
-- TypeScript 上級レベル（ジェネリクス、ユニオン型、条件型等の理解）
-- React 基礎〜中級レベルの理解
+- TypeScript 中級レベル（ジェネリクス、ユニオン型、条件型等の理解）
+- React 基礎レベルの理解
 - [前の STEP で学習した内容]
 
 ---

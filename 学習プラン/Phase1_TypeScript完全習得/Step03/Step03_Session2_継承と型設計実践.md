@@ -180,13 +180,107 @@ interface AdminUser extends BaseUser {
 
 ---
 
+### 練習問題 2.1: インターフェース継承の応用 🔰
+
+**要件**:
+以下の要件を満たすインターフェースを定義してください。
+
+1.  **`Shape` インターフェースの定義**:
+    *   `id`: 数値型（読み取り専用）
+    *   `color`: 文字列型
+    *   `getArea()`: 数値を返すメソッド
+
+2.  **`Circle` インターフェースの定義**:
+    *   `Shape` を継承します。
+    *   `radius`: 数値型
+
+3.  **`Rectangle` インターフェースの定義**:
+    *   `Shape` を継承します。
+    *   `width`: 数値型
+    *   `height`: 数値型
+
+4.  **`Drawable` インターフェースの定義**:
+    *   `draw()`: `void` を返すメソッド
+
+5.  **`ComplexCircle` インターフェースの定義**:
+    *   `Circle` と `Drawable` を複数継承します。
+    *   `center`: `{ x: number; y: number; }` 型のオブジェクト
+
+```typescript
+// TODO: 以下の要件を満たすインターフェースを定義してください
+
+// 1. Shapeインターフェースを定義
+
+// 2. Circleインターフェースを定義
+
+// 3. Rectangleインターフェースを定義
+
+// 4. Drawableインターフェースを定義
+
+// 5. ComplexCircleインターフェースを定義
+
+// 使用例 (実装は不要、型定義のみ)
+const myCircle: ComplexCircle = {
+  id: 1,
+  color: "red",
+  radius: 10,
+  center: { x: 0, y: 0 },
+  getArea: () => Math.PI * 10 * 10,
+  draw: () => console.log("Drawing circle"),
+};
+
+const myRectangle: Rectangle = {
+  id: 2,
+  color: "blue",
+  width: 20,
+  height: 10,
+  getArea: () => 20 * 10,
+};
+
+console.log(myCircle.getArea());
+myCircle.draw();
+console.log(myRectangle.getArea());
+```
+
+---
+
+### 解答例 2.1
+
+```typescript
+// 解答例 2.1
+interface Shape {
+  readonly id: number;
+  color: string;
+  getArea(): number;
+}
+
+interface Circle extends Shape {
+  radius: number;
+}
+
+interface Rectangle extends Shape {
+  width: number;
+  height: number;
+}
+
+interface Drawable {
+  draw(): void;
+}
+
+interface ComplexCircle extends Circle, Drawable {
+  center: { x: number; y: number; };
+}
+```
+
+---
+
 ### Section 3: 型エイリアスとの使い分け
 
 > 📚 **関連資料**: [専門用語集 - 型エイリアス vs インターフェース](./Step03_補足_専門用語集.md#型エイリアス-vs-インターフェース) | [実践コード例 - 使い分けパターン](./Step03_補足_実践コード例.md#使い分けパターン)
 
 #### 🎯 基本的な使い分けのガイドライン
 
-**💡 Step03レベルでの使い分け**
+**💡 Step03 レベルでの使い分け**
 
 ```typescript
 // ✅ インターフェース: オブジェクトの構造定義
@@ -232,13 +326,91 @@ interface Enrollment {
 
 ---
 
+### 練習問題 3.1: 型エイリアスとインターフェースの使い分け 🔰
+
+**要件**:
+以下のシナリオに基づいて、型エイリアスとインターフェースを適切に使い分けて型定義を行ってください。
+
+1.  **ユーザーIDの型定義**:
+    *   `UserId` という名前で、数値型を表現する型エイリアスを定義してください。
+
+2.  **ユーザーの役割の型定義**:
+    *   `UserRole` という名前で、"admin" | "editor" | "viewer" のいずれかの文字列リテラル型を許容する型エイリアスを定義してください。
+
+3.  **基本ユーザー情報のインターフェース定義**:
+    *   `BaseUser` という名前で、以下のプロパティを持つインターフェースを定義してください。
+        *   `id`: `UserId` 型（読み取り専用）
+        *   `name`: 文字列型
+        *   `email`: 文字列型
+
+4.  **管理者ユーザー情報のインターフェース定義**:
+    *   `AdminUser` という名前で、`BaseUser` を継承し、以下のプロパティを持つインターフェースを定義してください。
+        *   `role`: `UserRole` 型（"admin"に固定）
+        *   `permissions`: 文字列の配列型
+        *   `lastLogin`: Date型（任意）
+
+```typescript
+// TODO: 以下の要件を満たす型エイリアスとインターフェースを定義してください
+
+// 1. ユーザーIDの型定義
+
+// 2. ユーザーの役割の型定義
+
+// 3. 基本ユーザー情報のインターフェース定義
+
+// 4. 管理者ユーザー情報のインターフェース定義
+
+// 使用例 (実装は不要、型定義のみ)
+const admin: AdminUser = {
+  id: 1,
+  name: "管理者A",
+  email: "adminA@example.com",
+  role: "admin",
+  permissions: ["read", "write", "delete"],
+  lastLogin: new Date(),
+};
+
+const editor: BaseUser = {
+  id: 2,
+  name: "編集者B",
+  email: "editorB@example.com",
+};
+
+console.log(admin);
+console.log(editor);
+```
+
+---
+
+### 解答例 3.1
+
+```typescript
+// 解答例 3.1
+type UserId = number;
+type UserRole = "admin" | "editor" | "viewer";
+
+interface BaseUser {
+  readonly id: UserId;
+  name: string;
+  email: string;
+}
+
+interface AdminUser extends BaseUser {
+  role: "admin";
+  permissions: string[];
+  lastLogin?: Date;
+}
+```
+
+---
+
 ### 🤔 よくある質問と回答
 
 **Q: インターフェースと型エイリアスはどう使い分けるべきですか？**
-A: Step03レベルでは、オブジェクトの構造定義にはインターフェース、基本的な型の別名には型エイリアスを使用します。インターフェースは`extends`キーワードで継承できるため、拡張性が必要な場合に適しています。
+A: Step03 レベルでは、オブジェクトの構造定義にはインターフェース、基本的な型の別名には型エイリアスを使用します。インターフェースは`extends`キーワードで継承できるため、拡張性が必要な場合に適しています。
 
 **Q: 継承を使うとコードが複雑になりませんか？**
-A: 適切に使えばコードの再利用性と保守性を高めますが、過度な継承は避けるべきです。Step03では基本的な継承パターンに集中し、複雑な設計は後のステップで学習します。
+A: 適切に使えばコードの再利用性と保守性を高めますが、過度な継承は避けるべきです。Step03 では基本的な継承パターンに集中し、複雑な設計は後のステップで学習します。
 
 ---
 
@@ -307,4 +479,3 @@ console.log("2年生一覧:", secondYearStudents);
 **📌 重要**: Session2 では実践的なコーディングを通じてインターフェース継承の活用を体感します。完璧を目指さず、まずは動くコードを作ることを重視しましょう。
 
 **🌟 次回（Session3）は、プロジェクトの完成と学習の総括を行います！**
-

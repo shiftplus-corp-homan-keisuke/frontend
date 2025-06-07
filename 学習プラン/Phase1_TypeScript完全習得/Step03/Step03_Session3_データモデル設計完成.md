@@ -156,6 +156,144 @@ function registerStudentSafe(
 
 ---
 
+### 📝 解答例 (最終課題)
+
+```typescript
+// 解答例 (最終課題)
+
+// StudentManagementSystem クラスの実装例
+class StudentManagementSystem {
+  private students: Student[] = [];
+  private grades: Grade[] = [];
+  private nextId: number = 1;
+
+  registerStudent(studentData: CreateStudentRequest): Student {
+    const newStudent: Student = {
+      id: this.nextId++,
+      ...studentData,
+    };
+    this.students.push(newStudent);
+    return newStudent;
+  }
+
+  findStudentByNumber(studentNumber: string): Student | undefined {
+    return this.students.find((s) => s.studentNumber === studentNumber);
+  }
+
+  addGrade(gradeData: {
+    studentNumber: string;
+    courseCode: string;
+    courseName: string;
+    score: number;
+    semester: string;
+    year: number;
+  }): boolean {
+    const student = this.findStudentByNumber(gradeData.studentNumber);
+    if (!student) {
+      console.error(`Error: Student with number ${gradeData.studentNumber} not found.`);
+      return false;
+    }
+    const newGrade: Grade = {
+      studentId: student.id,
+      ...gradeData,
+    };
+    this.grades.push(newGrade);
+    return true;
+  }
+
+  calculateGPA(studentId: number): number {
+    const studentGrades = this.grades.filter((g) => g.studentId === studentId);
+    if (studentGrades.length === 0) {
+      return 0.0;
+    }
+    const totalScore = studentGrades.reduce((sum, grade) => sum + grade.score, 0);
+    return totalScore / studentGrades.length / 100 * 4; // 仮のGPA計算 (100点満点から4段階評価へ)
+  }
+}
+
+// エラーハンドリングの実装例
+function registerStudentSafe(
+  system: StudentManagementSystem, // StudentManagementSystemのインスタンスを引数に追加
+  studentData: CreateStudentRequest
+): Student | StudentError {
+  // バリデーション処理を実装してください
+  if (!studentData.name || !studentData.email || !studentData.studentNumber) {
+    return { type: "INVALID_DATA", message: "Name, email, and student number are required." };
+  }
+
+  if (system.findStudentByNumber(studentData.studentNumber)) {
+    return { type: "DUPLICATE", message: `Student with number ${studentData.studentNumber} already exists.` };
+  }
+
+  const newStudent = system.registerStudent(studentData);
+  return newStudent;
+}
+
+// 使用例
+const system = new StudentManagementSystem();
+
+const studentData1: CreateStudentRequest = {
+  studentNumber: "S2024001",
+  name: "田中太郎",
+  email: "tanaka@university.ac.jp",
+  birthDate: new Date("2003-04-15"),
+  grade: 2,
+  major: "情報工学",
+  advisor: "佐藤教授",
+  club: "プログラミング研究会",
+};
+
+const result1 = registerStudentSafe(system, studentData1);
+if ("type" in result1) {
+  console.error(`Error: ${result1.message}`);
+} else {
+  console.log("登録成功:", result1);
+}
+
+const studentData2: CreateStudentRequest = {
+  studentNumber: "S2024001", // 重複データ
+  name: "田中太郎",
+  email: "tanaka@university.ac.jp",
+  birthDate: new Date("2003-04-15"),
+  grade: 2,
+  major: "情報工学",
+  advisor: "佐藤教授",
+  club: "プログラミング研究会",
+};
+
+const result2 = registerStudentSafe(system, studentData2);
+if ("type" in result2) {
+  console.error(`Error: ${result2.message}`);
+} else {
+  console.log("登録成功:", result2);
+}
+
+system.addGrade({
+  studentNumber: "S2024001",
+  courseCode: "CS101",
+  courseName: "TypeScript入門",
+  score: 95,
+  semester: "春学期",
+  year: 2024,
+});
+
+system.addGrade({
+  studentNumber: "S2024001",
+  courseCode: "MA201",
+  courseName: "線形代数",
+  score: 80,
+  semester: "春学期",
+  year: 2024,
+});
+
+const student1 = system.findStudentByNumber("S2024001");
+if (student1) {
+  const gpa = system.calculateGPA(student1.id);
+  console.log(`${student1.name}のGPA: ${gpa.toFixed(2)}`);
+}
+```
+---
+
 ## 🎯 成果発表・総括・次ステップ（45-60 分）
 
 ### 発表準備（5 分）

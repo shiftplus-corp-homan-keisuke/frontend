@@ -261,7 +261,6 @@ function updateOrderStatus(order: Order, newStatus: Order["status"]): Order {
   };
 }
 ```
-
 ---
 
 ## 🎯 練習問題

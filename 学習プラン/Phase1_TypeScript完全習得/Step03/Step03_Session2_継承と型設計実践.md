@@ -184,9 +184,9 @@ interface AdminUser extends BaseUser {
 
 > 📚 **関連資料**: [専門用語集 - 型エイリアス vs インターフェース](./Step03_補足_専門用語集.md#型エイリアス-vs-インターフェース) | [実践コード例 - 使い分けパターン](./Step03_補足_実践コード例.md#使い分けパターン)
 
-#### 🎯 使い分けのガイドライン
+#### 🎯 基本的な使い分けのガイドライン
 
-**💡 いつインターフェースを使い、いつ型エイリアスを使うか**
+**💡 Step03レベルでの使い分け**
 
 ```typescript
 // ✅ インターフェース: オブジェクトの構造定義
@@ -196,47 +196,37 @@ interface User {
   email: string;
 }
 
-// ✅ 型エイリアス: ユニオン型、プリミティブ型の別名
-type UserStatus = "active" | "inactive" | "pending";
+// ✅ 型エイリアス: 基本的な別名定義
 type UserId = number;
-
-// ✅ 型エイリアス: 関数型
-type EventHandler = (event: string) => void;
 
 // ✅ インターフェース: 継承が必要な場合
 interface Student extends User {
   studentNumber: string;
   grade: number;
 }
-
-// ❌ 型エイリアスでは継承できない
-// type Student = User & { studentNumber: string; grade: number; }
-// type DetailedStudent extends Student { ... } // エラー！
 ```
 
 **🚀 実践的な使い分け例**
 
 ```typescript
-// 型エイリアス: 状態やステータスの定義
-type OrderStatus = "pending" | "confirmed" | "shipped" | "delivered";
-type PaymentMethod = "credit" | "debit" | "paypal" | "bank";
+// 型エイリアス: 基本的な型の別名
+type StudentId = number;
+type CourseName = string;
 
 // インターフェース: エンティティの構造定義
-interface Order {
-  readonly id: string;
-  readonly customerId: string;
-  readonly createdAt: Date;
-  status: OrderStatus;
-  paymentMethod: PaymentMethod;
-  items: OrderItem[];
-  totalAmount: number;
+interface Course {
+  readonly id: StudentId;
+  readonly courseCode: string;
+  courseName: CourseName;
+  credits: number;
+  instructor: string;
 }
 
-interface OrderItem {
-  readonly productId: string;
-  productName: string;
-  quantity: number;
-  unitPrice: number;
+interface Enrollment {
+  readonly studentId: StudentId;
+  readonly courseId: StudentId;
+  enrollmentDate: Date;
+  status: string;
 }
 ```
 
@@ -244,11 +234,11 @@ interface OrderItem {
 
 ### 🤔 よくある質問と回答
 
-**Q: インターフェースの継承と型エイリアスの交差型（&）の違いは何ですか？**
-A: インターフェースは`extends`キーワードで継承でき、同じインターフェース名を複数回宣言することでプロパティをマージできます。一方、型エイリアスは`&`で型を結合しますが、マージの概念はなく、新しい型を作成します。オブジェクトの型定義にはインターフェース、ユニオン型やプリミティブ型の別名には型エイリアスを使うのが一般的です。
+**Q: インターフェースと型エイリアスはどう使い分けるべきですか？**
+A: Step03レベルでは、オブジェクトの構造定義にはインターフェース、基本的な型の別名には型エイリアスを使用します。インターフェースは`extends`キーワードで継承できるため、拡張性が必要な場合に適しています。
 
 **Q: 継承を使うとコードが複雑になりませんか？**
-A: 適切に使えばコードの再利用性と保守性を高めますが、過度な継承は「継承の階層が深くなる問題」を引き起こす可能性があります。その場合は、コンポジション（オブジェクトの組み合わせ）を検討することも重要です。
+A: 適切に使えばコードの再利用性と保守性を高めますが、過度な継承は避けるべきです。Step03では基本的な継承パターンに集中し、複雑な設計は後のステップで学習します。
 
 ---
 

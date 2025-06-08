@@ -124,6 +124,55 @@ const { name, age, country = "Unknown" } = user;
 const { name: userName, age: userAge } = user;
 ```
 
+**🔥Challenge**
+
+```typescript
+// 問題1: 基本的なオブジェクトの分割代入
+// 以下の product オブジェクトから、name プロパティと price プロパティを抽出し、それぞれ productName と productPrice という変数に代入してください。
+const product = {
+  id: "P001",
+  name: "Laptop",
+  price: 1200,
+  category: "Electronics"
+};
+
+// 問題2: 配列の分割代入とスキップ
+// 以下の dataPoints 配列から、最初の要素と3番目の要素を抽出し、それぞれ firstValue と thirdValue という変数に代入してください。2番目の要素はスキップしてください。
+const dataPoints = [10, 20, 30, 40, 50];
+
+// 問題3: デフォルト値と別名の設定
+// 以下の userConfig オブジェクトがあります。
+// username プロパティを uName という変数名で抽出してください。
+// theme プロパティを theme という変数名で抽出してください。theme が存在しない場合は、デフォルトで "light" を設定してください。
+// language プロパティを抽出してください。もし language が存在しない場合は、デフォルトで "en" を設定してください。
+const userConfig = {
+  username: "TypeScriptLearner",
+  theme: "dark"
+  // language: "ja" は存在しない可能性がある
+};
+
+// 別のデータ例 (languageがない場合)
+const userConfig2 = {
+  username: "GuestUser"
+  // theme も language もない
+};
+
+/**
+問題4: 関数引数での分割代入と型注釈
+オンラインストアでの注文処理をシミュレートする関数 processOrder を作成します。
+この関数は、単一のオブジェクト引数を受け取ります。このオブジェクトは orderId と items というプロパティを持つことが保証されています。
+orderId は文字列 (string) です。
+items はオブジェクトの配列 (Array<{ productId: string; quantity: number; price: number; }>) です。
+課題:
+processOrder 関数を定義し、その引数で orderId と items を分割代入してください。
+分割代入された orderId と items に適切な型注釈を付けてください。
+関数内で、orderId と items を使用して、注文の概要を文字列として返してください。
+例: Order ID: [orderId], 商品数: [items.length]
+*/
+```
+
+
+
 **スプレッド演算子**
 
 スプレッド演算子（`...`）は、配列やオブジェクトの要素を展開する構文です。イミュータブルなデータ操作を可能にし、TypeScript では型安全性を保ちながら効率的なデータ処理を実現します。

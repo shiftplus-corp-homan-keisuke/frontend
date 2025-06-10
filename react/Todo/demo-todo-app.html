@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>高機能TODOアプリ デモ</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* カスタムグラデーション背景 */
+      .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+      }
+      
+      /* ガラスモーフィズム効果 */
+      .glass-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1);
+      }
+      
+      /* モダンな入力フィールド */
+      .modern-input {
+        background: rgba(255, 255, 255, 0.9);
+        border: 2px solid transparent;
+        border-radius: 12px;
+        padding: 12px 16px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      
+      .modern-input:focus {
+        outline: none;
+        border-color: #667eea;
+        background: rgba(255, 255, 255, 1);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+        transform: translateY(-1px);
+      }
+      
+      /* モダンなボタン */
+      .modern-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 12px;
+        padding: 12px 24px;
+        color: white;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      }
+      
+      .modern-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+      }
+      
+      .modern-btn:active {
+        transform: translateY(0);
+      }
+      
+      /* セカンダリボタン */
+      .secondary-btn {
+        background: rgba(255, 255, 255, 0.9);
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 8px 16px;
+        color: #64748b;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+      
+      .secondary-btn:hover {
+        background: rgba(255, 255, 255, 1);
+        border-color: #667eea;
+        color: #667eea;
+        transform: translateY(-1px);
+      }
+      
+      /* TODOアイテムのスタイル */
+      .todo-item {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 16px;
+        margin-bottom: 12px;
+        padding: 20px;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+      
+      .todo-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
+      }
+      
+      /* 優先度バッジ */
+      .priority-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-right: 8px;
+      }
+      
+      .priority-high {
+        background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        color: white;
+      }
+      
+      .priority-medium {
+        background: linear-gradient(135deg, #feca57, #ff9ff3);
+        color: white;
+      }
+      
+      .priority-low {
+        background: linear-gradient(135deg, #48dbfb, #0abde3);
+        color: white;
+      }
+      
+      /* チェックボックスのカスタマイズ */
+      .custom-checkbox {
+        appearance: none;
+        width: 24px;
+        height: 24px;
+        border: 2px solid #d1d5db;
+        border-radius: 6px;
+        background: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+      
+      .custom-checkbox:checked {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: #667eea;
+      }
+      
+      .custom-checkbox:checked::after {
+        content: '✓';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-weight: bold;
+        font-size: 14px;
+      }
+      
+      /* ドラッグ中のスタイル */
+      .dragging {
+        background: rgba(102, 126, 234, 0.1);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        transform: rotate(2deg);
+      }
+      
+      /* アニメーション */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      .fade-in-up {
+        animation: fadeInUp 0.5s ease-out;
+      }
+      
+      /* タグスタイル */
+      .tag {
+        background: rgba(102, 126, 234, 0.1);
+        color: #667eea;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 500;
+        margin-right: 4px;
+      }
+      
+      /* 空状態のスタイル */
+      .empty-state {
+        background: rgba(255, 255, 255, 0.7);
+        border: 2px dashed #d1d5db;
+        border-radius: 16px;
+        padding: 40px;
+        text-align: center;
+        color: #9ca3af;
+      }
+      
+      /* ヘッダーのスタイル */
+      .app-header {
+        padding: 20px 0;
+        margin-bottom: 24px;
+      }
+      
+      .app-title {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 28px;
+        font-weight: 800;
+      }
+      
+      /* スマートフォーム関連のスタイル */
+      .smart-form-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+      }
+      
+      /* メインタスク入力 */
+      .smart-main-input {
+        background: rgba(255, 255, 255, 0.9);
+        border: 2px solid rgba(226, 232, 240, 0.8);
+        border-radius: 16px;
+        font-size: 18px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        box-shadow: none;
+      }
+      
+      .smart-main-input:focus {
+        outline: none;
+        border-color: #667eea;
+        background: rgba(255, 255, 255, 1);
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        transform: translateY(-1px);
+      }
+      
+      .smart-main-input::placeholder {
+        color: #9ca3af;
+        font-weight: 400;
+      }
+      
+      /* クイックアクションボタン */
+      .quick-action-btn {
+        background: rgba(255, 255, 255, 0.8);
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 10px 16px;
+        color: #6b7280;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+      }
+      
+      .quick-action-btn:hover {
+        background: rgba(255, 255, 255, 1);
+        border-color: #667eea;
+        color: #667eea;
+        transform: translateY(-1px);
+      }
+      
+      /* スマート追加ボタン */
+      .smart-add-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 12px;
+        padding: 12px 24px;
+        color: white;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        display: flex;
+        align-items: center;
+      }
+      
+      .smart-add-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      }
+      
+      .smart-add-btn:active {
+        transform: translateY(0);
+      }
+      
+      /* 詳細セクション */
+      .details-section {
+        background: rgba(248, 250, 252, 0.8);
+        border-radius: 16px;
+        padding: 20px;
+        margin-top: 16px;
+        border: 1px solid rgba(226, 232, 240, 0.5);
+        transition: all 0.3s ease;
+      }
+      
+      .details-section.show {
+        animation: slideDown 0.3s ease-out;
+      }
+      
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      .details-header {
+        display: flex;
+        align-items: center;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 16px;
+        font-size: 14px;
+      }
+      
+      /* 入力グループ */
+      .input-group {
+        display: flex;
+        flex-direction: column;
+      }
+      
+      .input-label {
+        display: flex;
+        align-items: center;
+        font-size: 13px;
+        font-weight: 600;
+        color: #4b5563;
+        margin-bottom: 8px;
+      }
+      
+      .smart-detail-input {
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        box-shadow: none;
+      }
+      
+      .smart-detail-input:focus {
+        outline: none;
+        border-color: #667eea;
+        background: rgba(255, 255, 255, 1);
+        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+      }
+      
+      /* クリアボタン */
+      .clear-btn {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: #ef4444;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 10px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      
+      .clear-btn:hover {
+        background: #dc2626;
+        transform: translateY(-50%) scale(1.1);
+      }
+      
+      /* プリセットセクション */
+      .preset-section {
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 12px;
+        padding: 16px;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+      }
+      
+      .preset-header {
+        display: flex;
+        align-items: center;
+        font-size: 13px;
+        font-weight: 600;
+        color: #4b5563;
+        margin-bottom: 12px;
+      }
+      
+      .preset-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      
+      .preset-btn {
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 6px 12px;
+        font-size: 12px;
+        font-weight: 500;
+        color: #6b7280;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+      }
+      
+      .preset-btn:hover {
+        background: rgba(102, 126, 234, 0.1);
+        border-color: #667eea;
+        color: #667eea;
+        transform: translateY(-1px);
+      }
+      
+      .preset-btn:active {
+        transform: translateY(0);
+      }
+      
+      /* タグ候補 */
+      .tag-suggestions {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 10;
+        max-height: 120px;
+        overflow-y: auto;
+      }
+      
+      .tag-suggestion {
+        padding: 8px 12px;
+        cursor: pointer;
+        font-size: 13px;
+        transition: background-color 0.2s ease;
+      }
+      
+      .tag-suggestion:hover {
+        background: #f3f4f6;
+      }
+      
+      .tag-suggestion.selected {
+        background: #667eea;
+        color: white;
+      }
+      
+      /* 文字数カウンター */
+      #charCount {
+        transition: color 0.3s ease;
+      }
+      
+      #charCount.warning {
+        color: #f59e0b;
+      }
+      
+      #charCount.danger {
+        color: #ef4444;
+      }
+      
+      /* レスポンシブ対応 */
+      @media (max-width: 768px) {
+        .smart-form-container {
+          padding: 16px;
+          margin: 0 -4px;
+        }
+        
+        .smart-main-input {
+          font-size: 16px;
+          padding: 16px 12px 16px 48px;
+        }
+        
+        .details-section {
+          padding: 16px;
+        }
+        
+        .preset-buttons {
+          justify-content: center;
+        }
+        
+        .quick-action-btn,
+        .smart-add-btn {
+          flex: 1;
+          justify-content: center;
+        }
+      }
+      
+      /* アクセシビリティ */
+      @media (prefers-reduced-motion: reduce) {
+        .smart-main-input,
+        .smart-detail-input,
+        .quick-action-btn,
+        .smart-add-btn,
+        .preset-btn {
+          transition: none;
+        }
+        
+        .details-section.show {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+  <body class="gradient-bg">
+    <div class="max-w-4xl mx-auto px-4 py-8">
+      <div class="glass-card rounded-3xl p-8 fade-in-up">
+        <header class="app-header">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <i class="fas fa-tasks text-2xl text-purple-600"></i>
+              <h1 class="app-title">高機能TODOアプリ デモ</h1>
+            </div>
+            <button id="signoutBtn" class="secondary-btn">
+              <i class="fas fa-sign-out-alt mr-2"></i>
+              サインアウト
+            </button>
+          </div>
+        </header>
+        
+        <!-- スマートなタスク作成フォーム -->
+        <div class="smart-form-container mb-6">
+          <form id="todoForm" class="space-y-4">
+            <!-- メインタスク入力エリア -->
+            <div class="main-input-section">
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <i class="fas fa-edit text-gray-400"></i>
+                </div>
+                <input
+                  id="todoInput"
+                  type="text"
+                  placeholder="新しいタスクを入力してください..."
+                  class="smart-main-input w-full pl-12 pr-4 py-4 text-lg"
+                  maxlength="50"
+                  required
+                />
+                <div class="absolute inset-y-0 right-0 pr-4 flex items-center">
+                  <span id="charCount" class="text-sm text-gray-400">0/50</span>
+                </div>
+              </div>
+              
+              <!-- クイックアクションボタン -->
+              <div class="flex items-center justify-between mt-3">
+                <button
+                  type="button"
+                  id="toggleDetailsBtn"
+                  class="quick-action-btn"
+                  title="詳細オプションを表示/非表示"
+                >
+                  <i class="fas fa-cog mr-2"></i>
+                  詳細設定
+                  <i id="toggleIcon" class="fas fa-chevron-down ml-2 transition-transform duration-200"></i>
+                </button>
+                
+                <button type="submit" class="smart-add-btn">
+                  <i class="fas fa-plus mr-2"></i>
+                  タスクを追加
+                </button>
+              </div>
+            </div>
+            
+            <!-- 詳細オプション（展開/折りたたみ可能） -->
+            <div id="detailsSection" class="details-section hidden">
+              <div class="details-header">
+                <i class="fas fa-sliders-h mr-2"></i>
+                <span>詳細オプション</span>
+              </div>
+              
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                <!-- 期日設定 -->
+                <div class="input-group">
+                  <label class="input-label">
+                    <i class="fas fa-calendar-alt mr-2 text-blue-500"></i>
+                    期日
+                  </label>
+                  <div class="relative">
+                    <input
+                      id="dueDateInput"
+                      type="date"
+                      class="smart-detail-input"
+                      title="期日を設定"
+                    />
+                    <button
+                      type="button"
+                      id="clearDateBtn"
+                      class="clear-btn hidden"
+                      title="期日をクリア"
+                    >
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                </div>
+                
+                <!-- 優先度設定 -->
+                <div class="input-group">
+                  <label class="input-label">
+                    <i class="fas fa-flag mr-2 text-red-500"></i>
+                    優先度
+                  </label>
+                  <select id="priorityInput" class="smart-detail-input priority-select">
+                    <option value="medium">🟡 中優先度</option>
+                    <option value="high">🔴 高優先度</option>
+                    <option value="low">🔵 低優先度</option>
+                  </select>
+                </div>
+                
+                <!-- タグ設定 -->
+                <div class="input-group">
+                  <label class="input-label">
+                    <i class="fas fa-tags mr-2 text-purple-500"></i>
+                    タグ
+                  </label>
+                  <div class="relative">
+                    <input
+                      id="tagsInput"
+                      type="text"
+                      placeholder="例: 仕事, 重要, 今日"
+                      class="smart-detail-input"
+                    />
+                    <div id="tagSuggestions" class="tag-suggestions hidden"></div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- プリセットボタン -->
+              <div class="preset-section mt-4">
+                <div class="preset-header">
+                  <i class="fas fa-magic mr-2"></i>
+                  <span>クイック設定</span>
+                </div>
+                <div class="preset-buttons">
+                  <button type="button" class="preset-btn" data-preset="urgent">
+                    <i class="fas fa-exclamation-triangle mr-1"></i>
+                    緊急
+                  </button>
+                  <button type="button" class="preset-btn" data-preset="today">
+                    <i class="fas fa-clock mr-1"></i>
+                    今日
+                  </button>
+                  <button type="button" class="preset-btn" data-preset="work">
+                    <i class="fas fa-briefcase mr-1"></i>
+                    仕事
+                  </button>
+                  <button type="button" class="preset-btn" data-preset="personal">
+                    <i class="fas fa-user mr-1"></i>
+                    個人
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        
+        <div class="flex flex-wrap gap-3 mb-6 p-4 bg-gray-50 rounded-2xl">
+          <select id="filterSelect" class="secondary-btn">
+            <option value="all">📋 すべて</option>
+            <option value="active">⏳ 未完了</option>
+            <option value="completed">✅ 完了済み</option>
+          </select>
+          <select id="sortSelect" class="secondary-btn">
+            <option value="order">🔄 手動順</option>
+            <option value="createdAt">📅 作成日</option>
+            <option value="dueDate">⏰ 期日</option>
+            <option value="priority">🎯 優先度</option>
+            <option value="text">🔤 テキスト</option>
+          </select>
+          <select id="sortOrderSelect" class="secondary-btn">
+            <option value="asc">⬆️ 昇順</option>
+            <option value="desc">⬇️ 降順</option>
+          </select>
+          <button id="clearCompletedBtn" class="ml-auto text-red-500 hover:text-red-700 font-medium transition-colors">
+            <i class="fas fa-trash mr-1"></i>
+            完了済み一括削除
+          </button>
+        </div>
+        
+        <div id="todoList" class="space-y-3"></div>
+        
+        <div id="emptyState" class="empty-state hidden">
+          <i class="fas fa-clipboard-list text-4xl mb-4 text-gray-400"></i>
+          <p class="text-lg font-medium">最初の Todo を追加しましょう！</p>
+          <p class="text-sm mt-2">上のフォームから新しいタスクを作成できます</p>
+        </div>
+        
+        <div class="mt-6 flex justify-between items-center p-4 bg-gray-50 rounded-2xl">
+          <div class="flex space-x-6">
+            <span id="activeCount" class="flex items-center text-sm font-medium text-gray-600">
+              <i class="fas fa-clock mr-2 text-orange-500"></i>
+              未完了: 0
+            </span>
+            <span id="completedCount" class="flex items-center text-sm font-medium text-gray-600">
+              <i class="fas fa-check-circle mr-2 text-green-500"></i>
+              完了済み: 0
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <script>
+      // --- 状態管理 ---
+      let todos = [];
+      let filter = "all";
+      let sortBy = "order";
+      let sortOrder = "asc";
+      let orderSeed = 0;
+      let editingId = null;
+
+      // --- スマートフォーム関連の状態 ---
+      let detailsVisible = false;
+      const commonTags = ['仕事', '個人', '重要', '緊急', '今日', '明日', '買い物', '勉強', '運動', '家事'];
+
+      // --- スマートフォーム機能 ---
+      
+      // 文字数カウンター更新
+      function updateCharCount() {
+        const input = document.getElementById('todoInput');
+        const counter = document.getElementById('charCount');
+        const length = input.value.length;
+        const maxLength = input.maxLength;
+        
+        counter.textContent = `${length}/${maxLength}`;
+        
+        // 文字数に応じて色を変更
+        counter.className = 'text-sm';
+        if (length > maxLength * 0.8) {
+          counter.className += ' text-red-500 font-semibold';
+        } else if (length > maxLength * 0.6) {
+          counter.className += ' text-yellow-500';
+        } else {
+          counter.className += ' text-gray-400';
+        }
+      }
+
+      // 詳細セクションの表示/非表示切り替え
+      function toggleDetailsSection() {
+        const detailsSection = document.getElementById('detailsSection');
+        const toggleIcon = document.getElementById('toggleIcon');
+        
+        detailsVisible = !detailsVisible;
+        
+        if (detailsVisible) {
+          detailsSection.classList.remove('hidden');
+          detailsSection.classList.add('show');
+          toggleIcon.style.transform = 'rotate(180deg)';
+        } else {
+          detailsSection.classList.add('hidden');
+          detailsSection.classList.remove('show');
+          toggleIcon.style.transform = 'rotate(0deg)';
+        }
+      }
+
+      // 期日クリアボタンの表示/非表示
+      function updateClearDateButton() {
+        const dateInput = document.getElementById('dueDateInput');
+        const clearBtn = document.getElementById('clearDateBtn');
+        
+        if (dateInput.value) {
+          clearBtn.classList.remove('hidden');
+        } else {
+          clearBtn.classList.add('hidden');
+        }
+      }
+
+      // タグ候補の表示
+      function showTagSuggestions(input) {
+        const suggestions = document.getElementById('tagSuggestions');
+        const inputValue = input.value.toLowerCase();
+        const currentTags = inputValue.split(',').map(tag => tag.trim());
+        const lastTag = currentTags[currentTags.length - 1];
+        
+        if (lastTag.length < 1) {
+          suggestions.classList.add('hidden');
+          return;
+        }
+        
+        const filteredTags = commonTags.filter(tag =>
+          tag.toLowerCase().includes(lastTag) &&
+          !currentTags.slice(0, -1).includes(tag)
+        );
+        
+        if (filteredTags.length === 0) {
+          suggestions.classList.add('hidden');
+          return;
+        }
+        
+        suggestions.innerHTML = filteredTags.map(tag =>
+          `<div class="tag-suggestion" data-tag="${tag}">${tag}</div>`
+        ).join('');
+        
+        suggestions.classList.remove('hidden');
+      }
+
+      // タグ候補選択
+      function selectTagSuggestion(selectedTag) {
+        const input = document.getElementById('tagsInput');
+        const currentTags = input.value.split(',').map(tag => tag.trim());
+        currentTags[currentTags.length - 1] = selectedTag;
+        input.value = currentTags.join(', ') + ', ';
+        document.getElementById('tagSuggestions').classList.add('hidden');
+        input.focus();
+      }
+
+      // プリセット設定の適用
+      function applyPreset(presetType) {
+        const dueDateInput = document.getElementById('dueDateInput');
+        const priorityInput = document.getElementById('priorityInput');
+        const tagsInput = document.getElementById('tagsInput');
+        
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        
+        switch (presetType) {
+          case 'urgent':
+            priorityInput.value = 'high';
+            tagsInput.value = '緊急, 重要';
+            break;
+          case 'today':
+            dueDateInput.value = today.toISOString().split('T')[0];
+            tagsInput.value = '今日';
+            break;
+          case 'work':
+            priorityInput.value = 'medium';
+            tagsInput.value = '仕事';
+            break;
+          case 'personal':
+            priorityInput.value = 'low';
+            tagsInput.value = '個人';
+            break;
+        }
+        
+        updateClearDateButton();
+        
+        // プリセット適用のフィードバック
+        const btn = document.querySelector(`[data-preset="${presetType}"]`);
+        btn.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          btn.style.transform = 'scale(1)';
+        }, 150);
+      }
+
+      // フォームリセット
+      function resetSmartForm() {
+        document.getElementById('todoInput').value = '';
+        document.getElementById('dueDateInput').value = '';
+        document.getElementById('priorityInput').value = 'medium';
+        document.getElementById('tagsInput').value = '';
+        document.getElementById('tagSuggestions').classList.add('hidden');
+        updateCharCount();
+        updateClearDateButton();
+        
+        // 詳細セクションを閉じる
+        if (detailsVisible) {
+          toggleDetailsSection();
+        }
+      }
+
+      // --- ユーティリティ ---
+      function getPriorityBadge(priority) {
+        const badges = {
+          high: '<span class="priority-badge priority-high"><i class="fas fa-exclamation-triangle mr-1"></i>高</span>',
+          medium: '<span class="priority-badge priority-medium"><i class="fas fa-minus mr-1"></i>中</span>',
+          low: '<span class="priority-badge priority-low"><i class="fas fa-arrow-down mr-1"></i>低</span>'
+        };
+        return badges[priority] || badges.medium;
+      }
+
+      function formatTags(tags) {
+        return tags.map(tag => `<span class="tag">#${tag}</span>`).join('');
+      }
+
+      function renderTodos() {
+        let filtered = todos.filter((t) => {
+          if (filter === "active") return !t.completed;
+          if (filter === "completed") return t.completed;
+          return true;
+        });
+        
+        filtered.sort((a, b) => {
+          let valA, valB;
+          switch (sortBy) {
+            case "priority":
+              const pMap = { high: 3, medium: 2, low: 1 };
+              valA = pMap[a.priority];
+              valB = pMap[b.priority];
+              break;
+            case "dueDate":
+              valA = a.dueDate || (sortOrder === "asc" ? "9999-12-31" : "0000-01-01");
+              valB = b.dueDate || (sortOrder === "asc" ? "9999-12-31" : "0000-01-01");
+              break;
+            case "createdAt":
+              valA = a.createdAt;
+              valB = b.createdAt;
+              break;
+            case "text":
+              valA = a.text;
+              valB = b.text;
+              break;
+            default:
+              valA = a.order;
+              valB = b.order;
+          }
+          if (valA < valB) return sortOrder === "asc" ? -1 : 1;
+          if (valA > valB) return sortOrder === "asc" ? 1 : -1;
+          return 0;
+        });
+        
+        const list = document.getElementById("todoList");
+        list.innerHTML = "";
+        
+        filtered.forEach((todo, idx) => {
+          const li = document.createElement("div");
+          li.className = `todo-item fade-in-up ${todo.completed ? 'opacity-60' : ''}`;
+          li.draggable = true;
+          li.dataset.id = todo.id;
+          
+          li.innerHTML = `
+            <div class="flex items-start space-x-4">
+              <input type="checkbox" class="custom-checkbox mt-1" ${
+                todo.completed ? "checked" : ""
+              } data-action="toggle" />
+              
+              <div class="flex-grow">
+                ${
+                  editingId === todo.id
+                    ? `
+                    <div class="space-y-3">
+                      <input type="text" class="modern-input w-full" value="${
+                        todo.text
+                      }" data-action="editText" />
+                      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <input type="date" class="modern-input" value="${
+                          todo.dueDate || ""
+                        }" data-action="editDueDate" />
+                        <select class="modern-input" data-action="editPriority">
+                          <option value="high" ${
+                            todo.priority === "high" ? "selected" : ""
+                          }>🔴 高優先度</option>
+                          <option value="medium" ${
+                            todo.priority === "medium" ? "selected" : ""
+                          }>🟡 中優先度</option>
+                          <option value="low" ${
+                            todo.priority === "low" ? "selected" : ""
+                          }>🔵 低優先度</option>
+                        </select>
+                        <input type="text" class="modern-input" value="${todo.tags.join(
+                          ","
+                        )}" data-action="editTags" placeholder="タグ (カンマ区切り)" />
+                      </div>
+                      <div class="flex gap-2 justify-end">
+                        <button class="modern-btn" data-action="saveEdit">
+                          <i class="fas fa-save mr-1"></i>保存
+                        </button>
+                        <button class="secondary-btn" data-action="cancelEdit">
+                          <i class="fas fa-times mr-1"></i>キャンセル
+                        </button>
+                      </div>
+                    </div>
+                  `
+                    : `
+                    <div class="space-y-2">
+                      <div class="flex items-center space-x-2">
+                        ${getPriorityBadge(todo.priority)}
+                        <h3 class="text-lg font-medium ${
+                          todo.completed ? "line-through text-gray-500" : "text-gray-800"
+                        }">${todo.text}</h3>
+                      </div>
+                      
+                      <div class="flex flex-wrap items-center gap-2 text-sm text-gray-600">
+                        ${todo.dueDate ? `
+                          <span class="flex items-center">
+                            <i class="fas fa-calendar-alt mr-1 text-blue-500"></i>
+                            期日: ${todo.dueDate}
+                          </span>
+                        ` : ''}
+                        ${todo.tags.length ? `
+                          <div class="flex items-center">
+                            <i class="fas fa-tags mr-2 text-purple-500"></i>
+                            ${formatTags(todo.tags)}
+                          </div>
+                        ` : ''}
+                      </div>
+                    </div>
+                  `
+                }
+              </div>
+              
+              ${
+                editingId !== todo.id
+                  ? `
+                  <div class="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button class="text-blue-500 hover:text-blue-700 p-2" data-action="edit" title="編集">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="text-red-500 hover:text-red-700 p-2" data-action="delete" title="削除">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                `
+                  : ""
+              }
+            </div>
+          `;
+          
+          list.appendChild(li);
+        });
+        
+        document.getElementById("emptyState").style.display = filtered.length ? "none" : "block";
+        document.getElementById("activeCount").innerHTML = 
+          `<i class="fas fa-clock mr-2 text-orange-500"></i>未完了: ${todos.filter((t) => !t.completed).length}`;
+        document.getElementById("completedCount").innerHTML = 
+          `<i class="fas fa-check-circle mr-2 text-green-500"></i>完了済み: ${todos.filter((t) => t.completed).length}`;
+      }
+
+      // --- イベント ---
+      document.getElementById("todoForm").onsubmit = function (e) {
+        e.preventDefault();
+        const text = document.getElementById("todoInput").value.trim();
+        if (!text) return;
+        
+        const dueDate = document.getElementById("dueDateInput").value || null;
+        const priority = document.getElementById("priorityInput").value;
+        const tags = document
+          .getElementById("tagsInput")
+          .value.split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+          
+        todos.push({
+          id: "t" + Date.now() + Math.random(),
+          text,
+          completed: false,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+          dueDate,
+          priority,
+          tags,
+          order: orderSeed++,
+        });
+        
+        // スマートフォームのリセット機能を使用
+        resetSmartForm();
+        renderTodos();
+      };
+
+      // --- スマートフォームのイベントリスナー ---
+      
+      // 文字数カウンター
+      document.getElementById("todoInput").addEventListener("input", updateCharCount);
+      
+      // 詳細セクションの切り替え
+      document.getElementById("toggleDetailsBtn").addEventListener("click", toggleDetailsSection);
+      
+      // 期日入力の変更監視
+      document.getElementById("dueDateInput").addEventListener("change", updateClearDateButton);
+      
+      // 期日クリアボタン
+      document.getElementById("clearDateBtn").addEventListener("click", function() {
+        document.getElementById("dueDateInput").value = "";
+        updateClearDateButton();
+      });
+      
+      // タグ入力の候補表示
+      document.getElementById("tagsInput").addEventListener("input", function(e) {
+        showTagSuggestions(e.target);
+      });
+      
+      // タグ入力のフォーカス外れで候補を隠す
+      document.getElementById("tagsInput").addEventListener("blur", function() {
+        setTimeout(() => {
+          document.getElementById("tagSuggestions").classList.add("hidden");
+        }, 200);
+      });
+      
+      // タグ候補のクリック
+      document.getElementById("tagSuggestions").addEventListener("click", function(e) {
+        if (e.target.classList.contains("tag-suggestion")) {
+          selectTagSuggestion(e.target.dataset.tag);
+        }
+      });
+      
+      // プリセットボタンのクリック
+      document.querySelectorAll(".preset-btn").forEach(btn => {
+        btn.addEventListener("click", function() {
+          applyPreset(this.dataset.preset);
+        });
+      });
+      
+      // キーボードショートカット
+      document.addEventListener("keydown", function(e) {
+        // Ctrl/Cmd + Enter でフォーム送信
+        if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+          const form = document.getElementById("todoForm");
+          if (document.activeElement && form.contains(document.activeElement)) {
+            e.preventDefault();
+            form.dispatchEvent(new Event("submit"));
+          }
+        }
+        
+        // Ctrl/Cmd + D で詳細セクション切り替え
+        if ((e.ctrlKey || e.metaKey) && e.key === "d") {
+          if (document.activeElement && document.getElementById("todoForm").contains(document.activeElement)) {
+            e.preventDefault();
+            toggleDetailsSection();
+          }
+        }
+      });
+
+      document.getElementById("filterSelect").onchange = function (e) {
+        filter = e.target.value;
+        renderTodos();
+      };
+
+      document.getElementById("sortSelect").onchange = function (e) {
+        sortBy = e.target.value;
+        renderTodos();
+      };
+
+      document.getElementById("sortOrderSelect").onchange = function (e) {
+        sortOrder = e.target.value;
+        renderTodos();
+      };
+
+      document.getElementById("clearCompletedBtn").onclick = function () {
+        if (confirm("完了済みのTodoをすべて削除しますか？")) {
+          todos = todos.filter((t) => !t.completed);
+          renderTodos();
+        }
+      };
+
+      document.getElementById("signoutBtn").onclick = function () {
+        alert("サインアウトしました (デモ)");
+      };
+
+      document.getElementById("todoList").onclick = function (e) {
+        const todoItem = e.target.closest(".todo-item");
+        if (!todoItem) return;
+        
+        const id = todoItem.dataset.id;
+        const todo = todos.find((t) => t.id === id);
+        if (!todo) return;
+        
+        const action = e.target.dataset.action || e.target.closest('[data-action]')?.dataset.action;
+        
+        if (action === "toggle") {
+          todo.completed = !todo.completed;
+          todo.updatedAt = Date.now();
+          renderTodos();
+        } else if (action === "edit") {
+          editingId = id;
+          renderTodos();
+        } else if (action === "delete") {
+          if (confirm(`「${todo.text}」を削除しますか？`)) {
+            todos = todos.filter((t) => t.id !== id);
+            renderTodos();
+          }
+        } else if (action === "saveEdit") {
+          const text = todoItem.querySelector('[data-action="editText"]').value.trim();
+          const dueDate = todoItem.querySelector('[data-action="editDueDate"]').value || null;
+          const priority = todoItem.querySelector('[data-action="editPriority"]').value;
+          const tags = todoItem
+            .querySelector('[data-action="editTags"]')
+            .value.split(",")
+            .map((s) => s.trim())
+            .filter(Boolean);
+            
+          if (!text) return alert("テキストは必須です");
+          
+          todo.text = text;
+          todo.dueDate = dueDate;
+          todo.priority = priority;
+          todo.tags = tags;
+          todo.updatedAt = Date.now();
+          editingId = null;
+          renderTodos();
+        } else if (action === "cancelEdit") {
+          editingId = null;
+          renderTodos();
+        }
+      };
+
+      // --- D&D ---
+      let dragSrcId = null;
+      
+      document.getElementById("todoList").addEventListener("dragstart", function (e) {
+        const todoItem = e.target.closest(".todo-item");
+        if (!todoItem) return;
+        dragSrcId = todoItem.dataset.id;
+        todoItem.classList.add("dragging");
+      });
+
+      document.getElementById("todoList").addEventListener("dragend", function (e) {
+        const todoItem = e.target.closest(".todo-item");
+        if (todoItem) todoItem.classList.remove("dragging");
+        dragSrcId = null;
+      });
+
+      document.getElementById("todoList").addEventListener("dragover", function (e) {
+        e.preventDefault();
+        const todoItem = e.target.closest(".todo-item");
+        if (!todoItem || todoItem.dataset.id === dragSrcId) return;
+        todoItem.style.borderTop = "3px solid #667eea";
+      });
+
+      document.getElementById("todoList").addEventListener("dragleave", function (e) {
+        const todoItem = e.target.closest(".todo-item");
+        if (todoItem) todoItem.style.borderTop = "";
+      });
+
+      document.getElementById("todoList").addEventListener("drop", function (e) {
+        e.preventDefault();
+        const todoItem = e.target.closest(".todo-item");
+        if (!todoItem || todoItem.dataset.id === dragSrcId) return;
+        
+        todoItem.style.borderTop = "";
+        const fromIdx = todos.findIndex((t) => t.id === dragSrcId);
+        const toIdx = todos.findIndex((t) => t.id === todoItem.dataset.id);
+        
+        if (fromIdx < 0 || toIdx < 0) return;
+        
+        const [moved] = todos.splice(fromIdx, 1);
+        todos.splice(toIdx, 0, moved);
+        todos.forEach((t, i) => (t.order = i));
+        renderTodos();
+      });
+
+      // --- 初期化処理 ---
+      function initializeSmartForm() {
+        // 文字数カウンターの初期化
+        updateCharCount();
+        
+        // 期日クリアボタンの初期化
+        updateClearDateButton();
+        
+        // タグ候補の初期化
+        document.getElementById("tagSuggestions").classList.add("hidden");
+        
+        // 詳細セクションの初期状態
+        const detailsSection = document.getElementById('detailsSection');
+        const toggleIcon = document.getElementById('toggleIcon');
+        detailsSection.classList.add('hidden');
+        toggleIcon.style.transform = 'rotate(0deg)';
+        
+        // フォーカス時のアニメーション改善
+        const mainInput = document.getElementById('todoInput');
+        mainInput.addEventListener('focus', function() {
+          this.parentElement.style.transform = 'scale(1.02)';
+        });
+        
+        mainInput.addEventListener('blur', function() {
+          this.parentElement.style.transform = 'scale(1)';
+        });
+        
+        // アクセシビリティの改善
+        document.getElementById('toggleDetailsBtn').setAttribute('aria-expanded', 'false');
+        document.getElementById('detailsSection').setAttribute('aria-hidden', 'true');
+      }
+
+      // 初期描画とスマートフォーム初期化
+      renderTodos();
+      initializeSmartForm();
+    </script>
+  </body>
+</html>

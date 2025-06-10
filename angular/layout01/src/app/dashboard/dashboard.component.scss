@@ -1,0 +1,17 @@
+.dashboard {
+  h2 {
+    margin-bottom: 24px;
+  }
+  .card-list {
+    display: flex;
+    gap: 24px;
+  }
+  .card {
+    background: #fff;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    min-width: 180px;
+    font-size: 1.1rem;
+  }
+}

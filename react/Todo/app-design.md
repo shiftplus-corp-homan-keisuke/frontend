@@ -1,0 +1,1142 @@
+## 高機能 Todo アプリケーション 仕様書 (Jotai 版)
+
+### 1. アプリケーションの目標と主要機能
+
+#### 1.1. 目標
+
+- ユーザー認証に基づく Todo の個人管理を実現する。
+- クラウドデータベース（Firebase Firestore）によるデータ永続化とデバイス間同期を可能にする。
+- 期日、優先度、タグなどの詳細情報を Todo に付与し、管理しやすくする。
+- ドラッグ＆ドロップによる直感的な並べ替え機能を提供する。
+- Jotai を活用した、スケーラブルでパフォーマンスの良い状態管理アーキテクチャを構築する。
+
+#### 1.2. 主要機能
+
+1.  **ユーザー認証**: サインアップ、サインイン、サインアウト機能。
+2.  **Todo の追加**: テキストに加え、期日、優先度、タグを設定して Todo を追加できる。
+3.  **Todo の表示**: 現在の Todo リストを表示。フィルタリング、ソート、手動並べ替えに対応する。
+4.  **Todo の完了/未完了切り替え**: Todo の完了状態をトグルできる。
+5.  **Todo の編集**: 既存の Todo のテキスト、期日、優先度、タグを編集できる。
+6.  **Todo の削除**: 個別の Todo をリストから削除できる。
+7.  **フィルタリング**: 「すべて」「未完了」「完了済み」の基本的なフィルタに加え、期日、優先度、タグによる高度なフィルタリングも検討。
+8.  **ソート**: 作成日時、期日、優先度、手動順序に基づいて Todo をソートできる。
+9.  **ドラッグ＆ドロップ並べ替え**: UI 上で Todo アイテムをドラッグ＆ドロップして表示順を手動で変更できる。
+10. **完了済み Todo の一括削除**: 完了済みの Todo をまとめて削除する機能。
+
+### 2. 技術スタック
+
+- **フレームワーク**: React.js (v18 以降)
+- **言語**: TypeScript
+- **状態管理**: Jotai
+- **バックエンド/DB**: Firebase
+  - **Authentication**: ユーザー認証用
+  - **Firestore**: Todo データ永続化・同期用
+- **ルーティング (オプション)**: React Router (v6) - 認証ページと Todo ページなど、複数のビューがある場合
+- **UI ライブラリ/フレームワーク (推奨)**:
+  - Tailwind CSS (ユーティリティファースト CSS)
+  - または、Material-UI, Chakra UI, Ant Design などのコンポーネントライブラリ (日付ピッカー、モーダル等のため)
+- **ドラッグ＆ドロップ**: `react-beautiful-dnd`
+- **フォーム管理 (オプション)**: React Hook Form (入力バリデーションとパフォーマンス向上のため)
+- **日付操作**: `date-fns` または Day.js
+- **バンドラー**: Vite (推奨) または Create React App (Next.js も選択肢だが、本仕様ではクライアントサイドレンダリングを主眼とする)
+- **テスト**:
+  - Jest: JavaScript テストフレームワーク
+  - React Testing Library: React コンポーネントテスト用ユーティリティ
+- **リンター/フォーマッター**: ESLint, Prettier
+
+### 3. データ構造 (TypeScript)
+
+#### `src/types/index.ts`
+
+```typescript
+import { Timestamp } from "firebase/firestore"; // FirestoreのTimestamp型
+
+export interface User {
+  uid: string;
+  email: string | null;
+  displayName?: string | null;
+  // 他に必要なユーザー情報があれば追加
+}
+
+export interface Todo {
+  id: string; // FirestoreのドキュメントID
+  userId: string; // このTodoを所有するユーザーのUID
+  text: string; // Todoの内容
+  completed: boolean; // 完了状態
+  createdAt: Timestamp | number; // 作成日時 (Firestore Timestamp or Unix millis)
+  updatedAt: Timestamp | number; // 最終更新日時 (Firestore Timestamp or Unix millis)
+  dueDate?: Timestamp | number | null; // 期日 (オプション)
+  priority: "low" | "medium" | "high"; // 優先度
+  tags: string[]; // タグの配列 (例: ["work", "personal"])
+  order: number; // ドラッグ＆ドロップによる表示順 (数値が小さいほど上)
+}
+
+// フィルタリングの状態
+export type TodoFilterType = "all" | "active" | "completed";
+
+// ソートキー
+export type TodoSortBy =
+  | "createdAt"
+  | "dueDate"
+  | "priority"
+  | "order"
+  | "text";
+
+// ソート順
+export type TodoSortOrder = "asc" | "desc";
+```
+
+- `createdAt`, `updatedAt`, `dueDate` は Firestore に保存する際は `Timestamp` 型を使用し、クライアントで扱う際は必要に応じてミリ秒の数値に変換することを推奨します。
+
+### 4. アーキテクチャとディレクトリ構造
+
+```
+src/
+├── App.tsx                 // アプリケーションのルート、Jotai Provider, ルーター設定
+├── main.tsx                // Reactアプリケーションのエントリーポイント
+├── config/                 // 設定ファイル (Firebase設定など)
+│   └── firebase.ts         // Firebase初期化とインスタンスエクスポート
+├── store/                  // Jotai atoms
+│   ├── authAtoms.ts        // 認証関連のatom
+│   ├── todoAtoms.ts        // TodoデータおよびUI状態関連のatom
+│   └── atomUtils.ts        // (オプション) atom関連の共通ユーティリティ
+├── components/             // UIコンポーネント
+│   ├── Auth/               // 認証関連コンポーネント
+│   │   ├── SignInForm.tsx
+│   │   ├── SignUpForm.tsx
+│   │   └── AuthGuard.tsx     // 認証が必要なルートを保護するコンポーネント
+│   ├── Common/             // 共通UIコンポーネント (Button, Modal, Spinnerなど)
+│   │   ├── LoadingSpinner.tsx
+│   │   └── ErrorMessage.tsx
+│   ├── Todo/               // Todo機能関連コンポーネント
+│   │   ├── TodoAppLayout.tsx // Todoページのメインレイアウト
+│   │   ├── TodoForm.tsx      // Todo追加・編集フォーム
+│   │   ├── TodoList.tsx      // Todoリスト表示 (D&Dコンテナ)
+│   │   ├── TodoItem.tsx      // 個々のTodoアイテム
+│   │   ├── TodoFilterSort.tsx// フィルタリング・ソートUI
+│   │   └── ClearCompletedButton.tsx
+│   └── Layout/             // アプリ全体のレイアウトコンポーネント
+│       ├── Header.tsx
+│       └── Footer.tsx
+├── services/               // 外部サービスとの連携 (APIクライアントなど)
+│   └── todoService.ts      // FirestoreへのCRUD操作をカプセル化 (Jotai atomから利用)
+├── hooks/                  // カスタムフック (UIロジックや再利用可能なロジック)
+│   └── useDebounce.ts      // (例) 入力値のデバウンス用
+├── types/                  // TypeScript型定義
+│   └── index.ts
+├── utils/                  // 汎用ユーティリティ関数
+│   ├── dateUtils.ts
+│   ├── validationUtils.ts
+│   └── arrayUtils.ts
+├── assets/                 // 静的アセット (画像、フォントなど)
+└── styles/                 // グローバルスタイル、テーマ設定
+    └── global.css
+```
+
+### 5. 状態管理 (Jotai Atoms)
+
+Jotai の atom を使用して、アプリケーションの状態を宣言的かつ細かく管理します。
+
+#### 5.1. `store/authAtoms.ts`
+
+認証関連の状態とアクションを管理する atom 群。
+
+```typescript
+import { atom } from "jotai";
+import {
+  User as FirebaseUser,
+  onAuthStateChanged,
+  signOut as firebaseSignOut,
+} from "firebase/auth";
+import {
+  auth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+} from "../config/firebase"; // Firebase認証関数
+import { User } from "../types"; // アプリケーション内のUser型
+
+// 現在の認証ユーザー情報
+export const currentUserAtom = atom<User | null>(null);
+// 認証プロセスのローディング状態
+export const authLoadingAtom = atom<boolean>(true);
+// 認証エラーメッセージ
+export const authErrorAtom = atom<string | null>(null);
+
+// Firebaseの認証状態変更を監視し、関連atomを更新するatom。
+// このatomは副作用（リスナー登録）を持つため、アプリケーションの初期化時に一度読み込む。
+export const authStateObserverAtom = atom(
+  (get) => get(currentUserAtom), // このatomの読み取り値はcurrentUserAtomと同じ
+  (_get, set) => {
+    set(authLoadingAtom, true);
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      (firebaseUser: FirebaseUser | null) => {
+        if (firebaseUser) {
+          // FirebaseUserからアプリケーションのUser型にマッピング
+          const appUser: User = {
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            displayName: firebaseUser.displayName,
+          };
+          set(currentUserAtom, appUser);
+        } else {
+          set(currentUserAtom, null);
+        }
+        set(authErrorAtom, null);
+        set(authLoadingAtom, false);
+      },
+      (error) => {
+        console.error("Auth state change error:", error);
+        set(authErrorAtom, error.message || "Authentication error.");
+        set(currentUserAtom, null);
+        set(authLoadingAtom, false);
+      }
+    );
+    return unsubscribe; // atomアンマウント時にリスナーを解除
+  }
+);
+
+// サインインアクション (書き込み専用atom)
+export const signInAtom = atom(
+  null,
+  async (
+    _get,
+    set,
+    { email, password }: { email: string; password: string }
+  ) => {
+    set(authLoadingAtom, true);
+    set(authErrorAtom, null);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      // authStateObserverAtom が currentUserAtom を更新する
+    } catch (error: any) {
+      set(authErrorAtom, error.message || "Failed to sign in.");
+    } finally {
+      set(authLoadingAtom, false);
+    }
+  }
+);
+
+// サインアップアクション (書き込み専用atom)
+export const signUpAtom = atom(
+  null,
+  async (
+    _get,
+    set,
+    { email, password }: { email: string; password: string }
+  ) => {
+    set(authLoadingAtom, true);
+    set(authErrorAtom, null);
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+    } catch (error: any) {
+      set(authErrorAtom, error.message || "Failed to sign up.");
+    } finally {
+      set(authLoadingAtom, false);
+    }
+  }
+);
+
+// サインアウトアクション (書き込み専用atom)
+export const signOutAtom = atom(null, async (_get, set) => {
+  set(authLoadingAtom, true);
+  try {
+    await firebaseSignOut(auth);
+  } catch (error: any) {
+    set(authErrorAtom, error.message || "Failed to sign out.");
+  } finally {
+    set(authLoadingAtom, false); // authStateObserverがcurrentUserをnullにする
+  }
+});
+```
+
+#### 5.2. `store/todoAtoms.ts`
+
+Todo データの状態、UI の状態（フィルタ、ソート）、および Todo 操作に関連する atom 群。
+
+```typescript
+import { atom } from "jotai";
+import { Timestamp } from "firebase/firestore";
+import { Todo, TodoFilterType, TodoSortBy, TodoSortOrder } from "../types";
+import { currentUserAtom } from "./authAtoms";
+import {
+  subscribeToTodos,
+  addTodo as addTodoService,
+  updateTodo as updateTodoService,
+  deleteTodo as deleteTodoService,
+  clearCompletedTodos as clearCompletedTodosService,
+  updateTodosOrder as updateTodosOrderService,
+} from "../services/todoService"; // Firestore操作を抽象化したサービス
+
+// --- データ Atom ---
+// Firestoreから取得した生のTodoリスト
+export const baseTodosAtom = atom<Todo[]>([]);
+// Todoデータのローディング状態
+export const todosLoadingAtom = atom<boolean>(true);
+// Todoデータ関連のエラーメッセージ
+export const todosErrorAtom = atom<string | null>(null);
+
+// FirestoreからのTodoデータ購読を管理するatom (副作用を持つ)
+export const todosObserverAtom = atom(
+  (get) => get(baseTodosAtom), // 読み取り値はbaseTodosAtom
+  (get, set) => {
+    const currentUser = get(currentUserAtom);
+    if (!currentUser) {
+      set(baseTodosAtom, []);
+      set(todosLoadingAtom, false);
+      return;
+    }
+
+    set(todosLoadingAtom, true);
+    set(todosErrorAtom, null);
+
+    // todoService.ts を介して購読を開始
+    const unsubscribe = subscribeToTodos(
+      currentUser.uid,
+      (fetchedTodos) => {
+        set(baseTodosAtom, fetchedTodos);
+        set(todosLoadingAtom, false);
+      },
+      (error) => {
+        set(todosErrorAtom, error.message || "Failed to load todos.");
+        set(todosLoadingAtom, false);
+      }
+    );
+    return unsubscribe; // atomアンマウント時に購読を解除
+  }
+);
+
+// --- UI状態 Atom ---
+export const todoFilterAtom = atom<TodoFilterType>("all");
+export const todoSortByAtom = atom<TodoSortBy>("order"); // デフォルトは手動順
+export const todoSortOrderAtom = atom<TodoSortOrder>("asc");
+
+// --- 派生 Atom (Derived Atoms) ---
+// フィルタリングされたTodoリスト
+export const filteredTodosAtom = atom<Todo[]>((get) => {
+  const todos = get(baseTodosAtom);
+  const filter = get(todoFilterAtom);
+  // タグや期日でのフィルタリングロジックもここに追加可能
+  if (filter === "active") return todos.filter((todo) => !todo.completed);
+  if (filter === "completed") return todos.filter((todo) => todo.completed);
+  return todos;
+});
+
+// フィルタリングされ、ソートされた最終的な表示用Todoリスト
+export const visibleTodosAtom = atom<Todo[]>((get) => {
+  const filtered = get(filteredTodosAtom);
+  const sortBy = get(todoSortByAtom);
+  const sortOrder = get(todoSortOrderAtom);
+
+  return [...filtered].sort((a, b) => {
+    let valA: any, valB: any;
+    // createdAt, updatedAt, dueDate は Timestamp or number なので比較前に正規化が必要な場合がある
+    // 例: a.createdAt instanceof Timestamp ? a.createdAt.toMillis() : a.createdAt
+
+    switch (sortBy) {
+      case "priority":
+        const priorityMap = { high: 3, medium: 2, low: 1 };
+        valA = priorityMap[a.priority];
+        valB = priorityMap[b.priority];
+        break;
+      case "dueDate":
+        // 未設定の場合のソート順を考慮 (null/undefined は最後に来るように)
+        valA = a.dueDate
+          ? a.dueDate instanceof Timestamp
+            ? a.dueDate.toMillis()
+            : a.dueDate
+          : sortOrder === "asc"
+          ? Infinity
+          : -Infinity;
+        valB = b.dueDate
+          ? b.dueDate instanceof Timestamp
+            ? b.dueDate.toMillis()
+            : b.dueDate
+          : sortOrder === "asc"
+          ? Infinity
+          : -Infinity;
+        break;
+      case "order":
+        valA = a.order;
+        valB = b.order;
+        break;
+      default: // createdAt, textなど
+        valA = a[sortBy];
+        valB = b[sortBy];
+        if (
+          sortBy === "text" &&
+          typeof valA === "string" &&
+          typeof valB === "string"
+        ) {
+          return sortOrder === "asc"
+            ? valA.localeCompare(valB)
+            : valB.localeCompare(valA);
+        }
+        break;
+    }
+
+    if (valA < valB) return sortOrder === "asc" ? -1 : 1;
+    if (valA > valB) return sortOrder === "asc" ? 1 : -1;
+    return 0;
+  });
+});
+
+// 未完了のTodo数
+export const activeTodoCountAtom = atom(
+  (get) => get(baseTodosAtom).filter((todo) => !todo.completed).length
+);
+export const completedTodoCountAtom = atom(
+  (get) => get(baseTodosAtom).filter((todo) => todo.completed).length
+);
+
+// --- アクション Atom (書き込み専用) ---
+// 各アクションは対応するサービス関数を呼び出し、ローディング/エラー状態を管理する。
+// Firestoreのリアルタイム更新により baseTodosAtom は自動的に更新される想定。
+
+export const addTodoAtom = atom(
+  null,
+  async (
+    get,
+    set,
+    newTodoData: Omit<
+      Todo,
+      "id" | "userId" | "createdAt" | "updatedAt" | "completed" | "order"
+    >
+  ) => {
+    const currentUser = get(currentUserAtom);
+    if (!currentUser) throw new Error("User not authenticated.");
+    set(todosLoadingAtom, true); // オプショナル: アクション単位のローディング
+    try {
+      // order の最大値 + 1 を新しい order として設定 (簡易的)
+      const todos = get(baseTodosAtom);
+      const maxOrder = todos.reduce((max, t) => Math.max(max, t.order), -1);
+      await addTodoService(currentUser.uid, {
+        ...newTodoData,
+        order: maxOrder + 1,
+      });
+    } catch (e: any) {
+      set(todosErrorAtom, e.message || "Failed to add todo.");
+    } finally {
+      set(todosLoadingAtom, false);
+    }
+  }
+);
+
+export const updateTodoAtom = atom(
+  null,
+  async (
+    get,
+    set,
+    {
+      id,
+      updatedFields,
+    }: {
+      id: string;
+      updatedFields: Partial<
+        Omit<Todo, "id" | "userId" | "createdAt" | "updatedAt">
+      >;
+    }
+  ) => {
+    const currentUser = get(currentUserAtom);
+    if (!currentUser) throw new Error("User not authenticated.");
+    set(todosLoadingAtom, true);
+    try {
+      await updateTodoService(id, updatedFields);
+    } catch (e: any) {
+      set(todosErrorAtom, e.message || "Failed to update todo.");
+    } finally {
+      set(todosLoadingAtom, false);
+    }
+  }
+);
+
+// toggleCompleteAtom は updateTodoAtom を利用する形で実装も可能
+export const toggleTodoCompletionAtom = atom(
+  null,
+  async (
+    get,
+    set,
+    {
+      id,
+      currentCompletedStatus,
+    }: { id: string; currentCompletedStatus: boolean }
+  ) => {
+    set(updateTodoAtom, {
+      id,
+      updatedFields: { completed: !currentCompletedStatus },
+    });
+  }
+);
+
+export const deleteTodoAtom = atom(null, async (get, set, id: string) => {
+  const currentUser = get(currentUserAtom);
+  if (!currentUser) throw new Error("User not authenticated.");
+  set(todosLoadingAtom, true);
+  try {
+    await deleteTodoService(id);
+  } catch (e: any) {
+    set(todosErrorAtom, e.message || "Failed to delete todo.");
+  } finally {
+    set(todosLoadingAtom, false);
+  }
+});
+
+export const clearCompletedAtom = atom(null, async (get, set) => {
+  const currentUser = get(currentUserAtom);
+  if (!currentUser) throw new Error("User not authenticated.");
+  set(todosLoadingAtom, true);
+  try {
+    const todosToClear = get(baseTodosAtom).filter(
+      (t) => t.completed && t.userId === currentUser.uid
+    );
+    await clearCompletedTodosService(todosToClear.map((t) => t.id));
+  } catch (e: any) {
+    set(todosErrorAtom, e.message || "Failed to clear completed todos.");
+  } finally {
+    set(todosLoadingAtom, false);
+  }
+});
+
+// D&Dによる順序更新
+export const updateTodosOrderAtomAction = atom(
+  null,
+  async (get, set, orderedTodoIds: string[]) => {
+    // 並べ替え後のIDの配列
+    const currentUser = get(currentUserAtom);
+    if (!currentUser) throw new Error("User not authenticated.");
+    set(todosLoadingAtom, true);
+    // オプティミスティックUI: ローカルのbaseTodosAtomを先に更新
+    const currentTodos = get(baseTodosAtom);
+    const newOrderedTodos = orderedTodoIds.map((id, index) => {
+      const todo = currentTodos.find((t) => t.id === id);
+      if (!todo)
+        throw new Error(`Todo with id ${id} not found for reordering.`);
+      return { ...todo, order: index };
+    });
+    set(baseTodosAtom, newOrderedTodos); // ローカル状態を即時更新
+
+    try {
+      await updateTodosOrderService(newOrderedTodos); // バックエンドに新しい順序を保存
+    } catch (e: any) {
+      set(todosErrorAtom, e.message || "Failed to update todo order.");
+      // エラー時: ロールバック処理 (元の状態に戻すなど) も検討
+      set(baseTodosAtom, currentTodos); // 簡易的なロールバック
+    } finally {
+      set(todosLoadingAtom, false);
+    }
+  }
+);
+```
+
+### 6. Firebase 設定 (`config/firebase.ts`)
+
+Firebase プロジェクトをセットアップし、設定情報（API キーなど）を記述します。
+
+```typescript
+import { initializeApp, FirebaseApp } from "firebase/app";
+import { getAuth, Auth } from "firebase/auth";
+import { getFirestore, Firestore } from "firebase/firestore";
+// import { getAnalytics } from "firebase/analytics"; // 必要に応じて
+
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  // measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID // Analytics用
+};
+
+// Initialize Firebase
+const app: FirebaseApp = initializeApp(firebaseConfig);
+const auth: Auth = getAuth(app);
+const db: Firestore = getFirestore(app);
+// const analytics = getAnalytics(app); // 必要に応じて
+
+export { app, auth, db };
+```
+
+環境変数は `.env` ファイルに定義し、Vite 経由で読み込みます。
+Firestore のセキュリティルールは、認証済みユーザーが自身のデータ (`userId === request.auth.uid`) のみ操作できるように設定します。
+
+### 7. `services/todoService.ts`
+
+Firestore とのデータ操作を抽象化するサービスレイヤー。Jotai の atom 内から呼び出されます。
+
+```typescript
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  onSnapshot,
+  addDoc,
+  doc,
+  updateDoc,
+  deleteDoc,
+  writeBatch,
+  serverTimestamp,
+  Timestamp,
+  getDocs, // clearCompletedなどで使用
+} from "firebase/firestore";
+import { db } from "../config/firebase";
+import { Todo } from "../types";
+
+const TODOS_COLLECTION = "todos";
+
+// Todoデータのリアルタイム購読
+export const subscribeToTodos = (
+  userId: string,
+  onUpdate: (todos: Todo[]) => void,
+  onError: (error: Error) => void
+): (() => void) => {
+  // unsubscribe関数を返す
+  const q = query(
+    collection(db, TODOS_COLLECTION),
+    where("userId", "==", userId)
+    // orderBy('order', 'asc') // Firestore側でのソートも可能だが、クライアントソートと併用する場合は注意
+  );
+
+  const unsubscribe = onSnapshot(
+    q,
+    (querySnapshot) => {
+      const fetchedTodos: Todo[] = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        fetchedTodos.push({
+          id: doc.id,
+          ...data,
+          // Timestampをクライアントで扱いやすい形式に変換 (必要に応じて)
+          createdAt: data.createdAt, // そのままTimestampで扱うか、toMillis()するかは一貫させる
+          updatedAt: data.updatedAt,
+          dueDate: data.dueDate || null,
+        } as Todo);
+      });
+      // クライアントサイドで order に基づいてソートする (Firestoreでソートしない場合)
+      fetchedTodos.sort((a, b) => a.order - b.order);
+      onUpdate(fetchedTodos);
+    },
+    (error) => {
+      console.error("Error fetching todos from Firestore: ", error);
+      onError(error);
+    }
+  );
+
+  return unsubscribe;
+};
+
+// Todo追加
+export const addTodo = async (
+  userId: string,
+  todoData: Omit<
+    Todo,
+    "id" | "userId" | "createdAt" | "updatedAt" | "completed"
+  >
+): Promise<string> => {
+  const docRef = await addDoc(collection(db, TODOS_COLLECTION), {
+    ...todoData,
+    userId,
+    completed: false,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+  return docRef.id;
+};
+
+// Todo更新
+export const updateTodo = async (
+  todoId: string,
+  updates: Partial<Omit<Todo, "id" | "userId" | "createdAt" | "updatedAt">>
+): Promise<void> => {
+  const todoRef = doc(db, TODOS_COLLECTION, todoId);
+  await updateDoc(todoRef, {
+    ...updates,
+    updatedAt: serverTimestamp(),
+  });
+};
+
+// Todo削除
+export const deleteTodo = async (todoId: string): Promise<void> => {
+  const todoRef = doc(db, TODOS_COLLECTION, todoId);
+  await deleteDoc(todoRef);
+};
+
+// 完了済みTodoの一括削除
+export const clearCompletedTodos = async (todoIds: string[]): Promise<void> => {
+  if (todoIds.length === 0) return;
+  const batch = writeBatch(db);
+  todoIds.forEach((id) => {
+    batch.delete(doc(db, TODOS_COLLECTION, id));
+  });
+  await batch.commit();
+};
+
+// Todoの順序更新 (D&D用)
+export const updateTodosOrder = async (
+  orderedTodos: Pick<Todo, "id" | "order">[]
+): Promise<void> => {
+  if (orderedTodos.length === 0) return;
+  const batch = writeBatch(db);
+  orderedTodos.forEach((todo) => {
+    const todoRef = doc(db, TODOS_COLLECTION, todo.id);
+    batch.update(todoRef, { order: todo.order, updatedAt: serverTimestamp() });
+  });
+  await batch.commit();
+};
+```
+
+### 8. 主要コンポーネントの設計と Jotai 利用
+
+#### 8.1. `App.tsx`
+
+アプリケーションのルート。Jotai の `<Provider>` で全体をラップし、認証と Todo の監視を開始する atom をここで一度読み込みます。React Router などのルーティング設定もここで行います。
+
+```typescript
+import React from "react";
+import { Provider as JotaiProvider, useAtom } from "jotai";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import {
+  authStateObserverAtom,
+  currentUserAtom,
+  authLoadingAtom,
+} from "./store/authAtoms";
+import { todosObserverAtom } from "./store/todoAtoms";
+
+import SignInPage from "./pages/SignInPage"; // SignInFormを含むページ
+import SignUpPage from "./pages/SignUpPage"; // SignUpFormを含むページ
+import TodoAppPage from "./pages/TodoAppPage"; // TodoAppLayoutを含むページ
+import NotFoundPage from "./pages/NotFoundPage";
+import AuthGuard from "./components/Auth/AuthGuard";
+import GlobalSpinner from "./components/Common/GlobalSpinner"; // 全画面ローディング用
+
+// アプリケーション初期化用コンポーネント (監視atomの副作用をトリガー)
+const AppInitializers: React.FC = () => {
+  useAtom(authStateObserverAtom); // 認証状態監視を開始
+  useAtom(todosObserverAtom); // Todoデータ監視を開始
+  return null; // このコンポーネント自体は何もレンダリングしない
+};
+
+const AppRoutes: React.FC = () => {
+  const [currentUser] = useAtom(currentUserAtom);
+  const [authLoading] = useAtom(authLoadingAtom);
+
+  if (authLoading) {
+    return <GlobalSpinner />; // 認証状態確認中はグローバルスピナー表示
+  }
+
+  return (
+    <Routes>
+      <Route
+        path="/signin"
+        element={currentUser ? <Navigate to="/" /> : <SignInPage />}
+      />
+      <Route
+        path="/signup"
+        element={currentUser ? <Navigate to="/" /> : <SignUpPage />}
+      />
+      <Route
+        path="/"
+        element={
+          <AuthGuard>
+            <TodoAppPage />
+          </AuthGuard>
+        }
+      />
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <JotaiProvider>
+      <AppInitializers />
+      <Router>
+        <AppRoutes />
+      </Router>
+    </JotaiProvider>
+  );
+};
+
+export default App;
+```
+
+#### 8.2. `components/Auth/SignInForm.tsx` (例)
+
+`useAtom` を使用して認証関連の atom から状態を読み取り、サインインアクションを実行します。
+
+```typescript
+import React, { useState } from "react";
+import { useAtom } from "jotai";
+import {
+  signInAtom,
+  authLoadingAtom,
+  authErrorAtom,
+} from "../../store/authAtoms";
+// ... (フォーム要素、スタイル)
+
+const SignInForm: React.FC = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [, doSignIn] = useAtom(signInAtom);
+  const [loading] = useAtom(authLoadingAtom);
+  const [error, setError] = useAtom(authErrorAtom); // エラー表示とクリアのためにsetも取得
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null); // 送信前に前回のエラーをクリア
+    await doSignIn({ email, password });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {error && (
+        <p className="text-red-500 text-sm p-2 bg-red-100 rounded">{error}</p>
+      )}
+      <div>
+        <label htmlFor="email-signin">Email</label>
+        <input
+          id="email-signin"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          disabled={loading}
+        />
+      </div>
+      <div>
+        <label htmlFor="password-signin">Password</label>
+        <input
+          id="password-signin"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          disabled={loading}
+        />
+      </div>
+      <button type="submit" disabled={loading}>
+        {loading ? "Signing In..." : "Sign In"}
+      </button>
+    </form>
+  );
+};
+export default SignInForm;
+```
+
+#### 8.3. `components/Todo/TodoList.tsx` (例)
+
+`visibleTodosAtom` から表示すべき Todo リストを取得し、`react-beautiful-dnd` を使って D&D 機能を実装。D&D 完了時には `updateTodosOrderAtomAction` を呼び出します。
+
+```typescript
+import React from "react";
+import { useAtom } from "jotai";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from "react-beautiful-dnd";
+import {
+  visibleTodosAtom,
+  updateTodosOrderAtomAction,
+  todosLoadingAtom, // 個別のTodo操作中のローディングも考慮
+  todosErrorAtom,
+} from "../../store/todoAtoms";
+import TodoItemComponent from "./TodoItem"; // 名前を明確に
+import LoadingSpinner from "../Common/LoadingSpinner";
+import ErrorMessage from "../Common/ErrorMessage";
+
+const TodoList: React.FC = () => {
+  const [todosToDisplay] = useAtom(visibleTodosAtom);
+  const [, updateOrder] = useAtom(updateTodosOrderAtomAction);
+  const [loading] = useAtom(todosLoadingAtom); // 全体ローディング or アクションローディング
+  const [error] = useAtom(todosErrorAtom);
+
+  const onDragEnd = (result: DropResult) => {
+    if (
+      !result.destination ||
+      result.source.index === result.destination.index
+    ) {
+      return;
+    }
+
+    const currentTodos = [...todosToDisplay]; // visibleTodosAtomから取得した現在の表示順リスト
+    const [reorderedItem] = currentTodos.splice(result.source.index, 1);
+    currentTodos.splice(result.destination.index, 0, reorderedItem);
+
+    // 新しい順序のID配列を作成してアクションに渡す
+    const newOrderedIds = currentTodos.map((todo) => todo.id);
+    updateOrder(newOrderedIds);
+  };
+
+  if (loading && todosToDisplay.length === 0) {
+    // 初期ロード中
+    return (
+      <div className="text-center p-4">
+        <LoadingSpinner text="Loading todos..." />
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="p-4">
+        <ErrorMessage message={error} />
+      </div>
+    );
+  }
+  if (todosToDisplay.length === 0) {
+    return (
+      <p className="text-center text-gray-500 p-4">
+        No todos yet. Add one above!
+      </p>
+    );
+  }
+
+  return (
+    <DragDropContext onDragEnd={onDragEnd}>
+      <Droppable droppableId="todoListDroppable">
+        {(provided) => (
+          <ul
+            className="bg-white rounded-lg shadow"
+            {...provided.droppableProps}
+            ref={provided.innerRef}
+          >
+            {todosToDisplay.map((todo, index) => (
+              <Draggable key={todo.id} draggableId={todo.id} index={index}>
+                {(providedDraggable, snapshot) => (
+                  <li
+                    ref={providedDraggable.innerRef}
+                    {...providedDraggable.draggableProps}
+                    {...providedDraggable.dragHandleProps}
+                    className={`border-b border-gray-200 last:border-b-0 ${
+                      snapshot.isDragging ? "bg-blue-50 shadow-lg" : ""
+                    }`}
+                  >
+                    <TodoItemComponent todo={todo} />
+                  </li>
+                )}
+              </Draggable>
+            ))}
+            {provided.placeholder}
+          </ul>
+        )}
+      </Droppable>
+    </DragDropContext>
+  );
+};
+export default TodoList;
+```
+
+#### 8.4. `components/Todo/TodoItem.tsx` (例)
+
+個々の Todo 情報を表示し、編集・削除・完了トグルアクションを対応する atom 経由で実行します。
+
+```typescript
+import React, { useState } from "react";
+import { useAtom } from "jotai";
+import { Todo } from "../../types";
+import {
+  updateTodoAtom,
+  deleteTodoAtom,
+  toggleTodoCompletionAtom,
+  todosLoadingAtom, // アクション実行中のローディング表示用
+} from "../../store/todoAtoms";
+import { formatDate } from "../../utils/dateUtils"; // 日付フォーマット用ユーティリティ
+
+interface TodoItemComponentProps {
+  todo: Todo;
+}
+
+const TodoItemComponent: React.FC<TodoItemComponentProps> = React.memo(
+  ({ todo }) => {
+    const [, doUpdateTodo] = useAtom(updateTodoAtom);
+    const [, doDeleteTodo] = useAtom(deleteTodoAtom);
+    const [, doToggleCompletion] = useAtom(toggleTodoCompletionAtom);
+    const [itemLoading] = useAtom(todosLoadingAtom); // 個別アイテムの操作中のフィードバックにも使える
+
+    const [isEditing, setIsEditing] = useState(false);
+    const [editText, setEditText] = useState(todo.text);
+    // 他の編集可能フィールドのstate (dueDate, priority, tags) もここに追加
+
+    const handleToggleComplete = () => {
+      doToggleCompletion({
+        id: todo.id,
+        currentCompletedStatus: todo.completed,
+      });
+    };
+
+    const handleDelete = () => {
+      if (window.confirm(`Are you sure you want to delete "${todo.text}"?`)) {
+        doDeleteTodo(todo.id);
+      }
+    };
+
+    const handleEdit = () => {
+      setIsEditing(true);
+      setEditText(todo.text);
+      // 他の編集フィールドも初期化
+    };
+
+    const handleSaveEdit = async () => {
+      if (editText.trim() === "") return;
+      const updatedFields: Partial<
+        Omit<Todo, "id" | "userId" | "createdAt" | "updatedAt">
+      > = {
+        text: editText.trim(),
+        // priority: editedPriority,
+        // dueDate: editedDueDate ? Timestamp.fromDate(editedDueDate) : null,
+        // tags: editedTags,
+      };
+      await doUpdateTodo({ id: todo.id, updatedFields });
+      setIsEditing(false);
+    };
+
+    const handleCancelEdit = () => {
+      setIsEditing(false);
+    };
+
+    // 優先度やタグの表示コンポーネントは別途作成
+    // ...
+
+    if (isEditing) {
+      return (
+        <div className="p-4 bg-gray-50">
+          <input
+            type="text"
+            value={editText}
+            onChange={(e) => setEditText(e.target.value)}
+            className="w-full p-2 border rounded mb-2"
+            autoFocus
+          />
+          {/* 他の編集フィールド (日付ピッカー、優先度セレクト、タグ入力) */}
+          <div className="flex justify-end space-x-2">
+            <button onClick={handleSaveEdit} disabled={itemLoading}>
+              Save
+            </button>
+            <button onClick={handleCancelEdit} disabled={itemLoading}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div
+        className={`p-4 flex items-center group ${
+          todo.completed ? "opacity-60" : ""
+        }`}
+      >
+        <input
+          type="checkbox"
+          checked={todo.completed}
+          onChange={handleToggleComplete}
+          className="form-checkbox h-5 w-5 text-blue-600 rounded mr-3 flex-shrink-0"
+          disabled={itemLoading}
+        />
+        <div className="flex-grow">
+          <p
+            className={`text-lg ${
+              todo.completed ? "line-through text-gray-500" : "text-gray-800"
+            }`}
+          >
+            {todo.text}
+          </p>
+          <div className="text-xs text-gray-500 mt-1 space-x-2">
+            {todo.priority && (
+              <span className="capitalize">P: {todo.priority}</span>
+            )}
+            {todo.dueDate && <span>Due: {formatDate(todo.dueDate)}</span>}
+            {todo.tags && todo.tags.length > 0 && (
+              <span>Tags: {todo.tags.join(", ")}</span>
+            )}
+          </div>
+        </div>
+        <div className="flex-shrink-0 ml-auto space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button onClick={handleEdit} disabled={itemLoading}>
+            Edit
+          </button>
+          <button
+            onClick={handleDelete}
+            disabled={itemLoading}
+            className="text-red-500"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    );
+  }
+);
+
+export default TodoItemComponent;
+```
+
+#### 8.5. `components/Todo/TodoForm.tsx`
+
+Todo の追加と編集（モーダルやインラインではなく専用フォームの場合）を行います。
+`addTodoAtom` や `updateTodoAtom` を使用します。
+期日ピッカー (例: `react-datepicker`)、優先度セレクト、タグ入力 (例: `react-tagsinput`) などの UI コンポーネントを導入します。
+
+#### 8.6. `components/Todo/TodoFilterSort.tsx`
+
+`todoFilterAtom`, `todoSortByAtom`, `todoSortOrderAtom` の値を更新する UI を提供します。
+
+### 9. UX/UI の考慮点
+
+- **レスポンシブデザイン**: モバイル、タブレット、デスクトップの各画面サイズで快適に利用できること。
+- **アクセシビリティ (a11y)**: キーボード操作の完全サポート、適切な ARIA 属性の使用、スクリーンリーダー対応。`react-beautiful-dnd` はキーボード操作に標準で対応。
+- **ローディング状態のフィードバック**:
+  - 初期データロード中: 全画面スピナーまたはスケルトンスクリーン。
+  - Todo 追加/更新/削除中: ボタンを無効化しスピナー表示、または該当アイテムを一時的に半透明にするなど。
+- **エラーハンドリングと表示**:
+  - API エラーやバリデーションエラーは、ユーザーに分かりやすいメッセージで通知 (例: トースト通知、フォーム近辺のエラーメッセージ)。
+  - エラー発生時は、再試行可能な UI を提供 (必要な場合)。
+- **オプティミスティック UI**: Todo 追加や更新時、API の応答を待たずに UI を即座に更新し、体感速度を向上させる。エラー時はロールバック処理を行う。 (Jotai の atom 更新で対応)
+- **入力バリデーション**:
+  - Todo テキスト: 空でないこと、長すぎないこと。
+  - 期日: 過去の日付を選択できないようにする (仕様による)。
+- **空状態の表示**: Todo リストが空の場合、「最初の Todo を追加しましょう！」のようなメッセージとアクションボタンを表示。
+- **確認ダイアログ**: 削除操作など、破壊的なアクションの前には確認ダイアログを表示。
+- **視覚的階層と一貫性**: Tailwind CSS や UI コンポーネントライブラリを活用し、デザインの一貫性を保ち、視覚的に分かりやすい UI を構築。
+- **通知 (オプション)**: 期日が近づいた Todo のブラウザ通知 (Notification API)。
+
+### 10. テスト戦略
+
+- **単体テスト (Unit Tests)**:
+  - **Jotai Atoms**:
+    - 派生 atom (`filteredTodosAtom`, `visibleTodosAtom` 等) のロジックが正しいか。
+    - 書き込み専用 atom (`addTodoAtom` 等) が、内部で呼び出すサービス関数を正しい引数で呼び出すか。
+    - `@testing-library/react` の `renderHook` と Jotai の `<Provider>` を使ってテスト。必要に応じて atom の初期値を設定。
+  - **ユーティリティ関数**: `dateUtils.ts`, `validationUtils.ts` 等の純粋関数。
+  - **サービス関数 (`todoService.ts`)**: Firestore とのやり取りをモック化 (`@firebase/rules-unit-testing` や `jest.mock`) してテスト。
+- **コンポーネントテスト (Integration/Component Tests)**:
+  - React Testing Library を使用。
+  - コンポーネントが Jotai の atom の値を正しく表示し、ユーザーインタラクション（クリック、入力、D&D など）に応じて atom の更新関数を適切に呼び出すかテスト。
+  - テスト時には Jotai の `<Provider>` でコンポーネントをラップし、必要な atom の初期値を設定するか、モック化した atom を使用。
+  - フォームの送信、バリデーションロジックのテスト。
+- **E2E テスト (End-to-End Tests)**:
+  - Playwright や Cypress を使用。
+  - ユーザー認証から Todo の CRUD 操作、フィルタリング、ソート、D&D までの一連の主要なユーザーフローが、実際のブラウザ環境で正しく動作するかテスト。
+  - Firebase Emulator Suite を使用して、バックエンドの動作をローカルでエミュレートすることを推奨。
+
+### 11. 拡張性・将来の展望
+
+- **サブタスク**: Todo アイテムの下に階層的にサブタスクを作成できる機能。
+- **プロジェクト/リスト**: 複数の Todo リスト（例: "仕事", "個人", "買い物"）を作成・管理できる機能。
+- **共有機能**: Todo リストや個別の Todo を他のユーザーと共有し、共同編集できる機能。
+- **繰り返し Todo**: 「毎日」「毎週月曜」など、定期的な Todo を設定できる機能。
+- **テーマカスタマイズ**: ライトモード/ダークモードの切り替え、アクセントカラーの変更など。
+- **PWA 化**: オフラインアクセス、ホーム画面への追加など、Progressive Web App の機能を追加。
+- **検索機能**: Todo のテキスト、タグ、期日などで全文検索できる機能。
+- **ファイル添付**: Todo に画像やドキュメントなどのファイルを添付できる機能。
+- **リマインダー通知**: Firebase Cloud Messaging (FCM) やブラウザの Notification API を利用した期日リマインダー。
+
+---

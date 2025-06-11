@@ -130,6 +130,7 @@ const { name, age, country = "Unknown" } = user; // country が存在しない�
 
 // 変数名の変更
 const { name: userName, age: userAge } = user; // name を userName、age を userAge として抽出
+
 // ネストされたオブジェクトの分割代入
 const product = {
   id: "P001",

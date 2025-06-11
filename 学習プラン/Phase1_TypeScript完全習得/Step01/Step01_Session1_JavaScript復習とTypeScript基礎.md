@@ -129,7 +129,33 @@ const { name, age, country = "Unknown" } = user; // country が存在しない�
 // 値があるものにはデフォルト値は適用されない
 
 // 変数名の変更
-const { name: userName, age: userAge } = user;
+const { name: userName, age: userAge } = user; // name を userName、age を userAge として抽出
+// ネストされたオブジェクトの分割代入
+const product = {
+  id: "P001",
+  details: { name: "Laptop", price: 1200 },
+};
+const {
+  details: { name: productName, price: productPrice },
+} = product; // productName: string, productPrice: number として型推論される
+
+// ネストされた配列の分割代入
+const data = [
+  [1, 2],
+  [3, 4],
+  [5, 6],
+];
+const [[firstValue], [, secondValue]] = data; // firstValue: number, secondValue: number として型推論される
+
+// ネストされたオブジェクトと配列の分割代入
+const complexData = {
+  user: { name: "Alice", age: 30 },
+  scores: [85, 90, 95],
+};
+const {
+  user: { name: userName, age: userAge },
+  scores: [firstScore, secondScore],
+} = complexData; // userName: string, userAge: number, firstScore: number, secondScore: number として型推論される
 ```
 
 **🔥Challenge**

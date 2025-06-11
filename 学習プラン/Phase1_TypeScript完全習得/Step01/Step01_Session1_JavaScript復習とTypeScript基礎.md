@@ -111,14 +111,22 @@ const { name, age } = user; // name: string, age: number として型推論さ�
 // 配列の分割代入
 const colors = ["red", "green", "blue"];
 const [primary, secondary] = colors; // 両方とも string として型推論される
+const [first, , third] = colors; // 2番目の要素をスキップ
 
 // 関数の引数での分割代入
 function greetUser({ name, age }) {
   return `Hello, ${name}! You are ${age} years old.`;
 }
 
+// 関数の戻り値での分割代入
+function getUserInfo() {
+  return { name: "Alice", age: 30, country: "USA" };
+}
+const { name: userName, age: userAge } = getUserInfo(); // userName: string, userAge: number として型推論される
+
 // デフォルト値の設定
-const { name, age, country = "Unknown" } = user;
+const { name, age, country = "Unknown" } = user; // country が存在しない場合は "Unknown" が使用される。
+// 値があるものにはデフォルト値は適用されない
 
 // 変数名の変更
 const { name: userName, age: userAge } = user;
@@ -133,7 +141,7 @@ const product = {
   id: "P001",
   name: "Laptop",
   price: 1200,
-  category: "Electronics"
+  category: "Electronics",
 };
 
 // 問題2: 配列の分割代入とスキップ
@@ -147,13 +155,13 @@ const dataPoints = [10, 20, 30, 40, 50];
 // language プロパティを抽出してください。もし language が存在しない場合は、デフォルトで "en" を設定してください。
 const userConfig = {
   username: "TypeScriptLearner",
-  theme: "dark"
+  theme: "dark",
   // language: "ja" は存在しない可能性がある
 };
 
 // 別のデータ例 (languageがない場合)
 const userConfig2 = {
-  username: "GuestUser"
+  username: "GuestUser",
   // theme も language もない
 };
 
@@ -170,8 +178,6 @@ processOrder 関数を定義し、その引数で orderId と items を分割代
 例: Order ID: [orderId], 商品数: [items.length]
 */
 ```
-
-
 
 **スプレッド演算子**
 

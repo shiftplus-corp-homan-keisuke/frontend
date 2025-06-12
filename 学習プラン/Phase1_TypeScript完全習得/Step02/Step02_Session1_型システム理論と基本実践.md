@@ -261,51 +261,7 @@ function getValue(condition: boolean) {
 
 > 📚 **演習サポート資料**: [実践コード例 - 基本型の練習](./Step02_補足_実践コード例.md#基本型の練習) | [トラブルシューティング - 型システム関連エラー](./Step02_補足_トラブルシューティング.md#型システム関連エラー)
 
-### 演習 1: 基本型の実践（20 分）
-
-以下の要件に従って、型安全なコードを作成してください：
-
-```typescript
-// TODO: 以下の型定義を完成させてください
-
-// 1. ユーザーの基本情報を表す型
-interface UserInfo {
-  // ユーザーID（数値）
-  // ユーザー名（文字列）
-  // メールアドレス（文字列）
-  // アクティブ状態（真偽値）
-  // 最終ログイン日時（Date型またはnull）
-}
-
-// 2. ユーザーの役割を表すリテラル型
-type UserRole = // "admin" | "user" | "guest" のいずれか
-
-// 3. 設定情報を表す型
-interface AppSettings {
-  // テーマ（"light" | "dark" | null）
-  // 言語（string | undefined）
-  // 通知設定（boolean）
-}
-
-// 4. 以下の関数の型注釈を追加してください
-function createUser(name, email, role) {
-  return {
-    id: Math.floor(Math.random() * 1000),
-    name: name,
-    email: email,
-    role: role,
-    isActive: true,
-    lastLoginAt: null,
-  };
-}
-
-function validateEmail(email) {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-}
-```
-
-### 演習 2: 型推論の活用（10 分）
+### 演習 1: 型推論の活用（10 分）
 
 以下のコードで型推論がどのように働くかを確認し、コメントを追加してください：
 
@@ -336,7 +292,6 @@ let result = processStatus("pending"); // resultの型: ?
 1. **プリミティブ型の理解**: string, number, boolean, null, undefined の適切な使い分け
 2. **リテラル型の活用**: より厳密な型制御の方法
 3. **型推論の仕組み**: let vs const、オブジェクト・配列での推論
-4. **Union 型の基礎**: 複数の型を組み合わせる方法
 
 ---
 

@@ -65,6 +65,10 @@ Step01で基本的な型注釈を学習しました。Step02では、TypeScript�
 
 ##### 1. const assertion による型の厳密化
 
+> 📚 **詳細解説**: [専門用語集 - const assertion](./Step02_補足_専門用語集.md#const-assertionconst-アサーション)
+
+**💡 const assertionとは**: `as const`を使用して、TypeScriptの型推論をより厳密に制御し、値を具体的なリテラル型として保持する機能です。通常の型推論では値が汎用的な型（`string`、`number`など）に拡張されますが、const assertionによりこれを防ぎ、設定値や定数をより型安全に管理できます。
+
 ```typescript
 // 通常の型推論（widening）
 let theme = "dark"; // string型として推論（再代入可能）
@@ -97,8 +101,9 @@ type GradeThreshold = typeof STUDENT_GRADES[keyof typeof STUDENT_GRADES]; // 90 
 
 ```typescript
 // 学生の学年を表現するリテラル型
-type Grade = 1 | 2 | 3 | 4 | 5 | 6;
+type Grade = 1 | 2 | 3 | 4 | 5 | 6;  // 小学校1-6年生のみ
 type StudentStatus = "enrolled" | "graduated" | "suspended" | "transferred";
+// 入学 | 卒業 | 停学 | 転校
 
 // 学生情報の型定義（Step01からの発展）
 interface Student {
@@ -109,27 +114,30 @@ interface Student {
   subjects: readonly string[];
 }
 
-// Union型を活用した型安全な関数
-function getGradeLevel(grade: Grade): "elementary" | "middle" | "high" {
-  if (grade <= 6) return "elementary";
-  if (grade <= 9) return "middle";
-  return "high";
+// 小学校の学年レベルを取得する関数
+function getElementaryLevel(grade: Grade): "lower" | "middle" | "upper" {
+  if (grade <= 2) return "lower";    // 低学年 1-2年
+  if (grade <= 4) return "middle";   // 中学年 3-4年
+  return "upper";                    // 高学年 5-6年
 }
 
 // 判別可能なUnion型
 type StudentEvent =
-  | { type: "enrollment"; studentId: number; grade: Grade }
+  | { type: "enrollment"; studentId: number }
   | { type: "graduation"; studentId: number; graduationDate: Date }
-  | { type: "transfer"; studentId: number; newSchool: string };
+  | { type: "transfer"; studentId: number; newSchool: string }
+  | { type: "suspension"; studentId: number; reason: string; duration: number };
 
 function processStudentEvent(event: StudentEvent): string {
   switch (event.type) {
     case "enrollment":
-      return `Student ${event.studentId} enrolled in grade ${event.grade}`;
+      return `学生ID ${event.studentId} が入学しました`;
     case "graduation":
-      return `Student ${event.studentId} graduated on ${event.graduationDate}`;
+      return `学生ID ${event.studentId} が ${event.graduationDate.toLocaleDateString('ja-JP')} に卒業しました`;
     case "transfer":
-      return `Student ${event.studentId} transferred to ${event.newSchool}`;
+      return `学生ID ${event.studentId} が ${event.newSchool} に転校しました`;
+    case "suspension":
+      return `学生ID ${event.studentId} が ${event.duration}日間の停学処分を受けました。理由: ${event.reason}`;
   }
 }
 ```
@@ -275,15 +283,14 @@ function getStudentsByGradeLevel<T extends Grade>(
     .filter(student => student.grade === targetGrade)
     .map(student => ({
       ...student,
-      gradeLevel: getGradeLevel(student.grade) as StudentGradeLevel<T>
+      gradeLevel: getElementaryLevelForCondition(student.grade) as StudentGradeLevel<T>
     }));
 }
 
-function getGradeLevel(grade: Grade): string {
-  if (grade <= 3) return "elementary";
-  if (grade <= 6) return "middle";
-  if (grade <= 9) return "high";
-  return "unknown";
+function getElementaryLevelForCondition(grade: Grade): string {
+  if (grade <= 2) return "lower";     // 低学年 1-2年
+  if (grade <= 4) return "middle";    // 中学年 3-4年
+  return "upper";                     // 高学年 5-6年
 }
 ```
 

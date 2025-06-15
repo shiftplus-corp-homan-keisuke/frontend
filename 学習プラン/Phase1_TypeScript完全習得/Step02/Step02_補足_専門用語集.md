@@ -279,6 +279,52 @@ let config = {
 
 **注意点**: 型アサーションは型安全性を損なう可能性があるため、慎重に使用する
 
+### const assertion（const アサーション）
+**定義**: `as const`構文を使用して、TypeScriptの型推論をより厳密に制御し、値を読み取り専用のリテラル型として扱う機能です。通常の型推論では値が「widening」（型の拡張）されますが、const assertionを使用することでこれを防ぎ、より具体的で厳密な型を保持できます。
+
+**なぜ重要なのか**:
+- **型安全性の向上**: より具体的な型制約により、実行時エラーを防ぐ
+- **IntelliSenseの改善**: IDEでより正確な補完とエラー検出
+- **設定値の型安全管理**: 定数オブジェクトや配列の厳密な型管理
+- **Union型との連携**: リテラル型を組み合わせた強力な型制約
+
+**基本的な使用方法**:
+```typescript
+// 通常の型推論（widening）
+let theme = "dark"; // string型として推論
+let numbers = [1, 2, 3]; // number[]型として推論
+let config = { mode: "development" }; // { mode: string }型として推論
+
+// const assertionによる厳密な型推論
+const strictTheme = "dark" as const; // "dark"型（リテラル型）
+const strictNumbers = [1, 2, 3] as const; // readonly [1, 2, 3]型（タプル型）
+const strictConfig = { mode: "development" } as const; // { readonly mode: "development" }型
+
+// 配列での活用
+const statusList = ["pending", "approved", "rejected"] as const;
+type Status = typeof statusList[number]; // "pending" | "approved" | "rejected"
+
+// オブジェクトでの活用
+const API_ENDPOINTS = {
+  users: "/api/users",
+  posts: "/api/posts",
+  comments: "/api/comments"
+} as const;
+type EndpointPath = typeof API_ENDPOINTS[keyof typeof API_ENDPOINTS];
+// "/api/users" | "/api/posts" | "/api/comments"
+```
+
+**実用的な活用場面**:
+1. **設定オブジェクト**: APIエンドポイント、設定値の管理
+2. **列挙値**: ステータス、カテゴリなどの限定された値
+3. **タプル型**: 固定長配列の型安全な管理
+4. **Union型の生成**: `typeof`と組み合わせた型の自動生成
+
+**注意点とベストプラクティス**:
+- const assertionは値を読み取り専用にするため、後から変更できない
+- 大きなオブジェクトに使用すると、型情報が複雑になる可能性がある
+- 適切な場面（定数、設定値、列挙値）で使用することが重要
+
 ---
 
 ## 配列・タプル関連用語

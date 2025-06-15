@@ -20,7 +20,7 @@
 
 **学習目標**:
 - [ ] 型安全なデータ構造の設計
-- [ ] 商品管理システムの型定義完成
+- [ ] 学生管理システム発展版の型定義完成
 - [ ] 型システムの総合活用
 - [ ] 実践的な型設計パターンの習得
 
@@ -42,67 +42,65 @@
 
 ---
 
-## 🎯 最終課題：商品管理システムの型設計
+## 🎯 最終課題：学生管理システム発展版の型設計
 
 ### 📋 プロジェクト概要
 
-**目標**: 型安全な商品管理システムの型定義を完成させる  
-**重点**: ロジック実装ではなく、型定義とインターフェース設計に集中  
+**目標**: 型安全な学生管理システム発展版の型定義を完成させる
+**重点**: ロジック実装ではなく、型定義とインターフェース設計に集中
 **成果物**: 完全な型定義ファイル（`.d.ts`形式でも可）
 
 ### Phase 1: 基本型定義の設計（15分）
 
 > 📚 **関連資料**: [専門用語集 - 型定義関連用語](./Step02_補足_専門用語集.md#型定義関連用語) | [実践コード例 - プロジェクト型定義サンプル](./Step02_補足_実践コード例.md#プロジェクト型定義サンプル)
 
-#### 🔧 商品データの型定義
+#### 🔧 学生データの型定義
 
 ```typescript
 // TODO: 以下の型定義を完成させてください
 
-// 1. 商品カテゴリの型定義
-type ProductCategory = // "Electronics" | "Books" | "Clothing" | "Home" | "Sports"
+// 1. 学年の型定義
+type Grade = // 1 | 2 | 3 | 4 | 5 | 6
 
-// 2. 商品ステータスの型定義
-type ProductStatus = // "active" | "inactive" | "discontinued"
+// 2. 学生ステータスの型定義
+type StudentStatus = // "active" | "inactive" | "graduated" | "transferred"
 
-// 3. 商品の基本情報型
-interface Product {
-  // 商品ID（読み取り専用、数値）
-  // 商品名（文字列）
-  // 価格（数値）
-  // カテゴリ（ProductCategory型）
-  // ステータス（ProductStatus型）
-  // 在庫数（数値）
-  // 商品説明（オプショナル、文字列）
-  // 作成日時（Date型）
+// 3. 学生の基本情報型
+interface Student {
+  // 学生ID（読み取り専用、数値）
+  // 学生名（文字列）
+  // 学年（Grade型）
+  // クラス（文字列、例："A"）
+  // ステータス（StudentStatus型）
+  // 生年月日（Date型）
+  // 保護者連絡先（文字列、オプショナル）
+  // 入学日（Date型）
   // 更新日時（Date型）
 }
 
-// 4. 商品作成時の入力データ型
-interface CreateProductInput {
-  // 商品名（必須）
-  // 価格（必須）
-  // カテゴリ（必須）
-  // 在庫数（必須）
-  // 商品説明（オプショナル）
+// 4. 学生登録時の入力データ型
+interface CreateStudentInput {
+  // 学生名（必須）
+  // 学年（必須）
+  // クラス（必須）
+  // 生年月日（必須）
+  // 保護者連絡先（オプショナル）
   // ステータスはデフォルトで"active"なので入力不要
 }
 
-// 5. 商品更新時の入力データ型
-interface UpdateProductInput {
-  // 商品名（オプショナル）
+// 5. 学生情報更新時の入力データ型
+interface UpdateStudentInput {
+  // 学生名（オプショナル）
   name?: string;
-  // 価格（オプショナル）
-  price?: number;
-  // カテゴリ（オプショナル）
-  category?: ProductCategory;
-  // 在庫数（オプショナル）
-  stock?: number;
-  // 商品説明（オプショナル）
-  description?: string;
+  // 学年（オプショナル）
+  grade?: Grade;
+  // クラス（オプショナル）
+  class?: string;
+  // 保護者連絡先（オプショナル）
+  guardianContact?: string;
   // ステータス（オプショナル）
-  status?: ProductStatus;
-  // idと作成日時・更新日時は更新対象外
+  status?: StudentStatus;
+  // idと生年月日・入学日・更新日時は更新対象外
 }
 ```
 
@@ -111,23 +109,23 @@ interface UpdateProductInput {
 ```typescript
 // TODO: 以下の型定義を完成させてください
 
-// 1. 価格範囲の型定義
-interface PriceRange {
-  // 最小価格（オプショナル、数値）
-  // 最大価格（オプショナル、数値）
+// 1. 年齢範囲の型定義
+interface AgeRange {
+  // 最小年齢（オプショナル、数値）
+  // 最大年齢（オプショナル、数値）
 }
 
 // 2. 検索条件の型定義
 interface SearchCriteria {
-  // 商品名検索（オプショナル、文字列）
-  // カテゴリフィルタ（オプショナル、ProductCategory型）
-  // ステータスフィルタ（オプショナル、ProductStatus型）
-  // 価格範囲（オプショナル、PriceRange型）
-  // 在庫状況フィルタ（オプショナル、真偽値）
+  // 学生名検索（オプショナル、文字列）
+  // 学年フィルタ（オプショナル、Grade型）
+  // クラスフィルタ（オプショナル、文字列）
+  // ステータスフィルタ（オプショナル、StudentStatus型）
+  // 年齢範囲（オプショナル、AgeRange型）
 }
 
 // 3. ソート条件の型定義
-type SortField = // "name" | "price" | "createdAt" | "stock"
+type SortField = // "name" | "grade" | "class" | "birthDate" | "enrollmentDate"
 type SortOrder = // "asc" | "desc"
 
 interface SortCriteria {
@@ -145,41 +143,40 @@ interface SortCriteria {
 ```typescript
 // TODO: 以下の型定義を完成させてください
 
-// 1. カテゴリ別統計の型定義
-interface CategoryStatistics {
-  // カテゴリ名（ProductCategory型）
-  // 商品総数（数値）
-  // 平均価格（数値）
-  // 総在庫数（数値）
-  // アクティブ商品数（数値）
-  // 総価値（価格×在庫数の合計、数値）
+// 1. 学年別統計の型定義
+interface GradeStatistics {
+  // 学年（Grade型）
+  // 学生総数（数値）
+  // 平均年齢（数値）
+  // アクティブ学生数（数値）
+  // 男女比率（オブジェクト、male: number, female: number）
+  // クラス数（数値）
 }
 
-// 2. 在庫統計の型定義
-interface InventoryStatistics {
-  // 総商品数（数値）
-  // アクティブ商品数（数値）
-  // 非アクティブ商品数（数値）
-  // 廃止商品数（数値）
-  // 総在庫数（数値）
-  // 在庫切れ商品数（数値）
-  // 総在庫価値（数値）
-  // 平均価格（数値）
+// 2. 学校統計の型定義
+interface SchoolStatistics {
+  // 総学生数（数値）
+  // アクティブ学生数（数値）
+  // 非アクティブ学生数（数値）
+  // 卒業生数（数値）
+  // 転校生数（数値）
+  // 平均年齢（数値）
+  // 学年別分布（GradeStatistics型の配列）
 }
 
-// 3. 価格帯分析の型定義
-interface PriceRangeAnalysis {
-  // 価格帯（文字列、例："0-1000"）
-  // 商品数（数値）
+// 3. 年齢分析の型定義
+interface AgeAnalysis {
+  // 年齢帯（文字列、例："6-7"）
+  // 学生数（数値）
   // 割合（数値、パーセンテージ）
 }
 
-// 4. 売上予測データの型定義（将来の拡張を想定）
-interface SalesForecast {
-  // 商品ID（数値）
-  // 予測期間（文字列、例："2024-Q1"）
-  // 予測売上数量（数値）
-  // 予測売上金額（数値）
+// 4. 成績予測データの型定義（将来の拡張を想定）
+interface AcademicForecast {
+  // 学生ID（数値）
+  // 予測期間（文字列、例："2024-Q2"）
+  // 予測成績（文字列、例："A", "B", "C"）
+  // 予測根拠（文字列配列）
   // 信頼度（数値、0-1の範囲）
 }
 ```
@@ -193,19 +190,19 @@ interface SalesForecast {
 ```typescript
 // TODO: 以下の型定義を完成させてください
 
-// 1. 商品API レスポンスの型定義
-interface ProductApiResponse {
+// 1. 学生API レスポンスの型定義
+interface StudentApiResponse {
   // 成功フラグ（真偽値）
-  // データ（Product型、成功時のみ）
+  // データ（Student型、成功時のみ）
   // エラーメッセージ（文字列、失敗時のみ）
   // ステータスコード（数値）
   // タイムスタンプ（Date型）
 }
 
-// 2. 商品一覧API レスポンスの型定義
-interface ProductListApiResponse {
+// 2. 学生一覧API レスポンスの型定義
+interface StudentListApiResponse {
   // 成功フラグ（真偽値）
-  // データ（Product型の配列、成功時のみ）
+  // データ（Student型の配列、成功時のみ）
   // エラーメッセージ（文字列、失敗時のみ）
   // ステータスコード（数値）
   // タイムスタンプ（Date型）
@@ -214,16 +211,16 @@ interface ProductListApiResponse {
 // 3. 統計API レスポンスの型定義
 interface StatisticsApiResponse {
   // 成功フラグ（真偽値）
-  // データ（InventoryStatistics型、成功時のみ）
+  // データ（SchoolStatistics型、成功時のみ）
   // エラーメッセージ（文字列、失敗時のみ）
   // ステータスコード（数値）
   // タイムスタンプ（Date型）
 }
 
-// 4. カテゴリ別統計API レスポンスの型定義
-interface CategoryStatisticsApiResponse {
+// 4. 学年別統計API レスポンスの型定義
+interface GradeStatisticsApiResponse {
   // 成功フラグ（真偽値）
-  // データ（CategoryStatistics型の配列、成功時のみ）
+  // データ（GradeStatistics型の配列、成功時のみ）
   // エラーメッセージ（文字列、失敗時のみ）
   // ステータスコード（数値）
   // タイムスタンプ（Date型）
@@ -239,21 +236,21 @@ interface PaginationInfo {
   // 次のページがあるか（真偽値）
 }
 
-// 6. ページネーション付き商品一覧レスポンスの型定義
-interface PaginatedProductResponse {
-  // データ配列（Product型の配列）
+// 6. ページネーション付き学生一覧レスポンスの型定義
+interface PaginatedStudentResponse {
+  // データ配列（Student型の配列）
   // ページネーション情報（PaginationInfo型）
 }
 
-// 7. 商品管理サービスのインターフェース
-interface ProductService {
-  // 商品作成（CreateProductInput → Promise<ProductApiResponse>）
-  // 商品取得（id: number → Promise<ProductApiResponse>）
-  // 商品一覧取得（criteria?: SearchCriteria, sort?: SortCriteria → Promise<ProductListApiResponse>）
-  // 商品更新（id: number, input: UpdateProductInput → Promise<ProductApiResponse>）
-  // 商品削除（id: number → Promise<{ success: boolean; error?: string }>）
+// 7. 学生管理サービスのインターフェース
+interface StudentService {
+  // 学生登録（CreateStudentInput → Promise<StudentApiResponse>）
+  // 学生取得（id: number → Promise<StudentApiResponse>）
+  // 学生一覧取得（criteria?: SearchCriteria, sort?: SortCriteria → Promise<StudentListApiResponse>）
+  // 学生情報更新（id: number, input: UpdateStudentInput → Promise<StudentApiResponse>）
+  // 学生削除（id: number → Promise<{ success: boolean; error?: string }>）
   // 統計取得（→ Promise<StatisticsApiResponse>）
-  // カテゴリ別統計取得（→ Promise<CategoryStatisticsApiResponse>）
+  // 学年別統計取得（→ Promise<GradeStatisticsApiResponse>）
 }
 ```
 
@@ -275,24 +272,24 @@ interface ValidationResult {
   // エラー一覧（ValidationError型の配列）
 }
 
-// 3. 商品名バリデータ関数の型定義
+// 3. 学生名バリデータ関数の型定義
 type NameValidator = // (name: string) => ValidationResult
 
-// 4. 価格バリデータ関数の型定義
-type PriceValidator = // (price: number) => ValidationResult
+// 4. 学年バリデータ関数の型定義
+type GradeValidator = // (grade: Grade) => ValidationResult
 
-// 5. 在庫数バリデータ関数の型定義
-type StockValidator = // (stock: number) => ValidationResult
+// 5. クラスバリデータ関数の型定義
+type ClassValidator = // (className: string) => ValidationResult
 
-// 6. カテゴリバリデータ関数の型定義
-type CategoryValidator = // (category: ProductCategory) => ValidationResult
+// 6. 生年月日バリデータ関数の型定義
+type BirthDateValidator = // (birthDate: Date) => ValidationResult
 
-// 7. 商品バリデーションルールの型定義
-interface ProductValidationRules {
-  // 商品名バリデータ（NameValidator型）
-  // 価格バリデータ（PriceValidator型）
-  // 在庫数バリデータ（StockValidator型）
-  // カテゴリバリデータ（CategoryValidator型）
+// 7. 学生バリデーションルールの型定義
+interface StudentValidationRules {
+  // 学生名バリデータ（NameValidator型）
+  // 学年バリデータ（GradeValidator型）
+  // クラスバリデータ（ClassValidator型）
+  // 生年月日バリデータ（BirthDateValidator型）
 }
 ```
 
@@ -309,40 +306,41 @@ interface ProductValidationRules {
 ```typescript
 // TODO: 以下の型定義を完成させてください
 
-// 1. 商品IDの型定義
-interface ProductId {
-  // 商品ID（数値、読み取り専用）
+// 1. 学生IDの型定義
+interface StudentId {
+  // 学生ID（数値、読み取り専用）
 }
 
-// 2. 商品の表示用データ型
-interface ProductDisplayData {
-  // 商品ID（数値）
-  // 商品名（文字列）
-  // 価格（数値）
-  // カテゴリ（ProductCategory型）
-  // ステータス（ProductStatus型）
-  // 在庫数（数値）
-  // 商品説明（オプショナル、文字列）
-  // 作成日時・更新日時は表示用では不要
+// 2. 学生の表示用データ型
+interface StudentDisplayData {
+  // 学生ID（数値）
+  // 学生名（文字列）
+  // 学年（Grade型）
+  // クラス（文字列）
+  // ステータス（StudentStatus型）
+  // 年齢（数値、計算値）
+  // 保護者連絡先（オプショナル、文字列）
+  // 生年月日・入学日・更新日時は表示用では不要
 }
 
-// 3. 商品操作の結果型（Union型を活用）
-type ProductOperationResult =
-  | { success: true; data: Product }
+// 3. 学生操作の結果型（Union型を活用）
+type StudentOperationResult =
+  | { success: true; data: Student }
   | { success: false; error: string }
 
-// 4. カテゴリごとの商品配列型
-interface ProductsByCategory {
-  // Electronics（Product型の配列）
-  // Books（Product型の配列）
-  // Clothing（Product型の配列）
-  // Home（Product型の配列）
-  // Sports（Product型の配列）
+// 4. 学年ごとの学生配列型
+interface StudentsByGrade {
+  // 1年生（Student型の配列）
+  // 2年生（Student型の配列）
+  // 3年生（Student型の配列）
+  // 4年生（Student型の配列）
+  // 5年生（Student型の配列）
+  // 6年生（Student型の配列）
 }
 
-// 5. 商品検索結果の型定義
-interface ProductSearchResult {
-  // 検索結果（Product型の配列）
+// 5. 学生検索結果の型定義
+interface StudentSearchResult {
+  // 検索結果（Student型の配列）
   // 総件数（数値）
   // 検索条件（SearchCriteria型）
   // 実行時間（数値、ミリ秒）
@@ -354,20 +352,20 @@ interface ProductSearchResult {
 ```typescript
 // TODO: 以下の関数型定義を完成させてください
 
-// 1. 商品作成関数の型
-type CreateProductFunction = // (input: CreateProductInput) => Promise<ProductOperationResult>
+// 1. 学生登録関数の型
+type CreateStudentFunction = // (input: CreateStudentInput) => Promise<StudentOperationResult>
 
-// 2. 商品検索関数の型
-type SearchProductFunction = // (criteria: SearchCriteria) => Promise<ProductSearchResult>
+// 2. 学生検索関数の型
+type SearchStudentFunction = // (criteria: SearchCriteria) => Promise<StudentSearchResult>
 
-// 3. 商品バリデーション関数の型
-type ValidateProductFunction = // (product: CreateProductInput) => ValidationResult
+// 3. 学生バリデーション関数の型
+type ValidateStudentFunction = // (student: CreateStudentInput) => ValidationResult
 
-// 4. 価格計算関数の型
-type CalculatePriceFunction = // (basePrice: number, discount?: number) => number
+// 4. 年齢計算関数の型
+type CalculateAgeFunction = // (birthDate: Date, referenceDate?: Date) => number
 
-// 5. 在庫チェック関数の型
-type CheckStockFunction = // (productId: number, requestedQuantity: number) => boolean
+// 5. 在籍チェック関数の型
+type CheckEnrollmentFunction = // (studentId: number) => boolean
 ```
 
 ---
@@ -437,7 +435,7 @@ type CheckStockFunction = // (productId: number, requestedQuantity: number) => b
 
 ## 成果物
 
-- [ ] **図書管理システム**: Step02の学習内容を段階的に活用した4段階の図書管理システム → [Step02成果物: 図書管理システム](./Step02_成果物.md)
+- [ ] **学生管理システム発展版**: Step02の学習内容を段階的に活用した高度な学生管理システム → [Step02成果物: 学生管理システム発展版](./Step02_成果物.md)
 
 ---
 

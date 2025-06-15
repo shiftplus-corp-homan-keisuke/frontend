@@ -20,9 +20,10 @@
 
 **学習目標**:
 
-- [ ] TypeScript の基本型システムの完全理解
-- [ ] 型推論の仕組みと活用方法の習得
-- [ ] プリミティブ型の実践的活用
+- [ ] 高度な型推論メカニズムの理解
+- [ ] リテラル型とUnion型の実践活用
+- [ ] 構造的型付けの概念理解
+- [ ] const assertionと型の厳密化
 
 **前提知識**:
 
@@ -49,168 +50,240 @@
 
 > 📚 **関連資料**: [専門用語集 - 型システム関連用語](./Step02_補足_専門用語集.md#型システム関連用語) | [実践コード例 - 基本から始める段階的学習](./Step02_補足_実践コード例.md#基本から始める段階的学習)
 
-#### 🔍 プリミティブ型の完全理解
+#### 🔍 高度な型推論メカニズムの理解
 
-**💡 なぜ型システムが重要なのか**
+**💡 なぜ高度な型推論が重要なのか**
 
-TypeScript の型システムは、JavaScript の動的な性質に静的型チェックを追加し、開発時にエラーを検出できます。
+Step01で基本的な型注釈を学習しました。Step02では、TypeScriptの強力な型推論機能を活用して、より効率的で型安全なコードを書く方法を学習します。
 
-**🎯 TypeScript 特有の特徴**
+**🎯 Step02で学習する高度な機能**
 
-- **構造的型付け**: 名前ではなく構造で型を判定
-- **型推論**: 明示的な型注釈なしでも型を推論
-- **Union 型**: 複数の型を組み合わせ可能
-- **リテラル型**: 具体的な値そのものを型として使用
+- **const assertion**: より厳密な型推論の制御
+- **構造的型付け**: 名前ではなく構造による型の互換性
+- **リテラル型とUnion型**: 具体的な値による型制約
+- **型の厳密化**: widening の制御と型の精密化
 
-##### 1. string 型 - 文字列の型安全な管理
-
-```typescript
-// 基本的なstring型
-let userName: string = "Alice";
-let welcomeMessage: string = `Welcome, ${userName}!`;
-
-// 文字列リテラル型（より厳密な型制御）
-type Status = "pending" | "approved" | "rejected";
-let orderStatus: Status = "pending";
-```
-
-##### 2. number 型 - 数値の型安全な処理
+##### 1. const assertion による型の厳密化
 
 ```typescript
-// 基本的なnumber型
-let age: number = 25;
-let price: number = 99.99;
-let discount: number = 0.15; // 15%割引
-
-// 数値リテラル型
-type DiceValue = 1 | 2 | 3 | 4 | 5 | 6;
-let diceRoll: DiceValue = 3;
-```
-
-##### 3. boolean 型 - 論理値の明確な管理
-
-```typescript
-// 状態管理での活用
-interface UserState {
-  isLoggedIn: boolean;
-  isAdmin: boolean;
-  hasNotifications: boolean;
-  isDarkMode: boolean;
-}
-
-function updateUserInterface(state: UserState): void {
-  if (state.isLoggedIn) {
-    showUserDashboard();
-    if (state.isAdmin) {
-      showAdminPanel();
-    }
-  } else {
-    showLoginForm();
-  }
-
-  if (state.hasNotifications) {
-    showNotificationBadge();
-  }
-
-  applyTheme(state.isDarkMode ? "dark" : "light");
-}
-```
-
-##### 4. null と undefined - 値の不在の適切な管理
-
-```typescript
-// null と undefined の使い分け
-let explicitlyEmpty: null = null; // 意図的に空の値
-let notYetInitialized: undefined = undefined; // まだ初期化されていない
-
-// Union型での活用
-let userName: string | null = null; 
-let userAge: number | undefined = undefined;
-
-// API レスポンスでの活用
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  avatar?: string; // オプショナル（undefined の可能性）
-  lastLoginAt: Date | null; // 明示的に null の可能性
-}
-
-async function fetchUser(id: number): Promise<User | null> {
-  try {
-    const response = await fetch(`/api/users/${id}`);
-    if (!response.ok) {
-      return null; // ユーザーが見つからない場合
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Failed to fetch user:", error);
-    return null;
-  }
-}
-```
-
-### Section 2: 型推論の理解と活用
-
-> 📚 **関連資料**: [専門用語集 - 型推論関連用語](./Step02_補足_専門用語集.md#型推論関連用語) | [実践コード例 - 型推論の活用例](./Step02_補足_実践コード例.md#型推論の活用例)
-
-#### 🎯 型推論の基本メカニズム
-
-**💡 なぜ型推論が重要なのか**
-
-型推論により、冗長な型注釈を書かずに型安全性を確保できます。他言語（Java、C#等）と比較して、TypeScript の型推論は非常に強力です。
-
-##### 1. 基本的な型推論
-
-```typescript
-// 基本的な型推論（let使用）
-let inferredString = "Hello TypeScript"; // string型として推論
-let inferredNumber = 42; // number型として推論
-let inferredBoolean = true; // boolean型として推論
-
-// constによる厳密な型推論（リテラル型推論）
-const userName = "Alice"; // "Alice"型（文字列リテラル型）
-const userAge = 25; // 25型（数値リテラル型）
-const isActive = true; // true型（真偽値リテラル型）
-
-// let vs const の型推論の違い
-let mutableStatus = "pending"; // string型（再代入可能）
-const immutableStatus = "pending"; // "pending"型（厳密なリテラル型）
-```
-
-##### 2. オブジェクトと配列の型推論
-
-```typescript
-// オブジェクトの型推論
-const config = {
+// 通常の型推論（widening）
+let theme = "dark"; // string型として推論（再代入可能）
+let config = {
   apiUrl: "https://api.example.com",
   timeout: 5000,
   retryCount: 3,
-}; // { apiUrl: string; timeout: number; retryCount: number; }型として推論
+}; // { apiUrl: string; timeout: number; retryCount: number; }
 
-// 配列の推論
-const numbers = [1, 2, 3, 4, 5]; // number[]型として推論
-const names = ["Alice", "Bob", "Charlie"] as const; // readonly ["Alice", "Bob", "Charlie"]型
+// const assertionによる厳密な型推論
+const strictTheme = "dark" as const; // "dark"型（リテラル型）
+const strictConfig = {
+  apiUrl: "https://api.example.com",
+  timeout: 5000,
+  retryCount: 3,
+} as const; // readonly { apiUrl: "https://api.example.com"; timeout: 5000; retryCount: 3; }
 
-// 混合配列での最適共通型
-let mixedArray = [1, "hello", true]; // (string | number | boolean)[]
+// 実用例：設定オブジェクトの型安全性
+const STUDENT_GRADES = {
+  EXCELLENT: 90,
+  GOOD: 80,
+  AVERAGE: 70,
+  POOR: 60,
+} as const;
+
+type GradeThreshold = typeof STUDENT_GRADES[keyof typeof STUDENT_GRADES]; // 90 | 80 | 70 | 60
 ```
 
-##### 3. 関数の戻り値推論
+##### 2. リテラル型とUnion型の実践活用
 
 ```typescript
-// 関数の戻り値推論
-function add(a: number, b: number) {
-  return a + b; // number型として推論
+// 学生の学年を表現するリテラル型
+type Grade = 1 | 2 | 3 | 4 | 5 | 6;
+type StudentStatus = "enrolled" | "graduated" | "suspended" | "transferred";
+
+// 学生情報の型定義（Step01からの発展）
+interface Student {
+  readonly id: number;
+  name: string;
+  grade: Grade;
+  status: StudentStatus;
+  subjects: readonly string[];
 }
 
-function greet(name: string) {
-  return `Hello, ${name}!`; // string型として推論
+// Union型を活用した型安全な関数
+function getGradeLevel(grade: Grade): "elementary" | "middle" | "high" {
+  if (grade <= 6) return "elementary";
+  if (grade <= 9) return "middle";
+  return "high";
 }
 
-// 条件分岐での型推論
-function getValue(condition: boolean) {
-  return condition ? "success" : 404; // string | number として推論
+// 判別可能なUnion型
+type StudentEvent =
+  | { type: "enrollment"; studentId: number; grade: Grade }
+  | { type: "graduation"; studentId: number; graduationDate: Date }
+  | { type: "transfer"; studentId: number; newSchool: string };
+
+function processStudentEvent(event: StudentEvent): string {
+  switch (event.type) {
+    case "enrollment":
+      return `Student ${event.studentId} enrolled in grade ${event.grade}`;
+    case "graduation":
+      return `Student ${event.studentId} graduated on ${event.graduationDate}`;
+    case "transfer":
+      return `Student ${event.studentId} transferred to ${event.newSchool}`;
+  }
+}
+```
+
+##### 3. 構造的型付けの理解
+
+```typescript
+// 構造的型付けの例
+interface Point2D {
+  x: number;
+  y: number;
+}
+
+interface Point3D {
+  x: number;
+  y: number;
+  z: number;
+}
+
+// Point3DはPoint2Dと構造的に互換性がある
+function calculateDistance2D(point: Point2D): number {
+  return Math.sqrt(point.x * point.x + point.y * point.y);
+}
+
+const point3D: Point3D = { x: 1, y: 2, z: 3 };
+const distance = calculateDistance2D(point3D); // エラーなし！
+
+// 学生管理での構造的型付け
+interface BasicStudent {
+  id: number;
+  name: string;
+}
+
+interface DetailedStudent {
+  id: number;
+  name: string;
+  grade: Grade;
+  subjects: string[];
+  gpa: number;
+}
+
+function displayStudentName(student: BasicStudent): string {
+  return `Student: ${student.name} (ID: ${student.id})`;
+}
+
+const detailedStudent: DetailedStudent = {
+  id: 1,
+  name: "田中太郎",
+  grade: 3,
+  subjects: ["数学", "英語", "国語"],
+  gpa: 3.8,
+};
+
+// DetailedStudentはBasicStudentと構造的に互換性がある
+console.log(displayStudentName(detailedStudent)); // エラーなし！
+```
+
+### Section 2: 高度な型推論と文脈的型付け
+
+> 📚 **関連資料**: [専門用語集 - 型推論関連用語](./Step02_補足_専門用語集.md#型推論関連用語) | [実践コード例 - 型推論の活用例](./Step02_補足_実践コード例.md#型推論の活用例)
+
+#### 🎯 文脈的型推論の活用
+
+**💡 なぜ文脈的型推論が重要なのか**
+
+TypeScriptは文脈から型を推論する能力があります。これにより、冗長な型注釈を避けながら、型安全性を保つことができます。
+
+##### 1. 配列メソッドでの文脈的型推論
+
+```typescript
+// 学生データでの文脈的型推論
+const students = [
+  { id: 1, name: "田中太郎", grade: 3, gpa: 3.8 },
+  { id: 2, name: "佐藤花子", grade: 2, gpa: 3.9 },
+  { id: 3, name: "鈴木次郎", grade: 1, gpa: 3.2 },
+] as const;
+
+// map関数での文脈的型推論
+const studentNames = students.map(student => student.name); // string[]として推論
+const studentGrades = students.map(student => student.grade); // number[]として推論
+
+// filter関数での型の絞り込み
+const highPerformers = students.filter(student => student.gpa >= 3.5);
+// typeof students[number][]として推論（元の型を保持）
+
+// reduce関数での累積型推論
+const totalGPA = students.reduce((sum, student) => sum + student.gpa, 0);
+// numberとして推論
+```
+
+##### 2. 関数型での文脈的型推論
+
+```typescript
+// 高階関数での文脈的型推論
+type StudentProcessor<T> = (student: Student) => T;
+
+function processStudents<T>(
+  students: Student[],
+  processor: StudentProcessor<T>
+): T[] {
+  return students.map(processor);
+}
+
+// 使用時に型が推論される
+const names = processStudents(students, student => student.name); // string[]
+const isHonorRoll = processStudents(students, student => student.gpa >= 3.5); // boolean[]
+
+// イベントハンドラーでの文脈的型推論
+type EventHandler<T> = (event: T) => void;
+
+interface StudentEvent {
+  type: "grade_update" | "enrollment" | "graduation";
+  studentId: number;
+  timestamp: Date;
+}
+
+const handleStudentEvent: EventHandler<StudentEvent> = (event) => {
+  // eventの型はStudentEventとして推論される
+  console.log(`Processing ${event.type} for student ${event.studentId}`);
+};
+```
+
+##### 3. 条件型での型推論
+
+```typescript
+// 条件型を使った型推論
+type StudentGradeLevel<T extends number> =
+  T extends 1 | 2 | 3 ? "elementary" :
+  T extends 4 | 5 | 6 ? "middle" :
+  T extends 7 | 8 | 9 ? "high" :
+  "unknown";
+
+// 使用例
+type ElementaryLevel = StudentGradeLevel<2>; // "elementary"
+type HighLevel = StudentGradeLevel<8>; // "high"
+
+// 実用的な例：学生データの型安全な処理
+function getStudentsByGradeLevel<T extends Grade>(
+  students: Student[],
+  targetGrade: T
+): Array<Student & { gradeLevel: StudentGradeLevel<T> }> {
+  return students
+    .filter(student => student.grade === targetGrade)
+    .map(student => ({
+      ...student,
+      gradeLevel: getGradeLevel(student.grade) as StudentGradeLevel<T>
+    }));
+}
+
+function getGradeLevel(grade: Grade): string {
+  if (grade <= 3) return "elementary";
+  if (grade <= 6) return "middle";
+  if (grade <= 9) return "high";
+  return "unknown";
 }
 ```
 
@@ -218,28 +291,70 @@ function getValue(condition: boolean) {
 
 ## 🎯 実践演習
 
-> 📚 **演習サポート資料**: [実践コード例 - 基本型の練習](./Step02_補足_実践コード例.md#基本型の練習) | [トラブルシューティング - 型システム関連エラー](./Step02_補足_トラブルシューティング.md#型システム関連エラー)
+> 📚 **演習サポート資料**: [実践コード例 - 高度な型システム](./Step02_補足_実践コード例.md#高度な型システム) | [トラブルシューティング - 型推論エラー](./Step02_補足_トラブルシューティング.md#型推論エラー)
 
-### 演習 1: 型推論の活用（10 分）
+### 演習 1: const assertionと型推論（15 分）
 
-以下のコードで型推論がどのように働くかを確認し、コメントを追加してください：
+以下のコードを完成させて、const assertionと型推論の動作を確認してください：
 
 ```typescript
-// 型推論の確認
-const userConfig = {
-  theme: "dark",
-  fontSize: 14,
-  autoSave: true,
-}; // 型: ?
+// 1. 学生の成績基準を定義してください
+const GRADE_STANDARDS = {
+  // TODO: 各成績レベルの基準点を定義（const assertionを使用）
+} as const;
 
-const statusList = ["pending", "approved", "rejected"] as const; // 型: ?
+// 2. 学生のステータスを定義してください
+const STUDENT_STATUSES = [
+  // TODO: 学生の状態を配列で定義（const assertionを使用）
+] as const;
 
-function processStatus(status: (typeof statusList)[number]) {
-  // statusの型: ?
-  return `Processing: ${status}`;
+// 3. 型推論を活用した関数を作成してください
+function evaluateStudent(score: number) {
+  // TODO: scoreに基づいて成績レベルを返す関数
+  // GRADE_STANDARDSを活用してください
 }
 
-let result = processStatus("pending"); // resultの型: ?
+// 4. 文脈的型推論を確認してください
+const students = [
+  { id: 1, name: "田中", scores: [85, 92, 78] },
+  { id: 2, name: "佐藤", scores: [76, 84, 90] },
+  { id: 3, name: "鈴木", scores: [94, 89, 91] },
+];
+
+// TODO: map関数を使って各学生の平均点を計算
+const averageScores = students.map(/* ここを完成させてください */);
+
+// TODO: filter関数を使って平均80点以上の学生を抽出
+const highPerformers = students.filter(/* ここを完成させてください */);
+```
+
+### 演習 2: 構造的型付けの実践（10 分）
+
+以下の型定義を完成させて、構造的型付けの動作を確認してください：
+
+```typescript
+// 1. 基本的な学生インターフェース
+interface BasicStudent {
+  // TODO: id, name, gradeを定義
+}
+
+// 2. 詳細な学生インターフェース
+interface DetailedStudent {
+  // TODO: BasicStudentを拡張して、subjects, gpa, enrollmentDateを追加
+}
+
+// 3. 構造的型付けを活用した関数
+function displayBasicInfo(student: BasicStudent): string {
+  // TODO: 学生の基本情報を表示する関数
+}
+
+// 4. 型の互換性を確認
+const detailedStudent: DetailedStudent = {
+  // TODO: DetailedStudentのサンプルデータを作成
+};
+
+// この関数呼び出しがエラーにならないことを確認
+console.log(displayBasicInfo(detailedStudent));
 ```
 
 ---
@@ -248,12 +363,13 @@ let result = processStatus("pending"); // resultの型: ?
 
 ### ✅ 今回のセッションで習得すべきこと
 
-1. **プリミティブ型の理解**: string, number, boolean, null, undefined の適切な使い分け
-2. **リテラル型の活用**: より厳密な型制御の方法
-3. **型推論の仕組み**: let vs const、オブジェクト・配列での推論
+1. **const assertionの活用**: より厳密な型推論の制御方法
+2. **リテラル型とUnion型**: 具体的な値による型制約の実践
+3. **構造的型付け**: 名前ではなく構造による型の互換性理解
+4. **文脈的型推論**: 関数型や配列メソッドでの型推論活用
 
 ---
 
-**📌 重要**: Session1 は型システムの基礎固めです。焦らず確実に基本概念を理解しましょう。
+**📌 重要**: Session1 では高度な型推論機能を学習しました。Step01の基礎知識を活用して、より効率的な型安全コードを書けるようになりましょう。
 
-**🌟 次回（Session2）は、より実践的な型システムコードの作成に挑戦します！**
+**🌟 次回（Session2）は、タプル型・関数オーバーロード等のより高度な型機能を学習します！**

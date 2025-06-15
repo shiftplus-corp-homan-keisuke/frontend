@@ -1,4 +1,4 @@
-# Step02 成果物：計算機システム
+# Step02 成果物：学生管理システム発展版
 
 ---
 
@@ -6,13 +6,13 @@
 
 **あなたが作成するもの**: 既存のJavaScriptコードにTypeScriptの型注釈を追加する
 
-**なぜ作るのか**: Step02で学習した基本型システムと型注釈を実際のコードに適用し、**既存コードを型安全にする力**を身につけるため
+**なぜ作るのか**: Step02で学習した高度な型システム（const assertion、リテラル型、Union型、タプル型、関数オーバーロード）を実際のコードに適用し、**既存コードを型安全にする力**を身につけるため
 
 **学習目標**:
 - 既存のJavaScriptコードを読んで適切な型を判断できる
-- プリミティブ型（number、string、boolean）を正しく注釈できる
-- 配列型とオブジェクト型を適切に注釈できる
-- 関数の引数と戻り値の型を正しく推測して注釈できる
+- 高度な型機能（const assertion、リテラル型、Union型）を正しく注釈できる
+- タプル型と関数オーバーロードを適切に活用できる
+- 学生管理システムの複雑な型設計を実装できる
 
 ---
 
@@ -22,161 +22,247 @@
 
 ```
 📁 提出物/
-└── calculator.ts    # 型注釈を追加したプログラム（必須）
+└── student-management.ts    # 型注釈を追加したプログラム（必須）
 ```
 
 ---
 
-## ⏰ 作成手順（推奨時間配分：合計40分）
+## ⏰ 作成手順（推奨時間配分：合計60分）
 
-### Phase 1: 既存コードの理解（10分）
+### Phase 1: 既存コードの理解（15分）
 
-#### ステップ1-1: 提供されたJavaScriptコードを理解する（10分）
+#### ステップ1-1: 提供されたJavaScriptコードを理解する（15分）
 
 以下のJavaScriptコードを読んで、どんな型が必要か考えてください：
 
 ```javascript
 // 既存のJavaScriptコード（型注釈なし）
-let history = [];
+let students = [];
 let nextId = 1;
 
-function add(a, b) {
-  const result = a + b;
-  const expression = `${a} + ${b} = ${result}`;
+// 学生の基本情報
+const GRADES = [1, 2, 3, 4, 5, 6];
+const CLASSES = ["A", "B", "C"];
+const STATUSES = ["active", "inactive", "graduated", "transferred"];
+
+function addStudent(name, grade, className, birthDate, guardianContact) {
+  const student = {
+    id: nextId++,
+    name: name,
+    grade: grade,
+    class: className,
+    status: "active",
+    birthDate: new Date(birthDate),
+    guardianContact: guardianContact,
+    enrollmentDate: new Date(),
+    updatedAt: new Date()
+  };
   
-  addToHistory(expression, result);
+  students.push(student);
   
   return {
-    result: result,
-    expression: expression,
-    isValid: true
+    success: true,
+    data: student,
+    message: "学生が正常に登録されました"
   };
 }
 
-function subtract(a, b) {
-  const result = a - b;
-  const expression = `${a} - ${b} = ${result}`;
+function findStudent(searchType, value) {
+  let result;
   
-  addToHistory(expression, result);
+  if (searchType === "id") {
+    result = students.find(s => s.id === value);
+  } else if (searchType === "name") {
+    result = students.filter(s => s.name.includes(value));
+  } else if (searchType === "grade") {
+    result = students.filter(s => s.grade === value);
+  } else if (searchType === "class") {
+    result = students.filter(s => s.class === value);
+  }
   
-  return {
-    result: result,
-    expression: expression,
-    isValid: true
-  };
-}
-
-function multiply(a, b) {
-  const result = a * b;
-  const expression = `${a} × ${b} = ${result}`;
-  
-  addToHistory(expression, result);
-  
-  return {
-    result: result,
-    expression: expression,
-    isValid: true
-  };
-}
-
-function divide(a, b) {
-  if (b === 0) {
+  if (!result || (Array.isArray(result) && result.length === 0)) {
     return {
-      result: 0,
-      expression: `${a} ÷ ${b}`,
-      isValid: false,
-      errorMessage: "0で割ることはできません"
+      success: false,
+      data: null,
+      message: "該当する学生が見つかりませんでした"
     };
   }
-
-  const result = a / b;
-  const expression = `${a} ÷ ${b} = ${result}`;
-  
-  addToHistory(expression, result);
   
   return {
-    result: result,
-    expression: expression,
-    isValid: true
+    success: true,
+    data: result,
+    message: "検索が完了しました"
   };
 }
 
-function addToHistory(expression, result) {
-  const historyItem = {
-    id: nextId++,
-    expression: expression,
-    result: result
+function updateStudent(id, updates) {
+  const studentIndex = students.findIndex(s => s.id === id);
+  
+  if (studentIndex === -1) {
+    return {
+      success: false,
+      data: null,
+      message: "指定された学生が見つかりません"
+    };
+  }
+  
+  const student = students[studentIndex];
+  const updatedStudent = {
+    ...student,
+    ...updates,
+    updatedAt: new Date()
   };
   
-  history.push(historyItem);
+  students[studentIndex] = updatedStudent;
+  
+  return {
+    success: true,
+    data: updatedStudent,
+    message: "学生情報が更新されました"
+  };
 }
 
-function getHistory() {
-  return [...history];
+function getStudentsByGrade(grade) {
+  const gradeStudents = students.filter(s => s.grade === grade);
+  
+  return gradeStudents.map(student => [
+    student.id,
+    student.name,
+    student.class,
+    student.status
+  ]);
+}
+
+function getClassStatistics(grade, className) {
+  const classStudents = students.filter(s => 
+    s.grade === grade && s.class === className
+  );
+  
+  const activeCount = classStudents.filter(s => s.status === "active").length;
+  const totalCount = classStudents.length;
+  const averageAge = classStudents.reduce((sum, student) => {
+    const age = new Date().getFullYear() - student.birthDate.getFullYear();
+    return sum + age;
+  }, 0) / totalCount || 0;
+  
+  return {
+    grade: grade,
+    class: className,
+    totalStudents: totalCount,
+    activeStudents: activeCount,
+    averageAge: Math.round(averageAge * 10) / 10
+  };
+}
+
+function generateReport() {
+  const report = {
+    totalStudents: students.length,
+    byGrade: {},
+    byStatus: {
+      active: 0,
+      inactive: 0,
+      graduated: 0,
+      transferred: 0
+    },
+    generatedAt: new Date()
+  };
+  
+  // 学年別集計
+  GRADES.forEach(grade => {
+    const gradeStudents = students.filter(s => s.grade === grade);
+    report.byGrade[grade] = gradeStudents.length;
+  });
+  
+  // ステータス別集計
+  students.forEach(student => {
+    report.byStatus[student.status]++;
+  });
+  
+  return report;
 }
 
 function runExample() {
-  console.log("=== 計算機システムのデモ ===");
+  console.log("=== 学生管理システム発展版のデモ ===");
   
-  // 基本的な四則演算
-  console.log(add(10, 5));
-  console.log(subtract(10, 3));
-  console.log(multiply(4, 7));
-  console.log(divide(15, 3));
+  // 学生登録
+  console.log(addStudent("田中太郎", 3, "A", "2015-04-15", "090-1234-5678"));
+  console.log(addStudent("佐藤花子", 3, "B", "2015-06-20", "080-9876-5432"));
+  console.log(addStudent("鈴木次郎", 4, "A", "2014-03-10"));
   
-  // エラーケース
-  console.log(divide(10, 0));
+  // 学生検索
+  console.log(findStudent("name", "田中"));
+  console.log(findStudent("grade", 3));
   
-  // 履歴表示
-  console.log("\n=== 計算履歴 ===");
-  const calculationHistory = getHistory();
-  calculationHistory.forEach(h => {
-    console.log(`${h.id}: ${h.expression}`);
-  });
+  // 学生情報更新
+  console.log(updateStudent(1, { class: "B", status: "active" }));
+  
+  // 学年別学生一覧（タプル形式）
+  console.log("3年生一覧:", getStudentsByGrade(3));
+  
+  // クラス統計
+  console.log("3年A組統計:", getClassStatistics(3, "A"));
+  
+  // 全体レポート
+  console.log("全体レポート:", generateReport());
 }
 
 // 実行
 runExample();
 ```
 
-### Phase 2: 型注釈の追加（25分）
+### Phase 2: 高度な型注釈の追加（35分）
 
-#### ステップ2-1: 必要な型を定義する（10分）
+#### ステップ2-1: 必要な型を定義する（15分）
 
 上記のコードを見て、以下の型を定義してください：
 
-1. **計算結果を表現する型**
-   - 関数の戻り値として使われているオブジェクトの型
-   - どんなプロパティが必要でしょうか？
+1. **学生の基本型**
+   - 学年、クラス、ステータスのリテラル型
+   - 学生オブジェクトの型
 
-2. **計算履歴を表現する型**
-   - `addToHistory`で作成されているオブジェクトの型
-   - どんなプロパティが必要でしょうか？
+2. **操作結果の型**
+   - 成功・失敗を表現するUnion型
+   - 検索結果の型（単一・複数対応）
 
-#### ステップ2-2: 変数に型注釈を追加する（5分）
+3. **タプル型**
+   - 学生一覧表示用のタプル型
+
+4. **統計・レポート型**
+   - クラス統計の型
+   - 全体レポートの型
+
+#### ステップ2-2: const assertionの活用（5分）
 
 ```typescript
-// TODO: 以下の変数に適切な型注釈を追加してください
-let history = [];
+// TODO: 以下の定数にconst assertionを適用してください
+const GRADES = [1, 2, 3, 4, 5, 6];
+const CLASSES = ["A", "B", "C"];
+const STATUSES = ["active", "inactive", "graduated", "transferred"];
+```
+
+#### ステップ2-3: 関数オーバーロードの実装（10分）
+
+```typescript
+// TODO: findStudent関数に関数オーバーロードを適用してください
+// 検索タイプによって戻り値の型が変わることを表現する
+function findStudent(searchType, value) { /* ... */ }
+```
+
+#### ステップ2-4: 変数と関数に型注釈を追加する（5分）
+
+```typescript
+// TODO: 以下に適切な型注釈を追加してください
+let students = [];
 let nextId = 1;
+
+function addStudent(name, grade, className, birthDate, guardianContact) { /* ... */ }
+function updateStudent(id, updates) { /* ... */ }
+function getStudentsByGrade(grade) { /* ... */ }
+function getClassStatistics(grade, className) { /* ... */ }
+function generateReport() { /* ... */ }
 ```
 
-#### ステップ2-3: 関数に型注釈を追加する（10分）
-
-各関数の引数と戻り値に適切な型注釈を追加してください：
-
-```typescript
-// TODO: 以下の関数に型注釈を追加してください
-function add(a, b) { /* ... */ }
-function subtract(a, b) { /* ... */ }
-function multiply(a, b) { /* ... */ }
-function divide(a, b) { /* ... */ }
-function addToHistory(expression, result) { /* ... */ }
-function getHistory() { /* ... */ }
-function runExample() { /* ... */ }
-```
-
-### Phase 3: 動作確認（5分）
+### Phase 3: 動作確認（10分）
 
 #### ステップ3-1: 動作確認
 TypeScript Playgroundまたはローカル環境で実行して動作を確認
@@ -189,21 +275,23 @@ TypeScript Playgroundまたはローカル環境で実行して動作を確認
 
 ### 🔧 技術要件
 - [ ] TypeScriptでコンパイルエラーが発生しない
-- [ ] **必要な型を2つ以上定義している**
-- [ ] すべての変数に適切な型注釈が付いている
-- [ ] すべての関数の引数に適切な型注釈が付いている
-- [ ] すべての関数の戻り値に適切な型注釈が付いている
+- [ ] **必要な型を5つ以上定義している**
+- [ ] const assertionが適切に使用されている
+- [ ] リテラル型とUnion型が適切に定義されている
+- [ ] タプル型が適切に使用されている
+- [ ] 関数オーバーロードが実装されている
 
 ### 🎯 機能要件
 - [ ] 元のJavaScriptコードと同じ動作をする
-- [ ] 四則演算が正しく動作する
-- [ ] 0除算エラーが適切に処理される
-- [ ] 計算履歴が正しく記録・取得される
+- [ ] 学生の登録・検索・更新が正しく動作する
+- [ ] 統計機能が正しく動作する
+- [ ] レポート生成が正しく動作する
 
-### 💭 型注釈要件
-- [ ] 計算結果のオブジェクトの型が正しく定義されている
-- [ ] 計算履歴のオブジェクトの型が正しく定義されている
-- [ ] 配列の型注釈が適切に付いている
+### 💭 高度な型注釈要件
+- [ ] 学生オブジェクトの型が正しく定義されている
+- [ ] 操作結果のUnion型が適切に定義されている
+- [ ] 検索機能の関数オーバーロードが実装されている
+- [ ] タプル型を使った一覧表示が実装されている
 - [ ] オプショナルプロパティ（`?`）が適切に使われている
 
 ---
@@ -212,105 +300,91 @@ TypeScript Playgroundまたはローカル環境で実行して動作を確認
 
 | 項目 | 配点 | 評価ポイント |
 |------|------|-------------|
-| **型注釈の正確性** | 60点 | 全ての変数・関数に適切な型注釈が付いている |
-| **型定義の適切性** | 30点 | 必要な型が正しく定義されている |
-| **機能の完成度** | 10点 | 元のコードと同じ動作をする |
+| **高度な型機能の活用** | 50点 | const assertion、リテラル型、Union型、タプル型、関数オーバーロードの適切な使用 |
+| **型注釈の正確性** | 30点 | 全ての変数・関数に適切な型注釈が付いている |
+| **型設計の適切性** | 15点 | 必要な型が正しく定義されている |
+| **機能の完成度** | 5点 | 元のコードと同じ動作をする |
 
 **合格ライン**: 70点以上
 
 ---
 
-## 💡 型注釈のヒント
+## 💡 高度な型注釈のヒント
 
 ### 🤔 型を考える時の質問
 
-1. **この変数には何が入る？**
-   - `history` → 配列が入る → 何の配列？
-   - `nextId` → 数値が入る → `number`
+1. **const assertionはどこで使う？**
+   - `GRADES` → `const GRADES = [1, 2, 3, 4, 5, 6] as const`
+   - 配列をタプル型として扱いたい場合
 
-2. **この関数は何を受け取る？**
-   - `add(a, b)` → 数値を2つ受け取る → `number, number`
-   - `addToHistory(expression, result)` → 文字列と数値？
+2. **リテラル型とUnion型の組み合わせ**
+   - `type Grade = 1 | 2 | 3 | 4 | 5 | 6`
+   - `type StudentStatus = "active" | "inactive" | "graduated" | "transferred"`
 
-3. **この関数は何を返す？**
-   - `add` → オブジェクトを返す → どんなオブジェクト？
-   - `getHistory` → 配列を返す → 何の配列？
+3. **関数オーバーロードの設計**
+   - 検索タイプによって戻り値が変わる
+   - `"id"` → 単一の学生 or null
+   - `"name" | "grade" | "class"` → 学生の配列
 
-4. **このプロパティは必須？**
-   - `errorMessage` → エラーの時だけ → オプショナル（`?`）
+4. **タプル型の活用**
+   - `[number, string, string, StudentStatus]` → 学生一覧表示用
 
-### 📝 型注釈の例
+### 📝 高度な型注釈の例
 
 ```typescript
-// 基本的な型注釈
-let count: number = 0;
-let message: string = "hello";
-let isValid: boolean = true;
+// const assertion
+const GRADES = [1, 2, 3, 4, 5, 6] as const;
+type Grade = typeof GRADES[number]; // 1 | 2 | 3 | 4 | 5 | 6
 
-// 配列の型注釈
-let numbers: number[] = [1, 2, 3];
-let names: string[] = ["Alice", "Bob"];
+// Union型
+type OperationResult<T> = 
+  | { success: true; data: T; message: string }
+  | { success: false; data: null; message: string };
 
-// オブジェクトの型注釈
-let user: { name: string; age: number } = {
-  name: "Alice",
-  age: 30
-};
+// タプル型
+type StudentSummary = [number, string, string, StudentStatus];
 
-// 関数の型注釈
-function greet(name: string): string {
-  return `Hello, ${name}!`;
+// 関数オーバーロード
+function findStudent(searchType: "id", value: number): OperationResult<Student | null>;
+function findStudent(searchType: "name" | "grade" | "class", value: string | number): OperationResult<Student[]>;
+function findStudent(searchType: string, value: any): OperationResult<Student | Student[] | null> {
+  // 実装
 }
-
-// オプショナルプロパティ
-type User = {
-  name: string;
-  age: number;
-  email?: string;  // 任意のプロパティ
-};
 ```
 
 ### ⚠️ よくある間違い
 
-1. **配列の型注釈忘れ**
+1. **const assertionの忘れ**
    ```typescript
    // ❌ 間違い
-   let history = [];
+   const GRADES = [1, 2, 3, 4, 5, 6]; // number[]型
    
    // ✅ 正解
-   let history: HistoryItem[] = [];
+   const GRADES = [1, 2, 3, 4, 5, 6] as const; // readonly [1, 2, 3, 4, 5, 6]型
    ```
 
-2. **戻り値の型注釈忘れ**
+2. **関数オーバーロードの型不一致**
    ```typescript
-   // ❌ 間違い
-   function add(a: number, b: number) {
-     return { result: a + b };
+   // ❌ 間違い：実装の型がオーバーロードと一致しない
+   function findStudent(searchType: "id", value: number): Student;
+   function findStudent(searchType: string, value: any) { // 戻り値の型が不一致
+     // ...
    }
    
    // ✅ 正解
-   function add(a: number, b: number): CalculationResult {
-     return { result: a + b, expression: "...", isValid: true };
+   function findStudent(searchType: "id", value: number): OperationResult<Student | null>;
+   function findStudent(searchType: string, value: any): OperationResult<Student | Student[] | null> {
+     // ...
    }
    ```
 
-3. **オプショナルプロパティの見落とし**
+3. **タプル型の要素順序間違い**
    ```typescript
-   // ❌ 間違い：errorMessageは常に必要ではない
-   type Result = {
-     result: number;
-     expression: string;
-     isValid: boolean;
-     errorMessage: string;
-   };
+   // ❌ 間違い：要素の順序が実際のデータと一致しない
+   type StudentSummary = [string, number, string, StudentStatus]; // 名前, ID, クラス, ステータス
    
-   // ✅ 正解：errorMessageは任意
-   type Result = {
-     result: number;
-     expression: string;
-     isValid: boolean;
-     errorMessage?: string;
-   };
+   // ✅ 正解：実際のデータ順序と一致
+   type StudentSummary = [number, string, string, StudentStatus]; // ID, 名前, クラス, ステータス
    ```
 
 ---
@@ -321,54 +395,87 @@ type User = {
 <summary>⚠️ 注意：まず自分で考えてから見てください</summary>
 
 ```typescript
+// const assertion
+const GRADES = [1, 2, 3, 4, 5, 6] as const;
+const CLASSES = ["A", "B", "C"] as const;
+const STATUSES = ["active", "inactive", "graduated", "transferred"] as const;
+
 // 型定義
-type CalculationResult = {
-  result: number;
-  expression: string;
-  isValid: boolean;
-  errorMessage?: string;
+type Grade = typeof GRADES[number];
+type ClassName = typeof CLASSES[number];
+type StudentStatus = typeof STATUSES[number];
+
+type Student = {
+  id: number;
+  name: string;
+  grade: Grade;
+  class: ClassName;
+  status: StudentStatus;
+  birthDate: Date;
+  guardianContact?: string;
+  enrollmentDate: Date;
+  updatedAt: Date;
 };
 
-type CalculationHistory = {
-  id: number;
-  expression: string;
-  result: number;
+type OperationResult<T> = 
+  | { success: true; data: T; message: string }
+  | { success: false; data: null; message: string };
+
+type StudentSummary = [number, string, string, StudentStatus];
+
+type ClassStatistics = {
+  grade: Grade;
+  class: ClassName;
+  totalStudents: number;
+  activeStudents: number;
+  averageAge: number;
+};
+
+type SchoolReport = {
+  totalStudents: number;
+  byGrade: Record<Grade, number>;
+  byStatus: Record<StudentStatus, number>;
+  generatedAt: Date;
 };
 
 // 変数の型注釈
-let history: CalculationHistory[] = [];
+let students: Student[] = [];
 let nextId: number = 1;
 
-// 関数の型注釈
-function add(a: number, b: number): CalculationResult {
-  const result = a + b;
-  const expression = `${a} + ${b} = ${result}`;
-  
-  addToHistory(expression, result);
-  
-  return {
-    result: result,
-    expression: expression,
-    isValid: true
-  };
+// 関数オーバーロード
+function findStudent(searchType: "id", value: number): OperationResult<Student | null>;
+function findStudent(searchType: "name" | "grade" | "class", value: string | number): OperationResult<Student[]>;
+function findStudent(searchType: string, value: any): OperationResult<Student | Student[] | null> {
+  // 実装
 }
 
-function addToHistory(expression: string, result: number): void {
-  const historyItem: CalculationHistory = {
-    id: nextId++,
-    expression: expression,
-    result: result
-  };
-  
-  history.push(historyItem);
+function addStudent(
+  name: string, 
+  grade: Grade, 
+  className: ClassName, 
+  birthDate: string, 
+  guardianContact?: string
+): OperationResult<Student> {
+  // 実装
 }
 
-function getHistory(): CalculationHistory[] {
-  return [...history];
+function updateStudent(
+  id: number, 
+  updates: Partial<Pick<Student, 'name' | 'grade' | 'class' | 'status' | 'guardianContact'>>
+): OperationResult<Student> {
+  // 実装
 }
 
-function runExample(): void {
-  // 実行例のコード
+function getStudentsByGrade(grade: Grade): StudentSummary[] {
+  // 実装
+}
+
+function getClassStatistics(grade: Grade, className: ClassName): ClassStatistics {
+  // 実装
+}
+
+function generateReport(): SchoolReport {
+  // 実装
 }
 ```
 
@@ -380,12 +487,13 @@ function runExample(): void {
 
 余裕がある場合は以下にも挑戦してみてください：
 
-- [ ] より厳密な型定義（リテラル型の使用）
-- [ ] 型ガードの実装
-- [ ] ジェネリクスの活用
+- [ ] より厳密な型ガードの実装
+- [ ] Mapped Typesの活用
+- [ ] Conditional Typesの使用
+- [ ] ジェネリクスを使った汎用的な検索機能
 
 ---
 
-**📌 重要**: この課題の目的は**既存のJavaScriptコードを読んで適切な型注釈を付ける力**を身につけることです。実際の開発現場でよくある作業を体験しましょう。
+**📌 重要**: この課題の目的は**Step02で学習した高度な型機能を実際のコードに適用する力**を身につけることです。const assertion、リテラル型、Union型、タプル型、関数オーバーロードを積極的に活用しましょう。
 
 **🌟 次のステップ**: Step03では、インターフェースとオブジェクト型について学習します！

@@ -72,33 +72,6 @@ let welcomeMessage: string = `Welcome, ${userName}!`;
 // 文字列リテラル型（より厳密な型制御）
 type Status = "pending" | "approved" | "rejected";
 let orderStatus: Status = "pending";
-
-// API レスポンスでの活用例
-interface ApiResponse {
-  message: string;
-  status: Status;
-  userId: string;
-}
-
-function processApiResponse(response: ApiResponse): string {
-  return `Status: ${response.status}, Message: ${response.message}`;
-}
-```
-
-**🚀 実践的な活用例**
-
-```typescript
-// 設定管理
-type Environment = "development" | "staging" | "production";
-const API_ENDPOINTS: Record<Environment, string> = {
-  development: "http://localhost:3000/api",
-  staging: "https://staging-api.example.com",
-  production: "https://api.example.com",
-};
-
-function getApiEndpoint(env: Environment): string {
-  return API_ENDPOINTS[env];
-}
 ```
 
 ##### 2. number 型 - 数値の型安全な処理
@@ -112,20 +85,6 @@ let discount: number = 0.15; // 15%割引
 // 数値リテラル型
 type DiceValue = 1 | 2 | 3 | 4 | 5 | 6;
 let diceRoll: DiceValue = 3;
-
-// 実用的な数値処理
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  taxRate: number;
-}
-
-function calculateTotalPrice(product: Product, quantity: number): number {
-  const subtotal = product.price * quantity;
-  const tax = subtotal * product.taxRate;
-  return Math.round((subtotal + tax) * 100) / 100; // 小数点以下2桁で丸め
-}
 ```
 
 ##### 3. boolean 型 - 論理値の明確な管理
@@ -165,8 +124,8 @@ let explicitlyEmpty: null = null; // 意図的に空の値
 let notYetInitialized: undefined = undefined; // まだ初期化されていない
 
 // Union型での活用
-let userName: string | null = null; // ユーザー名が設定されていない
-let userAge: number | undefined = undefined; // 年齢が不明
+let userName: string | null = null; 
+let userAge: number | undefined = undefined;
 
 // API レスポンスでの活用
 interface User {

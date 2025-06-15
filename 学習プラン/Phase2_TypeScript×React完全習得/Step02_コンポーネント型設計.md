@@ -385,7 +385,7 @@ TypeScript上級者にとって、Generic Componentsは以下の価値を提供�
 
 #### 🧩 Generic Table Component
 
-````typescript
+```typescript
 // 5. 高度なGeneric Table実装
 interface Column<T> {
   key: keyof T;
@@ -406,12 +406,14 @@ interface TableProps<T extends Record<string, any>> {
   pagination?: {
     current: number;
     pageSize: number;
+```
+
 **⚠️ よくある間違いと注意点**
 
 Generic Componentsを実装する際の典型的なエラーパターンと対策：
 
 1. **Generic制約の過度な複雑化**: 使いにくいAPIの原因
-   ```typescript
+```typescript
    // ❌ 間違い: 制約が複雑すぎる
    interface BadTableProps<
      T extends Record<string, string | number | boolean>,
@@ -428,10 +430,10 @@ Generic Componentsを実装する際の典型的なエラーパターンと対�
      data: T[];
      sortKey?: keyof T;
    }
-   ```
+```
 
 2. **型推論の阻害**: 明示的な型指定が必要になる問題
-   ```typescript
+```typescript
    // ❌ 間違い: 型推論が働かない
    function badComponent<T>(props: { data: T[] }): JSX.Element {
      return <div>{JSON.stringify(props.data)}</div>;
@@ -446,7 +448,7 @@ Generic Componentsを実装する際の典型的なエラーパターンと対�
    ```
 
 3. **パフォーマンスの考慮不足**: 不要な再レンダリングの発生
-   ```typescript
+```typescript
    // ❌ 間違い: 毎回新しいオブジェクトを作成
    function BadTable<T>({ data, columns }: TableProps<T>) {
      return (
@@ -480,7 +482,7 @@ Generic Componentsを実装する際の典型的なエラーパターンと対�
        </table>
      );
    });
-   ```
+```
 
 **🚀 TypeScriptでの改善点**
 

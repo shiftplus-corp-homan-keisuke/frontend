@@ -21,9 +21,9 @@
 **学習目標**:
 
 - [ ] 高度な型推論メカニズムの理解
-- [ ] リテラル型とUnion型の実践活用
+- [ ] リテラル型と Union 型の実践活用
 - [ ] 構造的型付けの概念理解
-- [ ] const assertionと型の厳密化
+- [ ] const assertion と型の厳密化
 
 **前提知識**:
 
@@ -54,20 +54,20 @@
 
 **💡 なぜ高度な型推論が重要なのか**
 
-Step01で基本的な型注釈を学習しました。Step02では、TypeScriptの強力な型推論機能を活用して、より効率的で型安全なコードを書く方法を学習します。
+Step01 で基本的な型注釈を学習しました。Step02 では、TypeScript の強力な型推論機能を活用して、より効率的で型安全なコードを書く方法を学習します。
 
-**🎯 Step02で学習する高度な機能**
+**🎯 Step02 で学習する高度な機能**
 
 - **const assertion**: より厳密な型推論の制御
 - **構造的型付け**: 名前ではなく構造による型の互換性
-- **リテラル型とUnion型**: 具体的な値による型制約
+- **リテラル型と Union 型**: 具体的な値による型制約
 - **型の厳密化**: widening の制御と型の精密化
 
 ##### 1. const assertion による型の厳密化
 
 > 📚 **詳細解説**: [専門用語集 - const assertion](./Step02_補足_専門用語集.md#const-assertionconst-アサーション)
 
-**💡 const assertionとは**: `as const`を使用して、TypeScriptの型推論をより厳密に制御し、値を具体的なリテラル型として保持する機能です。通常の型推論では値が汎用的な型（`string`、`number`など）に拡張されますが、const assertionによりこれを防ぎ、設定値や定数をより型安全に管理できます。
+**💡 const assertion とは**: `as const`を使用して、TypeScript の型推論をより厳密に制御し、値を具体的なリテラル型として保持する機能です。通常の型推論では値が汎用的な型（`string`、`number`など）に拡張されますが、const assertion によりこれを防ぎ、設定値や定数をより型安全に管理できます。
 
 ```typescript
 // 通常の型推論（widening）
@@ -94,16 +94,16 @@ const STUDENT_GRADES = {
   POOR: 60,
 } as const;
 
-type GradeThreshold = typeof STUDENT_GRADES[keyof typeof STUDENT_GRADES]; // 90 | 80 | 70 | 60
+type GradeThreshold = (typeof STUDENT_GRADES)[keyof typeof STUDENT_GRADES]; // 90 | 80 | 70 | 60
 ```
 
-##### 2. リテラル型とUnion型の実践活用
+##### 2. リテラル型と Union 型の実践活用
 
 ```typescript
 // 学生の学年を表現するリテラル型
-type Grade = 1 | 2 | 3 | 4 | 5 | 6;  // 小学校1-6年生のみ
-type StudentStatus = "enrolled" | "graduated" | "suspended" | "transferred";
-// 入学 | 卒業 | 停学 | 転校
+type Grade = 1 | 2 | 3 | 4 | 5 | 6; // 小学校1-6年生のみ
+type StudentStatus = "active" | "inactive" | "graduated" | "transferred";
+// 在籍中 | 休学中 | 卒業 | 転校
 
 // 学生情報の型定義（Step01からの発展）
 interface Student {
@@ -116,28 +116,32 @@ interface Student {
 
 // 小学校の学年レベルを取得する関数
 function getElementaryLevel(grade: Grade): "lower" | "middle" | "upper" {
-  if (grade <= 2) return "lower";    // 低学年 1-2年
-  if (grade <= 4) return "middle";   // 中学年 3-4年
-  return "upper";                    // 高学年 5-6年
+  if (grade <= 2) return "lower"; // 低学年 1-2年
+  if (grade <= 4) return "middle"; // 中学年 3-4年
+  return "upper"; // 高学年 5-6年
 }
 
-// 判別可能なUnion型
+// 判別可能なUnion型（StudentStatusに合わせて整理）
 type StudentEvent =
-  | { type: "enrollment"; studentId: number }
-  | { type: "graduation"; studentId: number; graduationDate: Date }
-  | { type: "transfer"; studentId: number; newSchool: string }
-  | { type: "suspension"; studentId: number; reason: string; duration: number };
+  | { type: "active"; studentId: number }
+  | { type: "inactive"; studentId: number; reason?: string }
+  | { type: "graduated"; studentId: number; graduationDate: Date }
+  | { type: "transferred"; studentId: number; newSchool: string };
 
 function processStudentEvent(event: StudentEvent): string {
   switch (event.type) {
-    case "enrollment":
-      return `学生ID ${event.studentId} が入学しました`;
-    case "graduation":
-      return `学生ID ${event.studentId} が ${event.graduationDate.toLocaleDateString('ja-JP')} に卒業しました`;
-    case "transfer":
+    case "active":
+      return `学生ID ${event.studentId} が在籍中になりました`;
+    case "inactive":
+      return `学生ID ${event.studentId} が休学中になりました${
+        event.reason ? `。理由: ${event.reason}` : ""
+      }`;
+    case "graduated":
+      return `学生ID ${
+        event.studentId
+      } が ${event.graduationDate.toLocaleDateString("ja-JP")} に卒業しました`;
+    case "transferred":
       return `学生ID ${event.studentId} が ${event.newSchool} に転校しました`;
-    case "suspension":
-      return `学生ID ${event.studentId} が ${event.duration}日間の停学処分を受けました。理由: ${event.reason}`;
   }
 }
 ```
@@ -203,7 +207,7 @@ console.log(displayStudentName(detailedStudent)); // エラーなし！
 
 **💡 なぜ文脈的型推論が重要なのか**
 
-TypeScriptは文脈から型を推論する能力があります。これにより、冗長な型注釈を避けながら、型安全性を保つことができます。
+TypeScript は文脈から型を推論する能力があります。これにより、冗長な型注釈を避けながら、型安全性を保つことができます。
 
 ##### 1. 配列メソッドでの文脈的型推論
 
@@ -216,11 +220,11 @@ const students = [
 ] as const;
 
 // map関数での文脈的型推論
-const studentNames = students.map(student => student.name); // string[]として推論
-const studentGrades = students.map(student => student.grade); // number[]として推論
+const studentNames = students.map((student) => student.name); // string[]として推論
+const studentGrades = students.map((student) => student.grade); // number[]として推論
 
 // filter関数での型の絞り込み
-const highPerformers = students.filter(student => student.gpa >= 3.5);
+const highPerformers = students.filter((student) => student.gpa >= 3.5);
 // typeof students[number][]として推論（元の型を保持）
 
 // reduce関数での累積型推論
@@ -242,8 +246,8 @@ function processStudents<T>(
 }
 
 // 使用時に型が推論される
-const names = processStudents(students, student => student.name); // string[]
-const isHonorRoll = processStudents(students, student => student.gpa >= 3.5); // boolean[]
+const names = processStudents(students, (student) => student.name); // string[]
+const isHonorRoll = processStudents(students, (student) => student.gpa >= 3.5); // boolean[]
 
 // イベントハンドラーでの文脈的型推論
 type EventHandler<T> = (event: T) => void;
@@ -264,11 +268,13 @@ const handleStudentEvent: EventHandler<StudentEvent> = (event) => {
 
 ```typescript
 // 条件型を使った型推論
-type StudentGradeLevel<T extends number> =
-  T extends 1 | 2 | 3 ? "elementary" :
-  T extends 4 | 5 | 6 ? "middle" :
-  T extends 7 | 8 | 9 ? "high" :
-  "unknown";
+type StudentGradeLevel<T extends number> = T extends 1 | 2 | 3
+  ? "elementary"
+  : T extends 4 | 5 | 6
+  ? "middle"
+  : T extends 7 | 8 | 9
+  ? "high"
+  : "unknown";
 
 // 使用例
 type ElementaryLevel = StudentGradeLevel<2>; // "elementary"
@@ -280,17 +286,19 @@ function getStudentsByGradeLevel<T extends Grade>(
   targetGrade: T
 ): Array<Student & { gradeLevel: StudentGradeLevel<T> }> {
   return students
-    .filter(student => student.grade === targetGrade)
-    .map(student => ({
+    .filter((student) => student.grade === targetGrade)
+    .map((student) => ({
       ...student,
-      gradeLevel: getElementaryLevelForCondition(student.grade) as StudentGradeLevel<T>
+      gradeLevel: getElementaryLevelForCondition(
+        student.grade
+      ) as StudentGradeLevel<T>,
     }));
 }
 
 function getElementaryLevelForCondition(grade: Grade): string {
-  if (grade <= 2) return "lower";     // 低学年 1-2年
-  if (grade <= 4) return "middle";    // 中学年 3-4年
-  return "upper";                     // 高学年 5-6年
+  if (grade <= 2) return "lower"; // 低学年 1-2年
+  if (grade <= 4) return "middle"; // 中学年 3-4年
+  return "upper"; // 高学年 5-6年
 }
 ```
 
@@ -300,9 +308,9 @@ function getElementaryLevelForCondition(grade: Grade): string {
 
 > 📚 **演習サポート資料**: [実践コード例 - 高度な型システム](./Step02_補足_実践コード例.md#高度な型システム) | [トラブルシューティング - 型推論エラー](./Step02_補足_トラブルシューティング.md#型推論エラー)
 
-### 演習 1: const assertionと型推論（15 分）
+### 演習 1: const assertion と型推論（15 分）
 
-以下のコードを完成させて、const assertionと型推論の動作を確認してください：
+以下のコードを完成させて、const assertion と型推論の動作を確認してください：
 
 ```typescript
 // 1. 学生の成績基準を定義してください
@@ -370,13 +378,13 @@ console.log(displayBasicInfo(detailedStudent));
 
 ### ✅ 今回のセッションで習得すべきこと
 
-1. **const assertionの活用**: より厳密な型推論の制御方法
-2. **リテラル型とUnion型**: 具体的な値による型制約の実践
+1. **const assertion の活用**: より厳密な型推論の制御方法
+2. **リテラル型と Union 型**: 具体的な値による型制約の実践
 3. **構造的型付け**: 名前ではなく構造による型の互換性理解
 4. **文脈的型推論**: 関数型や配列メソッドでの型推論活用
 
 ---
 
-**📌 重要**: Session1 では高度な型推論機能を学習しました。Step01の基礎知識を活用して、より効率的な型安全コードを書けるようになりましょう。
+**📌 重要**: Session1 では高度な型推論機能を学習しました。Step01 の基礎知識を活用して、より効率的な型安全コードを書けるようになりましょう。
 
 **🌟 次回（Session2）は、タプル型・関数オーバーロード等のより高度な型機能を学習します！**

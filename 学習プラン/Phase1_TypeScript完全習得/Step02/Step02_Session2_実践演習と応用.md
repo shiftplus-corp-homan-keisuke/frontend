@@ -1,8 +1,8 @@
-# Session2: 実践演習と応用（90分）
+# Session2: 実践演習と応用（90 分）
 
-> 💡 **対象**: 他言語経験者（Session1完了者）
+> 💡 **対象**: 他言語経験者（Session1 完了者）
 > 🎯 **形式**: 講師サポート付き学習
-> ⏰ **時間**: 90分（休憩含む）
+> ⏰ **時間**: 90 分（休憩含む）
 
 ## 📚 関連補足資料
 
@@ -19,26 +19,28 @@
 ## 📅 セッション概要
 
 **学習目標**:
+
 - [ ] タプル型の詳細活用と名前付きタプル
 - [ ] 関数オーバーロードの理解と実装
 - [ ] 高度な配列操作と型安全性
 - [ ] 学生管理システムでの実践的な型活用
 
 **前提知識**:
-- Session1の完了（高度な型推論・const assertion・構造的型付けの理解）
-- Step01の学生管理システムの理解
-- 配列・オブジェクトの基本的なJavaScript操作
+
+- Session1 の完了（高度な型推論・const assertion・構造的型付けの理解）
+- Step01 の学生管理システムの理解
+- 配列・オブジェクトの基本的な JavaScript 操作
 
 ---
 
 ## ⏰ 詳細タイムテーブル
 
-| 時間 | 内容 | 講師の役割 | 学習者の活動 | 成果物 |
-|------|------|------------|--------------|--------|
-| **0-10分** | 前回復習・今回目標設定 | 復習確認・目標提示 | 振り返り・質問 | 理解確認 |
-| **10-50分** | 複合型の実践演習 | 実演・個別指導 | ハンズオン・実践 | 複合型コード |
-| **50-80分** | 関数型の実践演習 | コードレビュー・助言 | 個人開発・実装 | 関数型コード |
-| **80-90分** | 成果共有・質疑応答 | ファシリテート | 発表・討論 | 学習成果 |
+| 時間         | 内容                   | 講師の役割           | 学習者の活動     | 成果物       |
+| ------------ | ---------------------- | -------------------- | ---------------- | ------------ |
+| **0-10 分**  | 前回復習・今回目標設定 | 復習確認・目標提示   | 振り返り・質問   | 理解確認     |
+| **10-50 分** | 複合型の実践演習       | 実演・個別指導       | ハンズオン・実践 | 複合型コード |
+| **50-80 分** | 関数型の実践演習       | コードレビュー・助言 | 個人開発・実装   | 関数型コード |
+| **80-90 分** | 成果共有・質疑応答     | ファシリテート       | 発表・討論       | 学習成果     |
 
 ---
 
@@ -77,7 +79,7 @@ const japaneseScore: SubjectScore = ["国語", 78, 100];
 const studentRecord: StudentRecord = [
   1,
   "田中太郎",
-  [mathScore, englishScore, japaneseScore]
+  [mathScore, englishScore, japaneseScore],
 ];
 
 // タプルの分割代入
@@ -103,7 +105,7 @@ type StudentGrade = [
   studentId: number,
   name: string,
   grade: number,
-  semester?: "spring" | "fall"  // オプショナル要素
+  semester?: "spring" | "fall" // オプショナル要素
 ];
 
 // 学生の位置情報（教室の座標）
@@ -120,7 +122,7 @@ async function fetchStudentData(id: number): Promise<ApiResult<Student>> {
       id,
       name: "田中太郎",
       grade: 3,
-      subjects: ["数学", "英語", "国語"]
+      subjects: ["数学", "英語", "国語"],
     };
     return [student, null];
   } catch (error) {
@@ -141,7 +143,11 @@ if (error) {
 
 ```typescript
 // 残余要素を使ったタプル
-type StudentScores = [name: string, mainSubject: number, ...otherSubjects: number[]];
+type StudentScores = [
+  name: string,
+  mainSubject: number,
+  ...otherSubjects: number[]
+];
 
 const student1Scores: StudentScores = ["田中太郎", 85, 92, 78, 88, 90];
 const student2Scores: StudentScores = ["佐藤花子", 95, 88, 91];
@@ -161,6 +167,9 @@ function combineStudentScores(
 }
 ```
 
+##### 4. 読み取り専用配列の活用
+
+```typescript
 // 代替記法
 let readonlyNames: ReadonlyArray<string> = ["Alice", "Bob", "Charlie"];
 
@@ -172,7 +181,10 @@ function isValidLanguage(lang: string): boolean {
 }
 
 // イミュータブルな操作
-function addLanguage(languages: readonly string[], newLang: string): readonly string[] {
+function addLanguage(
+  languages: readonly string[],
+  newLang: string
+): readonly string[] {
   return [...languages, newLang];
 }
 ```
@@ -181,7 +193,7 @@ function addLanguage(languages: readonly string[], newLang: string): readonly st
 
 **💡 なぜタプル型が重要なのか**
 
-タプル型は、固定長で各要素の型が決まっている配列を表現します。座標、RGB値、関数の複数戻り値など、構造が決まっているデータの型安全な表現に重要です。
+タプル型は、固定長で各要素の型が決まっている配列を表現します。座標、RGB 値、関数の複数戻り値など、構造が決まっているデータの型安全な表現に重要です。
 
 ##### 1. 基本的なタプル型
 
@@ -197,7 +209,12 @@ type ApiResult<T> = [T, null] | [null, string]; // [data, null] or [null, error]
 function fetchUserData(id: number): ApiResult<User> {
   try {
     // 実際のAPI呼び出し処理
-    const user: User = { id, name: "Alice", email: "alice@example.com", isActive: true };
+    const user: User = {
+      id,
+      name: "Alice",
+      email: "alice@example.com",
+      isActive: true,
+    };
     return [user, null];
   } catch (error) {
     return [null, "Failed to fetch user"];
@@ -262,22 +279,43 @@ function findStudent(
   input: number | string | { grade?: number; minGpa?: number }
 ): Student | Student[] | null {
   const students: Student[] = [
-    { id: 1, name: "田中太郎", grade: 3, subjects: ["数学", "英語"], gpa: 3.8, enrollmentDate: new Date("2022-04-01") },
-    { id: 2, name: "佐藤花子", grade: 2, subjects: ["国語", "理科"], gpa: 3.9, enrollmentDate: new Date("2023-04-01") },
-    { id: 3, name: "鈴木次郎", grade: 3, subjects: ["数学", "社会"], gpa: 3.2, enrollmentDate: new Date("2022-04-01") },
+    {
+      id: 1,
+      name: "田中太郎",
+      grade: 3,
+      subjects: ["数学", "英語"],
+      gpa: 3.8,
+      enrollmentDate: new Date("2022-04-01"),
+    },
+    {
+      id: 2,
+      name: "佐藤花子",
+      grade: 2,
+      subjects: ["国語", "理科"],
+      gpa: 3.9,
+      enrollmentDate: new Date("2023-04-01"),
+    },
+    {
+      id: 3,
+      name: "鈴木次郎",
+      grade: 3,
+      subjects: ["数学", "社会"],
+      gpa: 3.2,
+      enrollmentDate: new Date("2022-04-01"),
+    },
   ];
 
   if (typeof input === "number") {
     // IDで検索：単一の学生またはnullを返す
-    return students.find(student => student.id === input) || null;
+    return students.find((student) => student.id === input) || null;
   } else if (typeof input === "string") {
     // 名前で検索：該当する学生の配列を返す
-    return students.filter(student =>
+    return students.filter((student) =>
       student.name.toLowerCase().includes(input.toLowerCase())
     );
   } else {
     // 条件で検索：条件に合う学生の配列を返す
-    return students.filter(student => {
+    return students.filter((student) => {
       if (input.grade && student.grade !== input.grade) return false;
       if (input.minGpa && student.gpa < input.minGpa) return false;
       return true;
@@ -306,9 +344,7 @@ interface SubjectGrade {
 function calculateGrade(scores: number[]): number;
 function calculateGrade(grades: SubjectGrade[]): number;
 function calculateGrade(student: Student): number;
-function calculateGrade(
-  input: number[] | SubjectGrade[] | Student
-): number {
+function calculateGrade(input: number[] | SubjectGrade[] | Student): number {
   if (Array.isArray(input)) {
     if (typeof input[0] === "number") {
       // 数値配列の場合
@@ -331,7 +367,7 @@ function calculateGrade(
 const avgFromScores = calculateGrade([85, 92, 78]); // number
 const avgFromGrades = calculateGrade([
   { subject: "数学", score: 85, maxScore: 100, date: new Date() },
-  { subject: "英語", score: 92, maxScore: 100, date: new Date() }
+  { subject: "英語", score: 92, maxScore: 100, date: new Date() },
 ]); // number
 const studentGPA = calculateGrade(students[0]); // number
 ```
@@ -356,16 +392,19 @@ function formatStudentData(
       }`;
     } else {
       // 複数学生の個別フォーマット
-      return input.map(student =>
-        `${student.name} (学年: ${student.grade}, GPA: ${student.gpa})`
+      return input.map(
+        (student) =>
+          `${student.name} (学年: ${student.grade}, GPA: ${student.gpa})`
       );
     }
   } else {
     if (format === "detailed") {
       // 詳細フォーマット
-      return `学生ID: ${input.id}, 名前: ${input.name}, 学年: ${input.grade}, ` +
-             `履修科目: ${input.subjects.join(", ")}, GPA: ${input.gpa}, ` +
-             `入学日: ${input.enrollmentDate.toLocaleDateString()}`;
+      return (
+        `学生ID: ${input.id}, 名前: ${input.name}, 学年: ${input.grade}, ` +
+        `履修科目: ${input.subjects.join(", ")}, GPA: ${input.gpa}, ` +
+        `入学日: ${input.enrollmentDate.toLocaleDateString()}`
+      );
     } else {
       // 基本フォーマット
       return `${input.name} (学年: ${input.grade}, GPA: ${input.gpa})`;
@@ -380,6 +419,9 @@ const detailedFormat = formatStudentData(students[0], "detailed"); // string
 const summaryFormat = formatStudentData(students, "summary"); // string
 ```
 
+##### 4. 設定管理での関数オーバーロード
+
+```typescript
 // 実用例：設定管理
 interface AppConfig {
   readonly version: string;
@@ -397,13 +439,42 @@ interface AppConfig {
 // 設定のオーバーライド用の型定義（Step02範囲内）
 interface ConfigOverrides {
   apiUrl?: string;
----
+  timeout?: number;
+  retryCount?: number;
+  features?: Partial<AppConfig["features"]>;
+}
+
+// 設定更新の関数オーバーロード
+function updateConfig(config: AppConfig, overrides: ConfigOverrides): AppConfig;
+function updateConfig(
+  config: AppConfig,
+  key: keyof AppConfig,
+  value: any
+): AppConfig;
+function updateConfig(
+  config: AppConfig,
+  keyOrOverrides: keyof AppConfig | ConfigOverrides,
+  value?: any
+): AppConfig {
+  if (typeof keyOrOverrides === "string") {
+    // 単一キーの更新
+    return { ...config, [keyOrOverrides]: value };
+  } else {
+    // 複数設定の更新
+    return {
+      ...config,
+      ...keyOrOverrides,
+      features: { ...config.features, ...keyOrOverrides.features },
+    };
+  }
+}
+```
 
 ## 🎯 実践演習
 
 > 🛠️ **演習サポート**: [トラブルシューティング - 高度な型機能でのよくある問題](./Step02_補足_トラブルシューティング.md#高度な型機能でのよくある問題) | [実践コード例 - 演習解答例とヒント](./Step02_補足_実践コード例.md#演習解答例とヒント)
 
-### 演習 1: タプル型を活用した学生成績システム（20分）
+### 演習 1: タプル型を活用した学生成績システム（20 分）
 
 以下の要件に従って、タプル型を活用した成績管理システムを作成してください：
 
@@ -411,28 +482,22 @@ interface ConfigOverrides {
 // TODO: 以下の型定義と関数を完成させてください
 
 // 1. 成績データのタプル型定義
-type SubjectScore = [
-  // 科目名（文字列）
-  // 点数（数値）
-  // 満点（数値）
-  // 試験日（Date型）
-];
+type SubjectScore = [// 科目名（文字列）
+// 点数（数値）
+// 満点（数値）
+// 試験日（Date型）];
 
 // 2. 学生の成績記録タプル型
-type StudentGradeRecord = [
-  // 学生ID（数値）
-  // 学生名（文字列）
-  // 学年（1-6の数値）
-  // 成績配列（SubjectScore[]）
-];
+type StudentGradeRecord = [// 学生ID（数値）
+// 学生名（文字列）
+// 学年（1-6の数値）
+// 成績配列（SubjectScore[]）];
 
 // 3. 成績分析結果のタプル型
-type GradeAnalysis = [
-  // 平均点（数値）
-  // 最高点（数値）
-  // 最低点（数値）
-  // 合格科目数（数値）
-];
+type GradeAnalysis = [// 平均点（数値）
+// 最高点（数値）
+// 最低点（数値）
+// 合格科目数（数値）];
 
 // 4. 成績処理関数（関数オーバーロード）
 function analyzeGrades(scores: SubjectScore[]): GradeAnalysis;
@@ -455,7 +520,7 @@ const studentRecord: StudentGradeRecord = [
   1,
   "田中太郎",
   3,
-  [mathScore, englishScore, scienceScore]
+  [mathScore, englishScore, scienceScore],
 ];
 
 // 使用例
@@ -463,7 +528,7 @@ const analysis1 = analyzeGrades([mathScore, englishScore, scienceScore]);
 const analysis2 = analyzeGrades(studentRecord);
 ```
 
-### 演習 2: 関数オーバーロードを活用した学生検索システム（15分）
+### 演習 2: 関数オーバーロードを活用した学生検索システム（15 分）
 
 以下の要件に従って、関数オーバーロードを活用した検索システムを作成してください：
 
@@ -472,16 +537,48 @@ const analysis2 = analyzeGrades(studentRecord);
 
 // 学生データ（サンプル）
 const students: Student[] = [
-  { id: 1, name: "田中太郎", grade: 3, subjects: ["数学", "英語"], gpa: 3.8, enrollmentDate: new Date("2022-04-01") },
-  { id: 2, name: "佐藤花子", grade: 2, subjects: ["国語", "理科"], gpa: 3.9, enrollmentDate: new Date("2023-04-01") },
-  { id: 3, name: "鈴木次郎", grade: 3, subjects: ["数学", "社会"], gpa: 3.2, enrollmentDate: new Date("2022-04-01") },
-  { id: 4, name: "田中花子", grade: 1, subjects: ["国語", "算数"], gpa: 3.5, enrollmentDate: new Date("2024-04-01") },
+  {
+    id: 1,
+    name: "田中太郎",
+    grade: 3,
+    subjects: ["数学", "英語"],
+    gpa: 3.8,
+    enrollmentDate: new Date("2022-04-01"),
+  },
+  {
+    id: 2,
+    name: "佐藤花子",
+    grade: 2,
+    subjects: ["国語", "理科"],
+    gpa: 3.9,
+    enrollmentDate: new Date("2023-04-01"),
+  },
+  {
+    id: 3,
+    name: "鈴木次郎",
+    grade: 3,
+    subjects: ["数学", "社会"],
+    gpa: 3.2,
+    enrollmentDate: new Date("2022-04-01"),
+  },
+  {
+    id: 4,
+    name: "田中花子",
+    grade: 1,
+    subjects: ["国語", "算数"],
+    gpa: 3.5,
+    enrollmentDate: new Date("2024-04-01"),
+  },
 ];
 
 // 1. 学生検索関数のオーバーロード定義
 function searchStudents(id: number): Student | null;
 function searchStudents(name: string): Student[];
-function searchStudents(criteria: { grade?: number; minGpa?: number; subject?: string }): Student[];
+function searchStudents(criteria: {
+  grade?: number;
+  minGpa?: number;
+  subject?: string;
+}): Student[];
 function searchStudents(
   input: number | string | { grade?: number; minGpa?: number; subject?: string }
 ): Student | Student[] | null {
@@ -539,19 +636,13 @@ console.log("サマリー:", summaryInfo);
 1. **タプル型の実践活用**: 固定長配列、名前付きタプル、オプショナル要素の使い分け
 2. **関数オーバーロード**: 同じ関数名で異なる引数パターンの型安全な処理
 3. **高度な配列操作**: 残余要素、スプレッド演算子、分割代入の活用
-4. **学生管理システムでの実践**: Step01からの継続的な発展と型設計の向上
+4. **学生管理システムでの実践**: Step01 からの継続的な発展と型設計の向上
 
 ---
 
 **📌 重要**: Session2 では高度な型機能を学習しました。タプル型と関数オーバーロードを活用して、より柔軟で型安全なコードを書けるようになりましょう。
 
-**🌟 次回（Session3）は、学生管理システムの発展版を完成させ、Step02の学習を総括します！**
-  return (num: number) => num * factor;
-}
-
-const double = createMultiplier(2);
-const triple = createMultiplier(3);
-```
+**🌟 次回（Session3）は、学生管理システムの発展版を完成させ、Step02 の学習を総括します！**
 
 ---
 
@@ -559,7 +650,7 @@ const triple = createMultiplier(3);
 
 > 🛠️ **演習サポート**: [トラブルシューティング - 実践演習でのよくある問題](./Step02_補足_トラブルシューティング.md#実践演習でのよくある問題) | [実践コード例 - 演習解答例とヒント](./Step02_補足_実践コード例.md#演習解答例とヒント)
 
-### 演習 1: ショッピングカート管理システム（30分）
+### 演習 1: ショッピングカート管理システム（30 分）
 
 以下の要件に従って、型安全なショッピングカートシステムを作成してください：
 
@@ -627,7 +718,7 @@ console.log(`Total: ${cart.getTotalPrice()}円`);
 console.log(`Items: ${cart.getItemCount()}個`);
 ```
 
-### 演習 2: データ変換パイプライン（20分）
+### 演習 2: データ変換パイプライン（20 分）
 
 以下の要件に従って、型安全なデータ変換システムを作成してください：
 

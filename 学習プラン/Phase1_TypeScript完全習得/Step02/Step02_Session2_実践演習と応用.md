@@ -60,12 +60,12 @@
 
 ```typescript
 // 学生の基本情報（Step01からの発展）
-interface Student {
+type Student = {
   readonly id: number;
   name: string;
   grade: 1 | 2 | 3 | 4 | 5 | 6;
   subjects: readonly string[];
-}
+};
 
 // 成績データをタプルで表現
 type SubjectScore = [subject: string, score: number, maxScore: number];
@@ -112,10 +112,12 @@ type StudentGrade = [
 type ClassroomPosition = [row: number, column: number, floor?: number];
 
 // API レスポンスのタプル型
-type ApiResult<T> = [data: T, error: null] | [data: null, error: string];
+type StudentApiResult =
+  | [data: Student, error: null]
+  | [data: null, error: string];
 
 // 学生データ取得の例
-async function fetchStudentData(id: number): Promise<ApiResult<Student>> {
+async function fetchStudentData(id: number): Promise<StudentApiResult> {
   try {
     // 実際のAPI呼び出し処理
     const student: Student = {
@@ -204,9 +206,16 @@ let rgbColor: [number, number, number] = [255, 128, 0]; // [R, G, B]
 let userInfo: [string, number, boolean] = ["Alice", 30, true]; // [name, age, isActive]
 
 // 実用例：API レスポンス
-type ApiResult<T> = [T, null] | [null, string]; // [data, null] or [null, error]
+type UserApiResult = [User, null] | [null, string]; // [data, null] or [null, error]
 
-function fetchUserData(id: number): ApiResult<User> {
+type User = {
+  id: number;
+  name: string;
+  email: string;
+  isActive: boolean;
+};
+
+function fetchUserData(id: number): UserApiResult {
   try {
     // 実際のAPI呼び出し処理
     const user: User = {
@@ -262,14 +271,14 @@ let temperatures: NumbersWithLabel = ["Tokyo", 25.5, 28.2, 22.1];
 
 ```typescript
 // 学生データの型定義（Step01からの発展）
-interface Student {
+type Student = {
   readonly id: number;
   name: string;
   grade: 1 | 2 | 3 | 4 | 5 | 6;
   subjects: readonly string[];
   gpa: number;
   enrollmentDate: Date;
-}
+};
 
 // 関数オーバーロードの定義
 function findStudent(id: number): Student | null;
@@ -333,12 +342,12 @@ const highPerformers = findStudent({ minGpa: 3.5 }); // Student[]
 
 ```typescript
 // 成績データの型定義
-interface SubjectGrade {
+type SubjectGrade = {
   subject: string;
   score: number;
   maxScore: number;
   date: Date;
-}
+};
 
 // 成績計算の関数オーバーロード
 function calculateGrade(scores: number[]): number;
@@ -423,7 +432,7 @@ const summaryFormat = formatStudentData(students, "summary"); // string
 
 ```typescript
 // 実用例：設定管理
-interface AppConfig {
+type AppConfig = {
   readonly version: string;
   readonly buildDate: Date;
   apiUrl: string;
@@ -434,27 +443,31 @@ interface AppConfig {
     notifications: boolean;
     analytics?: boolean;
   };
-}
+};
 
 // 設定のオーバーライド用の型定義（Step02範囲内）
-interface ConfigOverrides {
+type ConfigOverrides = {
   apiUrl?: string;
   timeout?: number;
   retryCount?: number;
-  features?: Partial<AppConfig["features"]>;
-}
+  features?: {
+    darkMode?: boolean;
+    notifications?: boolean;
+    analytics?: boolean;
+  };
+};
 
 // 設定更新の関数オーバーロード
 function updateConfig(config: AppConfig, overrides: ConfigOverrides): AppConfig;
 function updateConfig(
   config: AppConfig,
-  key: keyof AppConfig,
-  value: any
+  key: "apiUrl" | "timeout" | "retryCount",
+  value: string | number
 ): AppConfig;
 function updateConfig(
   config: AppConfig,
-  keyOrOverrides: keyof AppConfig | ConfigOverrides,
-  value?: any
+  keyOrOverrides: "apiUrl" | "timeout" | "retryCount" | ConfigOverrides,
+  value?: string | number
 ): AppConfig {
   if (typeof keyOrOverrides === "string") {
     // 単一キーの更新
@@ -661,20 +674,20 @@ console.log("サマリー:", summaryInfo);
 // TODO: 以下の型定義と関数を完成させてください
 
 // 1. 商品の型定義
-interface Product {
-  // 商品ID（数値）
-  // 商品名（文字列）
-  // 価格（数値）
-  // カテゴリ（文字列）
-  // 在庫状況（真偽値）
-}
+type Product = {
+  id: number; // 商品ID（数値）
+  name: string; // 商品名（文字列）
+  price: number; // 価格（数値）
+  category: string; // カテゴリ（文字列）
+  inStock: boolean; // 在庫状況（真偽値）
+};
 
 // 2. カートアイテムの型定義
-interface CartItem {
-  // 商品情報（Product型）
-  // 数量（数値）
-  // 追加日時（Date型）
-}
+type CartItem = {
+  product: Product; // 商品情報（Product型）
+  quantity: number; // 数量（数値）
+  addedAt: Date; // 追加日時（Date型）
+};
 
 // 3. カートの操作関数
 class ShoppingCart {
@@ -729,22 +742,22 @@ console.log(`Items: ${cart.getItemCount()}個`);
 // TODO: 以下の型定義と関数を完成させてください
 
 // 1. 生データの型定義
-interface RawUserData {
+type RawUserData = {
   id: string; // 文字列のID
   full_name: string; // フルネーム
   email_address: string; // メールアドレス
   is_active: string; // "true" または "false"
   created_at: string; // ISO日付文字列
-}
+};
 
 // 2. 変換後のデータ型定義
-interface ProcessedUser {
+type ProcessedUser = {
   id: number; // 数値のID
   name: string; // 名前
   email: string; // メールアドレス
   isActive: boolean; // 真偽値
   createdAt: Date; // Date型
-}
+};
 
 // 3. 変換関数
 function transformUserData(rawData: RawUserData[]): ProcessedUser[] {

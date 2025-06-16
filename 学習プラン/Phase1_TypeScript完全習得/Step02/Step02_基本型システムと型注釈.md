@@ -1,21 +1,23 @@
 # Step02: 基本型システムと型注釈
 
-> 🚀 **2025年改良版**: 他言語経験者向け・講師サポート付き学習に最適化されました！
+> 🚀 **2025 年改良版**: 他言語経験者向け・講師サポート付き学習に最適化されました！
 
 ## 📋 学習方式の選択
 
-### 🎯 推奨：3セッション分割学習（他言語経験者・講師サポート付き）
+### 🎯 推奨：3 セッション分割学習（他言語経験者・講師サポート付き）
 
 **対象**: 他言語経験者（静的型付け言語の経験推奨）
 **形式**: 講師サポート付き学習
-**総時間**: 240分（4時間）
+**総時間**: 240 分（4 時間）
 
 #### 📚 セッション構成
-- 🔰 **[Session1: 型システム理論と基本実践](./Step02_Session1_型システム理論と基本実践.md)** (90分)
-- 🔧 **[Session2: 実践演習と応用](./Step02_Session2_実践演習と応用.md)** (90分)
-- 🎯 **[Session3: プロジェクト完成](./Step02_Session3_プロジェクト完成.md)** (60分)
+
+- 🔰 **[Session1: 型システム理論と基本実践](./Step02_Session1_型システム理論と基本実践.md)** (90 分)
+- 🔧 **[Session2: 実践演習と応用](./Step02_Session2_実践演習と応用.md)** (90 分)
+- 🎯 **[Session3: プロジェクト完成](./Step02_Session3_プロジェクト完成.md)** (60 分)
 
 #### 👨‍🏫 講師向けリソース
+
 - 📖 **[講師用ガイド](./Step02_講師用ガイド.md)** - 詳細な指導方法・評価基準
 
 ---
@@ -24,7 +26,7 @@
 
 **対象**: 自習者・復習者
 **形式**: 個人学習
-**総時間**: 4時間
+**総時間**: 4 時間
 
 > � **補足資料**: 詳細な解説は以下の補足資料を見てね 🐰
 >
@@ -86,11 +88,11 @@ type Status = "pending" | "approved" | "rejected";
 let orderStatus: Status = "pending";
 
 // API レスポンスでの活用例
-interface ApiResponse {
+type ApiResponse = {
   message: string;
   status: Status;
   userId: string;
-}
+};
 
 function processApiResponse(response: ApiResponse): string {
   return `Status: ${response.status}, Message: ${response.message}`;
@@ -233,10 +235,10 @@ function safeDivide(a: number, b: number): number | null {
 
 ```typescript
 // 座標計算システム
-interface Point {
+type Point = {
   x: number;
   y: number;
-}
+};
 
 function calculateDistance(p1: Point, p2: Point): number {
   const dx = p2.x - p1.x;
@@ -686,7 +688,7 @@ const eventHandlers = [
   {
     type: "keydown",
     handler: (e: KeyboardEvent) => console.log("Key pressed"),
-  }
+  },
 ]; // 型が自動推論される
 
 // データ変換パイプラインでの活用
@@ -3162,35 +3164,37 @@ function mystery2(arr) {
 - f: (string | number | boolean)[]
 - g: { name: string; age: number; }
 - h: { id: number; name: string; }[]
-- mystery1: パラメータはany型（型推論不可）
-- mystery2: パラメータはany型（型推論不可）
+- mystery1: パラメータは any 型（型推論不可）
+- mystery2: パラメータは any 型（型推論不可）
 
 ### 演習 2-2: 商品管理システム 🔥
 
-身近な商品管理システムを段階的に実装し、Step02で学習した型システムを総合的に活用せよ
+身近な商品管理システムを段階的に実装し、Step02 で学習した型システムを総合的に活用せよ
 
 #### 学習目標:
-- Step02で学習した基本型システムの総合活用
+
+- Step02 で学習した基本型システムの総合活用
 - 実用的なデータ構造設計の体験
-- 型安全なCRUD操作の実装
+- 型安全な CRUD 操作の実装
 - 段階的な機能拡張の経験
 
 #### Phase 1: 基本構造設計 (初学者レベル)
 
 **要件:**
+
 - 商品情報の型定義
-- 基本的なCRUD操作の実装
+- 基本的な CRUD 操作の実装
 - 型安全なデータ管理
 
 ```typescript
 // 商品情報の型定義
 interface Product {
-  readonly id: number;        // 商品ID（変更不可）
-  name: string;              // 商品名
-  price: number;             // 価格
-  category: string;          // カテゴリ
-  inStock: boolean;          // 在庫状況
-  description?: string;      // 商品説明（オプショナル）
+  readonly id: number; // 商品ID（変更不可）
+  name: string; // 商品名
+  price: number; // 価格
+  category: string; // カテゴリ
+  inStock: boolean; // 在庫状況
+  description?: string; // 商品説明（オプショナル）
 }
 
 // 商品管理クラス
@@ -3220,7 +3224,7 @@ class ProductManager {
 
   // 商品削除
   removeProduct(id: number): boolean {
-    const index = this.products.findIndex(product => product.id === id);
+    const index = this.products.findIndex((product) => product.id === id);
     if (index !== -1) {
       this.products.splice(index, 1);
       return true;
@@ -3229,8 +3233,8 @@ class ProductManager {
   }
 
   // 商品更新
-  updateProduct(id: number, updates: Partial<Omit<Product, 'id'>>): boolean {
-    const product = this.products.find(p => p.id === id);
+  updateProduct(id: number, updates: Partial<Omit<Product, "id">>): boolean {
+    const product = this.products.find((p) => p.id === id);
     if (product) {
       Object.assign(product, updates);
       return true;
@@ -3248,6 +3252,7 @@ class ProductManager {
 #### Phase 2: 検索・フィルタ機能 (中級レベル)
 
 **要件:**
+
 - カテゴリ別検索
 - 価格範囲検索
 - 在庫状況検索
@@ -3259,31 +3264,31 @@ class ProductManager {
 
   // カテゴリ別検索
   findProductsByCategory(category: string): Product[] {
-    return this.products.filter(product =>
-      product.category.toLowerCase() === category.toLowerCase()
+    return this.products.filter(
+      (product) => product.category.toLowerCase() === category.toLowerCase()
     );
   }
 
   // 価格範囲検索
   findProductsByPriceRange(minPrice: number, maxPrice: number): Product[] {
-    return this.products.filter(product =>
-      product.price >= minPrice && product.price <= maxPrice
+    return this.products.filter(
+      (product) => product.price >= minPrice && product.price <= maxPrice
     );
   }
 
   // 在庫状況検索
   findProductsInStock(): Product[] {
-    return this.products.filter(product => product.inStock);
+    return this.products.filter((product) => product.inStock);
   }
 
   findProductsOutOfStock(): Product[] {
-    return this.products.filter(product => !product.inStock);
+    return this.products.filter((product) => !product.inStock);
   }
 
   // 名前による部分検索
   searchProductsByName(searchTerm: string): Product[] {
     const lowerSearchTerm = searchTerm.toLowerCase();
-    return this.products.filter(product =>
+    return this.products.filter((product) =>
       product.name.toLowerCase().includes(lowerSearchTerm)
     );
   }
@@ -3296,29 +3301,42 @@ class ProductManager {
     inStock?: boolean;
     nameSearch?: string;
   }): Product[] {
-    return this.products.filter(product => {
+    return this.products.filter((product) => {
       // カテゴリ条件
-      if (criteria.category &&
-          product.category.toLowerCase() !== criteria.category.toLowerCase()) {
+      if (
+        criteria.category &&
+        product.category.toLowerCase() !== criteria.category.toLowerCase()
+      ) {
         return false;
       }
 
       // 価格条件
-      if (criteria.minPrice !== undefined && product.price < criteria.minPrice) {
+      if (
+        criteria.minPrice !== undefined &&
+        product.price < criteria.minPrice
+      ) {
         return false;
       }
-      if (criteria.maxPrice !== undefined && product.price > criteria.maxPrice) {
+      if (
+        criteria.maxPrice !== undefined &&
+        product.price > criteria.maxPrice
+      ) {
         return false;
       }
 
       // 在庫条件
-      if (criteria.inStock !== undefined && product.inStock !== criteria.inStock) {
+      if (
+        criteria.inStock !== undefined &&
+        product.inStock !== criteria.inStock
+      ) {
         return false;
       }
 
       // 名前検索条件
-      if (criteria.nameSearch &&
-          !product.name.toLowerCase().includes(criteria.nameSearch.toLowerCase())) {
+      if (
+        criteria.nameSearch &&
+        !product.name.toLowerCase().includes(criteria.nameSearch.toLowerCase())
+      ) {
         return false;
       }
 
@@ -3331,6 +3349,7 @@ class ProductManager {
 #### Phase 3: 高度機能 (上級レベル)
 
 **要件:**
+
 - カテゴリ別統計
 - 在庫総額計算
 - 最高価格・最低価格商品検索
@@ -3359,18 +3378,22 @@ class ProductManager {
 
   // カテゴリ別統計
   getCategoryStatistics(): CategoryStats[] {
-    const categories = [...new Set(this.products.map(p => p.category))];
-    
-    return categories.map(category => {
-      const categoryProducts = this.products.filter(p => p.category === category);
-      const inStockProducts = categoryProducts.filter(p => p.inStock);
-      
+    const categories = [...new Set(this.products.map((p) => p.category))];
+
+    return categories.map((category) => {
+      const categoryProducts = this.products.filter(
+        (p) => p.category === category
+      );
+      const inStockProducts = categoryProducts.filter((p) => p.inStock);
+
       return {
         category,
         totalProducts: categoryProducts.length,
-        averagePrice: categoryProducts.length > 0
-          ? categoryProducts.reduce((sum, p) => sum + p.price, 0) / categoryProducts.length
-          : 0,
+        averagePrice:
+          categoryProducts.length > 0
+            ? categoryProducts.reduce((sum, p) => sum + p.price, 0) /
+              categoryProducts.length
+            : 0,
         totalValue: categoryProducts.reduce((sum, p) => sum + p.price, 0),
         inStockCount: inStockProducts.length,
       };
@@ -3380,14 +3403,14 @@ class ProductManager {
   // 在庫総額計算
   getTotalInventoryValue(): number {
     return this.products
-      .filter(product => product.inStock)
+      .filter((product) => product.inStock)
       .reduce((total, product) => total + product.price, 0);
   }
 
   // 最高価格商品
   getMostExpensiveProduct(): Product | null {
     if (this.products.length === 0) return null;
-    
+
     return this.products.reduce((max, current) =>
       current.price > max.price ? current : max
     );
@@ -3396,7 +3419,7 @@ class ProductManager {
   // 最低価格商品
   getCheapestProduct(): Product | null {
     if (this.products.length === 0) return null;
-    
+
     return this.products.reduce((min, current) =>
       current.price < min.price ? current : min
     );
@@ -3404,31 +3427,35 @@ class ProductManager {
 
   // 商品数カウント
   getInventoryStats(): InventoryStats {
-    const inStockProducts = this.products.filter(p => p.inStock);
-    const outOfStockProducts = this.products.filter(p => !p.inStock);
-    
+    const inStockProducts = this.products.filter((p) => p.inStock);
+    const outOfStockProducts = this.products.filter((p) => !p.inStock);
+
     return {
       total: this.products.length,
       inStock: inStockProducts.length,
       outOfStock: outOfStockProducts.length,
       totalValue: this.getTotalInventoryValue(),
-      averagePrice: this.products.length > 0
-        ? this.products.reduce((sum, p) => sum + p.price, 0) / this.products.length
-        : 0,
+      averagePrice:
+        this.products.length > 0
+          ? this.products.reduce((sum, p) => sum + p.price, 0) /
+            this.products.length
+          : 0,
     };
   }
 
   // 価格帯別商品数
-  getPriceRangeDistribution(ranges: [number, number][]): Record<string, number> {
+  getPriceRangeDistribution(
+    ranges: [number, number][]
+  ): Record<string, number> {
     const distribution: Record<string, number> = {};
-    
+
     ranges.forEach(([min, max]) => {
       const key = `${min}-${max}`;
       distribution[key] = this.products.filter(
-        p => p.price >= min && p.price <= max
+        (p) => p.price >= min && p.price <= max
       ).length;
     });
-    
+
     return distribution;
   }
 }
@@ -3444,18 +3471,28 @@ const laptop = productManager.addProduct(
   "高性能ノートパソコン"
 );
 const book = productManager.addProduct("TypeScript入門", 3000, "Books");
-const headphones = productManager.addProduct("ワイヤレスヘッドホン", 15000, "Electronics");
+const headphones = productManager.addProduct(
+  "ワイヤレスヘッドホン",
+  15000,
+  "Electronics"
+);
 
 // Phase 2: 検索機能
-console.log("Electronics商品:", productManager.findProductsByCategory("Electronics"));
-console.log("1万円以下の商品:", productManager.findProductsByPriceRange(0, 10000));
+console.log(
+  "Electronics商品:",
+  productManager.findProductsByCategory("Electronics")
+);
+console.log(
+  "1万円以下の商品:",
+  productManager.findProductsByPriceRange(0, 10000)
+);
 console.log("在庫あり商品:", productManager.findProductsInStock());
 
 // 複合検索
 const searchResults = productManager.searchProducts({
   category: "Electronics",
   maxPrice: 50000,
-  inStock: true
+  inStock: true,
 });
 console.log("Electronics、5万円以下、在庫あり:", searchResults);
 
@@ -3470,25 +3507,31 @@ const priceRanges: [number, number][] = [
   [0, 5000],
   [5001, 20000],
   [20001, 100000],
-  [100001, Infinity]
+  [100001, Infinity],
 ];
-console.log("価格帯別商品数:", productManager.getPriceRangeDistribution(priceRanges));
+console.log(
+  "価格帯別商品数:",
+  productManager.getPriceRangeDistribution(priceRanges)
+);
 ```
 
 #### 📝 学習ポイント
 
-**Phase 1で学ぶこと:**
+**Phase 1 で学ぶこと:**
+
 - `interface`による型定義
 - `readonly`プロパティの活用
 - オプショナルプロパティ（`?`）
 - `Partial`型と`Omit`型の基本的な使用
 
-**Phase 2で学ぶこと:**
+**Phase 2 で学ぶこと:**
+
 - 配列の`filter`メソッドと型安全性
 - 複雑な条件分岐の型安全な実装
 - オブジェクトの型定義と活用
 
-**Phase 3で学ぶこと:**
+**Phase 3 で学ぶこと:**
+
 - より高度な型定義（`Record`型など）
 - 統計計算の型安全な実装
 - 配列の`reduce`メソッドの活用
@@ -3535,7 +3578,7 @@ console.log("価格帯別商品数:", productManager.getPriceRangeDistribution(p
 
 ### 成果物
 
-- [ ] **図書管理システム**: Step02の学習内容を段階的に活用した4段階の図書管理システム → [Step02成果物: 図書管理システム](./Step02_成果物.md)
+- [ ] **図書管理システム**: Step02 の学習内容を段階的に活用した 4 段階の図書管理システム → [Step02 成果物: 図書管理システム](./Step02_成果物.md)
 
 ## 🔄 Step 3 への準備
 

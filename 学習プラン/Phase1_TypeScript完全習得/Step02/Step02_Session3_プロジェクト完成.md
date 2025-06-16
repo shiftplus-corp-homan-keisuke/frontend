@@ -1,32 +1,34 @@
-# Session3: プロジェクト完成（60分）
+# Session3: プロジェクト完成（60 分）
 
-> 💡 **対象**: 他言語経験者（Session1・2完了者）
+> 💡 **対象**: 他言語経験者（Session1・2 完了者）
 > 🎯 **形式**: 講師サポート付き学習
-> ⏰ **時間**: 60分（休憩含む）
+> ⏰ **時間**: 60 分（休憩含む）
 
 - ## 📚 関連補足資料
 
   プロジェクト完成をサポートする補足資料をご用意しています：
 
-  - 💻 **[実践コード例](./Step01_補足_実践コード例.md)** - 完全なシステム実装例とベストプラクティス
-  - 🚨 **[トラブルシューティング](./Step01_補足_トラブルシューティング.md)** - デバッグとエラー解決の完全ガイド
-  - 📖 **[専門用語集](./Step01_補足_専門用語集.md)** - 高度な概念と用語の詳細解説
-  - 🌐 **[参考リソース](./Step01_補足_参考リソース.md)** - 継続学習のためのリソース集
-  - 🔧 **[開発環境ガイド](./Step01_補足_開発環境ガイド.md)** - 効率的な開発環境の活用
+  - 💻 **[実践コード例](./Step02_補足_実践コード例.md)** - 完全なシステム実装例とベストプラクティス
+  - 🚨 **[トラブルシューティング](./Step02_補足_トラブルシューティング.md)** - デバッグとエラー解決の完全ガイド
+  - 📖 **[専門用語集](./Step02_補足_専門用語集.md)** - 高度な概念と用語の詳細解説
+  - 🌐 **[参考リソース](./Step02_補足_参考リソース.md)** - 継続学習のためのリソース集
+  - 📋 **[補足資料](./Step02_補足資料.md)** - その他の重要な補足情報
 
   > 💡 **活用方法**: 学習中に疑問が生じた際や、より深く理解したい場合に参照してね 🐰
 
 ## 📅 セッション概要
 
 **学習目標**:
+
 - [ ] 型安全なデータ構造の設計
 - [ ] 学生管理システム発展版の型定義完成
 - [ ] 型システムの総合活用
 - [ ] 実践的な型設計パターンの習得
 
 **前提知識**:
-- Session1・2の完了（基本型・複合型の理解）
-- TypeScript基本構文の理解
+
+- Session1・2 の完了（基本型・複合型の理解）
+- TypeScript 基本構文の理解
 
 **重要**: このセッションでは**型の学習に特化**し、ロジックの実装は行いません。型定義とインターフェース設計に集中します。
 
@@ -34,11 +36,11 @@
 
 ## ⏰ 詳細タイムテーブル
 
-| 時間 | 内容 | 講師の役割 | 学習者の活動 | 成果物 |
-|------|------|------------|--------------|--------|
-| **0-10分** | 最終課題説明 | 課題説明・期待値設定 | 理解・質問 | 要件理解 |
-| **10-45分** | プロジェクト完成 | 個別サポート・デバッグ支援 | 開発・完成 | 型定義完成 |
-| **45-60分** | 成果発表・次Step準備 | 評価・フィードバック | 発表・振り返り | 学習成果 |
+| 時間         | 内容                   | 講師の役割                 | 学習者の活動   | 成果物     |
+| ------------ | ---------------------- | -------------------------- | -------------- | ---------- |
+| **0-10 分**  | 最終課題説明           | 課題説明・期待値設定       | 理解・質問     | 要件理解   |
+| **10-45 分** | プロジェクト完成       | 個別サポート・デバッグ支援 | 開発・完成     | 型定義完成 |
+| **45-60 分** | 成果発表・次 Step 準備 | 評価・フィードバック       | 発表・振り返り | 学習成果   |
 
 ---
 
@@ -50,7 +52,7 @@
 **重点**: ロジック実装ではなく、型定義とインターフェース設計に集中
 **成果物**: 完全な型定義ファイル（`.d.ts`形式でも可）
 
-### Phase 1: 基本型定義の設計（15分）
+### Phase 1: 基本型定義の設計（15 分）
 
 > 📚 **関連資料**: [専門用語集 - 型定義関連用語](./Step02_補足_専門用語集.md#型定義関連用語) | [実践コード例 - プロジェクト型定義サンプル](./Step02_補足_実践コード例.md#プロジェクト型定義サンプル)
 
@@ -60,13 +62,20 @@
 // TODO: 以下の型定義を完成させてください
 
 // 1. 学年の型定義
-type Grade = // 1 | 2 | 3 | 4 | 5 | 6
+type Grade = {
+  // TODO: 学年の型定義を完成させてください
+  // 1年生から6年生までのリテラル型（1 | 2 | 3 | 4 | 5 | 6）
+};
 
 // 2. 学生ステータスの型定義
-type StudentStatus = // "active" | "inactive" | "graduated" | "transferred"
+type StudentStatus = {
+  // TODO: 学生ステータスの型定義を完成させてください
+  // "active"（在籍中）| "inactive"（休学中）| "graduated"（卒業）| "transferred"（転校）
+};
 
 // 3. 学生の基本情報型
-interface Student {
+type Student = {
+  // TODO: 学生の基本情報型を完成させてください
   // 学生ID（読み取り専用、数値）
   // 学生名（文字列）
   // 学年（Grade型）
@@ -76,32 +85,29 @@ interface Student {
   // 保護者連絡先（文字列、オプショナル）
   // 入学日（Date型）
   // 更新日時（Date型）
-}
+};
 
 // 4. 学生登録時の入力データ型
-interface CreateStudentInput {
-  // 学生名（必須）
-  // 学年（必須）
-  // クラス（必須）
-  // 生年月日（必須）
-  // 保護者連絡先（オプショナル）
-  // ステータスはデフォルトで"active"なので入力不要
-}
+type CreateStudentInput = {
+  // TODO: 学生登録時の入力データ型を完成させてください
+  // 学生名（必須、文字列）
+  // 学年（必須、Grade型）
+  // クラス（必須、文字列）
+  // 生年月日（必須、Date型）
+  // 保護者連絡先（オプショナル、文字列）
+  // ヒント: ステータスはデフォルトで"active"なので入力不要
+};
 
 // 5. 学生情報更新時の入力データ型
-interface UpdateStudentInput {
-  // 学生名（オプショナル）
-  name?: string;
-  // 学年（オプショナル）
-  grade?: Grade;
-  // クラス（オプショナル）
-  class?: string;
-  // 保護者連絡先（オプショナル）
-  guardianContact?: string;
-  // ステータス（オプショナル）
-  status?: StudentStatus;
-  // idと生年月日・入学日・更新日時は更新対象外
-}
+type UpdateStudentInput = {
+  // TODO: 学生情報更新時の入力データ型を完成させてください
+  // 学生名（オプショナル、文字列）
+  // 学年（オプショナル、Grade型）
+  // クラス（オプショナル、文字列）
+  // 保護者連絡先（オプショナル、文字列）
+  // ステータス（オプショナル、StudentStatus型）
+  // ヒント: idと生年月日・入学日・更新日時は更新対象外
+};
 ```
 
 #### 🎯 検索・フィルタ関連の型定義
@@ -110,31 +116,41 @@ interface UpdateStudentInput {
 // TODO: 以下の型定義を完成させてください
 
 // 1. 年齢範囲の型定義
-interface AgeRange {
+type AgeRange = {
+  // TODO: 年齢範囲の型定義を完成させてください
   // 最小年齢（オプショナル、数値）
   // 最大年齢（オプショナル、数値）
-}
+};
 
 // 2. 検索条件の型定義
-interface SearchCriteria {
+type SearchCriteria = {
+  // TODO: 検索条件の型定義を完成させてください
   // 学生名検索（オプショナル、文字列）
   // 学年フィルタ（オプショナル、Grade型）
   // クラスフィルタ（オプショナル、文字列）
   // ステータスフィルタ（オプショナル、StudentStatus型）
   // 年齢範囲（オプショナル、AgeRange型）
-}
+};
 
 // 3. ソート条件の型定義
-type SortField = // "name" | "grade" | "class" | "birthDate" | "enrollmentDate"
-type SortOrder = // "asc" | "desc"
+type SortField = {
+  // TODO: ソートフィールドの型定義を完成させてください
+  // "name" | "grade" | "class" | "birthDate" | "enrollmentDate"
+};
 
-interface SortCriteria {
+type SortOrder = {
+  // TODO: ソート順序の型定義を完成させてください
+  // "asc"（昇順）| "desc"（降順）
+};
+
+type SortCriteria = {
+  // TODO: ソート条件の型定義を完成させてください
   // ソートフィールド（SortField型）
   // ソート順序（SortOrder型）
-}
+};
 ```
 
-### Phase 2: 統計・分析用の型定義（15分）
+### Phase 2: 統計・分析用の型定義（15 分）
 
 > 📚 **関連資料**: [専門用語集 - 統計・分析関連用語](./Step02_補足_専門用語集.md#統計・分析関連用語) | [実践コード例 - 統計データ型定義](./Step02_補足_実践コード例.md#統計データ型定義)
 
@@ -144,17 +160,19 @@ interface SortCriteria {
 // TODO: 以下の型定義を完成させてください
 
 // 1. 学年別統計の型定義
-interface GradeStatistics {
+type GradeStatistics = {
+  // TODO: 学年別統計の型定義を完成させてください
   // 学年（Grade型）
   // 学生総数（数値）
   // 平均年齢（数値）
   // アクティブ学生数（数値）
   // 男女比率（オブジェクト、male: number, female: number）
   // クラス数（数値）
-}
+};
 
 // 2. 学校統計の型定義
-interface SchoolStatistics {
+type SchoolStatistics = {
+  // TODO: 学校統計の型定義を完成させてください
   // 総学生数（数値）
   // アクティブ学生数（数値）
   // 非アクティブ学生数（数値）
@@ -162,28 +180,30 @@ interface SchoolStatistics {
   // 転校生数（数値）
   // 平均年齢（数値）
   // 学年別分布（GradeStatistics型の配列）
-}
+};
 
 // 3. 年齢分析の型定義
-interface AgeAnalysis {
+type AgeAnalysis = {
+  // TODO: 年齢分析の型定義を完成させてください
   // 年齢帯（文字列、例："6-7"）
   // 学生数（数値）
   // 割合（数値、パーセンテージ）
-}
+};
 
 // 4. 成績予測データの型定義（将来の拡張を想定）
-interface AcademicForecast {
+type AcademicForecast = {
+  // TODO: 成績予測データの型定義を完成させてください
   // 学生ID（数値）
   // 予測期間（文字列、例："2024-Q2"）
   // 予測成績（文字列、例："A", "B", "C"）
   // 予測根拠（文字列配列）
   // 信頼度（数値、0-1の範囲）
-}
+};
 ```
 
-### Phase 3: API・サービス層の型定義（15分）
+### Phase 3: API・サービス層の型定義（15 分）
 
-> 📚 **関連資料**: [専門用語集 - API・サービス関連用語](./Step02_補足_専門用語集.md#API・サービス関連用語) | [実践コード例 - API型定義パターン](./Step02_補足_実践コード例.md#API型定義パターン)
+> 📚 **関連資料**: [専門用語集 - API・サービス関連用語](./Step02_補足_専門用語集.md#API・サービス関連用語) | [実践コード例 - API 型定義パターン](./Step02_補足_実践コード例.md#API型定義パターン)
 
 #### 🔌 API レスポンスの型定義
 
@@ -191,67 +211,74 @@ interface AcademicForecast {
 // TODO: 以下の型定義を完成させてください
 
 // 1. 学生API レスポンスの型定義
-interface StudentApiResponse {
+type StudentApiResponse = {
+  // TODO: 学生APIレスポンスの型定義を完成させてください
   // 成功フラグ（真偽値）
-  // データ（Student型、成功時のみ）
-  // エラーメッセージ（文字列、失敗時のみ）
+  // データ（Student型、成功時のみ、オプショナル）
+  // エラーメッセージ（文字列、失敗時のみ、オプショナル）
   // ステータスコード（数値）
   // タイムスタンプ（Date型）
-}
+};
 
 // 2. 学生一覧API レスポンスの型定義
-interface StudentListApiResponse {
+type StudentListApiResponse = {
+  // TODO: 学生一覧APIレスポンスの型定義を完成させてください
   // 成功フラグ（真偽値）
-  // データ（Student型の配列、成功時のみ）
-  // エラーメッセージ（文字列、失敗時のみ）
+  // データ（Student型の配列、成功時のみ、オプショナル）
+  // エラーメッセージ（文字列、失敗時のみ、オプショナル）
   // ステータスコード（数値）
   // タイムスタンプ（Date型）
-}
+};
 
 // 3. 統計API レスポンスの型定義
-interface StatisticsApiResponse {
+type StatisticsApiResponse = {
+  // TODO: 統計APIレスポンスの型定義を完成させてください
   // 成功フラグ（真偽値）
-  // データ（SchoolStatistics型、成功時のみ）
-  // エラーメッセージ（文字列、失敗時のみ）
+  // データ（SchoolStatistics型、成功時のみ、オプショナル）
+  // エラーメッセージ（文字列、失敗時のみ、オプショナル）
   // ステータスコード（数値）
   // タイムスタンプ（Date型）
-}
+};
 
 // 4. 学年別統計API レスポンスの型定義
-interface GradeStatisticsApiResponse {
+type GradeStatisticsApiResponse = {
+  // TODO: 学年別統計APIレスポンスの型定義を完成させてください
   // 成功フラグ（真偽値）
-  // データ（GradeStatistics型の配列、成功時のみ）
-  // エラーメッセージ（文字列、失敗時のみ）
+  // データ（GradeStatistics型の配列、成功時のみ、オプショナル）
+  // エラーメッセージ（文字列、失敗時のみ、オプショナル）
   // ステータスコード（数値）
   // タイムスタンプ（Date型）
-}
+};
 
 // 5. ページネーション情報の型定義
-interface PaginationInfo {
+type PaginationInfo = {
+  // TODO: ページネーション情報の型定義を完成させてください
   // 現在のページ（数値）
   // 1ページあたりの件数（数値）
   // 総件数（数値）
   // 総ページ数（数値）
   // 前のページがあるか（真偽値）
   // 次のページがあるか（真偽値）
-}
+};
 
 // 6. ページネーション付き学生一覧レスポンスの型定義
-interface PaginatedStudentResponse {
+type PaginatedStudentResponse = {
+  // TODO: ページネーション付き学生一覧レスポンスの型定義を完成させてください
   // データ配列（Student型の配列）
   // ページネーション情報（PaginationInfo型）
-}
+};
 
-// 7. 学生管理サービスのインターフェース
-interface StudentService {
-  // 学生登録（CreateStudentInput → Promise<StudentApiResponse>）
-  // 学生取得（id: number → Promise<StudentApiResponse>）
-  // 学生一覧取得（criteria?: SearchCriteria, sort?: SortCriteria → Promise<StudentListApiResponse>）
-  // 学生情報更新（id: number, input: UpdateStudentInput → Promise<StudentApiResponse>）
-  // 学生削除（id: number → Promise<{ success: boolean; error?: string }>）
-  // 統計取得（→ Promise<StatisticsApiResponse>）
-  // 学年別統計取得（→ Promise<GradeStatisticsApiResponse>）
-}
+// 7. 学生管理サービスの型定義
+type StudentService = {
+  // TODO: 学生管理サービスの型定義を完成させてください
+  // 学生登録: (input: CreateStudentInput) => Promise<StudentApiResponse>
+  // 学生取得: (id: number) => Promise<StudentApiResponse>
+  // 学生一覧取得: (criteria?: SearchCriteria, sort?: SortCriteria) => Promise<StudentListApiResponse>
+  // 学生情報更新: (id: number, input: UpdateStudentInput) => Promise<StudentApiResponse>
+  // 学生削除: (id: number) => Promise<{ success: boolean; error?: string }>
+  // 統計取得: () => Promise<StatisticsApiResponse>
+  // 学年別統計取得: () => Promise<GradeStatisticsApiResponse>
+};
 ```
 
 #### 🎯 バリデーション関連の型定義
@@ -260,37 +287,52 @@ interface StudentService {
 // TODO: 以下の型定義を完成させてください
 
 // 1. バリデーションエラーの型定義
-interface ValidationError {
+type ValidationError = {
+  // TODO: バリデーションエラーの型定義を完成させてください
   // フィールド名（文字列）
   // エラーメッセージ（文字列）
   // エラーコード（文字列）
-}
+};
 
 // 2. バリデーション結果の型定義
-interface ValidationResult {
+type ValidationResult = {
+  // TODO: バリデーション結果の型定義を完成させてください
   // 有効かどうか（真偽値）
   // エラー一覧（ValidationError型の配列）
-}
+};
 
 // 3. 学生名バリデータ関数の型定義
-type NameValidator = // (name: string) => ValidationResult
+type NameValidator = {
+  // TODO: 学生名バリデータ関数の型定義を完成させてください
+  // (name: string) => ValidationResult
+};
 
 // 4. 学年バリデータ関数の型定義
-type GradeValidator = // (grade: Grade) => ValidationResult
+type GradeValidator = {
+  // TODO: 学年バリデータ関数の型定義を完成させてください
+  // (grade: Grade) => ValidationResult
+};
 
 // 5. クラスバリデータ関数の型定義
-type ClassValidator = // (className: string) => ValidationResult
+type ClassValidator = {
+  // TODO: クラスバリデータ関数の型定義を完成させてください
+  // (className: string) => ValidationResult
+};
 
 // 6. 生年月日バリデータ関数の型定義
-type BirthDateValidator = // (birthDate: Date) => ValidationResult
+type BirthDateValidator = {
+  // TODO: 生年月日バリデータ関数の型定義を完成させてください
+  // (birthDate: Date) => ValidationResult
+};
 
 // 7. 学生バリデーションルールの型定義
-interface StudentValidationRules {
+type StudentValidationRules = {
+  // TODO: 学生バリデーションルールの型定義を完成させてください
   // 学生名バリデータ（NameValidator型）
   // 学年バリデータ（GradeValidator型）
   // クラスバリデータ（ClassValidator型）
   // 生年月日バリデータ（BirthDateValidator型）
-}
+};
 ```
 
 ---
@@ -299,7 +341,7 @@ interface StudentValidationRules {
 
 > 🛠️ **実装サポート**: [トラブルシューティング - プロジェクト実装でのよくある問題](./Step02_補足_トラブルシューティング.md#プロジェクト実装でのよくある問題) | [実践コード例 - プロジェクト完成例とヒント](./Step02_補足_実践コード例.md#プロジェクト完成例とヒント)
 
-### チャレンジ 1: 基本型定義の完成（10分）
+### チャレンジ 1: 基本型定義の完成（10 分）
 
 以下の型定義を完成させてください：
 
@@ -307,12 +349,14 @@ interface StudentValidationRules {
 // TODO: 以下の型定義を完成させてください
 
 // 1. 学生IDの型定義
-interface StudentId {
+type StudentId = {
+  // TODO: 学生IDの型定義を完成させてください
   // 学生ID（数値、読み取り専用）
-}
+};
 
 // 2. 学生の表示用データ型
-interface StudentDisplayData {
+type StudentDisplayData = {
+  // TODO: 学生の表示用データ型を完成させてください
   // 学生ID（数値）
   // 学生名（文字列）
   // 学年（Grade型）
@@ -320,52 +364,72 @@ interface StudentDisplayData {
   // ステータス（StudentStatus型）
   // 年齢（数値、計算値）
   // 保護者連絡先（オプショナル、文字列）
-  // 生年月日・入学日・更新日時は表示用では不要
-}
+  // ヒント: 生年月日・入学日・更新日時は表示用では不要
+};
 
 // 3. 学生操作の結果型（Union型を活用）
-type StudentOperationResult =
-  | { success: true; data: Student }
-  | { success: false; error: string }
+type StudentOperationResult = {
+  // TODO: 学生操作の結果型を完成させてください（Union型を活用）
+  // 成功時: { success: true; data: Student }
+  // 失敗時: { success: false; error: string }
+  // ヒント: | を使ってUnion型で定義
+};
 
 // 4. 学年ごとの学生配列型
-interface StudentsByGrade {
+type StudentsByGrade = {
+  // TODO: 学年ごとの学生配列型を完成させてください
   // 1年生（Student型の配列）
   // 2年生（Student型の配列）
   // 3年生（Student型の配列）
   // 4年生（Student型の配列）
   // 5年生（Student型の配列）
   // 6年生（Student型の配列）
-}
+};
 
 // 5. 学生検索結果の型定義
-interface StudentSearchResult {
+type StudentSearchResult = {
+  // TODO: 学生検索結果の型定義を完成させてください
   // 検索結果（Student型の配列）
   // 総件数（数値）
   // 検索条件（SearchCriteria型）
   // 実行時間（数値、ミリ秒）
-}
+};
 ```
 
-### チャレンジ 2: 関数型定義（5分）
+### チャレンジ 2: 関数型定義（5 分）
 
 ```typescript
 // TODO: 以下の関数型定義を完成させてください
 
 // 1. 学生登録関数の型
-type CreateStudentFunction = // (input: CreateStudentInput) => Promise<StudentOperationResult>
+type CreateStudentFunction = {
+  // TODO: 学生登録関数の型定義を完成させてください
+  // (input: CreateStudentInput) => Promise<StudentOperationResult>
+};
 
 // 2. 学生検索関数の型
-type SearchStudentFunction = // (criteria: SearchCriteria) => Promise<StudentSearchResult>
+type SearchStudentFunction = {
+  // TODO: 学生検索関数の型定義を完成させてください
+  // (criteria: SearchCriteria) => Promise<StudentSearchResult>
+};
 
 // 3. 学生バリデーション関数の型
-type ValidateStudentFunction = // (student: CreateStudentInput) => ValidationResult
+type ValidateStudentFunction = {
+  // TODO: 学生バリデーション関数の型定義を完成させてください
+  // (student: CreateStudentInput) => ValidationResult
+};
 
 // 4. 年齢計算関数の型
-type CalculateAgeFunction = // (birthDate: Date, referenceDate?: Date) => number
+type CalculateAgeFunction = {
+  // TODO: 年齢計算関数の型定義を完成させてください
+  // (birthDate: Date, referenceDate?: Date) => number
+};
 
 // 5. 在籍チェック関数の型
-type CheckEnrollmentFunction = // (studentId: number) => boolean
+type CheckEnrollmentFunction = {
+  // TODO: 在籍チェック関数の型定義を完成させてください
+  // (studentId: number) => boolean
+};
 ```
 
 ---
@@ -375,9 +439,9 @@ type CheckEnrollmentFunction = // (studentId: number) => boolean
 ### ✅ 今回のセッションで習得すべきこと
 
 1. **実践的な型設計**: 実際のアプリケーションで使用される型定義パターン
-2. **型の組み合わせ**: Partial、Readonly、Pick、Omit等のユーティリティ型の活用
-3. **インターフェース設計**: サービス層やAPI層の型安全な設計
-4. **型の再利用性**: DRYの原則に従った型定義の設計
+2. **型の組み合わせ**: Union 型、リテラル型、オブジェクト型の効果的な組み合わせ
+3. **サービス設計**: サービス層や API 層の型安全な設計
+4. **型の再利用性**: DRY の原則に従った型定義の設計
 
 ---
 
@@ -393,9 +457,9 @@ type CheckEnrollmentFunction = // (studentId: number) => boolean
 
 ### 学習成果
 
-- [ ] TypeScript型システムの深い理解
+- [ ] TypeScript 型システムの深い理解
 - [ ] 実用的な型設計パターンの習得
-- [ ] インターフェース設計能力の向上
+- [ ] 型設計能力の向上
 - [ ] 型の再利用性を考慮した設計
 
 ### 今後の学習計画
@@ -412,14 +476,14 @@ type CheckEnrollmentFunction = // (studentId: number) => boolean
 
 #### 型設計能力（60%）
 
-- [ ] **基本型定義**: Union型、リテラル型、インターフェースの適切な使用
-- [ ] **複合型設計**: 型の組み合わせとユーティリティ型の活用
-- [ ] **型の再利用性**: DRYの原則に従った型定義の設計
+- [ ] **基本型定義**: Union 型、リテラル型、オブジェクト型の適切な使用
+- [ ] **複合型設計**: Union 型、リテラル型、オブジェクト型の効果的な組み合わせ
+- [ ] **型の再利用性**: DRY の原則に従った型定義の設計
 - [ ] **型安全性**: 実行時エラーを防ぐ型設計の実装
 
 #### 設計品質（25%）
 
-- [ ] **インターフェース設計**: サービス層・API層の適切な型定義
+- [ ] **型設計**: サービス層・API 層の適切な型定義
 - [ ] **型の一貫性**: プロジェクト全体での型定義の統一性
 - [ ] **拡張性**: 将来の機能追加を考慮した設計
 - [ ] **可読性**: 理解しやすい型定義とネーミング
@@ -435,7 +499,7 @@ type CheckEnrollmentFunction = // (studentId: number) => boolean
 
 ## 成果物
 
-- [ ] **学生管理システム発展版**: Step02の学習内容を段階的に活用した高度な学生管理システム → [Step02成果物: 学生管理システム発展版](./Step02_成果物.md)
+- [ ] **学生管理システム発展版**: Step02 の学習内容を段階的に活用した高度な学生管理システム → [Step02 成果物: 学生管理システム発展版](./Step02_成果物.md)
 
 ---
 

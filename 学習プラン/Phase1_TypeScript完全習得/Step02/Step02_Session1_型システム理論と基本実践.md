@@ -106,13 +106,13 @@ type StudentStatus = "active" | "inactive" | "graduated" | "transferred";
 // 在籍中 | 休学中 | 卒業 | 転校
 
 // 学生情報の型定義（Step01からの発展）
-interface Student {
+type Student = {
   readonly id: number;
   name: string;
   grade: Grade;
   status: StudentStatus;
   subjects: readonly string[];
-}
+};
 
 // 小学校の学年レベルを取得する関数
 function getElementaryLevel(grade: Grade): "lower" | "middle" | "upper" {
@@ -148,18 +148,28 @@ function processStudentEvent(event: StudentEvent): string {
 
 ##### 3. 構造的型付けの理解
 
+**構造的型付け（Structural Typing）**とは、TypeScript が採用している型システムの仕組みで、**型の名前ではなく、型の構造（プロパティやメソッドの形）**によって型の互換性を判断する方式です。
+
+**重要なポイント**：
+
+- **名前的型付け**：型の名前が同じかどうかで互換性を判断（Java、C#など）
+- **構造的型付け**：型の構造が同じかどうかで互換性を判断（TypeScript、Go）
+- **Duck Typing**：「アヒルのように歩き、アヒルのように鳴くなら、それはアヒルである」という考え方
+
+> 💡 **詳細情報**: [構造的型付けの詳細](Step02_補足_専門用語集.md#構造的型付けstructural-typing)
+
 ```typescript
 // 構造的型付けの例
-interface Point2D {
+type Point2D = {
   x: number;
   y: number;
-}
+};
 
-interface Point3D {
+type Point3D = {
   x: number;
   y: number;
   z: number;
-}
+};
 
 // Point3DはPoint2Dと構造的に互換性がある
 function calculateDistance2D(point: Point2D): number {
@@ -170,18 +180,18 @@ const point3D: Point3D = { x: 1, y: 2, z: 3 };
 const distance = calculateDistance2D(point3D); // エラーなし！
 
 // 学生管理での構造的型付け
-interface BasicStudent {
+type BasicStudent = {
   id: number;
   name: string;
-}
+};
 
-interface DetailedStudent {
+type DetailedStudent = {
   id: number;
   name: string;
   grade: Grade;
   subjects: string[];
   gpa: number;
-}
+};
 
 function displayStudentName(student: BasicStudent): string {
   return `Student: ${student.name} (ID: ${student.id})`;
@@ -236,66 +246,69 @@ const totalGPA = students.reduce((sum, student) => sum + student.gpa, 0);
 
 ```typescript
 // 高階関数での文脈的型推論
-type StudentProcessor<T> = (student: Student) => T;
+type StudentProcessor = (student: Student) => string;
 
-function processStudents<T>(
+function processStudentNames(
   students: Student[],
-  processor: StudentProcessor<T>
-): T[] {
+  processor: StudentProcessor
+): string[] {
   return students.map(processor);
 }
 
 // 使用時に型が推論される
-const names = processStudents(students, (student) => student.name); // string[]
-const isHonorRoll = processStudents(students, (student) => student.gpa >= 3.5); // boolean[]
+const names = processStudentNames(students, (student) => student.name); // string[]
 
 // イベントハンドラーでの文脈的型推論
-type EventHandler<T> = (event: T) => void;
+type EventHandler = (event: StudentEvent) => void;
 
-interface StudentEvent {
+type StudentEvent = {
   type: "grade_update" | "enrollment" | "graduation";
   studentId: number;
   timestamp: Date;
-}
+};
 
-const handleStudentEvent: EventHandler<StudentEvent> = (event) => {
+const handleStudentEvent: EventHandler = (event) => {
   // eventの型はStudentEventとして推論される
   console.log(`Processing ${event.type} for student ${event.studentId}`);
 };
 ```
 
-##### 3. 条件型での型推論
+##### 3. 関数オーバーロードの基本
 
 ```typescript
-// 条件型を使った型推論
-type StudentGradeLevel<T extends number> = T extends 1 | 2 | 3
-  ? "elementary"
-  : T extends 4 | 5 | 6
-  ? "middle"
-  : T extends 7 | 8 | 9
-  ? "high"
-  : "unknown";
+// 関数オーバーロードを使った型安全な処理
+function getStudentInfo(id: number): Student | null;
+function getStudentInfo(name: string): Student[];
+function getStudentInfo(input: number | string): Student | Student[] | null {
+  const students = [
+    {
+      id: 1,
+      name: "田中太郎",
+      grade: 3 as Grade,
+      status: "active" as StudentStatus,
+      subjects: ["数学", "英語"],
+    },
+    {
+      id: 2,
+      name: "佐藤花子",
+      grade: 2 as Grade,
+      status: "active" as StudentStatus,
+      subjects: ["国語", "理科"],
+    },
+  ];
 
-// 使用例
-type ElementaryLevel = StudentGradeLevel<2>; // "elementary"
-type HighLevel = StudentGradeLevel<8>; // "high"
-
-// 実用的な例：学生データの型安全な処理
-function getStudentsByGradeLevel<T extends Grade>(
-  students: Student[],
-  targetGrade: T
-): Array<Student & { gradeLevel: StudentGradeLevel<T> }> {
-  return students
-    .filter((student) => student.grade === targetGrade)
-    .map((student) => ({
-      ...student,
-      gradeLevel: getElementaryLevelForCondition(
-        student.grade
-      ) as StudentGradeLevel<T>,
-    }));
+  if (typeof input === "number") {
+    return students.find((student) => student.id === input) || null;
+  } else {
+    return students.filter((student) => student.name.includes(input));
+  }
 }
 
-function getElementaryLevelForCondition(grade: Grade): string {
+// 使用例
+const studentById = getStudentInfo(1); // Student | null
+const studentsByName = getStudentInfo("田中"); // Student[]
+
+function getElementaryLevel(grade: Grade): "lower" | "middle" | "upper" {
   if (grade <= 2) return "lower"; // 低学年 1-2年
   if (grade <= 4) return "middle"; // 中学年 3-4年
   return "upper"; // 高学年 5-6年
@@ -348,15 +361,15 @@ const highPerformers = students.filter(/* ここを完成させてください *
 以下の型定義を完成させて、構造的型付けの動作を確認してください：
 
 ```typescript
-// 1. 基本的な学生インターフェース
-interface BasicStudent {
+// 1. 基本的な学生型
+type BasicStudent = {
   // TODO: id, name, gradeを定義
-}
+};
 
-// 2. 詳細な学生インターフェース
-interface DetailedStudent {
-  // TODO: BasicStudentを拡張して、subjects, gpa, enrollmentDateを追加
-}
+// 2. 詳細な学生型
+type DetailedStudent = {
+  // TODO: BasicStudentのプロパティに加えて、subjects, gpa, enrollmentDateを追加
+};
 
 // 3. 構造的型付けを活用した関数
 function displayBasicInfo(student: BasicStudent): string {

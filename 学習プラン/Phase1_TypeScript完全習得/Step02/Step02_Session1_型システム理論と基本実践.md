@@ -221,7 +221,6 @@ console.log(displayStudentName(detailedStudent)); // エラーなし！
 >
 > **通常の型推論**: `const x = 5` → 値から`number`型を推測
 > **文脈的型推論**: `students.map(student => student.name)` → `student`の型を配列要素型から推測
->
 
 **💡 なぜ文脈的型推論が重要なのか**
 
@@ -284,6 +283,7 @@ const handleStudentEvent: EventHandler = (event) => {
 ```
 
 ##### 3. 関数オーバーロードの基本
+
 関数オーバーロードは、同じ関数名で異なる引数の型に応じて、異なる戻り値の型を定義できる機能です。引数の型によって戻り値の型が自動的に決まるため、より型安全なコードが書けます。
 
 > 詳細は[専門用語集](./Step02_補足_専門用語集.md#関数オーバーロード)を参照してください。
@@ -320,12 +320,6 @@ function getStudentInfo(input: number | string): Student | Student[] | null {
 // 使用例 - 関数オーバーロードにより引数の型に応じて戻り値の型が決定される
 const studentById = getStudentInfo(1); // Student | null（number引数）
 const studentsByName = getStudentInfo("田中"); // Student[]（string引数）
-
-function getElementaryLevel(grade: Grade): "lower" | "middle" | "upper" {
-  if (grade <= 2) return "lower"; // 低学年 1-2年
-  if (grade <= 4) return "middle"; // 中学年 3-4年
-  return "upper"; // 高学年 5-6年
-}
 ```
 
 ---

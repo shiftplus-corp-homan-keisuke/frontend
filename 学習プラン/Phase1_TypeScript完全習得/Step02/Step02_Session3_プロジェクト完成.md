@@ -62,52 +62,47 @@
 // TODO: 以下の型定義を完成させてください
 
 // 1. 学年の型定義
-type Grade = {
-  // TODO: 学年の型定義を完成させてください
-  // 1年生から6年生までのリテラル型（1 | 2 | 3 | 4 | 5 | 6）
-};
+// TODO: 学年の型定義を完成させてください
+// 1年生から6年生までのリテラル型（1 | 2 | 3 | 4 | 5 | 6）
+type Grade = "";
 
 // 2. 学生ステータスの型定義
-type StudentStatus = {
-  // TODO: 学生ステータスの型定義を完成させてください
-  // "active"（在籍中）| "inactive"（休学中）| "graduated"（卒業）| "transferred"（転校）
-};
+// TODO: 学生ステータスの型定義を完成させてください
+// "active"（在籍中）| "inactive"（休学中）| "graduated"（卒業）| "transferred"（転校）
+type StudentStatus = "";
 
 // 3. 学生の基本情報型
-type Student = {
-  // TODO: 学生の基本情報型を完成させてください
-  // 学生ID（読み取り専用、数値）
-  // 学生名（文字列）
-  // 学年（Grade型）
-  // クラス（文字列、例："A"）
-  // ステータス（StudentStatus型）
-  // 生年月日（Date型）
-  // 保護者連絡先（文字列、オプショナル）
-  // 入学日（Date型）
-  // 更新日時（Date型）
-};
+// TODO: 学生の基本情報型を完成させてください
+// 学生ID（読み取り専用、数値）
+// 学生名（文字列）
+// 学年（Grade型）
+// クラス（文字列、例："A"）
+// ステータス（StudentStatus型）
+// 生年月日（Date型）
+// 保護者連絡先（文字列、オプショナル）
+// 入学日（Date型）
+// 更新日時（Date型）
+type Student = "";
 
 // 4. 学生登録時の入力データ型
-type CreateStudentInput = {
-  // TODO: 学生登録時の入力データ型を完成させてください
-  // 学生名（必須、文字列）
-  // 学年（必須、Grade型）
-  // クラス（必須、文字列）
-  // 生年月日（必須、Date型）
-  // 保護者連絡先（オプショナル、文字列）
-  // ヒント: ステータスはデフォルトで"active"なので入力不要
-};
+// TODO: 学生登録時の入力データ型を完成させてください
+// 学生名（必須、文字列）
+// 学年（必須、Grade型）
+// クラス（必須、文字列）
+// 生年月日（必須、Date型）
+// 保護者連絡先（オプショナル、文字列）
+// ヒント: ステータスはデフォルトで"active"なので入力不要
+type CreateStudentInput = "";
 
 // 5. 学生情報更新時の入力データ型
-type UpdateStudentInput = {
-  // TODO: 学生情報更新時の入力データ型を完成させてください
-  // 学生名（オプショナル、文字列）
-  // 学年（オプショナル、Grade型）
-  // クラス（オプショナル、文字列）
-  // 保護者連絡先（オプショナル、文字列）
-  // ステータス（オプショナル、StudentStatus型）
-  // ヒント: idと生年月日・入学日・更新日時は更新対象外
-};
+// TODO: 学生情報更新時の入力データ型を完成させてください
+// 学生名（オプショナル、文字列）
+// 学年（オプショナル、Grade型）
+// クラス（オプショナル、文字列）
+// 保護者連絡先（オプショナル、文字列）
+// ステータス（オプショナル、StudentStatus型）
+// ヒント: idと生年月日・入学日・更新日時は更新対象外
+type UpdateStudentInput = "";
 ```
 
 #### 🎯 検索・フィルタ関連の型定義
@@ -116,38 +111,34 @@ type UpdateStudentInput = {
 // TODO: 以下の型定義を完成させてください
 
 // 1. 年齢範囲の型定義
-type AgeRange = {
-  // TODO: 年齢範囲の型定義を完成させてください
-  // 最小年齢（オプショナル、数値）
-  // 最大年齢（オプショナル、数値）
-};
+// TODO: 年齢範囲の型定義を完成させてください
+// 最小年齢（オプショナル、数値）
+// 最大年齢（オプショナル、数値）
+type AgeRange = "";
 
 // 2. 検索条件の型定義
 type SearchCriteria = {
-  // TODO: 検索条件の型定義を完成させてください
   // 学生名検索（オプショナル、文字列）
   // 学年フィルタ（オプショナル、Grade型）
   // クラスフィルタ（オプショナル、文字列）
   // ステータスフィルタ（オプショナル、StudentStatus型）
   // 年齢範囲（オプショナル、AgeRange型）
+  // TODO: 検索条件の型定義を完成させてください
 };
 
 // 3. ソート条件の型定義
-type SortField = {
-  // TODO: ソートフィールドの型定義を完成させてください
-  // "name" | "grade" | "class" | "birthDate" | "enrollmentDate"
-};
+// TODO: ソートフィールドの型定義を完成させてください
+// "name" | "grade" | "class" | "birthDate" | "enrollmentDate"
+type SortField = "";
 
-type SortOrder = {
-  // TODO: ソート順序の型定義を完成させてください
-  // "asc"（昇順）| "desc"（降順）
-};
+// TODO: ソート順序の型定義を完成させてください
+// "asc"（昇順）| "desc"（降順）
+type SortOrder = "";
 
-type SortCriteria = {
-  // TODO: ソート条件の型定義を完成させてください
-  // ソートフィールド（SortField型）
-  // ソート順序（SortOrder型）
-};
+// TODO: ソート条件の型定義を完成させてください
+// ソートフィールド（SortField型）
+// ソート順序（SortOrder型）
+type SortCriteria = "";
 ```
 
 ### Phase 2: 統計・分析用の型定義（15 分）
@@ -160,44 +151,41 @@ type SortCriteria = {
 // TODO: 以下の型定義を完成させてください
 
 // 1. 学年別統計の型定義
-type GradeStatistics = {
-  // TODO: 学年別統計の型定義を完成させてください
-  // 学年（Grade型）
-  // 学生総数（数値）
-  // 平均年齢（数値）
-  // アクティブ学生数（数値）
-  // 男女比率（オブジェクト、male: number, female: number）
-  // クラス数（数値）
-};
+// TODO: 学年別統計の型定義を完成させてください
+// 学年（Grade型）
+// 学生総数（数値）
+// 平均年齢（数値）
+// アクティブ学生数（数値）
+// 男女比率（オブジェクト、male: number, female: number）
+// クラス数（数値）
+type GradeStatistics = "";
 
 // 2. 学校統計の型定義
-type SchoolStatistics = {
-  // TODO: 学校統計の型定義を完成させてください
-  // 総学生数（数値）
-  // アクティブ学生数（数値）
-  // 非アクティブ学生数（数値）
-  // 卒業生数（数値）
-  // 転校生数（数値）
-  // 平均年齢（数値）
-  // 学年別分布（GradeStatistics型の配列）
-};
+// TODO: 学校統計の型定義を完成させてください
+// 総学生数（数値）
+// アクティブ学生数（数値）
+// 非アクティブ学生数（数値）
+// 卒業生数（数値）
+// 転校生数（数値）
+// 平均年齢（数値）
+// 学年別分布（GradeStatistics型の配列）
+type SchoolStatistics = "";
 
 // 3. 年齢分析の型定義
-type AgeAnalysis = {
-  // TODO: 年齢分析の型定義を完成させてください
-  // 年齢帯（文字列、例："6-7"）
-  // 学生数（数値）
-  // 割合（数値、パーセンテージ）
-};
+// TODO: 年齢分析の型定義を完成させてください
+// 年齢帯（文字列、例："6-7"）
+// 学生数（数値）
+// 割合（数値、パーセンテージ）
+type AgeAnalysis = "";
 
 // 4. 成績予測データの型定義（将来の拡張を想定）
 type AcademicForecast = {
-  // TODO: 成績予測データの型定義を完成させてください
   // 学生ID（数値）
   // 予測期間（文字列、例："2024-Q2"）
   // 予測成績（文字列、例："A", "B", "C"）
   // 予測根拠（文字列配列）
   // 信頼度（数値、0-1の範囲）
+  // TODO: 成績予測データの型定義を完成させてください
 };
 ```
 
@@ -211,74 +199,67 @@ type AcademicForecast = {
 // TODO: 以下の型定義を完成させてください
 
 // 1. 学生API レスポンスの型定義
-type StudentApiResponse = {
-  // TODO: 学生APIレスポンスの型定義を完成させてください
-  // 成功フラグ（真偽値）
-  // データ（Student型、成功時のみ、オプショナル）
-  // エラーメッセージ（文字列、失敗時のみ、オプショナル）
-  // ステータスコード（数値）
-  // タイムスタンプ（Date型）
-};
+// TODO: 学生APIレスポンスの型定義を完成させてください
+// 成功フラグ（真偽値）
+// データ（Student型、成功時のみ、オプショナル）
+// エラーメッセージ（文字列、失敗時のみ、オプショナル）
+// ステータスコード（数値）
+// タイムスタンプ（Date型）
+type StudentApiResponse = "";
 
 // 2. 学生一覧API レスポンスの型定義
-type StudentListApiResponse = {
-  // TODO: 学生一覧APIレスポンスの型定義を完成させてください
-  // 成功フラグ（真偽値）
-  // データ（Student型の配列、成功時のみ、オプショナル）
-  // エラーメッセージ（文字列、失敗時のみ、オプショナル）
-  // ステータスコード（数値）
-  // タイムスタンプ（Date型）
-};
+// TODO: 学生一覧APIレスポンスの型定義を完成させてください
+// 成功フラグ（真偽値）
+// データ（Student型の配列、成功時のみ、オプショナル）
+// エラーメッセージ（文字列、失敗時のみ、オプショナル）
+// ステータスコード（数値）
+// タイムスタンプ（Date型）
+type StudentListApiResponse = "";
 
 // 3. 統計API レスポンスの型定義
-type StatisticsApiResponse = {
-  // TODO: 統計APIレスポンスの型定義を完成させてください
-  // 成功フラグ（真偽値）
-  // データ（SchoolStatistics型、成功時のみ、オプショナル）
-  // エラーメッセージ（文字列、失敗時のみ、オプショナル）
-  // ステータスコード（数値）
-  // タイムスタンプ（Date型）
-};
+// TODO: 統計APIレスポンスの型定義を完成させてください
+// 成功フラグ（真偽値）
+// データ（SchoolStatistics型、成功時のみ、オプショナル）
+// エラーメッセージ（文字列、失敗時のみ、オプショナル）
+// ステータスコード（数値）
+// タイムスタンプ（Date型）
+type StatisticsApiResponse = "";
 
 // 4. 学年別統計API レスポンスの型定義
-type GradeStatisticsApiResponse = {
-  // TODO: 学年別統計APIレスポンスの型定義を完成させてください
-  // 成功フラグ（真偽値）
-  // データ（GradeStatistics型の配列、成功時のみ、オプショナル）
-  // エラーメッセージ（文字列、失敗時のみ、オプショナル）
-  // ステータスコード（数値）
-  // タイムスタンプ（Date型）
-};
+// TODO: 学年別統計APIレスポンスの型定義を完成させてください
+// 成功フラグ（真偽値）
+// データ（GradeStatistics型の配列、成功時のみ、オプショナル）
+// エラーメッセージ（文字列、失敗時のみ、オプショナル）
+// ステータスコード（数値）
+// タイムスタンプ（Date型）
+type GradeStatisticsApiResponse = "";
 
 // 5. ページネーション情報の型定義
-type PaginationInfo = {
-  // TODO: ページネーション情報の型定義を完成させてください
-  // 現在のページ（数値）
-  // 1ページあたりの件数（数値）
-  // 総件数（数値）
-  // 総ページ数（数値）
-  // 前のページがあるか（真偽値）
-  // 次のページがあるか（真偽値）
-};
+// TODO: ページネーション情報の型定義を完成させてください
+// 現在のページ（数値）
+// 1ページあたりの件数（数値）
+// 総件数（数値）
+// 総ページ数（数値）
+// 前のページがあるか（真偽値）
+// 次のページがあるか（真偽値）
+type PaginationInfo = "";
 
 // 6. ページネーション付き学生一覧レスポンスの型定義
-type PaginatedStudentResponse = {
-  // TODO: ページネーション付き学生一覧レスポンスの型定義を完成させてください
-  // データ配列（Student型の配列）
-  // ページネーション情報（PaginationInfo型）
-};
+// TODO: ページネーション付き学生一覧レスポンスの型定義を完成させてください
+// データ配列（Student型の配列）
+// ページネーション情報（PaginationInfo型）
+type PaginatedStudentResponse = "";
 
 // 7. 学生管理サービスの型定義
-type StudentService = {
-  // TODO: 学生管理サービスの型定義を完成させてください
-  // 学生登録: (input: CreateStudentInput) => Promise<StudentApiResponse>
-  // 学生取得: (id: number) => Promise<StudentApiResponse>
-  // 学生一覧取得: (criteria?: SearchCriteria, sort?: SortCriteria) => Promise<StudentListApiResponse>
-  // 学生情報更新: (id: number, input: UpdateStudentInput) => Promise<StudentApiResponse>
-  // 学生削除: (id: number) => Promise<{ success: boolean; error?: string }>
-  // 統計取得: () => Promise<StatisticsApiResponse>
-  // 学年別統計取得: () => Promise<GradeStatisticsApiResponse>
-};
+// TODO: 学生管理サービスの型定義を完成させてください
+// 学生登録: (input: CreateStudentInput) => Promise<StudentApiResponse>
+// 学生取得: (id: number) => Promise<StudentApiResponse>
+// 学生一覧取得: (criteria?: SearchCriteria, sort?: SortCriteria) => Promise<StudentListApiResponse>
+// 学生情報更新: (id: number, input: UpdateStudentInput) => Promise<StudentApiResponse>
+// 学生削除: (id: number) => Promise<{ success: boolean; error?: string }>
+// 統計取得: () => Promise<StatisticsApiResponse>
+// 学年別統計取得: () => Promise<GradeStatisticsApiResponse>
+type StudentService = "";
 ```
 
 #### 🎯 バリデーション関連の型定義
@@ -287,52 +268,45 @@ type StudentService = {
 // TODO: 以下の型定義を完成させてください
 
 // 1. バリデーションエラーの型定義
-type ValidationError = {
-  // TODO: バリデーションエラーの型定義を完成させてください
-  // フィールド名（文字列）
-  // エラーメッセージ（文字列）
-  // エラーコード（文字列）
-};
+// TODO: バリデーションエラーの型定義を完成させてください
+// フィールド名（文字列）
+// エラーメッセージ（文字列）
+// エラーコード（文字列）
+type ValidationError = "";
 
 // 2. バリデーション結果の型定義
-type ValidationResult = {
-  // TODO: バリデーション結果の型定義を完成させてください
-  // 有効かどうか（真偽値）
-  // エラー一覧（ValidationError型の配列）
-};
+// TODO: バリデーション結果の型定義を完成させてください
+// 有効かどうか（真偽値）
+// エラー一覧（ValidationError型の配列）
+type ValidationResult = "";
 
 // 3. 学生名バリデータ関数の型定義
-type NameValidator = {
-  // TODO: 学生名バリデータ関数の型定義を完成させてください
-  // (name: string) => ValidationResult
-};
+// TODO: 学生名バリデータ関数の型定義を完成させてください
+// (name: string) => ValidationResult
+type NameValidator = "";
 
 // 4. 学年バリデータ関数の型定義
-type GradeValidator = {
-  // TODO: 学年バリデータ関数の型定義を完成させてください
-  // (grade: Grade) => ValidationResult
-};
+// TODO: 学年バリデータ関数の型定義を完成させてください
+// (grade: Grade) => ValidationResult
+type GradeValidator = "";
 
 // 5. クラスバリデータ関数の型定義
-type ClassValidator = {
-  // TODO: クラスバリデータ関数の型定義を完成させてください
-  // (className: string) => ValidationResult
-};
+// TODO: クラスバリデータ関数の型定義を完成させてください
+// (className: string) => ValidationResult
+type ClassValidator = "";
 
 // 6. 生年月日バリデータ関数の型定義
-type BirthDateValidator = {
-  // TODO: 生年月日バリデータ関数の型定義を完成させてください
-  // (birthDate: Date) => ValidationResult
-};
+// TODO: 生年月日バリデータ関数の型定義を完成させてください
+// (birthDate: Date) => ValidationResult
+type BirthDateValidator = "";
 
 // 7. 学生バリデーションルールの型定義
-type StudentValidationRules = {
-  // TODO: 学生バリデーションルールの型定義を完成させてください
-  // 学生名バリデータ（NameValidator型）
-  // 学年バリデータ（GradeValidator型）
-  // クラスバリデータ（ClassValidator型）
-  // 生年月日バリデータ（BirthDateValidator型）
-};
+// TODO: 学生バリデーションルールの型定義を完成させてください
+// 学生名バリデータ（NameValidator型）
+// 学年バリデータ（GradeValidator型）
+// クラスバリデータ（ClassValidator型）
+// 生年月日バリデータ（BirthDateValidator型）
+type StudentValidationRules = "";
 ```
 
 ---
@@ -349,51 +323,46 @@ type StudentValidationRules = {
 // TODO: 以下の型定義を完成させてください
 
 // 1. 学生IDの型定義
-type StudentId = {
-  // TODO: 学生IDの型定義を完成させてください
-  // 学生ID（数値、読み取り専用）
-};
+// TODO: 学生IDの型定義を完成させてください
+// 学生ID（数値、読み取り専用）
+type StudentId = "";
 
 // 2. 学生の表示用データ型
-type StudentDisplayData = {
-  // TODO: 学生の表示用データ型を完成させてください
-  // 学生ID（数値）
-  // 学生名（文字列）
-  // 学年（Grade型）
-  // クラス（文字列）
-  // ステータス（StudentStatus型）
-  // 年齢（数値、計算値）
-  // 保護者連絡先（オプショナル、文字列）
-  // ヒント: 生年月日・入学日・更新日時は表示用では不要
-};
+// TODO: 学生の表示用データ型を完成させてください
+// 学生ID（数値）
+// 学生名（文字列）
+// 学年（Grade型）
+// クラス（文字列）
+// ステータス（StudentStatus型）
+// 年齢（数値、計算値）
+// 保護者連絡先（オプショナル、文字列）
+// ヒント: 生年月日・入学日・更新日時は表示用では不要
+type StudentDisplayData = "";
 
 // 3. 学生操作の結果型（Union型を活用）
-type StudentOperationResult = {
-  // TODO: 学生操作の結果型を完成させてください（Union型を活用）
-  // 成功時: { success: true; data: Student }
-  // 失敗時: { success: false; error: string }
-  // ヒント: | を使ってUnion型で定義
-};
+// TODO: 学生操作の結果型を完成させてください（Union型を活用）
+// 成功時: { success: true; data: Student }
+// 失敗時: { success: false; error: string }
+// ヒント: | を使ってUnion型で定義
+type StudentOperationResult = "";
 
 // 4. 学年ごとの学生配列型
-type StudentsByGrade = {
-  // TODO: 学年ごとの学生配列型を完成させてください
-  // 1年生（Student型の配列）
-  // 2年生（Student型の配列）
-  // 3年生（Student型の配列）
-  // 4年生（Student型の配列）
-  // 5年生（Student型の配列）
-  // 6年生（Student型の配列）
-};
+// TODO: 学年ごとの学生配列型を完成させてください
+// 1年生（Student型の配列）
+// 2年生（Student型の配列）
+// 3年生（Student型の配列）
+// 4年生（Student型の配列）
+// 5年生（Student型の配列）
+// 6年生（Student型の配列）
+type StudentsByGrade = "";
 
 // 5. 学生検索結果の型定義
-type StudentSearchResult = {
-  // TODO: 学生検索結果の型定義を完成させてください
-  // 検索結果（Student型の配列）
-  // 総件数（数値）
-  // 検索条件（SearchCriteria型）
-  // 実行時間（数値、ミリ秒）
-};
+// TODO: 学生検索結果の型定義を完成させてください
+// 検索結果（Student型の配列）
+// 総件数（数値）
+// 検索条件（SearchCriteria型）
+// 実行時間（数値、ミリ秒）
+type StudentSearchResult = "";
 ```
 
 ### チャレンジ 2: 関数型定義（5 分）
@@ -402,34 +371,30 @@ type StudentSearchResult = {
 // TODO: 以下の関数型定義を完成させてください
 
 // 1. 学生登録関数の型
-type CreateStudentFunction = {
-  // TODO: 学生登録関数の型定義を完成させてください
-  // (input: CreateStudentInput) => Promise<StudentOperationResult>
-};
+// TODO: 学生登録関数の型定義を完成させてください
+// (input: CreateStudentInput) => Promise<StudentOperationResult>
+type CreateStudentFunction = "";
 
 // 2. 学生検索関数の型
-type SearchStudentFunction = {
-  // TODO: 学生検索関数の型定義を完成させてください
-  // (criteria: SearchCriteria) => Promise<StudentSearchResult>
-};
+// TODO: 学生検索関数の型定義を完成させてください
+// (criteria: SearchCriteria) => Promise<StudentSearchResult>
+type SearchStudentFunction = "";
 
 // 3. 学生バリデーション関数の型
 type ValidateStudentFunction = {
-  // TODO: 学生バリデーション関数の型定義を完成させてください
   // (student: CreateStudentInput) => ValidationResult
+  // TODO: 学生バリデーション関数の型定義を完成させてください
 };
 
 // 4. 年齢計算関数の型
-type CalculateAgeFunction = {
-  // TODO: 年齢計算関数の型定義を完成させてください
-  // (birthDate: Date, referenceDate?: Date) => number
-};
+// TODO: 年齢計算関数の型定義を完成させてください
+// (birthDate: Date, referenceDate?: Date) => number
+type CalculateAgeFunction = "";
 
 // 5. 在籍チェック関数の型
-type CheckEnrollmentFunction = {
-  // TODO: 在籍チェック関数の型定義を完成させてください
-  // (studentId: number) => boolean
-};
+// TODO: 在籍チェック関数の型定義を完成させてください
+// (studentId: number) => boolean
+type CheckEnrollmentFunction = "";
 ```
 
 ---

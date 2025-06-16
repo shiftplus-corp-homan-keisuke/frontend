@@ -86,12 +86,13 @@ const studentRecord: StudentRecord = [
 const [studentId, studentName, scores] = studentRecord;
 console.log(`学生ID: ${studentId}, 名前: ${studentName}`);
 
-// 成績タプルの処理
+// 成績配列から平均点を計算する
 function calculateAverage(scores: SubjectScore[]): number {
   const total = scores.reduce((sum, [, score]) => sum + score, 0);
   return total / scores.length;
 }
 
+// 成績配列から科目名の配列を取得する
 function getSubjectNames(scores: SubjectScore[]): string[] {
   return scores.map(([subject]) => subject);
 }
@@ -116,7 +117,7 @@ type StudentApiResult =
   | [data: Student, error: null]
   | [data: null, error: string];
 
-// 学生データ取得の例
+// 学生IDから学生データを非同期で取得する（成功時はデータ、失敗時はエラーメッセージを返す）
 async function fetchStudentData(id: number): Promise<StudentApiResult> {
   try {
     // 実際のAPI呼び出し処理
@@ -161,6 +162,7 @@ console.log(`${name}の主要科目: ${mainScore}, その他: ${otherScores}`);
 // 複数の学生データを結合
 type CombinedScores = [...StudentScores, ...StudentScores];
 
+// 2つの学生成績データを結合して1つのタプルにする
 function combineStudentScores(
   scores1: StudentScores,
   scores2: StudentScores
@@ -178,11 +180,12 @@ let readonlyNames: ReadonlyArray<string> = ["Alice", "Bob", "Charlie"];
 // 実用例：設定値の管理
 const SUPPORTED_LANGUAGES: readonly string[] = ["ja", "en", "fr", "de"];
 
+// 指定された言語コードがサポート対象かどうかを判定する
 function isValidLanguage(lang: string): boolean {
   return SUPPORTED_LANGUAGES.includes(lang);
 }
 
-// イミュータブルな操作
+// 既存の言語配列に新しい言語を追加した新しい配列を返す（元の配列は変更しない）
 function addLanguage(
   languages: readonly string[],
   newLang: string
@@ -215,6 +218,7 @@ type User = {
   isActive: boolean;
 };
 
+// ユーザーIDからユーザーデータを取得する（成功時はデータ、失敗時はエラーメッセージを返す）
 function fetchUserData(id: number): UserApiResult {
   try {
     // 実際のAPI呼び出し処理
@@ -280,7 +284,7 @@ type Student = {
   enrollmentDate: Date;
 };
 
-// 関数オーバーロードの定義
+// 引数の型に応じて異なる検索を行う関数オーバーロード
 function findStudent(id: number): Student | null;
 function findStudent(name: string): Student[];
 function findStudent(criteria: { grade?: number; minGpa?: number }): Student[];
@@ -349,7 +353,7 @@ type SubjectGrade = {
   date: Date;
 };
 
-// 成績計算の関数オーバーロード
+// 引数の型に応じて異なる成績計算を行う関数オーバーロード
 function calculateGrade(scores: number[]): number;
 function calculateGrade(grades: SubjectGrade[]): number;
 function calculateGrade(student: Student): number;
@@ -384,7 +388,7 @@ const studentGPA = calculateGrade(students[0]); // number
 ##### 3. データ変換での関数オーバーロード
 
 ```typescript
-// データ変換の関数オーバーロード
+// 学生データを指定されたフォーマットで文字列に変換する関数オーバーロード
 function formatStudentData(student: Student): string;
 function formatStudentData(students: Student[]): string[];
 function formatStudentData(student: Student, format: "detailed"): string;
@@ -457,7 +461,7 @@ type ConfigOverrides = {
   };
 };
 
-// 設定更新の関数オーバーロード
+// アプリケーション設定を更新する関数オーバーロード（一括更新または個別更新）
 function updateConfig(config: AppConfig, overrides: ConfigOverrides): AppConfig;
 function updateConfig(
   config: AppConfig,
@@ -516,6 +520,7 @@ type GradeAnalysis = [
 // 合格科目数（数値）];
 
 // 4. 成績処理関数（関数オーバーロード）
+// 成績データを分析して統計情報を返す関数オーバーロード
 function analyzeGrades(scores: SubjectScore[]): GradeAnalysis;
 function analyzeGrades(student: StudentGradeRecord): GradeAnalysis;
 function analyzeGrades(
@@ -588,6 +593,7 @@ const students: Student[] = [
 ];
 
 // 1. 学生検索関数のオーバーロード定義
+// 引数の型に応じて異なる学生検索を行う関数オーバーロード
 function searchStudents(id: number): Student | null;
 function searchStudents(name: string): Student[];
 function searchStudents(criteria: {
@@ -605,6 +611,7 @@ function searchStudents(
 }
 
 // 2. 成績フォーマット関数のオーバーロード定義
+// 学生情報を指定されたフォーマットで表示用文字列に変換する関数オーバーロード
 function formatStudentInfo(student: Student): string;
 function formatStudentInfo(students: Student[]): string[];
 function formatStudentInfo(student: Student, format: "detailed"): string;
@@ -693,27 +700,27 @@ type CartItem = {
 class ShoppingCart {
   private items: CartItem[] = [];
 
-  // 商品をカートに追加
+  // 商品をカートに追加する
   addItem(product: Product, quantity: number): void {
     // TODO: 実装
   }
 
-  // 商品をカートから削除
+  // 指定された商品IDの商品をカートから削除する
   removeItem(productId: number): void {
     // TODO: 実装
   }
 
-  // カート内の商品一覧を取得
+  // カート内の全商品一覧を読み取り専用で取得する
   getItems(): readonly CartItem[] {
     // TODO: 実装
   }
 
-  // 合計金額を計算
+  // カート内の全商品の合計金額を計算する
   getTotalPrice(): number {
     // TODO: 実装
   }
 
-  // カート内の商品数を取得
+  // カート内の商品の総数量を取得する
   getItemCount(): number {
     // TODO: 実装
   }
@@ -759,7 +766,7 @@ type ProcessedUser = {
   createdAt: Date; // Date型
 };
 
-// 3. 変換関数
+// 生データを処理済みデータに変換する
 function transformUserData(rawData: RawUserData[]): ProcessedUser[] {
   // TODO: 実装
   // - IDを数値に変換
@@ -769,12 +776,12 @@ function transformUserData(rawData: RawUserData[]): ProcessedUser[] {
   // - created_atをDate型に変換
 }
 
-// 4. フィルタリング関数
+// アクティブなユーザーのみを抽出する
 function filterActiveUsers(users: ProcessedUser[]): ProcessedUser[] {
   // TODO: アクティブなユーザーのみを返す
 }
 
-// 5. ソート関数
+// ユーザーを名前順でソートする
 function sortUsersByName(users: ProcessedUser[]): ProcessedUser[] {
   // TODO: 名前でソートして返す
 }

@@ -216,6 +216,13 @@ console.log(displayStudentName(detailedStudent)); // エラーなし！
 
 #### 🎯 文脈的型推論の活用
 
+> **文脈的型推論とは？**
+> 型推論の一種で、**関数の引数や変数が使用される文脈から型を推測**する機能です。
+>
+> **通常の型推論**: `const x = 5` → 値から`number`型を推測
+> **文脈的型推論**: `students.map(student => student.name)` → `student`の型を配列要素型から推測
+>
+
 **💡 なぜ文脈的型推論が重要なのか**
 
 TypeScript は文脈から型を推論する能力があります。これにより、冗長な型注釈を避けながら、型安全性を保つことができます。
@@ -223,24 +230,25 @@ TypeScript は文脈から型を推論する能力があります。これによ
 ##### 1. 配列メソッドでの文脈的型推論
 
 ```typescript
-// 学生データでの文脈的型推論
+// 学生データの定義（通常の型推論）
 const students = [
   { id: 1, name: "田中太郎", grade: 3, gpa: 3.8 },
   { id: 2, name: "佐藤花子", grade: 2, gpa: 3.9 },
   { id: 3, name: "鈴木次郎", grade: 1, gpa: 3.2 },
 ] as const;
 
-// map関数での文脈的型推論
-const studentNames = students.map((student) => student.name); // string[]として推論
-const studentGrades = students.map((student) => student.grade); // number[]として推論
+// ここから文脈的型推論の例
+const studentNames = students.map((student) => student.name);
+// ↑ student引数の型が配列要素型から自動推測される（文脈的型推論）
 
-// filter関数での型の絞り込み
+const studentGrades = students.map((student) => student.grade);
+// ↑ student引数の型が配列要素型から自動推測される（文脈的型推論）
+
 const highPerformers = students.filter((student) => student.gpa >= 3.5);
-// typeof students[number][]として推論（元の型を保持）
+// ↑ student引数の型が配列要素型から自動推測される（文脈的型推論）
 
-// reduce関数での累積型推論
 const totalGPA = students.reduce((sum, student) => sum + student.gpa, 0);
-// numberとして推論
+// ↑ student引数の型が配列要素型から自動推測される（文脈的型推論）
 ```
 
 ##### 2. 関数型での文脈的型推論
@@ -257,7 +265,8 @@ function processStudentNames(
 }
 
 // 使用時に型が推論される
-const names = processStudentNames(students, (student) => student.name); // string[]
+const names = processStudentNames(students, (student) => student.name);
+// ↑ student引数の型がStudentProcessorから自動推測される（文脈的型推論）
 
 // イベントハンドラーでの文脈的型推論
 type EventHandler = (event: StudentEvent) => void;
@@ -269,12 +278,15 @@ type StudentEvent = {
 };
 
 const handleStudentEvent: EventHandler = (event) => {
-  // eventの型はStudentEventとして推論される
+  // ↑ event引数の型がEventHandlerから自動推測される（文脈的型推論）
   console.log(`Processing ${event.type} for student ${event.studentId}`);
 };
 ```
 
 ##### 3. 関数オーバーロードの基本
+関数オーバーロードは、同じ関数名で異なる引数の型に応じて、異なる戻り値の型を定義できる機能です。引数の型によって戻り値の型が自動的に決まるため、より型安全なコードが書けます。
+
+> 詳細は[専門用語集](./Step02_補足_専門用語集.md#関数オーバーロード)を参照してください。
 
 ```typescript
 // 関数オーバーロードを使った型安全な処理
@@ -305,9 +317,9 @@ function getStudentInfo(input: number | string): Student | Student[] | null {
   }
 }
 
-// 使用例
-const studentById = getStudentInfo(1); // Student | null
-const studentsByName = getStudentInfo("田中"); // Student[]
+// 使用例 - 関数オーバーロードにより引数の型に応じて戻り値の型が決定される
+const studentById = getStudentInfo(1); // Student | null（number引数）
+const studentsByName = getStudentInfo("田中"); // Student[]（string引数）
 
 function getElementaryLevel(grade: Grade): "lower" | "middle" | "upper" {
   if (grade <= 2) return "lower"; // 低学年 1-2年

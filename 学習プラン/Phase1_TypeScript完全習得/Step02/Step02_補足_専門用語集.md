@@ -567,9 +567,18 @@ type Logger = (message: string, ...args: unknown[]) => void;
 
 ### 関数オーバーロード（Function Overloads）
 
-**定義**: 同じ関数名に対して、引数の型や数、戻り値の型が異なる複数の関数シグネチャ（宣言）を定義し、それらを単一の実装関数で処理する機能です。これにより、関数の利用者が異なる引数の組み合わせで関数を呼び出せるようになり、柔軟な API 設計が可能になります。
+**定義**: 同じ関数名で異なる引数の型や数に応じて、異なる戻り値の型を定義できるTypeScriptの機能です。引数の型によって戻り値の型が自動的に決まるため、より型安全で直感的なAPIを提供できます。
 
-**コード例**:
+**基本構造**:
+- **オーバーロードシグネチャ**: 関数の呼び出し方法を定義（実装は含まない）
+- **実装シグネチャ**: 実際の関数の実装を含む（すべてのオーバーロードを処理）
+
+**主な利点**:
+- 引数の型に応じて戻り値の型が自動推論される
+- 型安全性が向上し、実行時エラーを防げる
+- APIの使いやすさが向上する
+
+**基本的なコード例**:
 
 ```typescript
 // 1. 基本的なオーバーロード
@@ -580,7 +589,31 @@ function format(value: string | number | boolean): string {
   return String(value);
 }
 
-// 2. より複雑なオーバーロード
+// 使用例
+const str = format("hello");    // string型
+const num = format(123);        // string型
+const bool = format(true);      // string型
+
+// 2. より実用的なオーバーロード例
+function getStudentInfo(id: number): Student | null;
+function getStudentInfo(name: string): Student[];
+function getStudentInfo(input: number | string): Student | Student[] | null {
+  if (typeof input === "number") {
+    return students.find(s => s.id === input) || null;
+  } else {
+    return students.filter(s => s.name.includes(input));
+  }
+}
+
+// 使用例 - 引数の型に応じて戻り値の型が決定される
+const studentById = getStudentInfo(1);      // Student | null
+const studentsByName = getStudentInfo("田中"); // Student[]
+```
+
+**高度な活用例**:
+
+```typescript
+// DOM要素の型安全な作成
 function createElement(tag: "div"): HTMLDivElement;
 function createElement(tag: "span"): HTMLSpanElement;
 function createElement(tag: "input"): HTMLInputElement;
@@ -588,13 +621,20 @@ function createElement(tag: string): HTMLElement {
   return document.createElement(tag);
 }
 
-// 3. 条件付きオーバーロード
-function processArray(arr: string[]): string[];
-function processArray(arr: number[]): number[];
-function processArray(arr: (string | number)[]): (string | number)[] {
-  return arr.map((item) => item);
-}
+// 使用例
+const div = createElement("div");     // HTMLDivElement型
+const span = createElement("span");   // HTMLSpanElement型
+const input = createElement("input"); // HTMLInputElement型
 ```
+
+**注意点**:
+- オーバーロードシグネチャは実装を含まない
+- 実装シグネチャはすべてのオーバーロードケースを処理する必要がある
+- オーバーロードの順序は重要（より具体的なものを先に定義）
+
+**参考リンク**:
+- [TypeScript公式ドキュメント - Function Overloads](https://www.typescriptlang.org/docs/handbook/2/functions.html#function-overloads)
+- [TypeScript Deep Dive - Function Overloading](https://basarat.gitbook.io/typescript/type-system/functions#overloading)
 
 ### 高階関数（Higher-Order Functions）
 

@@ -128,6 +128,7 @@ type StudentEvent =
   | { type: "graduated"; studentId: number; graduationDate: Date }
   | { type: "transferred"; studentId: number; newSchool: string };
 
+// 学生に起こるイベントを処理
 function processStudentEvent(event: StudentEvent): string {
   switch (event.type) {
     case "active":

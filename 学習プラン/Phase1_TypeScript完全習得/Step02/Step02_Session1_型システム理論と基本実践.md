@@ -121,7 +121,7 @@ function getElementaryLevel(grade: Grade): "lower" | "middle" | "upper" {
   return "upper"; // 高学年 5-6年
 }
 
-// 判別可能なUnion型（StudentStatusに合わせて整理）
+// 判別可能なUnion型（typeで判別できる）
 type StudentEvent =
   | { type: "active"; studentId: number }
   | { type: "inactive"; studentId: number; reason?: string }

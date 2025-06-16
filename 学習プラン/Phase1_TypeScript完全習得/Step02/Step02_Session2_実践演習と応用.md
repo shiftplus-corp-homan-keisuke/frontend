@@ -482,19 +482,22 @@ function updateConfig(
 // TODO: 以下の型定義と関数を完成させてください
 
 // 1. 成績データのタプル型定義
-type SubjectScore = [// 科目名（文字列）
+type SubjectScore = [
+// 科目名（文字列）
 // 点数（数値）
 // 満点（数値）
 // 試験日（Date型）];
 
 // 2. 学生の成績記録タプル型
-type StudentGradeRecord = [// 学生ID（数値）
+type StudentGradeRecord = [
+// 学生ID（数値）
 // 学生名（文字列）
 // 学年（1-6の数値）
 // 成績配列（SubjectScore[]）];
 
 // 3. 成績分析結果のタプル型
-type GradeAnalysis = [// 平均点（数値）
+type GradeAnalysis = [
+// 平均点（数値）
 // 最高点（数値）
 // 最低点（数値）
 // 合格科目数（数値）];

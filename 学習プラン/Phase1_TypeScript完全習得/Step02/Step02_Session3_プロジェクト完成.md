@@ -90,7 +90,7 @@
 データベース (MySQL/PostgreSQL等)
 ```
 
-#### 学習者が定義する型の役割
+#### 定義する型の役割
 - **基本型**: システムの核となるデータ構造
 - **検索型**: ユーザーの検索・フィルタ機能をサポート
 - **統計型**: 管理者向けの分析機能をサポート
@@ -458,28 +458,28 @@ type StudentSearchResult = "";
 ```typescript
 // TODO: 以下の関数型定義を完成させてください
 
-// 1. 学生登録関数の型
+// 1. 学生登録関数の型 - 学生情報を受け取って登録処理を行う
 // TODO: 学生登録関数の型定義を完成させてください
 // (input: CreateStudentInput) => Promise<StudentOperationResult>
 type CreateStudentFunction = "";
 
-// 2. 学生検索関数の型
+// 2. 学生検索関数の型 - 検索条件に基づいて学生を検索する
 // TODO: 学生検索関数の型定義を完成させてください
 // (criteria: SearchCriteria) => Promise<StudentSearchResult>
 type SearchStudentFunction = "";
 
-// 3. 学生バリデーション関数の型
+// 3. 学生バリデーション関数の型 - 学生データの妥当性を検証する
 type ValidateStudentFunction = {
   // (student: CreateStudentInput) => ValidationResult
   // TODO: 学生バリデーション関数の型定義を完成させてください
 };
 
-// 4. 年齢計算関数の型
+// 4. 年齢計算関数の型 - 生年月日から年齢を計算する
 // TODO: 年齢計算関数の型定義を完成させてください
 // (birthDate: Date, referenceDate?: Date) => number
 type CalculateAgeFunction = "";
 
-// 5. 在籍チェック関数の型
+// 5. 在籍チェック関数の型 - 学生IDから在籍状況を確認する
 // TODO: 在籍チェック関数の型定義を完成させてください
 // (studentId: number) => boolean
 type CheckEnrollmentFunction = "";

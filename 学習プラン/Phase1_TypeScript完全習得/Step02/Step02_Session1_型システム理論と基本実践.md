@@ -114,7 +114,7 @@ type Student = {
   subjects: readonly string[];
 };
 
-// 小学校の学年レベルを取得する関数
+// 学年に応じて低学年・中学年・高学年を判定する
 function getElementaryLevel(grade: Grade): "lower" | "middle" | "upper" {
   if (grade <= 2) return "lower"; // 低学年 1-2年
   if (grade <= 4) return "middle"; // 中学年 3-4年
@@ -128,7 +128,7 @@ type StudentEvent =
   | { type: "graduated"; studentId: number; graduationDate: Date }
   | { type: "transferred"; studentId: number; newSchool: string };
 
-// 学生に起こるイベントを処理
+// 学生のステータス変更イベントに応じてメッセージを生成する
 function processStudentEvent(event: StudentEvent): string {
   switch (event.type) {
     case "active":
@@ -172,7 +172,7 @@ type Point3D = {
   z: number;
 };
 
-// Point3DはPoint2Dと構造的に互換性がある
+// 2D座標点から原点までの距離を計算する（構造的型付けによりPoint3Dも受け入れ可能）
 function calculateDistance2D(point: Point2D): number {
   return Math.sqrt(point.x * point.x + point.y * point.y);
 }
@@ -194,6 +194,7 @@ type DetailedStudent = {
   gpa: number;
 };
 
+// 学生の基本情報を表示用文字列に変換する
 function displayStudentName(student: BasicStudent): string {
   return `Student: ${student.name} (ID: ${student.id})`;
 }
@@ -256,6 +257,7 @@ const totalGPA = students.reduce((sum, student) => sum + student.gpa, 0);
 // 高階関数での文脈的型推論
 type StudentProcessor = (student: Student) => string;
 
+// 学生配列に対して処理関数を適用して名前配列を生成する
 function processStudentNames(
   students: Student[],
   processor: StudentProcessor
@@ -276,8 +278,8 @@ type StudentEvent = {
   timestamp: Date;
 };
 
+// 学生イベントを処理するハンドラー（文脈的型推論でevent引数の型が自動推測される）
 const handleStudentEvent: EventHandler = (event) => {
-  // ↑ event引数の型がEventHandlerから自動推測される（文脈的型推論）
   console.log(`Processing ${event.type} for student ${event.studentId}`);
 };
 ```
@@ -289,7 +291,7 @@ const handleStudentEvent: EventHandler = (event) => {
 > 詳細は[専門用語集](./Step02_補足_専門用語集.md#関数オーバーロード)を参照してください。
 
 ```typescript
-// 関数オーバーロードを使った型安全な処理
+// 引数の型に応じて異なる戻り値型を返す関数オーバーロード
 function getStudentInfo(id: number): Student | null;
 function getStudentInfo(name: string): Student[];
 function getStudentInfo(input: number | string): Student | Student[] | null {

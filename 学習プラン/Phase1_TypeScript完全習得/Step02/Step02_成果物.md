@@ -46,6 +46,7 @@ const GRADES = [1, 2, 3, 4, 5, 6];
 const CLASSES = ["A", "B", "C"];
 const STATUSES = ["active", "inactive", "graduated", "transferred"];
 
+// 新しい学生を登録して学生配列に追加する
 function addStudent(name, grade, className, birthDate, guardianContact) {
   const student = {
     id: nextId++,
@@ -68,6 +69,7 @@ function addStudent(name, grade, className, birthDate, guardianContact) {
   };
 }
 
+// 検索タイプと値に基づいて学生を検索する（ID検索は単一、その他は複数結果）
 function findStudent(searchType, value) {
   let result;
 
@@ -96,6 +98,7 @@ function findStudent(searchType, value) {
   };
 }
 
+// 指定されたIDの学生情報を更新する
 function updateStudent(id, updates) {
   const studentIndex = students.findIndex((s) => s.id === id);
 
@@ -123,6 +126,7 @@ function updateStudent(id, updates) {
   };
 }
 
+// 指定された学年の学生一覧をタプル形式で取得する
 function getStudentsByGrade(grade) {
   const gradeStudents = students.filter((s) => s.grade === grade);
 
@@ -134,6 +138,7 @@ function getStudentsByGrade(grade) {
   ]);
 }
 
+// 指定された学年とクラスの統計情報を計算する
 function getClassStatistics(grade, className) {
   const classStudents = students.filter(
     (s) => s.grade === grade && s.class === className
@@ -156,6 +161,7 @@ function getClassStatistics(grade, className) {
   };
 }
 
+// 学校全体の統計レポートを生成する（学年別・ステータス別集計を含む）
 function generateReport() {
   const report = {
     totalStudents: students.length,
@@ -183,6 +189,7 @@ function generateReport() {
   return report;
 }
 
+// システムの動作確認用デモ関数（各機能をテストする）
 function runExample() {
   console.log("=== 学生管理システム発展版のデモ ===");
 
@@ -485,7 +492,7 @@ type SchoolReport = {
 let students: Student[] = [];
 let nextId: number = 1;
 
-// 関数オーバーロード
+// 検索タイプに応じて異なる戻り値型を返す関数オーバーロード
 function findStudent(
   searchType: "id",
   value: number
@@ -501,6 +508,7 @@ function findStudent(
   // 実装
 }
 
+// 新しい学生を登録する（保護者連絡先はオプショナル）
 function addStudent(
   name: string,
   grade: Grade,
@@ -511,6 +519,7 @@ function addStudent(
   // 実装
 }
 
+// 学生情報を部分的に更新する（全てのフィールドがオプショナル）
 function updateStudent(
   id: number,
   updates: {
@@ -524,10 +533,12 @@ function updateStudent(
   // 実装
 }
 
+// 指定学年の学生一覧をタプル形式で取得する
 function getStudentsByGrade(grade: Grade): StudentSummary[] {
   // 実装
 }
 
+// 指定されたクラスの統計情報を計算する
 function getClassStatistics(
   grade: Grade,
   className: ClassName
@@ -535,6 +546,7 @@ function getClassStatistics(
   // 実装
 }
 
+// 学校全体の統計レポートを生成する
 function generateReport(): SchoolReport {
   // 実装
 }

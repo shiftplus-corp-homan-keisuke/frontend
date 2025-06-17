@@ -263,10 +263,10 @@ function isOverdue(loanRecord) {
 以下のコードには意図的に型エラーが含まれています。エラーを見つけて修正してください：
 
 ```typescript
-// 問題1: 基本型の型エラー
-let userAge: number = "25";  // エラー：文字列を数値型に代入
+// 問題1
+let userAge: number = "25";
 
-// 問題2: オブジェクト型の型エラー
+// 問題2
 type SimpleUser = {
   name: string;
   age: number;
@@ -275,14 +275,14 @@ type SimpleUser = {
 
 let user: SimpleUser = {
   name: "田中太郎",
-  age: "25",  // エラー：文字列を数値型に代入
+  age: "25",
   email: "tanaka@example.com"
 };
 
-// 問題3: 配列型の型エラー
-let productPrices: number[] = [100, 200, "300"];  // エラー：文字列が数値配列に含まれている
+// 問題3
+let productPrices: number[] = [100, 200, "300"];
 
-// 問題4: オプショナルプロパティの型エラー
+// 問題4
 type UserInfo = {
   name: string;
   age: number;
@@ -291,12 +291,11 @@ type UserInfo = {
 
 let userInfo: UserInfo = {
   name: "山田花子",
-  // age が不足している  // エラー：必須プロパティが不足
   phone: "090-1234-5678"
 };
 
 // 問題5: 関数の戻り値型エラー
-function getUserName(user: SimpleUser): number {  // エラー：戻り値型が不適切
+function getUserName(user: SimpleUser): number {
   return user.name;
 }
 ```

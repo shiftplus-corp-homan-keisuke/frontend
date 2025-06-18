@@ -1,359 +1,474 @@
 # Step07 専門用語集
 
-> 💡 **このファイルについて**: Step07で出てくる実践プロジェクト開発関連の重要な専門用語と概念の詳細解説集です。
+> 💡 **このファイルについて**: Step07で出てくるクリーンアーキテクチャ関連の重要な専門用語と概念の詳細解説集です。
 
 ## 📋 目次
-1. [プロジェクト設計用語](#プロジェクト設計用語)
-2. [状態管理用語](#状態管理用語)
-3. [コンポーネント設計用語](#コンポーネント設計用語)
-4. [型安全性用語](#型安全性用語)
+1. [クリーンアーキテクチャ基本用語](#クリーンアーキテクチャ基本用語)
+2. [レイヤー分離用語](#レイヤー分離用語)
+3. [依存性管理用語](#依存性管理用語)
+4. [設計原則用語](#設計原則用語)
 
 ---
 
-## プロジェクト設計用語
+## クリーンアーキテクチャ基本用語
 
-### アーキテクチャパターン（Architecture Pattern）
-**定義**: アプリケーションの構造を決定する設計パターン
+### クリーンアーキテクチャ（Clean Architecture）
+**定義**: ロバート・C・マーチンが提唱した、依存関係を内側に向けることで保守性と拡張性を高めるアーキテクチャパターン
 
-**主要パターン**:
-- **MVC (Model-View-Controller)**: データ、表示、制御の分離
-- **MVP (Model-View-Presenter)**: ビューとモデルの完全分離
-- **MVVM (Model-View-ViewModel)**: データバインディング中心の設計
-- **Component-Based**: コンポーネント単位での設計
+**基本構造**:
+```typescript
+// 依存関係の方向: 外側 → 内側
+// Infrastructure → Interface Adapters → Application Business Rules → Enterprise Business Rules
+```
 
-### 関心の分離（Separation of Concerns）
-**定義**: 異なる責任を持つコードを分離する設計原則
+**特徴**:
+- **依存性逆転**: 外側のレイヤーが内側のレイヤーに依存
+- **フレームワーク独立**: 特定のフレームワークに依存しない
+- **テスタブル**: ビジネスロジックを独立してテスト可能
+- **UI独立**: UIを変更してもビジネスロジックに影響しない
+
+### エンティティ（Entity）
+**定義**: ビジネスルールをカプセル化したオブジェクト
 
 **実装例**:
 ```typescript
-// データ層
-interface TodoRepository {
-  findAll(): Todo[];
-  save(todo: Todo): void;
-  delete(id: string): void;
-}
+// ドメインエンティティ
+export class BlogPost {
+  private constructor(
+    private readonly _id: BlogPostId,
+    private _title: string,
+    private _content: string,
+    private _authorId: AuthorId,
+    private _publishedAt: Date | null = null
+  ) {}
 
-// ビジネスロジック層
-class TodoService {
-  constructor(private repository: TodoRepository) {}
-  
-  createTodo(title: string): Todo {
-    const todo = new Todo(generateId(), title);
-    this.repository.save(todo);
-    return todo;
+  static create(title: string, content: string, authorId: AuthorId): BlogPost {
+    const id = BlogPostId.generate();
+    return new BlogPost(id, title, content, authorId);
+  }
+
+  publish(): void {
+    if (this._publishedAt !== null) {
+      throw new Error('記事は既に公開されています');
+    }
+    this._publishedAt = new Date();
+  }
+
+  get id(): BlogPostId { return this._id; }
+  get title(): string { return this._title; }
+  get isPublished(): boolean { return this._publishedAt !== null; }
+}
+```
+
+### ユースケース（Use Case）
+**定義**: アプリケーション固有のビジネスルールを実装するレイヤー
+
+**実装例**:
+```typescript
+// アプリケーションサービス（ユースケース）
+export class PublishBlogPostUseCase {
+  constructor(
+    private readonly blogPostRepository: BlogPostRepository,
+    private readonly eventPublisher: EventPublisher
+  ) {}
+
+  async execute(command: PublishBlogPostCommand): Promise<void> {
+    const blogPost = await this.blogPostRepository.findById(command.blogPostId);
+    if (!blogPost) {
+      throw new Error('記事が見つかりません');
+    }
+
+    blogPost.publish();
+    await this.blogPostRepository.save(blogPost);
+    
+    await this.eventPublisher.publish(
+      new BlogPostPublishedEvent(blogPost.id, blogPost.title)
+    );
   }
 }
-
-// プレゼンテーション層
-class TodoController {
-  constructor(private service: TodoService) {}
-  
-  handleCreateTodo(title: string): void {
-    this.service.createTodo(title);
-    this.updateView();
-  }
-}
-```
-
----
-
-## 状態管理用語
-
-### 状態（State）
-**定義**: アプリケーションの現在の状況を表すデータ
-
-**状態の種類**:
-```typescript
-// アプリケーション状態
-interface AppState {
-  todos: Todo[];
-  filter: FilterType;
-  isLoading: boolean;
-  error: string | null;
-}
-
-// コンポーネント状態
-interface ComponentState {
-  inputValue: string;
-  isEditing: boolean;
-  validationErrors: string[];
-}
-```
-
-### イミュータブル更新（Immutable Update）
-**定義**: 既存のオブジェクトを変更せず、新しいオブジェクトを作成する更新方法
-
-**実装例**:
-```typescript
-// ミュータブル（避けるべき）
-function addTodoMutable(state: AppState, todo: Todo): void {
-  state.todos.push(todo); // 既存の配列を変更
-}
-
-// イミュータブル（推奨）
-function addTodoImmutable(state: AppState, todo: Todo): AppState {
-  return {
-    ...state,
-    todos: [...state.todos, todo] // 新しい配列を作成
-  };
-}
-```
-
-### アクション（Action）
-**定義**: 状態変更を表現するオブジェクト
-
-**実装例**:
-```typescript
-// アクションの型定義
-type TodoAction = 
-  | { type: 'ADD_TODO'; payload: { title: string } }
-  | { type: 'TOGGLE_TODO'; payload: { id: string } }
-  | { type: 'DELETE_TODO'; payload: { id: string } }
-  | { type: 'SET_FILTER'; payload: { filter: FilterType } };
-
-// アクションクリエーター
-const todoActions = {
-  addTodo: (title: string): TodoAction => ({
-    type: 'ADD_TODO',
-    payload: { title }
-  }),
-  
-  toggleTodo: (id: string): TodoAction => ({
-    type: 'TOGGLE_TODO',
-    payload: { id }
-  })
-};
 ```
 
 ---
 
-## コンポーネント設計用語
+## レイヤー分離用語
 
-### コンポーネント（Component）
-**定義**: 再利用可能なUI要素とその動作をカプセル化したもの
+### ドメイン層（Domain Layer）
+**定義**: ビジネスロジックの中核を担うレイヤー
 
-**コンポーネントの種類**:
+**構成要素**:
 ```typescript
-// プレゼンテーショナルコンポーネント
-interface TodoItemProps {
-  todo: Todo;
-  onToggle: (id: string) => void;
-  onDelete: (id: string) => void;
+// エンティティ
+export class User {
+  constructor(
+    private readonly id: UserId,
+    private email: Email,
+    private name: UserName
+  ) {}
 }
 
-class TodoItem {
-  constructor(private props: TodoItemProps) {}
-  
-  render(): HTMLElement {
-    // UIのレンダリングのみ
+// 値オブジェクト
+export class Email {
+  constructor(private readonly value: string) {
+    if (!this.isValid(value)) {
+      throw new Error('無効なメールアドレスです');
+    }
+  }
+
+  private isValid(email: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  toString(): string {
+    return this.value;
   }
 }
 
-// コンテナコンポーネント
-class TodoContainer {
-  constructor(private store: TodoStore) {}
-  
-  render(): HTMLElement {
-    // 状態管理とデータの受け渡し
-    const todos = this.store.getTodos();
-    return new TodoList({
-      todos,
-      onToggle: this.handleToggle.bind(this)
-    }).render();
+// ドメインサービス
+export class UserDomainService {
+  constructor(private userRepository: UserRepository) {}
+
+  async isDuplicateEmail(email: Email): Promise<boolean> {
+    const existingUser = await this.userRepository.findByEmail(email);
+    return existingUser !== null;
   }
 }
 ```
 
-### Props（プロパティ）
-**定義**: コンポーネントに渡される入力データ
+### アプリケーション層（Application Layer）
+**定義**: ユースケースを実装し、ドメイン層を調整するレイヤー
 
-**型安全なProps**:
+**実装例**:
 ```typescript
-interface ButtonProps {
-  text: string;
-  variant: 'primary' | 'secondary' | 'danger';
-  size?: 'small' | 'medium' | 'large';
-  disabled?: boolean;
-  onClick: (event: MouseEvent) => void;
+// アプリケーションサービス
+export class CreateUserUseCase {
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly userDomainService: UserDomainService,
+    private readonly eventPublisher: EventPublisher
+  ) {}
+
+  async execute(command: CreateUserCommand): Promise<CreateUserResult> {
+    const email = new Email(command.email);
+    const name = new UserName(command.name);
+
+    // ドメインサービスを使用してビジネスルールをチェック
+    if (await this.userDomainService.isDuplicateEmail(email)) {
+      throw new Error('このメールアドレスは既に使用されています');
+    }
+
+    const user = User.create(email, name);
+    await this.userRepository.save(user);
+
+    await this.eventPublisher.publish(new UserCreatedEvent(user.id));
+
+    return new CreateUserResult(user.id);
+  }
+}
+```
+
+### インフラストラクチャ層（Infrastructure Layer）
+**定義**: 外部システムとの連携を担うレイヤー
+
+**実装例**:
+```typescript
+// リポジトリの実装
+export class TypeORMUserRepository implements UserRepository {
+  constructor(private readonly connection: Connection) {}
+
+  async save(user: User): Promise<void> {
+    const userEntity = this.toEntity(user);
+    await this.connection.getRepository(UserEntity).save(userEntity);
+  }
+
+  async findById(id: UserId): Promise<User | null> {
+    const entity = await this.connection
+      .getRepository(UserEntity)
+      .findOne(id.value);
+    
+    return entity ? this.toDomain(entity) : null;
+  }
+
+  private toEntity(user: User): UserEntity {
+    return {
+      id: user.id.value,
+      email: user.email.toString(),
+      name: user.name.toString()
+    };
+  }
+
+  private toDomain(entity: UserEntity): User {
+    return new User(
+      new UserId(entity.id),
+      new Email(entity.email),
+      new UserName(entity.name)
+    );
+  }
+}
+```
+
+---
+
+## 依存性管理用語
+
+### 依存性逆転の原則（Dependency Inversion Principle）
+**定義**: 高レベルモジュールは低レベルモジュールに依存してはならず、両方とも抽象に依存すべき
+
+**実装例**:
+```typescript
+// 抽象（インターフェース）
+export interface BlogPostRepository {
+  save(blogPost: BlogPost): Promise<void>;
+  findById(id: BlogPostId): Promise<BlogPost | null>;
+  findByAuthor(authorId: AuthorId): Promise<BlogPost[]>;
 }
 
-class Button {
-  constructor(private props: ButtonProps) {
-    this.validateProps();
+// 高レベルモジュール（ユースケース）
+export class GetBlogPostsByAuthorUseCase {
+  constructor(
+    private readonly blogPostRepository: BlogPostRepository // 抽象に依存
+  ) {}
+
+  async execute(query: GetBlogPostsByAuthorQuery): Promise<BlogPost[]> {
+    return await this.blogPostRepository.findByAuthor(query.authorId);
   }
-  
-  private validateProps(): void {
-    if (!this.props.text.trim()) {
-      throw new Error('Button text is required');
+}
+
+// 低レベルモジュール（実装）
+export class InMemoryBlogPostRepository implements BlogPostRepository {
+  private blogPosts: Map<string, BlogPost> = new Map();
+
+  async save(blogPost: BlogPost): Promise<void> {
+    this.blogPosts.set(blogPost.id.value, blogPost);
+  }
+
+  async findById(id: BlogPostId): Promise<BlogPost | null> {
+    return this.blogPosts.get(id.value) || null;
+  }
+
+  async findByAuthor(authorId: AuthorId): Promise<BlogPost[]> {
+    return Array.from(this.blogPosts.values())
+      .filter(post => post.authorId.equals(authorId));
+  }
+}
+```
+
+### 依存性注入（Dependency Injection）
+**定義**: オブジェクトの依存関係を外部から注入する設計パターン
+
+**実装例**:
+```typescript
+// DIコンテナ
+export class DIContainer {
+  private services = new Map<string, any>();
+
+  register<T>(key: string, factory: () => T): void {
+    this.services.set(key, factory);
+  }
+
+  resolve<T>(key: string): T {
+    const factory = this.services.get(key);
+    if (!factory) {
+      throw new Error(`Service not found: ${key}`);
+    }
+    return factory();
+  }
+}
+
+// 設定
+const container = new DIContainer();
+
+container.register('BlogPostRepository', () => new InMemoryBlogPostRepository());
+container.register('EventPublisher', () => new InMemoryEventPublisher());
+
+container.register('PublishBlogPostUseCase', () => 
+  new PublishBlogPostUseCase(
+    container.resolve('BlogPostRepository'),
+    container.resolve('EventPublisher')
+  )
+);
+```
+
+---
+
+## 設計原則用語
+
+### 単一責任の原則（Single Responsibility Principle）
+**定義**: クラスは変更する理由を1つだけ持つべき
+
+**実装例**:
+```typescript
+// 悪い例：複数の責任を持つクラス
+class BadUserService {
+  createUser(userData: any): void {
+    // ユーザー作成
+    // メール送信
+    // ログ出力
+    // データベース保存
+  }
+}
+
+// 良い例：責任を分離
+class UserFactory {
+  create(email: string, name: string): User {
+    return User.create(new Email(email), new UserName(name));
+  }
+}
+
+class UserRepository {
+  async save(user: User): Promise<void> {
+    // データベース保存のみ
+  }
+}
+
+class EmailService {
+  async sendWelcomeEmail(user: User): Promise<void> {
+    // メール送信のみ
+  }
+}
+
+class CreateUserUseCase {
+  constructor(
+    private userFactory: UserFactory,
+    private userRepository: UserRepository,
+    private emailService: EmailService
+  ) {}
+
+  async execute(command: CreateUserCommand): Promise<void> {
+    const user = this.userFactory.create(command.email, command.name);
+    await this.userRepository.save(user);
+    await this.emailService.sendWelcomeEmail(user);
+  }
+}
+```
+
+### 開放閉鎖の原則（Open/Closed Principle）
+**定義**: ソフトウェアエンティティは拡張に対して開いており、修正に対して閉じているべき
+
+**実装例**:
+```typescript
+// 抽象基底クラス
+abstract class NotificationSender {
+  abstract send(message: string, recipient: string): Promise<void>;
+}
+
+// 具体実装
+class EmailNotificationSender extends NotificationSender {
+  async send(message: string, recipient: string): Promise<void> {
+    // メール送信実装
+  }
+}
+
+class SMSNotificationSender extends NotificationSender {
+  async send(message: string, recipient: string): Promise<void> {
+    // SMS送信実装
+  }
+}
+
+// 新しい通知方法を追加する場合、既存コードを変更せずに拡張
+class SlackNotificationSender extends NotificationSender {
+  async send(message: string, recipient: string): Promise<void> {
+    // Slack送信実装
+  }
+}
+
+// 使用側
+class NotificationService {
+  constructor(private senders: NotificationSender[]) {}
+
+  async sendToAll(message: string, recipient: string): Promise<void> {
+    for (const sender of this.senders) {
+      await sender.send(message, recipient);
     }
   }
 }
 ```
 
----
-
-## 型安全性用語
-
-### 型ガード（Type Guard）
-**定義**: 実行時に型を確認し、型安全性を保証する仕組み
+### 値オブジェクト（Value Object）
+**定義**: 同一性ではなく値によって識別されるオブジェクト
 
 **実装例**:
 ```typescript
-// ユーザー定義型ガード
-function isTodo(value: unknown): value is Todo {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'id' in value &&
-    'title' in value &&
-    'completed' in value
-  );
+export class Money {
+  constructor(
+    private readonly amount: number,
+    private readonly currency: string
+  ) {
+    if (amount < 0) {
+      throw new Error('金額は0以上である必要があります');
+    }
+  }
+
+  add(other: Money): Money {
+    if (this.currency !== other.currency) {
+      throw new Error('異なる通貨同士は計算できません');
+    }
+    return new Money(this.amount + other.amount, this.currency);
+  }
+
+  equals(other: Money): boolean {
+    return this.amount === other.amount && this.currency === other.currency;
+  }
+
+  toString(): string {
+    return `${this.amount} ${this.currency}`;
+  }
 }
 
 // 使用例
-function processTodoData(data: unknown): Todo[] {
-  if (Array.isArray(data)) {
-    return data.filter(isTodo);
-  }
-  return [];
-}
-```
-
-### 判別可能なユニオン（Discriminated Union）
-**定義**: 共通のプロパティで区別できるユニオン型
-
-**実装例**:
-```typescript
-// 判別可能なユニオン
-type ApiResponse<T> = 
-  | { status: 'loading' }
-  | { status: 'success'; data: T }
-  | { status: 'error'; error: string };
-
-// 型安全な処理
-function handleTodoResponse(response: ApiResponse<Todo[]>): void {
-  switch (response.status) {
-    case 'loading':
-      showLoadingSpinner();
-      break;
-    case 'success':
-      displayTodos(response.data); // response.dataは確実にTodo[]
-      break;
-    case 'error':
-      showError(response.error); // response.errorは確実にstring
-      break;
-  }
-}
-```
-
-### 型アサーション（Type Assertion）
-**定義**: 開発者が型を明示的に指定する仕組み
-
-**適切な使用例**:
-```typescript
-// DOM要素の型アサーション
-const todoInput = document.getElementById('todo-input') as HTMLInputElement;
-const todoList = document.querySelector('.todo-list') as HTMLUListElement;
-
-// APIレスポンスの型アサーション（型ガードと組み合わせ）
-async function fetchTodos(): Promise<Todo[]> {
-  const response = await fetch('/api/todos');
-  const data = await response.json();
-  
-  // 型ガードで検証してからアサーション
-  if (Array.isArray(data) && data.every(isTodo)) {
-    return data as Todo[];
-  }
-  
-  throw new Error('Invalid todo data format');
-}
-```
-
-### 型の絞り込み（Type Narrowing）
-**定義**: 条件分岐により型の範囲を狭める仕組み
-
-**実装例**:
-```typescript
-type TodoFilter = 'all' | 'active' | 'completed';
-
-function filterTodos(todos: Todo[], filter: TodoFilter): Todo[] {
-  // 型の絞り込み
-  if (filter === 'active') {
-    return todos.filter(todo => !todo.completed);
-  }
-  
-  if (filter === 'completed') {
-    return todos.filter(todo => todo.completed);
-  }
-  
-  // filter === 'all' の場合
-  return todos;
-}
-
-// null チェックによる型の絞り込み
-function getTodoTitle(todo: Todo | null): string {
-  if (todo === null) {
-    return 'No todo selected';
-  }
-  
-  // この時点でtodoはTodo型として扱われる
-  return todo.title;
-}
+const price1 = new Money(100, 'JPY');
+const price2 = new Money(200, 'JPY');
+const total = price1.add(price2); // 300 JPY
 ```
 
 ---
 
 ## 📚 実用的なパターン
 
-### ファクトリーパターン
+### リポジトリパターン
 ```typescript
-interface TodoFactory {
-  createTodo(title: string): Todo;
-  createTodoFromData(data: TodoData): Todo;
+export interface Repository<T, ID> {
+  save(entity: T): Promise<void>;
+  findById(id: ID): Promise<T | null>;
+  delete(id: ID): Promise<void>;
 }
 
-class DefaultTodoFactory implements TodoFactory {
-  createTodo(title: string): Todo {
-    return {
-      id: generateId(),
-      title: title.trim(),
-      completed: false,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
+export class BlogPostRepository implements Repository<BlogPost, BlogPostId> {
+  async save(blogPost: BlogPost): Promise<void> {
+    // 実装
   }
-  
-  createTodoFromData(data: TodoData): Todo {
-    return {
-      ...data,
-      createdAt: new Date(data.createdAt),
-      updatedAt: new Date(data.updatedAt)
-    };
+
+  async findById(id: BlogPostId): Promise<BlogPost | null> {
+    // 実装
+  }
+
+  async delete(id: BlogPostId): Promise<void> {
+    // 実装
   }
 }
 ```
 
-### オブザーバーパターン
+### ファクトリーパターン
 ```typescript
-interface Observer<T> {
-  update(data: T): void;
-}
+export class BlogPostFactory {
+  static create(title: string, content: string, authorId: AuthorId): BlogPost {
+    // バリデーション
+    if (!title.trim()) {
+      throw new Error('タイトルは必須です');
+    }
 
-class TodoStore {
-  private observers: Observer<Todo[]>[] = [];
-  private todos: Todo[] = [];
-  
-  subscribe(observer: Observer<Todo[]>): void {
-    this.observers.push(observer);
+    // エンティティ作成
+    return BlogPost.create(title, content, authorId);
   }
-  
-  private notify(): void {
-    this.observers.forEach(observer => observer.update([...this.todos]));
-  }
-  
-  addTodo(todo: Todo): void {
-    this.todos.push(todo);
-    this.notify();
+
+  static reconstruct(
+    id: BlogPostId,
+    title: string,
+    content: string,
+    authorId: AuthorId,
+    publishedAt: Date | null
+  ): BlogPost {
+    // データベースから復元する際に使用
+    return BlogPost.reconstruct(id, title, content, authorId, publishedAt);
   }
 }
 ```
@@ -362,10 +477,10 @@ class TodoStore {
 
 ## 📚 参考リンク
 
-- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
-- [Clean Code](https://clean-code-developer.com/)
-- [Design Patterns](https://refactoring.guru/design-patterns)
+- [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+- [Domain-Driven Design](https://domainlanguage.com/ddd/)
+- [SOLID Principles](https://en.wikipedia.org/wiki/SOLID)
 
 ---
 
-**📌 重要**: 実践プロジェクトでは、これらの概念を組み合わせて、保守性が高く型安全なアプリケーションを構築することが重要です。
+**📌 重要**: クリーンアーキテクチャでは、これらの概念を組み合わせて、保守性が高く拡張可能なアプリケーションを構築することが重要です。

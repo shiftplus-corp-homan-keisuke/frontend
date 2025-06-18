@@ -69,25 +69,27 @@
 
 > 💡 **詳細解説**: 4つのレイヤーの詳細は [Step07_補足_専門用語集.md#4つのレイヤー](./Step07_補足_専門用語集.md#4つのレイヤー) を見てね 🐰
 
+![クリーンアーキテクチャの4つのレイヤー](./diagrams/clean-architecture-layers.svg)
+
 ```typescript
 /**
  * クリーンアーキテクチャの4つのレイヤー
- * 
+ *
  * 1. Entity層（エンティティ層）
  *    - 最も内側のレイヤー
  *    - ビジネスルールとドメインロジック
  *    - 外部の変更に最も影響を受けにくい
- * 
+ *
  * 2. UseCase層（ユースケース層）
  *    - アプリケーション固有のビジネスルール
  *    - エンティティ間の協調を制御
  *    - 外部システムとの境界を定義
- * 
+ *
  * 3. Interface Adapter層（インターフェースアダプター層）
  *    - 外部システム（DB、UI）とのアダプター
  *    - データ形式の変換
  *    - Repository、Presenter、Controller
- * 
+ *
  * 4. Framework層（フレームワーク層）
  *    - 最も外側のレイヤー
  *    - 外部ライブラリ、フレームワーク
@@ -107,6 +109,8 @@
 - **テスタビリティ**: 各レイヤーを独立してテスト可能
 
 #### 2. 依存関係逆転の原則（DIP）
+
+![依存関係逆転の原則](./diagrams/dependency-inversion-principle.svg)
 
 ```typescript
 // ❌ 悪い例：具象クラスに依存
@@ -158,6 +162,8 @@ const service = new GoodBlogService(repository);
 **💡 なぜEntity層が重要なのか**
 
 Entity層は、ビジネスの核となるルールとロジックを含む最も重要なレイヤーです。ここに適切にドメインロジックを配置することで、ビジネスルールの一貫性を保ち、変更に強いシステムを構築できます。
+
+![Entity層の構造](./diagrams/entity-structure.svg)
 
 ```typescript
 // ブログ記事エンティティの設計
@@ -330,6 +336,8 @@ export class CategoryName {
 **💡 なぜUseCase層が重要なのか**
 
 UseCase層は、アプリケーション固有のビジネスルールを実装し、エンティティ間の協調を制御します。外部システムとの境界を定義し、システムの入出力を管理する重要な役割を担います。
+
+![UseCase層の処理フロー](./diagrams/usecase-flow.svg)
 
 ```typescript
 // UseCase入力データ

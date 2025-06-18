@@ -69,6 +69,8 @@ Step01 で基本的な型注釈を学習しました。Step02 では、TypeScrip
 
 **💡 const assertion とは**: `as const`を使用して、TypeScript の型推論をより厳密に制御し、値を具体的なリテラル型として保持する機能です。通常の型推論では値が汎用的な型（`string`、`number`など）に拡張されますが、const assertion によりこれを防ぎ、設定値や定数をより型安全に管理できます。
 
+![const assertion の比較](./diagrams/const-assertion-comparison.svg)
+
 ```typescript
 // 通常の型推論（widening）
 let theme = "dark"; // string型として推論（再代入可能）
@@ -98,6 +100,8 @@ type GradeThreshold = (typeof STUDENT_GRADES)[keyof typeof STUDENT_GRADES]; // 9
 ```
 
 ##### 2. リテラル型と Union 型の実践活用
+
+![リテラル型とUnion型](./diagrams/literal-union-types.svg)
 
 ```typescript
 // 学生の学年を表現するリテラル型
@@ -150,6 +154,8 @@ function processStudentEvent(event: StudentEvent): string {
 ##### 3. 構造的型付けの理解
 
 **構造的型付け（Structural Typing）**とは、TypeScript が採用している型システムの仕組みで、**型の名前ではなく、型の構造（プロパティやメソッドの形）**によって型の互換性を判断する方式です。
+
+![構造的型付け](./diagrams/structural-typing.svg)
 
 **重要なポイント**：
 
@@ -222,6 +228,8 @@ console.log(displayStudentName(detailedStudent)); // エラーなし！
 >
 > **通常の型推論**: `const x = 5` → 値から`number`型を推測
 > **文脈的型推論**: `students.map(student => student.name)` → `student`の型を配列要素型から推測
+
+![文脈的型推論](./diagrams/contextual-type-inference.svg)
 
 **💡 なぜ文脈的型推論が重要なのか**
 

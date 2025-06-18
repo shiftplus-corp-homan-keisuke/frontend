@@ -75,13 +75,13 @@ interface Student {
 
 継承により、共通の構造を持つインターフェースを効率的に定義できます。これにより以下の利点があります：
 
-- **コードの再利用**: 
+- **コードの再利用**:
   共通プロパティやメソッドを基底インターフェースで一度定義すれば、それを継承するインターフェースで重複して定義する必要がなくなります。これにより、コードの記述量が減り、一貫性が保たれます。
-- **保守性の向上**: 
+- **保守性の向上**:
   基底インターフェースの定義を変更すると、それを継承している全てのインターフェースにその変更が自動的に反映されます。これにより、大規模なシステムでも変更漏れを防ぎ、保守作業の負担を軽減できます。
-- **設計の明確化**: 
+- **設計の明確化**:
   継承を用いることで、オブジェクト間の「is-a」関係（例: 「犬は動物の一種である」）を明確に表現できます。これにより、システムの構造が理解しやすくなり、より論理的で整理された設計が可能になります。
-- **拡張性**: 
+- **拡張性**:
   新しい機能や要件が追加された場合でも、既存の基底インターフェースを継承して新しいインターフェースを作成することで、既存のコードに影響を与えることなく機能を追加できます。これは、システムの柔軟性と将来的な変更への対応力を高めます。
 
 #### 1. 基本的な継承
@@ -110,11 +110,8 @@ interface Teacher extends Person {
   position: "assistant" | "associate" | "professor";
   courses: string[];
 }
-```
 
-**🚀 実際の使用例**
-
-```typescript
+// 実際の使用例
 const student: Student = {
   id: 1,
   name: "田中太郎",
@@ -190,25 +187,29 @@ interface AdminUser extends BaseUser {
 以下の要件を満たすインターフェースを定義してください。
 
 1.  **`Shape` インターフェースの定義**:
-    *   `id`: 数値型（読み取り専用）
-    *   `color`: 文字列型
-    *   `getArea()`: 数値を返すメソッド
+
+    - `id`: 数値型（読み取り専用）
+    - `color`: 文字列型
+    - `getArea()`: 数値を返すメソッド
 
 2.  **`Circle` インターフェースの定義**:
-    *   `Shape` を継承します。
-    *   `radius`: 数値型
+
+    - `Shape` を継承します。
+    - `radius`: 数値型
 
 3.  **`Rectangle` インターフェースの定義**:
-    *   `Shape` を継承します。
-    *   `width`: 数値型
-    *   `height`: 数値型
+
+    - `Shape` を継承します。
+    - `width`: 数値型
+    - `height`: 数値型
 
 4.  **`Drawable` インターフェースの定義**:
-    *   `draw()`: `void` を返すメソッド
+
+    - `draw()`: `void` を返すメソッド
 
 5.  **`ComplexCircle` インターフェースの定義**:
-    *   `Circle` と `Drawable` を複数継承します。
-    *   `center`: `{ x: number; y: number; }` 型のオブジェクト
+    - `Circle` と `Drawable` を複数継承します。
+    - `center`: `{ x: number; y: number; }` 型のオブジェクト
 
 ```typescript
 // TODO: 以下の要件を満たすインターフェースを定義してください
@@ -223,7 +224,7 @@ interface AdminUser extends BaseUser {
 
 // 5. ComplexCircleインターフェースを定義
 
-// 使用例 (実装は不要、型定義のみ)
+// 使用例
 const myCircle: ComplexCircle = {
   id: 1,
   color: "red",
@@ -272,7 +273,7 @@ interface Drawable {
 }
 
 interface ComplexCircle extends Circle, Drawable {
-  center: { x: number; y: number; };
+  center: { x: number; y: number };
 }
 ```
 
@@ -284,10 +285,21 @@ interface ComplexCircle extends Circle, Drawable {
 
 #### 🎯 基本的な使い分けのガイドライン
 
+**使い分けの判断基準**
+
+| 場面                   | 使用する構文 | 理由                         |
+| ---------------------- | ------------ | ---------------------------- |
+| オブジェクトの構造定義 | `interface`  | 宣言マージ可能、継承しやすい |
+| 継承が必要             | `interface`  | `extends` キーワードで直感的 |
+| 基本型の別名定義       | `type`       | シンプルで読みやすい         |
+| ユニオン型・交差型     | `type`       | `interface` では表現困難     |
+| ライブラリ拡張         | `interface`  | 宣言マージで既存型を拡張可能 |
+
 **💡 Step03 レベルでの使い分け**
 
 ```typescript
 // ✅ インターフェース: オブジェクトの構造定義
+// 理由: 将来的に継承やライブラリ拡張の可能性がある
 interface User {
   id: number;
   name: string;
@@ -295,9 +307,11 @@ interface User {
 }
 
 // ✅ 型エイリアス: 基本的な別名定義
+// 理由: 単純な型の別名なので、typeで十分
 type UserId = number;
 
 // ✅ インターフェース: 継承が必要な場合
+// 理由: extendsキーワードで継承関係が明確
 interface Student extends User {
   studentNumber: string;
   grade: number;
@@ -335,23 +349,26 @@ interface Enrollment {
 **要件**:
 以下のシナリオに基づいて、型エイリアスとインターフェースを適切に使い分けて型定義を行ってください。
 
-1.  **ユーザーIDの型定義**:
-    *   `UserId` という名前で、数値型を表現する型エイリアスを定義してください。
+1.  **ユーザー ID の型定義**:
+
+    - `UserId` という名前で、数値型を表現する型エイリアスを定義してください。
 
 2.  **ユーザーの役割の型定義**:
-    *   `UserRole` という名前で、"admin" | "editor" | "viewer" のいずれかの文字列リテラル型を許容する型エイリアスを定義してください。
+
+    - `UserRole` という名前で、"admin" | "editor" | "viewer" のいずれかの文字列リテラル型を許容する型エイリアスを定義してください。
 
 3.  **基本ユーザー情報のインターフェース定義**:
-    *   `BaseUser` という名前で、以下のプロパティを持つインターフェースを定義してください。
-        *   `id`: `UserId` 型（読み取り専用）
-        *   `name`: 文字列型
-        *   `email`: 文字列型
+
+    - `BaseUser` という名前で、以下のプロパティを持つインターフェースを定義してください。
+      - `id`: `UserId` 型（読み取り専用）
+      - `name`: 文字列型
+      - `email`: 文字列型
 
 4.  **管理者ユーザー情報のインターフェース定義**:
-    *   `AdminUser` という名前で、`BaseUser` を継承し、以下のプロパティを持つインターフェースを定義してください。
-        *   `role`: `UserRole` 型（"admin"に固定）
-        *   `permissions`: 文字列の配列型
-        *   `lastLogin`: Date型（任意）
+    - `AdminUser` という名前で、`BaseUser` を継承し、以下のプロパティを持つインターフェースを定義してください。
+      - `role`: `UserRole` 型（"admin"に固定）
+      - `permissions`: 文字列の配列型
+      - `lastLogin`: Date 型（任意）
 
 ```typescript
 // TODO: 以下の要件を満たす型エイリアスとインターフェースを定義してください
@@ -426,7 +443,69 @@ A: 適切に使えばコードの再利用性と保守性を高めますが、�
 
 Session1-2 で学習した内容を活用して、実際に動作する学生管理システムを作成します。
 
+### 練習問題 4.1: 学生管理システム実装 🔰
+
+**要件**:
+以下の要件を満たす学生管理システムを実装してください。
+
+1. **`Person` インターフェースの定義**:
+
+   - `id`: 数値型（読み取り専用）
+   - `name`: 文字列型
+   - `email`: 文字列型
+   - `birthDate`: Date 型
+
+2. **`Student` インターフェースの定義**:
+
+   - `Person` を継承します
+   - `studentNumber`: 文字列型（読み取り専用）
+   - `grade`: 数値型
+   - `major`: 文字列型
+   - `advisor`: 文字列型
+   - `phone`: 文字列型（任意）
+   - `club`: 文字列型（任意）
+
+3. **`Grade` インターフェースの定義**:
+
+   - `studentId`: 数値型
+   - `courseCode`: 文字列型
+   - `courseName`: 文字列型
+   - `score`: 数値型
+   - `semester`: 文字列型
+   - `year`: 数値型
+
+4. **`registerStudent` 関数の実装**:
+
+   - 引数: 学生情報（id を除く）
+   - 戻り値: `Student` 型
+   - 機能: 自動で ID を生成して学生オブジェクトを作成
+
+5. **`calculateGPA` 関数の実装**:
+
+   - 引数: 成績配列(`Grade[]`)、学生 ID(`number`)
+   - 戻り値: `number`
+   - 機能: 指定された学生の GPA を計算（100 点満点を 4.0 満点に変換）
+
+6. **`getStudentsByGrade` 関数の実装**:
+   - 引数: 学生配列(`Student[]`)、学年(`number`)
+   - 戻り値: `Student[]`
+   - 機能: 指定された学年の学生を抽出
+
 ```typescript
+// TODO: 以下の要件を満たすインターフェースと関数を実装してください
+
+// 1. Personインターフェースを定義
+
+// 2. Studentインターフェースを定義
+
+// 3. Gradeインターフェースを定義
+
+// 4. registerStudent関数を実装
+
+// 5. calculateGPA関数を実装
+
+// 6. getStudentsByGrade関数を実装
+
 // システムの使用例
 const students: Student[] = [];
 const grades: Grade[] = [];
@@ -447,7 +526,7 @@ const newStudent = registerStudent({
 students.push(newStudent);
 
 // 成績追加
-const grade1 = {
+const grade1: Grade = {
   studentId: newStudent.id,
   courseCode: "CS101",
   courseName: "TypeScript入門",
@@ -456,15 +535,85 @@ const grade1 = {
   year: 2024,
 };
 
-grades.push(grade1);
+const grade2: Grade = {
+  studentId: newStudent.id,
+  courseCode: "CS102",
+  courseName: "Web開発基礎",
+  score: 88,
+  semester: "春学期",
+  year: 2024,
+};
+
+grades.push(grade1, grade2);
 
 // GPA計算
 const gpa = calculateGPA(grades, newStudent.id);
-console.log(`${newStudent.name}のGPA: ${gpa}`);
+console.log(`${newStudent.name}のGPA: ${gpa.toFixed(2)}`);
 
 // 学年別検索
 const secondYearStudents = getStudentsByGrade(students, 2);
 console.log("2年生一覧:", secondYearStudents);
+```
+
+---
+
+### 解答例 4.1
+
+```typescript
+// 解答例 4.1
+interface Person {
+  readonly id: number;
+  name: string;
+  email: string;
+  birthDate: Date;
+}
+
+interface Student extends Person {
+  readonly studentNumber: string;
+  grade: number;
+  major: string;
+  advisor: string;
+  phone?: string;
+  club?: string;
+}
+
+interface Grade {
+  studentId: number;
+  courseCode: string;
+  courseName: string;
+  score: number;
+  semester: string;
+  year: number;
+}
+
+let nextStudentId = 1;
+
+function registerStudent(studentData: Omit<Student, "id">): Student {
+  return {
+    id: nextStudentId++,
+    ...studentData,
+  };
+}
+
+function calculateGPA(grades: Grade[], studentId: number): number {
+  const studentGrades = grades.filter((grade) => grade.studentId === studentId);
+
+  if (studentGrades.length === 0) {
+    return 0;
+  }
+
+  const totalPoints = studentGrades.reduce((sum, grade) => {
+    // 100点満点を4.0満点に変換
+    const gpaPoint = (grade.score / 100) * 4.0;
+    return sum + gpaPoint;
+  }, 0);
+
+  return totalPoints / studentGrades.length;
+}
+
+function getStudentsByGrade(students: Student[], grade: number): Student[] {
+  return students.filter((student) => student.grade === grade);
+}
 ```
 
 ---

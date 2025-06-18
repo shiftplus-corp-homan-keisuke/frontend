@@ -1,0 +1,131 @@
+<svg width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="800" height="600" fill="#f8f9fa"/>
+  
+  <!-- タイトル -->
+  <text x="400" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#2c3e50">
+    構造的型付け（Structural Typing）
+  </text>
+  
+  <!-- 説明 -->
+  <text x="400" y="60" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#7f8c8d">
+    型の名前ではなく、型の構造（プロパティやメソッドの形）によって型の互換性を判断
+  </text>
+  
+  <!-- 名前的型付け vs 構造的型付け -->
+  <text x="200" y="100" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#e74c3c">
+    名前的型付け（Java、C#など）
+  </text>
+  <text x="600" y="100" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#27ae60">
+    構造的型付け（TypeScript、Go）
+  </text>
+  
+  <!-- 名前的型付けの例 -->
+  <rect x="50" y="120" width="300" height="120" fill="#ffebee" stroke="#e74c3c" stroke-width="2" rx="5"/>
+  <text x="60" y="140" font-family="Monaco, monospace" font-size="11" fill="#2c3e50">
+    class Point2D { x: number; y: number; }
+  </text>
+  <text x="60" y="155" font-family="Monaco, monospace" font-size="11" fill="#2c3e50">
+    class Vector2D { x: number; y: number; }
+  </text>
+  <text x="60" y="180" font-family="Monaco, monospace" font-size="11" fill="#2c3e50">
+    function distance(p: Point2D) { ... }
+  </text>
+  <text x="60" y="200" font-family="Monaco, monospace" font-size="11" fill="#e74c3c">
+    distance(new Vector2D()); // ❌ エラー
+  </text>
+  <text x="60" y="220" font-family="Arial, sans-serif" font-size="10" fill="#e74c3c">
+    構造が同じでも型名が違うため互換性なし
+  </text>
+  
+  <!-- 構造的型付けの例 -->
+  <rect x="450" y="120" width="300" height="120" fill="#e8f5e8" stroke="#27ae60" stroke-width="2" rx="5"/>
+  <text x="460" y="140" font-family="Monaco, monospace" font-size="11" fill="#2c3e50">
+    type Point2D = { x: number; y: number; }
+  </text>
+  <text x="460" y="155" font-family="Monaco, monospace" font-size="11" fill="#2c3e50">
+    type Vector2D = { x: number; y: number; }
+  </text>
+  <text x="460" y="180" font-family="Monaco, monospace" font-size="11" fill="#2c3e50">
+    function distance(p: Point2D) { ... }
+  </text>
+  <text x="460" y="200" font-family="Monaco, monospace" font-size="11" fill="#27ae60">
+    distance(vector2D); // ✅ OK
+  </text>
+  <text x="460" y="220" font-family="Arial, sans-serif" font-size="10" fill="#27ae60">
+    構造が同じなら型名に関係なく互換性あり
+  </text>
+  
+  <!-- 実践例 -->
+  <text x="400" y="280" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#2c3e50">
+    実践例：学生管理システムでの構造的型付け
+  </text>
+  
+  <!-- 基本学生型 -->
+  <rect x="50" y="300" width="300" height="100" fill="#e8f4fd" stroke="#3498db" stroke-width="2" rx="5"/>
+  <text x="60" y="320" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#3498db">
+    BasicStudent（基本学生型）
+  </text>
+  <text x="60" y="340" font-family="Monaco, monospace" font-size="11" fill="#2c3e50">
+    type BasicStudent = {
+  </text>
+  <text x="60" y="355" font-family="Monaco, monospace" font-size="11" fill="#2c3e50">
+      id: number;
+  </text>
+  <text x="60" y="370" font-family="Monaco, monospace" font-size="11" fill="#2c3e50">
+      name: string;
+  </text>
+  <text x="60" y="385" font-family="Monaco, monospace" font-size="11" fill="#2c3e50">
+    }
+  </text>
+  
+  <!-- 詳細学生型 -->
+  <rect x="450" y="300" width="300" height="140" fill="#fff3e0" stroke="#f39c12" stroke-width="2" rx="5"/>
+  <text x="460" y="320" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#f39c12">
+    DetailedStudent（詳細学生型）
+  </text>
+  <text x="460" y="340" font-family="Monaco, monospace" font-size="11" fill="#2c3e50">
+    type DetailedStudent = {
+  </text>
+  <text x="460" y="355" font-family="Monaco, monospace" font-size="11" fill="#2c3e50">
+      id: number;        // ✓ 共通
+  </text>
+  <text x="460" y="370" font-family="Monaco, monospace" font-size="11" fill="#2c3e50">
+      name: string;      // ✓ 共通
+  </text>
+  <text x="460" y="385" font-family="Monaco, monospace" font-size="11" fill="#7f8c8d">
+      grade: number;     // 追加プロパティ
+  </text>
+  <text x="460" y="400" font-family="Monaco, monospace" font-size="11" fill="#7f8c8d">
+      subjects: string[]; // 追加プロパティ
+  </text>
+  <text x="460" y="415" font-family="Monaco, monospace" font-size="11" fill="#7f8c8d">
+      gpa: number;       // 追加プロパティ
+  </text>
+  <text x="460" y="430" font-family="Monaco, monospace" font-size="11" fill="#2c3e50">
+    }
+  </text>
+  
+  <!-- 互換性の説明 -->
+  <rect x="100" y="460" width="600" height="80" fill="#f8f9fa" stroke="#95a5a6" stroke-width="2" rx="5"/>
+  <text x="120" y="480" font-family="Monaco, monospace" font-size="12" fill="#2c3e50">
+    function displayStudentName(student: BasicStudent): string {
+  </text>
+  <text x="120" y="495" font-family="Monaco, monospace" font-size="12" fill="#2c3e50">
+        return `Student: ${student.name} (ID: ${student.id})`;
+  </text>
+  <text x="120" y="510" font-family="Monaco, monospace" font-size="12" fill="#2c3e50">
+    }
+  </text>
+  <text x="120" y="530" font-family="Monaco, monospace" font-size="12" fill="#27ae60">
+    displayStudentName(detailedStudent); // ✅ OK！構造的に互換性あり
+  </text>
+  
+  <!-- Duck Typing の説明 -->
+  <text x="400" y="570" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#9b59b6">
+    🦆 Duck Typing: "アヒルのように歩き、アヒルのように鳴くなら、それはアヒルである"
+  </text>
+  <text x="400" y="590" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#7f8c8d">
+    必要なプロパティ・メソッドを持っていれば、その型として扱える
+  </text>
+</svg>

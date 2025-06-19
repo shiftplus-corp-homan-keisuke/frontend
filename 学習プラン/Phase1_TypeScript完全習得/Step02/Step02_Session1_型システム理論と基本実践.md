@@ -84,7 +84,7 @@ const strictConfig = {
   apiUrl: "https://api.example.com",
   timeout: 5000,
   retryCount: 3,
-} as const; // readonly { apiUrl: "https://api.example.com"; timeout: 5000; retryCount: 3; }
+} as const; // どう推論される??
 
 // 実用例：設定オブジェクトの型安全性
 const STUDENT_GRADES = {
@@ -94,7 +94,7 @@ const STUDENT_GRADES = {
   POOR: 60,
 } as const;
 
-type GradeThreshold = (typeof STUDENT_GRADES)[keyof typeof STUDENT_GRADES]; // 90 | 80 | 70 | 60
+type GradeThreshold = (typeof STUDENT_GRADES)[keyof typeof STUDENT_GRADES]; // どう推論される??
 ```
 
 ##### 2. リテラル型と Union 型の実践活用
@@ -121,7 +121,7 @@ function getElementaryLevel(grade: Grade): "lower" | "middle" | "upper" {
   return "upper"; // 高学年 5-6年
 }
 
-// 判別可能なUnion型（typeで判別できる）
+// 判別可能なUnion型（typeで判別できる。実際に利用しているprocessStudentEvent関数を見てみよ🐰）
 type StudentEvent =
   | { type: "active"; studentId: number }
   | { type: "inactive"; studentId: number; reason?: string }
@@ -180,7 +180,7 @@ function calculateDistance2D(point: Point2D): number {
 }
 
 const point3D: Point3D = { x: 1, y: 2, z: 3 };
-const distance = calculateDistance2D(point3D); // エラーなし！
+const distance = calculateDistance2D(point3D); // エラーは?
 
 // 学生管理での構造的型付け
 type BasicStudent = {
@@ -210,7 +210,7 @@ const detailedStudent: DetailedStudent = {
 };
 
 // DetailedStudentはBasicStudentと構造的に互換性がある
-console.log(displayStudentName(detailedStudent)); // エラーなし！
+console.log(displayStudentName(detailedStudent)); // エラーは?
 ```
 
 ### Section 2: 高度な型推論と文脈的型付け
@@ -240,17 +240,14 @@ const students = [
 ] as const;
 
 // ここから文脈的型推論の例
+// student引数の型が配列要素型から自動推測される（文脈的型推論）
 const studentNames = students.map((student) => student.name);
-// ↑ student引数の型が配列要素型から自動推測される（文脈的型推論）
 
 const studentGrades = students.map((student) => student.grade);
-// ↑ student引数の型が配列要素型から自動推測される（文脈的型推論）
 
 const highPerformers = students.filter((student) => student.gpa >= 3.5);
-// ↑ student引数の型が配列要素型から自動推測される（文脈的型推論）
 
 const totalGPA = students.reduce((sum, student) => sum + student.gpa, 0);
-// ↑ student引数の型が配列要素型から自動推測される（文脈的型推論）
 ```
 
 ##### 2. 関数型での文脈的型推論
@@ -270,20 +267,6 @@ function processStudentNames(
 // 使用時に型が推論される
 const names = processStudentNames(students, (student) => student.name);
 // ↑ student引数の型がStudentProcessorから自動推測される（文脈的型推論）
-
-// イベントハンドラーでの文脈的型推論
-type EventHandler = (event: StudentEvent) => void;
-
-type StudentEvent = {
-  type: "grade_update" | "enrollment" | "graduation";
-  studentId: number;
-  timestamp: Date;
-};
-
-// 学生イベントを処理するハンドラー（文脈的型推論でevent引数の型が自動推測される）
-const handleStudentEvent: EventHandler = (event) => {
-  console.log(`Processing ${event.type} for student ${event.studentId}`);
-};
 ```
 
 ##### 3. 関数オーバーロードの基本

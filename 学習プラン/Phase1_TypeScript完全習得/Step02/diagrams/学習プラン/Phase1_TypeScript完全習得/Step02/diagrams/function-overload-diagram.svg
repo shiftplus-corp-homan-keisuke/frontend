@@ -1,0 +1,158 @@
+<svg width="1000" height="700" viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景 -->
+  <rect width="1000" height="700" fill="#f8f9fa"/>
+  
+  <!-- タイトル -->
+  <text x="500" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#2c3e50">
+    TypeScript関数オーバーロード：updateConfig関数の動作図解
+  </text>
+  
+  <!-- 関数シグネチャ部分 -->
+  <rect x="50" y="60" width="900" height="120" fill="#e8f4fd" stroke="#3498db" stroke-width="2" rx="10"/>
+  <text x="70" y="85" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#2c3e50">
+    関数オーバーロードの定義
+  </text>
+  
+  <!-- オーバーロード1 -->
+  <rect x="70" y="95" width="400" height="35" fill="#ffffff" stroke="#3498db" stroke-width="1" rx="5"/>
+  <text x="80" y="110" font-family="Monaco, monospace" font-size="11" fill="#2c3e50">
+    function updateConfig(config: AppConfig,
+  </text>
+  <text x="80" y="125" font-family="Monaco, monospace" font-size="11" fill="#2c3e50">
+                        overrides: ConfigOverrides): AppConfig
+  </text>
+  
+  <!-- オーバーロード2 -->
+  <rect x="500" y="95" width="420" height="35" fill="#ffffff" stroke="#3498db" stroke-width="1" rx="5"/>
+  <text x="510" y="110" font-family="Monaco, monospace" font-size="11" fill="#2c3e50">
+    function updateConfig(config: AppConfig,
+  </text>
+  <text x="510" y="125" font-family="Monaco, monospace" font-size="11" fill="#2c3e50">
+                        key: string, value: string | number): AppConfig
+  </text>
+  
+  <!-- 実装部分 -->
+  <rect x="70" y="140" width="850" height="30" fill="#fff3e0" stroke="#f39c12" stroke-width="1" rx="5"/>
+  <text x="80" y="155" font-family="Monaco, monospace" font-size="11" fill="#2c3e50">
+    実装: function updateConfig(config, keyOrOverrides, value?) { ... }
+  </text>
+  
+  <!-- 使用例セクション -->
+  <text x="70" y="210" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#2c3e50">
+    使用例とフロー
+  </text>
+  
+  <!-- 使用例1: 一括更新 -->
+  <rect x="50" y="230" width="450" height="180" fill="#e8f5e8" stroke="#27ae60" stroke-width="2" rx="10"/>
+  <text x="70" y="255" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#27ae60">
+    パターン1: 一括更新（ConfigOverrides使用）
+  </text>
+  
+  <!-- 呼び出し例1 -->
+  <rect x="70" y="270" width="410" height="50" fill="#ffffff" stroke="#27ae60" stroke-width="1" rx="5"/>
+  <text x="80" y="285" font-family="Monaco, monospace" font-size="10" fill="#2c3e50">
+    updateConfig(config, {
+  </text>
+  <text x="80" y="300" font-family="Monaco, monospace" font-size="10" fill="#2c3e50">
+      apiUrl: "https://new-api.com",
+  </text>
+  <text x="80" y="315" font-family="Monaco, monospace" font-size="10" fill="#2c3e50">
+      timeout: 5000
+  </text>
+  <text x="80" y="330" font-family="Monaco, monospace" font-size="10" fill="#2c3e50">
+    });
+  </text>
+  
+  <!-- 処理フロー1 -->
+  <rect x="70" y="330" width="410" height="70" fill="#f0f8f0" stroke="#27ae60" stroke-width="1" rx="5"/>
+  <text x="80" y="350" font-family="Arial, sans-serif" font-size="11" fill="#2c3e50">
+    処理フロー:
+  </text>
+  <text x="80" y="365" font-family="Arial, sans-serif" font-size="10" fill="#2c3e50">
+    1. typeof keyOrOverrides !== "string" → オブジェクト判定
+  </text>
+  <text x="80" y="380" font-family="Arial, sans-serif" font-size="10" fill="#2c3e50">
+    2. スプレッド演算子で既存設定とマージ
+  </text>
+  <text x="80" y="395" font-family="Arial, sans-serif" font-size="10" fill="#2c3e50">
+    3. features プロパティも個別にマージ
+  </text>
+  
+  <!-- 使用例2: 個別更新 -->
+  <rect x="520" y="230" width="430" height="180" fill="#fff3e0" stroke="#f39c12" stroke-width="2" rx="10"/>
+  <text x="540" y="255" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#f39c12">
+    パターン2: 個別更新（キー・値指定）
+  </text>
+  
+  <!-- 呼び出し例2 -->
+  <rect x="540" y="270" width="390" height="50" fill="#ffffff" stroke="#f39c12" stroke-width="1" rx="5"/>
+  <text x="550" y="285" font-family="Monaco, monospace" font-size="10" fill="#2c3e50">
+    updateConfig(config, "apiUrl", "https://new-api.com");
+  </text>
+  <text x="550" y="300" font-family="Monaco, monospace" font-size="10" fill="#2c3e50">
+    updateConfig(config, "timeout", 3000);
+  </text>
+  <text x="550" y="315" font-family="Monaco, monospace" font-size="10" fill="#2c3e50">
+    updateConfig(config, "retryCount", 5);
+  </text>
+  
+  <!-- 処理フロー2 -->
+  <rect x="540" y="330" width="390" height="70" fill="#fefbf0" stroke="#f39c12" stroke-width="1" rx="5"/>
+  <text x="550" y="350" font-family="Arial, sans-serif" font-size="11" fill="#2c3e50">
+    処理フロー:
+  </text>
+  <text x="550" y="365" font-family="Arial, sans-serif" font-size="10" fill="#2c3e50">
+    1. typeof keyOrOverrides === "string" → 文字列判定
+  </text>
+  <text x="550" y="380" font-family="Arial, sans-serif" font-size="10" fill="#2c3e50">
+    2. 計算プロパティ名で単一キーを更新
+  </text>
+  <text x="550" y="395" font-family="Arial, sans-serif" font-size="10" fill="#2c3e50">
+    3. [keyOrOverrides]: value でプロパティ設定
+  </text>
+  
+  <!-- 型判定の仕組み -->
+  <rect x="50" y="430" width="900" height="120" fill="#f8f9fa" stroke="#95a5a6" stroke-width="2" rx="10"/>
+  <text x="70" y="455" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#2c3e50">
+    TypeScriptの型判定メカニズム
+  </text>
+  
+  <rect x="70" y="470" width="860" height="70" fill="#ffffff" stroke="#95a5a6" stroke-width="1" rx="5"/>
+  <text x="80" y="490" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">
+    コンパイル時: TypeScriptは引数の型に基づいて適切なオーバーロードを選択
+  </text>
+  <text x="80" y="510" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">
+    実行時: typeof演算子による動的な型チェックで処理を分岐
+  </text>
+  <text x="80" y="530" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">
+    結果: 型安全性を保ちながら、柔軟な関数呼び出しが可能
+  </text>
+  
+  <!-- 矢印の定義 -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" 
+     refX="0" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#34495e" />
+    </marker>
+  </defs>
+  
+  <!-- フロー矢印 -->
+  <line x1="270" y1="180" x2="270" y2="230" stroke="#34495e" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="710" y1="180" x2="710" y2="230" stroke="#34495e" stroke-width="2" marker-end="url(#arrow)"/>
+  
+  <!-- 利点とポイント -->
+  <rect x="50" y="570" width="900" height="110" fill="#e8f4fd" stroke="#3498db" stroke-width="2" rx="10"/>
+  <text x="70" y="595" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#3498db">
+    関数オーバーロードの利点
+  </text>
+  
+  <text x="70" y="620" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">
+    ✓ 型安全性: コンパイル時に引数の型チェックが行われる
+  </text>
+  <text x="70" y="640" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">
+    ✓ 柔軟性: 同じ関数名で異なる引数パターンに対応
+  </text>
+  <text x="70" y="660" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">
+    ✓ 可読性: 関数の使用方法が明確で、IDEの補完機能も活用できる
+  </text>
+</svg>

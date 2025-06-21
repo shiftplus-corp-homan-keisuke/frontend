@@ -4,12 +4,13 @@
 
 ## 🎯 課題の目的
 
-**あなたが作成するもの**: 既存のJavaScriptコードにTypeScriptのユニオン型と型ガードを追加する
+**あなたが作成するもの**: 既存の JavaScript コードに TypeScript のユニオン型と型ガードを追加する
 
-**なぜ作るのか**: Step04で学習したユニオン型と型ガードを実際のコードに適用し、**既存コードを型安全にする力**を身につけるため
+**なぜ作るのか**: Step04 で学習したユニオン型と型ガードを実際のコードに適用し、**既存コードを型安全にする力**を身につけるため
 
 **学習目標**:
-- 既存のJavaScriptコードを読んで適切なユニオン型を設計できる
+
+- 既存の JavaScript コードを読んで適切なユニオン型を設計できる
 - ユニオン型（Union Types）を正しく定義できる
 - 型ガード関数を実装できる
 - 判別可能なユニオン（Discriminated Unions）を理解して使える
@@ -18,7 +19,7 @@
 
 ## 📋 必須提出物
 
-以下の1つのファイルのみ提出してください：
+以下の 1 つのファイルのみ提出してください：
 
 ```
 📁 提出物/
@@ -27,13 +28,25 @@
 
 ---
 
-## ⏰ 作成手順（推奨時間配分：合計40分）
+## ⏰ 作成手順（推奨時間配分：合計 40 分）
 
-### Phase 1: 既存コードの理解（10分）
+### Phase 1: 既存コードの理解（10 分）
 
-#### ステップ1-1: 提供されたJavaScriptコードを理解する（10分）
+#### ステップ 1-1: 提供された JavaScript コードを理解する（10 分）
 
-以下のJavaScriptコードを読んで、どんなユニオン型と型ガードが必要か考えてください：
+以下の JavaScript コードを読んで、どんなユニオン型と型ガードが必要か考えてください：
+
+**📋 システムの概要**
+このコードは**交差点の信号機管理システム**です。主な機能は以下の通りです：
+
+- **信号機の登録・管理**: 車両用、歩行者用、矢印信号機を管理
+- **信号色の制御**: 赤・黄・緑の信号切り替えと状態追跡
+- **信号機の状態管理**: 動作中・停止中・メンテナンス中の管理
+- **変更履歴の記録**: 信号の変更をタイムスタンプ付きで記録
+- **検索・フィルタリング**: 特定の色・種類・状態の信号機を検索
+- **データ処理**: 不明なデータ形式の安全な処理
+
+このシステムを通じて、交差点の信号機を一元管理し、安全な交通制御を実現しています。
 
 ```javascript
 // 既存のJavaScriptコード（ユニオン型・型ガードなし）
@@ -48,31 +61,31 @@ function addTrafficLight(type, location) {
     currentColor: "red",
     status: "active",
     type: type,
-    location: location
+    location: location,
   };
-  
+
   lights.push(light);
   return light;
 }
 
 function changeLight(lightId, newColor) {
-  const light = lights.find(l => l.id === lightId);
-  
+  const light = lights.find((l) => l.id === lightId);
+
   if (!light || light.status !== "active") {
     return false;
   }
-  
+
   const oldColor = light.currentColor;
   light.currentColor = newColor;
-  
+
   const record = {
     id: nextRecordId++,
     lightId: lightId,
     fromColor: oldColor,
     toColor: newColor,
-    timestamp: new Date()
+    timestamp: new Date(),
   };
-  
+
   changeRecords.push(record);
   return true;
 }
@@ -126,40 +139,40 @@ function processUnknownData(data) {
 }
 
 function getLightsByColor(color) {
-  return lights.filter(light => light.currentColor === color);
+  return lights.filter((light) => light.currentColor === color);
 }
 
 function getLightsByType(type) {
-  return lights.filter(light => light.type === type);
+  return lights.filter((light) => light.type === type);
 }
 
 function getActiveLights() {
-  return lights.filter(light => light.status === "active");
+  return lights.filter((light) => light.status === "active");
 }
 
 function runExample() {
   console.log("=== 信号機システムのデモ ===");
-  
+
   // 信号機の追加
   addTrafficLight("vehicle", "交差点A - 車両用");
   addTrafficLight("pedestrian", "交差点A - 歩行者用");
   addTrafficLight("arrow", "交差点A - 右折用");
-  
+
   // 信号の変更
   changeLight(1, "green");
   changeLight(2, "red");
   changeLight(3, "yellow");
-  
+
   // 各種処理のテスト
   console.log("色の処理:", processLightColor("red"));
   console.log("状態の処理:", processLightStatus("active"));
   console.log("種類の処理:", processLightType("vehicle"));
-  
+
   // データ処理のテスト
   console.log("データ処理1:", processUnknownData("test"));
   console.log("データ処理2:", processUnknownData(123));
   console.log("データ処理3:", processUnknownData(lights[0]));
-  
+
   // 検索機能のテスト
   console.log("赤信号:", getLightsByColor("red"));
   console.log("車両用信号:", getLightsByType("vehicle"));
@@ -170,17 +183,19 @@ function runExample() {
 runExample();
 ```
 
-### Phase 2: ユニオン型と型ガードの追加（25分）
+### Phase 2: ユニオン型と型ガードの追加（25 分）
 
-#### ステップ2-1: ユニオン型の定義（10分）
+#### ステップ 2-1: ユニオン型の定義（10 分）
 
 上記のコードを見て、以下のユニオン型を定義してください：
 
 1. **信号の色を表現するユニオン型**
+
    - `processLightColor`関数で使われている色の値
    - どんな色が使われていますか？
 
 2. **信号機の状態を表現するユニオン型**
+
    - `processLightStatus`関数で使われている状態の値
    - どんな状態が使われていますか？
 
@@ -189,59 +204,68 @@ runExample();
    - どんな種類が使われていますか？
 
 **🤔 考えてみましょう**:
+
 - `"red" | "yellow" | "green"` のような形で定義
 - 文字列リテラル型のユニオンを作成
 
-#### ステップ2-2: 型ガード関数の実装（10分）
+#### ステップ 2-2: 型ガード関数の実装（10 分）
 
 ```typescript
 // TODO: 以下の型ガード関数を実装してください
 
 // 信号の色の型ガード
-function isRedLight(color: ?): color is ? {
+function isRedLight(color: ?): color is ?{
   // 実装してください
-}
+};
 
-function isYellowLight(color: ?): color is ? {
+function isYellowLight(color: ?): color is ?{
   // 実装してください
-}
+};
 
-function isGreenLight(color: ?): color is ? {
+function isGreenLight(color: ?): color is ?{
   // 実装してください
-}
+};
 
 // 信号機の状態の型ガード
-function isActiveLight(status: ?): status is ? {
+function isActiveLight(status: ?): status is ?{
   // 実装してください
-}
+};
 
 // 不明なデータの型ガード
-function isValidTrafficLight(value: unknown): value is ? {
+function isValidTrafficLight(value: unknown): value is ?{
   // 実装してください
-}
+};
 ```
 
 **🤔 考えてみましょう**:
+
 - `value is Type` の形で戻り値の型を指定
 - `typeof` や `===` を使った条件判定
 
-#### ステップ2-3: 変数と関数に型注釈を追加（5分）
+#### ステップ 2-3: 変数と関数に型注釈を追加（5 分）
 
 ```typescript
 // TODO: 以下の変数と関数に適切な型注釈を追加してください
 let lights = [];
 let changeRecords = [];
 
-function addTrafficLight(type, location) { /* ... */ }
-function changeLight(lightId, newColor) { /* ... */ }
-function processLightColor(color) { /* ... */ }
+function addTrafficLight(type, location) {
+  /* ... */
+}
+function changeLight(lightId, newColor) {
+  /* ... */
+}
+function processLightColor(color) {
+  /* ... */
+}
 // その他の関数...
 ```
 
-### Phase 3: 動作確認（5分）
+### Phase 3: 動作確認（5 分）
 
-#### ステップ3-1: 動作確認
-TypeScript Playgroundまたはローカル環境で実行して動作を確認
+#### ステップ 3-1: 動作確認
+
+TypeScript Playground またはローカル環境で実行して動作を確認
 
 ---
 
@@ -250,19 +274,22 @@ TypeScript Playgroundまたはローカル環境で実行して動作を確認
 以下の要件を**すべて満たす**ことで合格とします：
 
 ### 🔧 技術要件
-- [ ] TypeScriptでコンパイルエラーが発生しない
-- [ ] **ユニオン型を3つ以上定義している**（最重要！）
-- [ ] **型ガード関数を3つ以上実装している**（最重要！）
+
+- [ ] TypeScript でコンパイルエラーが発生しない
+- [ ] **ユニオン型を 3 つ以上定義している**（最重要！）
+- [ ] **型ガード関数を 3 つ以上実装している**（最重要！）
 - [ ] すべての変数に適切な型注釈が付いている
 - [ ] すべての関数の引数と戻り値に適切な型注釈が付いている
 
 ### 🎯 機能要件
-- [ ] 元のJavaScriptコードと同じ動作をする
+
+- [ ] 元の JavaScript コードと同じ動作をする
 - [ ] 信号機の追加・変更ができる
 - [ ] 信号の色・状態・種類の処理ができる
 - [ ] 不明なデータの安全な処理ができる
 
 ### 💭 ユニオン型・型ガード要件
+
 - [ ] 信号の色のユニオン型が正しく定義されている
 - [ ] 信号機の状態のユニオン型が正しく定義されている
 - [ ] 信号機の種類のユニオン型が正しく定義されている
@@ -273,13 +300,13 @@ TypeScript Playgroundまたはローカル環境で実行して動作を確認
 
 ## 📊 評価基準
 
-| 項目 | 配点 | 評価ポイント |
-|------|------|-------------|
-| **ユニオン型設計力** | 40点 | 適切なユニオン型を自分で設計できている |
-| **型ガード実装力** | 40点 | 型ガード関数を正しく実装できている |
-| **型注釈の正確性** | 20点 | 全ての変数・関数に適切な型注釈が付いている |
+| 項目                 | 配点  | 評価ポイント                               |
+| -------------------- | ----- | ------------------------------------------ |
+| **ユニオン型設計力** | 40 点 | 適切なユニオン型を自分で設計できている     |
+| **型ガード実装力**   | 40 点 | 型ガード関数を正しく実装できている         |
+| **型注釈の正確性**   | 20 点 | 全ての変数・関数に適切な型注釈が付いている |
 
-**合格ライン**: 70点以上
+**合格ライン**: 70 点以上
 
 ---
 
@@ -288,6 +315,7 @@ TypeScript Playgroundまたはローカル環境で実行して動作を確認
 ### 🤔 ユニオン型を考える時の質問
 
 1. **この値にはどんなパターンがある？**
+
    - 信号の色 → "red", "yellow", "green"
    - 信号機の状態 → "active", "inactive", "maintenance"
    - 信号機の種類 → "vehicle", "pedestrian", "arrow"
@@ -364,12 +392,13 @@ function processUnknownData(data: unknown): string {
 ### ⚠️ よくある間違い
 
 1. **型ガードの戻り値型注釈忘れ**
+
    ```typescript
    // ❌ 間違い：戻り値型注釈がない
    function isRedLight(color: LightColor) {
      return color === "red";
    }
-   
+
    // ✅ 正解：`value is Type`の形で指定
    function isRedLight(color: LightColor): color is "red" {
      return color === "red";
@@ -377,22 +406,24 @@ function processUnknownData(data: unknown): string {
    ```
 
 2. **ユニオン型で存在しない値を使用**
+
    ```typescript
    // ❌ 間違い：定義されていない値
    type LightColor = "red" | "yellow" | "green";
    const color: LightColor = "blue"; // エラー！
-   
+
    // ✅ 正解：定義された値のみ使用
    const color: LightColor = "red"; // OK
    ```
 
 3. **型ガードを使わない不安全な処理**
+
    ```typescript
    // ❌ 間違い：型チェックなし
    function processData(data: unknown) {
      return data.id; // エラー！unknownにはidプロパティがない
    }
-   
+
    // ✅ 正解：型ガードを使用
    function processData(data: unknown) {
      if (isTrafficLight(data)) {
@@ -487,6 +518,6 @@ function processLightColor(color: LightColor): string {
 
 ---
 
-**📌 重要**: この課題の目的は**既存のJavaScriptコードを読んで適切なユニオン型と型ガードを実装する力**を身につけることです。TypeScriptのユニオン型と型ガードシステムを実践的に学習しましょう。
+**📌 重要**: この課題の目的は**既存の JavaScript コードを読んで適切なユニオン型と型ガードを実装する力**を身につけることです。TypeScript のユニオン型と型ガードシステムを実践的に学習しましょう。
 
-**🌟 次のステップ**: Step05では、ジェネリクスの基礎について学習します！
+**🌟 次のステップ**: Step05 では、ジェネリクスの基礎について学習します！

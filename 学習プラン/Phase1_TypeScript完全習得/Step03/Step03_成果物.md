@@ -1,447 +1,774 @@
-# Step03 成果物：図書管理システム
+# Step03 統合プロジェクト：図書管理システム開発
 
 ---
 
-## 🎯 課題の目的
+## 🎯 プロジェクトの目的
 
-**あなたが作成するもの**: 既存のJavaScriptコードにTypeScriptのインターフェース定義を追加する
+**あなたが挑戦するプロジェクト**: Session1-3で学習した内容を統合した完全な図書管理システムの開発
 
-**なぜ作るのか**: Step03で学習したインターフェースとオブジェクト型を実際のコードに適用し、**既存コードを型安全にする力**を身につけるため
+**なぜ作るのか**: Step03で学習したインターフェース、クラス設計、抽象クラスを**段階的に統合**し、実用的なオブジェクト指向設計力を身につけるため
 
 **学習目標**:
-- 既存のJavaScriptコードを読んで適切なインターフェースを設計できる
-- インターフェースの基本定義ができる
-- 継承（extends）を使ってインターフェースを拡張できる
-- オプショナルプロパティ（?）と読み取り専用プロパティ（readonly）を適切に使える
+- Session1-3の学習内容を1つのシステムとして統合する
+- インターフェース → クラス → 抽象クラスの段階的な設計を体験する
+- TypeScriptの型安全性を活用した完全なシステムを構築する
+- 実際に動作する図書管理システムを完成させる
 
 ---
 
-## 📋 必須提出物
+## 📋 統合プロジェクト構成
 
-以下の1つのファイルのみ提出してください：
-
+### 最終成果物
 ```
-📁 提出物/
-└── library-system.ts    # インターフェース定義を追加したプログラム（必須）
+📁 integrated-library-system/
+├── src/
+│   ├── interfaces/          # Phase 1: インターフェース設計
+│   │   ├── book.interface.ts
+│   │   ├── member.interface.ts
+│   │   └── borrow-record.interface.ts
+│   ├── entities/            # Phase 2: クラス実装
+│   │   ├── book.entity.ts
+│   │   ├── member.entity.ts
+│   │   └── borrow-record.entity.ts
+│   ├── services/            # Phase 3: 抽象クラスと統合
+│   │   ├── base.service.ts
+│   │   ├── book.service.ts
+│   │   ├── member.service.ts
+│   │   └── library.system.ts
+│   └── main.ts              # システム統合とテスト
+└── README.md                # プロジェクト説明書
 ```
 
 ---
 
-## ⏰ 作成手順（推奨時間配分：合計40分）
+## 🚀 Phase 1: インターフェース設計（Session1の学習内容を活用）
 
-### Phase 1: 既存コードの理解（10分）
+### ⏰ 推定時間: 60分
 
-#### ステップ1-1: 提供されたJavaScriptコードを理解する（10分）
+### 📋 実装内容
 
-以下のJavaScriptコードを読んで、どんなインターフェースが必要か考えてください：
+Session1で学習したインターフェース設計の知識を活用して、図書管理システムの基盤となるインターフェースを設計します。
 
-```javascript
-// 既存のJavaScriptコード（インターフェース定義なし）
-let books = [];
-let authors = [];
-let borrowRecords = [];
-let nextBookId = 1;
-let nextAuthorId = 1;
-let nextBorrowId = 1;
+#### 🔧 実装ファイル: `src/interfaces/book.interface.ts`
 
-function addBook(title, author, category, publishedYear, isbn) {
-  const book = {
-    id: nextBookId++,
-    title: title,
-    author: author,
-    category: category,
-    publishedYear: publishedYear,
-    isbn: isbn,
-    status: "available"
-  };
-  
-  books.push(book);
-  return book;
+```typescript
+// TODO: Session1で学習した内容を活用してインターフェースを実装してください
+
+// 型エイリアスの定義
+export type BookGenre = "fiction" | "non-fiction" | "science" | "history" | "biography";
+export type BorrowStatus = "borrowed" | "returned" | "overdue";
+
+// 書籍情報インターフェース
+export interface Book {
+  // TODO: 以下の要件を満たすプロパティを定義してください
+  // - id: 文字列型（読み取り専用）
+  // - title: 文字列型
+  // - author: 文字列型
+  // - isbn: 文字列型
+  // - publishedYear: 数値型
+  // - genre: BookGenre型
+  // - isAvailable: 真偽値型
 }
 
-function addAuthor(name, birthYear, nationality, biography) {
-  const author = {
-    id: nextAuthorId++,
-    name: name,
-    birthYear: birthYear,
-    nationality: nationality,
-    biography: biography
-  };
-  
-  authors.push(author);
-  return author;
+// 書籍検索条件インターフェース
+export interface BookSearchCriteria {
+  // TODO: 全てのプロパティをオプショナルにして実装してください
+  // - title?, author?, genre?, isAvailable?
+}
+```
+
+#### 🔧 実装ファイル: `src/interfaces/member.interface.ts`
+
+```typescript
+// TODO: Session1で学習した内容を活用してインターフェースを実装してください
+
+export type MembershipType = "standard" | "premium" | "student";
+
+// 図書館利用者インターフェース
+export interface Member {
+  // TODO: 以下の要件を満たすプロパティを定義してください
+  // - id: 文字列型（読み取り専用）
+  // - name: 文字列型
+  // - email: 文字列型
+  // - membershipType: MembershipType型
+  // - joinDate: Date型
 }
 
-function borrowBook(bookId, borrowerName) {
-  const book = books.find(b => b.id === bookId);
-  
-  if (!book || book.status !== "available") {
-    return null;
+// 利用者検索条件インターフェース
+export interface MemberSearchCriteria {
+  // TODO: オプショナルプロパティとして実装してください
+  // - name?, membershipType?
+}
+```
+
+#### 🔧 実装ファイル: `src/interfaces/borrow-record.interface.ts`
+
+```typescript
+// TODO: Session1で学習した内容を活用してインターフェースを実装してください
+
+import { BorrowStatus } from './book.interface';
+
+// 貸出記録インターフェース
+export interface BorrowRecord {
+  // TODO: 以下の要件を満たすプロパティを定義してください
+  // - id: 文字列型（読み取り専用）
+  // - bookId: 文字列型（読み取り専用）
+  // - memberId: 文字列型（読み取り専用）
+  // - borrowDate: Date型
+  // - dueDate: Date型
+  // - returnDate: Date型（オプショナル）
+  // - status: BorrowStatus型
+}
+```
+
+### ✅ Phase 1 完了チェック
+- [ ] 全てのインターフェースが正しく定義されている
+- [ ] readonly修飾子が適切に使用されている
+- [ ] 型エイリアスが適切に定義されている
+- [ ] オプショナルプロパティ（?）が適切に使用されている
+- [ ] TypeScriptコンパイルエラーがない
+
+---
+
+## 🚀 Phase 2: クラス実装（Session2の学習内容を活用）
+
+### ⏰ 推定時間: 90分
+
+### 📋 実装内容
+
+Session2で学習したクラス設計の知識を活用して、Phase 1で定義したインターフェースを実装するクラスを作成します。
+
+#### 🔧 実装ファイル: `src/entities/book.entity.ts`
+
+```typescript
+// TODO: Session2で学習した内容を活用してクラスを実装してください
+
+import { Book, BookGenre } from '../interfaces/book.interface';
+
+export class BookEntity implements Book {
+  public readonly id: string;
+  public title: string;
+  // TODO: 他のプロパティを実装してください
+
+  constructor(
+    id: string,
+    title: string,
+    author: string,
+    isbn: string,
+    publishedYear: number,
+    genre: BookGenre
+  ) {
+    // TODO: プロパティの初期化を実装してください
+    // ヒント: this.isAvailable = true; // 初期状態は貸出可能
   }
-  
-  const borrowRecord = {
-    id: nextBorrowId++,
-    bookId: bookId,
-    borrowerName: borrowerName,
-    borrowDate: new Date(),
-    returnDate: null
-  };
-  
-  borrowRecords.push(borrowRecord);
-  book.status = "borrowed";
-  
-  return borrowRecord;
-}
 
-function returnBook(borrowId) {
-  const record = borrowRecords.find(r => r.id === borrowId);
-  
-  if (!record || record.returnDate) {
+  /**
+   * 書籍情報の検証
+   * @returns 検証結果
+   */
+  public validate(): boolean {
+    // TODO: 以下の検証ルールを実装してください
+    // - タイトルが空でない
+    // - 著者名が空でない
+    // - ISBNが13文字
+    // - 出版年が1000年以降、現在年以下
     return false;
   }
-  
-  record.returnDate = new Date();
-  
-  const book = books.find(b => b.id === record.bookId);
-  if (book) {
-    book.status = "available";
+
+  /**
+   * 貸出状態の変更
+   * @param isAvailable 貸出可能状態
+   */
+  public setBorrowStatus(isAvailable: boolean): void {
+    // TODO: 実装してください
   }
-  
-  return true;
-}
 
-function findBooksByTitle(title) {
-  return books.filter(book => 
-    book.title.toLowerCase().includes(title.toLowerCase())
-  );
-}
-
-function findBooksByAuthor(author) {
-  return books.filter(book => 
-    book.author.toLowerCase().includes(author.toLowerCase())
-  );
-}
-
-function getAvailableBooks() {
-  return books.filter(book => book.status === "available");
-}
-
-function getAllBooks() {
-  return [...books];
-}
-
-function getAllAuthors() {
-  return [...authors];
-}
-
-function runExample() {
-  console.log("=== 図書管理システムのデモ ===");
-  
-  // 著者の追加
-  addAuthor("夏目漱石", 1867, "日本", "明治時代の小説家");
-  addAuthor("村上春樹", 1949, "日本", "現代日本文学の代表的作家");
-  
-  // 図書の追加
-  addBook("吾輩は猫である", "夏目漱石", "fiction", 1905, "978-4-10-101001-1");
-  addBook("ノルウェイの森", "村上春樹", "fiction", 1987, "978-4-06-274881-5");
-  addBook("相対性理論入門", "アインシュタイン", "science", 1916);
-  
-  // 図書の検索
-  console.log("タイトル検索（猫）:", findBooksByTitle("猫"));
-  console.log("著者検索（村上）:", findBooksByAuthor("村上"));
-  
-  // 図書の貸出
-  const borrow1 = borrowBook(1, "田中太郎");
-  const borrow2 = borrowBook(2, "佐藤花子");
-  
-  console.log("貸出記録1:", borrow1);
-  console.log("貸出記録2:", borrow2);
-  
-  // 利用可能な図書の確認
-  console.log("利用可能な図書:", getAvailableBooks());
-  
-  // 図書の返却
-  if (borrow1) {
-    const returned = returnBook(borrow1.id);
-    console.log("返却成功:", returned);
+  /**
+   * 表示用文字列の取得
+   * @returns 表示用文字列
+   */
+  public getDisplayInfo(): string {
+    // TODO: "タイトル by 著者名 (出版年)" の形式で返却してください
+    return "";
   }
+}
+```
+
+#### 🔧 実装ファイル: `src/entities/member.entity.ts`
+
+```typescript
+// TODO: Session2で学習した内容を活用してクラスを実装してください
+
+import { Member, MembershipType } from '../interfaces/member.interface';
+
+export class MemberEntity implements Member {
+  // TODO: プロパティを実装してください
+
+  constructor(
+    id: string,
+    name: string,
+    email: string,
+    membershipType: MembershipType,
+    joinDate?: Date
+  ) {
+    // TODO: プロパティの初期化を実装してください
+    // ヒント: this.joinDate = joinDate || new Date();
+  }
+
+  /**
+   * 利用者情報の検証
+   * @returns 検証結果
+   */
+  public validate(): boolean {
+    // TODO: 名前とメールアドレスの基本検証を実装してください
+    return false;
+  }
+
+  /**
+   * 貸出可能冊数の取得
+   * @returns 貸出可能冊数
+   */
+  public getMaxBorrowLimit(): number {
+    // TODO: 以下の仕様で実装してください
+    // - student: 3冊
+    // - standard: 5冊
+    // - premium: 10冊
+    return 0;
+  }
+
+  /**
+   * 表示用文字列の取得
+   * @returns 表示用文字列
+   */
+  public getDisplayInfo(): string {
+    // TODO: "名前 (会員種別)" の形式で返却してください
+    return "";
+  }
+}
+```
+
+#### 🔧 実装ファイル: `src/entities/borrow-record.entity.ts`
+
+```typescript
+// TODO: Session2で学習した内容を活用してクラスを実装してください
+
+import { BorrowRecord, BorrowStatus } from '../interfaces/borrow-record.interface';
+
+export class BorrowRecordEntity implements BorrowRecord {
+  // TODO: プロパティを実装してください
+
+  constructor(
+    id: string,
+    bookId: string,
+    memberId: string,
+    borrowDate?: Date
+  ) {
+    // TODO: プロパティの初期化を実装してください
+    // ヒント: 
+    // - borrowDate = borrowDate || new Date()
+    // - dueDate = 14日後の日付
+    // - status = "borrowed"
+  }
+
+  /**
+   * 返却処理
+   */
+  public returnBook(): void {
+    // TODO: 返却日の設定と状態の更新を実装してください
+  }
+
+  /**
+   * 延滞チェック
+   * @returns 延滞状態
+   */
+  public isOverdue(): boolean {
+    // TODO: 現在日時と返却期限を比較して実装してください
+    return false;
+  }
+
+  /**
+   * 延滞状態の更新
+   */
+  public updateOverdueStatus(): void {
+    // TODO: 延滞チェックの結果に基づいて状態を更新してください
+  }
+}
+```
+
+### ✅ Phase 2 完了チェック
+- [ ] 全てのクラスがインターフェースを正しく実装している
+- [ ] アクセス修飾子（public, private, readonly）が適切に使用されている
+- [ ] コンストラクタが適切に実装されている
+- [ ] 各クラスに必要なメソッドが実装されている
+- [ ] TypeScriptコンパイルエラーがない
+
+---
+
+## 🚀 Phase 3: 抽象クラスと統合システム（Session3の学習内容を活用）
+
+### ⏰ 推定時間: 120分
+
+### 📋 実装内容
+
+Session3で学習した抽象クラスの知識を活用して、Phase 1-2の成果物を統合した完全な図書管理システムを構築します。
+
+#### 🔧 実装ファイル: `src/services/base.service.ts`
+
+```typescript
+// TODO: Session3で学習した内容を活用して抽象クラスを実装してください
+
+/**
+ * 基底サービス抽象クラス
+ * @template T エンティティの型
+ */
+export abstract class BaseService<T> {
+  protected items: Map<string, T> = new Map();
+
+  // 抽象メソッド（サブクラスで実装必須）
+  abstract add(item: T): boolean;
+  abstract update(id: string, updates: Partial<T>): boolean;
+  abstract delete(id: string): boolean;
+
+  /**
+   * IDによる検索
+   * @param id 検索ID
+   * @returns 見つかったアイテム
+   */
+  public findById(id: string): T | undefined {
+    // TODO: 実装してください
+    return undefined;
+  }
+
+  /**
+   * 全アイテムの取得
+   * @returns 全アイテム
+   */
+  public findAll(): T[] {
+    // TODO: 実装してください
+    return [];
+  }
+
+  /**
+   * アイテム数の取得
+   * @returns アイテム数
+   */
+  public count(): number {
+    // TODO: 実装してください
+    return 0;
+  }
+
+  /**
+   * ID生成
+   * @returns 生成されたID
+   */
+  protected generateId(): string {
+    // TODO: ユニークなIDを生成してください（例：タイムスタンプ + ランダム文字列）
+    return "";
+  }
+}
+```
+
+#### 🔧 実装ファイル: `src/services/book.service.ts`
+
+```typescript
+// TODO: Session3で学習した内容を活用してサービスクラスを実装してください
+
+import { BaseService } from './base.service';
+import { BookEntity } from '../entities/book.entity';
+import { BookSearchCriteria } from '../interfaces/book.interface';
+
+export class BookService extends BaseService<BookEntity> {
+  /**
+   * 書籍の追加
+   * @param book 書籍エンティティ
+   * @returns 追加成功可否
+   */
+  public add(book: BookEntity): boolean {
+    // TODO: バリデーション後、Mapに保存してください
+    return false;
+  }
+
+  /**
+   * 書籍の更新
+   * @param id 書籍ID
+   * @param updates 更新内容
+   * @returns 更新成功可否
+   */
+  public update(id: string, updates: Partial<BookEntity>): boolean {
+    // TODO: 実装してください
+    return false;
+  }
+
+  /**
+   * 書籍の削除
+   * @param id 書籍ID
+   * @returns 削除成功可否
+   */
+  public delete(id: string): boolean {
+    // TODO: 実装してください
+    return false;
+  }
+
+  /**
+   * 書籍検索
+   * @param criteria 検索条件
+   * @returns 検索結果
+   */
+  public searchBooks(criteria: BookSearchCriteria): BookEntity[] {
+    // TODO: 検索条件に基づいてフィルタリングしてください
+    return [];
+  }
+
+  /**
+   * 貸出可能書籍の取得
+   * @returns 貸出可能書籍一覧
+   */
+  public getAvailableBooks(): BookEntity[] {
+    // TODO: isAvailable = true の書籍を返却してください
+    return [];
+  }
+}
+```
+
+#### 🔧 実装ファイル: `src/services/member.service.ts`
+
+```typescript
+// TODO: Session3で学習した内容を活用してサービスクラスを実装してください
+
+import { BaseService } from './base.service';
+import { MemberEntity } from '../entities/member.entity';
+import { MemberSearchCriteria } from '../interfaces/member.interface';
+
+export class MemberService extends BaseService<MemberEntity> {
+  // TODO: BookServiceと同様の構造で実装してください
+  // - add, update, delete メソッド
+  // - searchMembers メソッド
+}
+```
+
+#### 🔧 実装ファイル: `src/services/library.system.ts`
+
+```typescript
+// TODO: Session3で学習した内容を活用してシステム統合クラスを実装してください
+
+import { BookService } from './book.service';
+import { MemberService } from './member.service';
+import { BookEntity } from '../entities/book.entity';
+import { MemberEntity } from '../entities/member.entity';
+import { BorrowRecordEntity } from '../entities/borrow-record.entity';
+
+/**
+ * システム統計情報
+ */
+export interface SystemStats {
+  totalBooks: number;
+  availableBooks: number;
+  totalMembers: number;
+  activeBorrows: number;
+}
+
+/**
+ * 図書管理システム統合クラス
+ */
+export class LibrarySystem {
+  private bookService: BookService;
+  private memberService: MemberService;
+  private borrowRecords: Map<string, BorrowRecordEntity> = new Map();
+
+  constructor() {
+    this.bookService = new BookService();
+    this.memberService = new MemberService();
+  }
+
+  /**
+   * 書籍の追加
+   * @param title タイトル
+   * @param author 著者
+   * @param isbn ISBN
+   * @param publishedYear 出版年
+   * @param genre ジャンル
+   * @returns 書籍ID
+   */
+  public addBook(title: string, author: string, isbn: string, publishedYear: number, genre: string): string {
+    // TODO: BookEntityを作成してBookServiceに追加してください
+    return "";
+  }
+
+  /**
+   * 利用者の追加
+   * @param name 名前
+   * @param email メールアドレス
+   * @param membershipType 会員種別
+   * @returns 利用者ID
+   */
+  public addMember(name: string, email: string, membershipType: string): string {
+    // TODO: MemberEntityを作成してMemberServiceに追加してください
+    return "";
+  }
+
+  /**
+   * 書籍の貸出
+   * @param bookId 書籍ID
+   * @param memberId 利用者ID
+   * @returns 貸出記録ID
+   */
+  public borrowBook(bookId: string, memberId: string): string | null {
+    // TODO: 以下の処理フローを実装してください
+    // 1. 書籍と利用者の存在確認
+    // 2. 書籍の貸出可能性チェック
+    // 3. 貸出記録の作成
+    // 4. 書籍の貸出状態更新
+    // 5. 貸出記録IDを返却
+    return null;
+  }
+
+  /**
+   * 書籍の返却
+   * @param borrowRecordId 貸出記録ID
+   * @returns 返却成功可否
+   */
+  public returnBook(borrowRecordId: string): boolean {
+    // TODO: 返却処理を実装してください
+    return false;
+  }
+
+  /**
+   * システム統計の取得
+   * @returns システム統計
+   */
+  public getSystemStats(): SystemStats {
+    // TODO: 以下の統計情報を返却してください
+    // - totalBooks: 総書籍数
+    // - availableBooks: 貸出可能書籍数
+    // - totalMembers: 総利用者数
+    // - activeBorrows: アクティブな貸出数
+    return {
+      totalBooks: 0,
+      availableBooks: 0,
+      totalMembers: 0,
+      activeBorrows: 0
+    };
+  }
+
+  // TODO: 検索メソッドも実装してください
+  // - searchBooks(criteria: BookSearchCriteria): BookEntity[]
+  // - searchMembers(criteria: MemberSearchCriteria): MemberEntity[]
+}
+```
+
+### ✅ Phase 3 完了チェック
+- [ ] 抽象クラス`BaseService`が適切に実装されている
+- [ ] 具象クラスが抽象クラスを正しく継承している
+- [ ] `LibrarySystem`クラスが全ての機能を統合している
+- [ ] 貸出・返却機能が正常に動作する
+- [ ] 検索機能が正常に動作する
+- [ ] TypeScriptコンパイルエラーがない
+
+---
+
+## 🚀 Phase 4: システム統合とテスト
+
+### ⏰ 推定時間: 60分
+
+### 📋 実装内容
+
+#### 🔧 実装ファイル: `src/main.ts`
+
+```typescript
+// TODO: 完成したシステムの動作確認を実装してください
+
+import { LibrarySystem } from './services/library.system';
+
+/**
+ * 図書管理システムのデモンストレーション
+ */
+function demonstrateLibrarySystem(): void {
+  console.log("=== 図書管理システム デモンストレーション ===\n");
+
+  const library = new LibrarySystem();
+
+  // 1. 書籍の追加
+  console.log("📚 書籍を追加しています...");
+  const book1Id = library.addBook("TypeScript入門", "山田太郎", "9784123456789", 2023, "science");
+  const book2Id = library.addBook("JavaScript完全ガイド", "田中花子", "9784987654321", 2022, "science");
+  const book3Id = library.addBook("推理小説の世界", "佐藤次郎", "9784111222333", 2021, "fiction");
   
-  console.log("全図書:", getAllBooks());
-  console.log("全著者:", getAllAuthors());
+  console.log(`書籍1 ID: ${book1Id}`);
+  console.log(`書籍2 ID: ${book2Id}`);
+  console.log(`書籍3 ID: ${book3Id}\n`);
+
+  // 2. 利用者の追加
+  console.log("👥 利用者を追加しています...");
+  const member1Id = library.addMember("田中一郎", "tanaka@example.com", "standard");
+  const member2Id = library.addMember("山田花子", "yamada@example.com", "premium");
+  const member3Id = library.addMember("佐藤学生", "sato@student.example.com", "student");
+  
+  console.log(`利用者1 ID: ${member1Id}`);
+  console.log(`利用者2 ID: ${member2Id}`);
+  console.log(`利用者3 ID: ${member3Id}\n`);
+
+  // 3. システム統計の表示
+  console.log("📊 初期システム統計:");
+  console.log(library.getSystemStats());
+  console.log();
+
+  // 4. 書籍の貸出
+  console.log("📖 書籍を貸出しています...");
+  const borrow1Id = library.borrowBook(book1Id, member1Id);
+  const borrow2Id = library.borrowBook(book2Id, member2Id);
+  
+  console.log(`貸出記録1 ID: ${borrow1Id}`);
+  console.log(`貸出記録2 ID: ${borrow2Id}\n`);
+
+  // 5. 貸出後のシステム統計
+  console.log("📊 貸出後のシステム統計:");
+  console.log(library.getSystemStats());
+  console.log();
+
+  // 6. 書籍の返却
+  console.log("📚 書籍を返却しています...");
+  if (borrow1Id) {
+    const returnResult = library.returnBook(borrow1Id);
+    console.log(`返却結果: ${returnResult ? '成功' : '失敗'}`);
+  }
+
+  // 7. 最終システム統計
+  console.log("\n📊 最終システム統計:");
+  console.log(library.getSystemStats());
+
+  console.log("\n=== デモンストレーション完了 ===");
 }
 
-// 実行
-runExample();
-```
+// TODO: 個別機能のテスト関数も実装してください
+function testIndividualComponents(): void {
+  console.log("\n=== 個別コンポーネントテスト ===\n");
 
-### Phase 2: インターフェース定義の追加（25分）
-
-#### ステップ2-1: 基本インターフェースの定義（15分）
-
-上記のコードを見て、以下のインターフェースを定義してください：
-
-1. **図書情報を表現するインターフェース**
-   - `addBook`関数が返すオブジェクトの型
-   - どんなプロパティが必要でしょうか？
-   - どのプロパティがオプショナル（?）でしょうか？
-   - どのプロパティが読み取り専用（readonly）でしょうか？
-
-2. **著者情報を表現するインターフェース**
-   - `addAuthor`関数が返すオブジェクトの型
-   - どんなプロパティが必要でしょうか？
-
-3. **貸出記録を表現するインターフェース**
-   - `borrowBook`関数が返すオブジェクトの型
-   - どんなプロパティが必要でしょうか？
-
-**🤔 考えてみましょう**:
-- `isbn`は必須？オプショナル？
-- `id`は変更可能？読み取り専用？
-- `returnDate`は最初からある？後から追加？
-
-#### ステップ2-2: 型エイリアスの定義（5分）
-
-```typescript
-// TODO: 以下の型エイリアスを定義してください
-// 図書の状態を表現する型（"available" | "borrowed" | "reserved"）
-// 図書のカテゴリを表現する型（"fiction" | "non-fiction" | "science" | "history"）
-```
-
-#### ステップ2-3: 変数と関数に型注釈を追加（5分）
-
-```typescript
-// TODO: 以下の変数と関数に適切な型注釈を追加してください
-let books = [];
-let authors = [];
-let borrowRecords = [];
-
-function addBook(title, author, category, publishedYear, isbn) { /* ... */ }
-function addAuthor(name, birthYear, nationality, biography) { /* ... */ }
-function borrowBook(bookId, borrowerName) { /* ... */ }
-// その他の関数...
-```
-
-### Phase 3: 動作確認（5分）
-
-#### ステップ3-1: 動作確認
-TypeScript Playgroundまたはローカル環境で実行して動作を確認
-
----
-
-## ✅ 最低合格要件
-
-以下の要件を**すべて満たす**ことで合格とします：
-
-### 🔧 技術要件
-- [ ] TypeScriptでコンパイルエラーが発生しない
-- [ ] **インターフェースを3つ以上定義している**（最重要！）
-- [ ] **型エイリアスを2つ以上定義している**
-- [ ] すべての変数に適切な型注釈が付いている
-- [ ] すべての関数の引数と戻り値に適切な型注釈が付いている
-
-### 🎯 機能要件
-- [ ] 元のJavaScriptコードと同じ動作をする
-- [ ] 図書の追加・検索ができる
-- [ ] 著者の追加ができる
-- [ ] 図書の貸出・返却ができる
-
-### 💭 インターフェース要件
-- [ ] 図書情報のインターフェースが正しく定義されている
-- [ ] 著者情報のインターフェースが正しく定義されている
-- [ ] 貸出記録のインターフェースが正しく定義されている
-- [ ] オプショナルプロパティ（?）が適切に使われている
-- [ ] 読み取り専用プロパティ（readonly）が適切に使われている
-
----
-
-## 📊 評価基準
-
-| 項目 | 配点 | 評価ポイント |
-|------|------|-------------|
-| **インターフェース設計力** | 50点 | 適切なインターフェースを自分で設計できている |
-| **型注釈の正確性** | 30点 | 全ての変数・関数に適切な型注釈が付いている |
-| **機能の完成度** | 20点 | 元のコードと同じ動作をする |
-
-**合格ライン**: 70点以上
-
----
-
-## 💡 インターフェース設計のヒント
-
-### 🤔 インターフェースを考える時の質問
-
-1. **このオブジェクトにはどんな情報が含まれる？**
-   - 図書 → タイトル、著者、カテゴリ、出版年、ISBN、状態、ID
-   - 著者 → 名前、生年、国籍、略歴、ID
-   - 貸出記録 → 図書ID、借用者名、貸出日、返却日、ID
-
-2. **どの情報が必須？どの情報がオプショナル？**
-   - ISBN → 古い本にはないかも → オプショナル（?）
-   - 生年 → 不明な場合がある → オプショナル（?）
-   - 返却日 → 最初はnull → オプショナル（?）
-
-3. **どの情報が変更不可？**
-   - ID → 一度決まったら変更しない → 読み取り専用（readonly）
-
-### 📝 インターフェースの基本例
-
-```typescript
-// 基本的なインターフェース
-interface User {
-  readonly id: number;    // 読み取り専用
-  name: string;           // 必須
-  email?: string;         // オプショナル
+  // BookEntity のテスト
+  // MemberEntity のテスト
+  // BorrowRecordEntity のテスト
+  // 各サービスクラスのテスト
 }
 
-// 継承を使ったインターフェース
-interface DetailedUser extends User {
-  age: number;
-  address: string;
-}
-
-// 型エイリアス
-type Status = "active" | "inactive" | "pending";
-type Role = "admin" | "user" | "guest";
-```
-
-### ⚠️ よくある間違い
-
-1. **オプショナルプロパティの見落とし**
-   ```typescript
-   // ❌ 間違い：ISBNは必須ではない
-   interface Book {
-     id: number;
-     title: string;
-     isbn: string;  // 古い本にはISBNがない場合がある
-   }
-   
-   // ✅ 正解：ISBNはオプショナル
-   interface Book {
-     readonly id: number;
-     title: string;
-     isbn?: string;  // オプショナル
-   }
-   ```
-
-2. **読み取り専用プロパティの見落とし**
-   ```typescript
-   // ❌ 間違い：IDは変更可能にすべきではない
-   interface Book {
-     id: number;  // 変更可能
-     title: string;
-   }
-   
-   // ✅ 正解：IDは読み取り専用
-   interface Book {
-     readonly id: number;  // 読み取り専用
-     title: string;
-   }
-   ```
-
-3. **型エイリアスを使わない**
-   ```typescript
-   // ❌ 間違い：文字列リテラルを直接使用
-   interface Book {
-     status: "available" | "borrowed" | "reserved";
-     category: "fiction" | "non-fiction" | "science";
-   }
-   
-   // ✅ 正解：型エイリアスを使用
-   type BookStatus = "available" | "borrowed" | "reserved";
-   type BookCategory = "fiction" | "non-fiction" | "science";
-   
-   interface Book {
-     status: BookStatus;
-     category: BookCategory;
-   }
-   ```
-
----
-
-## 📚 参考：完成例（インターフェース定義の答えを見たい場合）
-
-<details>
-<summary>⚠️ 注意：まず自分で考えてから見てください</summary>
-
-```typescript
-// 型エイリアス
-type BookStatus = "available" | "borrowed" | "reserved";
-type BookCategory = "fiction" | "non-fiction" | "science" | "history";
-
-// インターフェース定義
-interface Book {
-  readonly id: number;
-  title: string;
-  author: string;
-  category: BookCategory;
-  publishedYear: number;
-  isbn?: string;  // オプショナル
-  status: BookStatus;
-}
-
-interface Author {
-  readonly id: number;
-  name: string;
-  birthYear?: number;  // オプショナル
-  nationality?: string;  // オプショナル
-  biography?: string;  // オプショナル
-}
-
-interface BorrowRecord {
-  readonly id: number;
-  bookId: number;
-  borrowerName: string;
-  borrowDate: Date;
-  returnDate?: Date;  // オプショナル
-}
-
-// 変数の型注釈
-let books: Book[] = [];
-let authors: Author[] = [];
-let borrowRecords: BorrowRecord[] = [];
-let nextBookId: number = 1;
-let nextAuthorId: number = 1;
-let nextBorrowId: number = 1;
-
-// 関数の型注釈
-function addBook(
-  title: string, 
-  author: string, 
-  category: BookCategory, 
-  publishedYear: number, 
-  isbn?: string
-): Book {
-  // 実装
-}
-
-function addAuthor(
-  name: string, 
-  birthYear?: number, 
-  nationality?: string, 
-  biography?: string
-): Author {
-  // 実装
-}
-
-function borrowBook(bookId: number, borrowerName: string): BorrowRecord | null {
-  // 実装
+// メイン実行
+if (require.main === module) {
+  demonstrateLibrarySystem();
+  testIndividualComponents();
 }
 ```
 
-</details>
+#### 🔧 実装ファイル: `README.md`
+
+```markdown
+# 統合図書管理システム
+
+## 概要
+Session1-3で学習したTypeScriptの概念を統合した完全な図書管理システムです。
+
+## 学習内容の統合
+- **Phase 1**: Session1で学習したインターフェース設計
+- **Phase 2**: Session2で学習したクラス実装
+- **Phase 3**: Session3で学習した抽象クラスと統合
+
+## 機能
+- 書籍管理（追加・更新・削除・検索）
+- 利用者管理（追加・更新・削除・検索）
+- 貸出・返却管理
+- システム統計表示
+
+## 実行方法
+```bash
+# TypeScriptのコンパイル
+tsc src/main.ts --outDir dist --target ES2020 --module commonjs
+
+# 実行
+node dist/main.js
+```
+
+## 学習のポイント
+1. インターフェースによる型安全な設計
+2. クラスによるオブジェクト指向実装
+3. 抽象クラスによる共通機能の抽象化
+4. 統合システムによる実践的な設計パターン
+```
+
+### ✅ Phase 4 完了チェック
+- [ ] システム全体が正常に動作する
+- [ ] デモンストレーションが完全に実行される
+- [ ] 全ての機能が統合されている
+- [ ] README.mdが適切に作成されている
 
 ---
 
-## 🚀 発展課題（任意）
+## 📊 総合評価基準
 
-余裕がある場合は以下にも挑戦してみてください：
+### 🎯 各Phaseの評価ポイント
 
-- [ ] インターフェースの継承（extends）を使った拡張
-- [ ] より詳細な図書情報のインターフェース
-- [ ] 図書館の統計情報を表現するインターフェース
+**Phase 1（インターフェース設計）**: 30点
+- Session1の学習内容の活用（15点）
+- インターフェースの適切な定義（15点）
+
+**Phase 2（クラス実装）**: 40点
+- Session2の学習内容の活用（20点）
+- クラスの正しい実装（20点）
+
+**Phase 3（抽象クラスと統合）**: 50点
+- Session3の学習内容の活用（25点）
+- システム統合の完成度（25点）
+
+**Phase 4（システム統合とテスト）**: 30点
+- 統合システムの動作（20点）
+- テストとドキュメント（10点）
+
+**総合評価**: 150点満点
 
 ---
 
-**📌 重要**: この課題の目的は**既存のJavaScriptコードを読んで適切なインターフェースを設計する力**を身につけることです。TypeScriptのインターフェースとオブジェクト型システムを実践的に学習しましょう。
+## 🚀 学習の流れ
 
-**🌟 次のステップ**: Step04では、ユニオン型と型ガードについて学習します！
+### 💡 段階的統合の効果
+1. **Phase 1**: Session1の知識でインターフェース設計の基盤を構築
+2. **Phase 2**: Session2の知識でクラス実装により具体的な機能を実現
+3. **Phase 3**: Session3の知識で抽象クラスによる高度な設計パターンを適用
+4. **Phase 4**: 全てを統合した完全なシステムを完成
+
+### 🔄 学習内容の連続性
+- Phase 1の成果物がPhase 2の基盤となる
+- Phase 2の成果物がPhase 3で統合される
+- Phase 3の成果物がPhase 4で完全なシステムとなる
+- 各Phaseで前のPhaseの学習成果を活用する
+
+### ⚠️ 重要なポイント
+- 各Phaseは前のPhaseの成果物を必ず活用する
+- Session1-3の学習内容を段階的に統合していく
+- 最終的に1つの完成したシステムを目指す
+- 実際に動作するシステムとして完成させる
+
+---
+
+## 🎯 発展課題（任意）
+
+基本統合プロジェクト完了後、さらなる学習を希望する場合：
+
+1. **エラーハンドリングの強化**: カスタム例外クラスの実装
+2. **データ永続化**: JSON/CSV形式でのデータ保存・読み込み
+3. **ログ機能**: 操作履歴の記録と表示
+4. **バリデーション強化**: より詳細な入力検証
+5. **レポート機能**: 貸出統計レポートの生成
+
+---
+
+## 📝 完成時の提出物
+
+### 必須ファイル
+- `src/interfaces/` 配下の全インターフェースファイル
+- `src/entities/` 配下の全エンティティファイル
+- `src/services/` 配下の全サービスファイル
+- `src/main.ts` システム統合とテストファイル
+- `README.md` プロジェクト説明書
+
+### 動作確認
+- TypeScriptコンパイルエラーがないこと
+- `main.ts` が正常に実行されること
+- 全ての機能が期待通りに動作すること
+
+この統合プロジェクトを通じて、Session1-3で学習したTypeScriptの概念を1つのシステムとして統合し、実用的なオブジェクト指向設計力を身につけてください。

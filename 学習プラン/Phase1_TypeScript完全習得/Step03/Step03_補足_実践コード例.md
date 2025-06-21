@@ -1,44 +1,45 @@
 # Step03 実践コード例
 
-> 💡 **このファイルについて**: インターフェースとオブジェクト型の段階的な学習のためのコード例集です。
+> 💡 **このファイルについて**: インターフェース、クラス設計、抽象クラスの段階的な学習のためのコード例集です。
 
 ## 📋 目次
 1. [基本的なインターフェース設計](#基本的なインターフェース設計)
-2. [型エイリアスとの使い分け](#型エイリアスとの使い分け)
-3. [継承とコンポジションの実践](#継承とコンポジションの実践)
-4. [実用的なデータモデル設計](#実用的なデータモデル設計)
-5. [ブログシステム設計](#ブログシステム設計)
+2. [クラス設計と実装](#クラス設計と実装)
+3. [抽象クラスと高度な設計パターン](#抽象クラスと高度な設計パターン)
+4. [Storeシステムの実装例](#storeシステムの実装例)
 
 ---
 
 ## 基本的なインターフェース設計
 
-### ステップ1: シンプルなインターフェース
+### ステップ1: 商品インターフェースの基本設計
 ```typescript
-// user-basic.ts
+// product-basic.ts
 
-// 基本的なユーザーインターフェース
-interface User {
-  id: number;
+// 基本的な商品インターフェース
+interface Product {
+  id: string;
   name: string;
-  email: string;
+  price: number;
+  category: string;
   createdAt: Date;
 }
 
 // 使用例
-const user: User = {
-  id: 1,
-  name: "Alice",
-  email: "alice@example.com",
+const product: Product = {
+  id: "prod_001",
+  name: "TypeScript入門書",
+  price: 2980,
+  category: "書籍",
   createdAt: new Date()
 };
 
-console.log(`User: ${user.name} (${user.email})`);
+console.log(`商品: ${product.name} - ¥${product.price}`);
 ```
 
 **実行方法**:
 ```bash
-npx ts-node user-basic.ts
+npx ts-node product-basic.ts
 ```
 
 **学習ポイント**:
@@ -46,206 +47,78 @@ npx ts-node user-basic.ts
 - オブジェクトリテラルでの実装
 - 型安全性の確保
 
-### ステップ2: オプショナルプロパティ
+### ステップ2: オプショナルプロパティと拡張
 ```typescript
-// user-optional.ts
+// product-extended.ts
 
-interface CreateUserRequest {
+interface ProductCategory {
+  id: string;
   name: string;
-  email: string;
-  age?: number; // オプショナル
-  profile?: {
-    bio?: string;
-    avatar?: string;
-    socialLinks?: {
-      twitter?: string;
-      github?: string;
+  description?: string;
+}
+
+interface CreateProductRequest {
+  name: string;
+  price: number;
+  categoryId: string;
+  description?: string;
+  tags?: string[];
+  specifications?: {
+    weight?: number;
+    dimensions?: {
+      width: number;
+      height: number;
+      depth: number;
     };
   };
 }
 
-// 最小限の情報でユーザー作成
-const minimalUser: CreateUserRequest = {
-  name: "Bob",
-  email: "bob@example.com"
+// 最小限の情報で商品作成
+const minimalProduct: CreateProductRequest = {
+  name: "シンプル商品",
+  price: 1000,
+  categoryId: "cat_001"
 };
 
-// 詳細情報付きでユーザー作成
-const detailedUser: CreateUserRequest = {
-  name: "Charlie",
-  email: "charlie@example.com",
-  age: 28,
-  profile: {
-    bio: "Software Developer",
-    avatar: "avatar.jpg",
-    socialLinks: {
-      github: "charlie-dev"
+// 詳細情報付きで商品作成
+const detailedProduct: CreateProductRequest = {
+  name: "高機能ノートPC",
+  price: 150000,
+  categoryId: "cat_electronics",
+  description: "最新のプロセッサを搭載した高性能ノートパソコン",
+  tags: ["ノートPC", "高性能", "ビジネス"],
+  specifications: {
+    weight: 1.2,
+    dimensions: {
+      width: 30,
+      height: 2,
+      depth: 20
     }
   }
 };
 
-// ユーザー作成関数
-function createUser(request: CreateUserRequest): User {
+// 商品作成関数
+function createProduct(request: CreateProductRequest): Product {
   return {
-    id: Math.floor(Math.random() * 1000),
+    id: "prod_" + Date.now(),
     name: request.name,
-    email: request.email,
+    price: request.price,
+    category: request.categoryId,
     createdAt: new Date()
   };
 }
 
-console.log("Minimal user:", createUser(minimalUser));
-console.log("Detailed user:", createUser(detailedUser));
+console.log("最小商品:", createProduct(minimalProduct));
+console.log("詳細商品:", createProduct(detailedProduct));
 ```
 
-**学習ポイント**:
-- オプショナルプロパティ（?）の使用
-- ネストしたオブジェクトの型定義
-- 柔軟なデータ構造の設計
-
-### ステップ3: 読み取り専用プロパティ
-```typescript
-// user-readonly.ts
-
-interface ReadonlyUser {
-  readonly id: number;
-  readonly createdAt: Date;
-  name: string; // 変更可能
-  email: string; // 変更可能
-  readonly metadata: {
-    readonly version: number;
-    readonly source: string;
-  };
-}
-
-function createReadonlyUser(name: string, email: string): ReadonlyUser {
-  return {
-    id: Math.floor(Math.random() * 1000),
-    createdAt: new Date(),
-    name,
-    email,
-    metadata: {
-      version: 1,
-      source: "api"
-    }
-  };
-}
-
-const user = createReadonlyUser("David", "david@example.com");
-
-// 変更可能なプロパティ
-user.name = "David Smith"; // OK
-user.email = "david.smith@example.com"; // OK
-
-// 読み取り専用プロパティ（エラーになる）
-// user.id = 999; // Error: Cannot assign to 'id'
-// user.createdAt = new Date(); // Error: Cannot assign to 'createdAt'
-// user.metadata.version = 2; // Error: Cannot assign to 'version'
-
-console.log("User:", user);
-```
-
-**学習ポイント**:
-- readonly修飾子の使用
-- イミュータブルなデータ設計
-- 変更可能・不可能なプロパティの使い分け
-
----
-
-## 型エイリアスとの使い分け
-
-### ステップ4: インターフェース vs 型エイリアス
-```typescript
-// interface-vs-type.ts
-
-// インターフェース（オブジェクトの形状定義に適している）
-interface UserInterface {
-  id: number;
-  name: string;
-  email: string;
-}
-
-// 型エイリアス（ユニオン型、プリミティブ型に適している）
-type UserType = {
-  id: number;
-  name: string;
-  email: string;
-};
-
-type Status = "active" | "inactive" | "pending";
-type ID = string | number;
-type UserTuple = [string, string, number]; // [name, email, age]
-
-// インターフェースの継承
-interface AdminUser extends UserInterface {
-  permissions: string[];
-  lastLogin?: Date;
-}
-
-// 型エイリアスのインターセクション
-type AdminUserType = UserType & {
-  permissions: string[];
-  lastLogin?: Date;
-};
-
-// ユニオン型（型エイリアスでのみ可能）
-type Shape = 
-  | { kind: "circle"; radius: number }
-  | { kind: "rectangle"; width: number; height: number }
-  | { kind: "triangle"; base: number; height: number };
-
-function calculateArea(shape: Shape): number {
-  switch (shape.kind) {
-    case "circle":
-      return Math.PI * shape.radius ** 2;
-    case "rectangle":
-      return shape.width * shape.height;
-    case "triangle":
-      return (shape.base * shape.height) / 2;
-  }
-}
-
-// 使用例
-const circle: Shape = { kind: "circle", radius: 5 };
-const rectangle: Shape = { kind: "rectangle", width: 10, height: 20 };
-
-console.log("Circle area:", calculateArea(circle));
-console.log("Rectangle area:", calculateArea(rectangle));
-
-// インターフェースマージ（インターフェースでのみ可能）
-interface Config {
-  apiUrl: string;
-}
-
-interface Config {
-  timeout: number;
-}
-
-// 自動的にマージされる
-const config: Config = {
-  apiUrl: "https://api.example.com",
-  timeout: 5000
-};
-
-console.log("Config:", config);
-```
-
-**学習ポイント**:
-- インターフェースと型エイリアスの使い分け
-- 判別ユニオン型の実装
-- インターフェースマージの活用
-
----
-
-## 継承とコンポジションの実践
-
-### ステップ5: インターフェース継承
+### ステップ3: インターフェース継承と多重継承
 ```typescript
 // interface-inheritance.ts
 
 // 基本エンティティ
-interface Entity {
-  id: number;
+interface BaseEntity {
+  id: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -258,119 +131,170 @@ interface Timestamped {
 
 // 識別可能
 interface Identifiable {
-  id: number;
+  id: string;
 }
 
 // 単一継承
-interface User extends Entity {
-  name: string;
-  email: string;
-}
-
-// 多重継承
-interface Product extends Identifiable, Timestamped {
+interface Product extends BaseEntity {
   name: string;
   price: number;
   category: string;
 }
 
-// 階層的継承
-interface AdminUser extends User {
-  permissions: string[];
-  role: "admin" | "super-admin";
+// 多重継承
+interface InventoryItem extends Identifiable, Timestamped {
+  productId: string;
+  quantity: number;
+  location: string;
 }
 
-interface SuperAdminUser extends AdminUser {
-  systemAccess: boolean;
-  auditLog: string[];
+// 階層的継承
+interface DigitalProduct extends Product {
+  downloadUrl: string;
+  licenseKey: string;
+  fileSize: number;
+}
+
+interface PhysicalProduct extends Product {
+  weight: number;
+  dimensions: {
+    width: number;
+    height: number;
+    depth: number;
+  };
+  shippingRequired: boolean;
 }
 
 // 実装例
-class UserService {
-  private users: User[] = [];
-  private nextId = 1;
+const digitalProduct: DigitalProduct = {
+  id: "dig_001",
+  name: "TypeScript完全ガイド（PDF版）",
+  price: 1980,
+  category: "電子書籍",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  downloadUrl: "https://example.com/download/typescript-guide.pdf",
+  licenseKey: "TS-GUIDE-2024-001",
+  fileSize: 15728640 // 15MB
+};
 
-  createUser(name: string, email: string): User {
-    const now = new Date();
-    const user: User = {
-      id: this.nextId++,
-      name,
-      email,
-      createdAt: now,
-      updatedAt: now
-    };
-    this.users.push(user);
-    return user;
+console.log("デジタル商品:", digitalProduct);
+```
+
+---
+
+## クラス設計と実装
+
+### ステップ4: 基本的なクラス設計
+```typescript
+// product-class.ts
+
+class Product {
+  private _id: string;
+  private _createdAt: Date;
+  private _updatedAt: Date;
+
+  constructor(
+    public name: string,
+    public price: number,
+    public category: string
+  ) {
+    this._id = "prod_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
+    this._createdAt = new Date();
+    this._updatedAt = new Date();
   }
 
-  promoteToAdmin(userId: number, permissions: string[]): AdminUser | null {
-    const user = this.users.find(u => u.id === userId);
-    if (!user) return null;
+  // Getter
+  get id(): string {
+    return this._id;
+  }
 
-    const adminUser: AdminUser = {
-      ...user,
-      permissions,
-      role: "admin",
-      updatedAt: new Date()
-    };
+  get createdAt(): Date {
+    return this._createdAt;
+  }
 
-    return adminUser;
+  get updatedAt(): Date {
+    return this._updatedAt;
+  }
+
+  // ビジネスロジック
+  public updatePrice(newPrice: number): void {
+    if (newPrice <= 0) {
+      throw new Error("価格は0より大きい値である必要があります");
+    }
+    this.price = newPrice;
+    this._updatedAt = new Date();
+  }
+
+  public applyDiscount(discountRate: number): number {
+    if (discountRate < 0 || discountRate > 1) {
+      throw new Error("割引率は0から1の間である必要があります");
+    }
+    return this.price * (1 - discountRate);
+  }
+
+  public getInfo(): string {
+    return `${this.name} (${this.category}) - ¥${this.price}`;
+  }
+
+  // 静的メソッド
+  static fromData(data: any): Product {
+    return new Product(data.name, data.price, data.category);
   }
 }
 
 // 使用例
-const userService = new UserService();
-const user = userService.createUser("Alice", "alice@example.com");
-const admin = userService.promoteToAdmin(user.id, ["read", "write"]);
+const product = new Product("TypeScript学習本", 2980, "書籍");
+console.log("商品情報:", product.getInfo());
+console.log("10%割引価格:", product.applyDiscount(0.1));
 
-console.log("User:", user);
-console.log("Admin:", admin);
+product.updatePrice(2500);
+console.log("価格更新後:", product.getInfo());
 ```
 
-**学習ポイント**:
-- 単一継承と多重継承
-- 階層的なインターフェース設計
-- 継承を活用したデータモデル
-
-### ステップ6: コンポジション設計
+### ステップ5: インターフェース実装とサービス層
 ```typescript
-// composition-design.ts
+// product-service.ts
 
-// 小さなインターフェースに分割（Interface Segregation Principle）
-interface Logger {
-  log(level: "info" | "warn" | "error", message: string): void;
+interface ProductRepository {
+  save(product: Product): Promise<string>;
+  findById(id: string): Promise<Product | null>;
+  findByCategory(category: string): Promise<Product[]>;
+  update(product: Product): Promise<boolean>;
+  delete(id: string): Promise<boolean>;
 }
 
-interface Database {
-  save(collection: string, data: any): Promise<string>;
-  find(collection: string, id: string): Promise<any | null>;
-  update(collection: string, id: string, data: any): Promise<boolean>;
-  delete(collection: string, id: string): Promise<boolean>;
+interface ProductValidator {
+  validate(product: Product): ValidationResult;
 }
 
-interface EmailService {
-  sendEmail(to: string, subject: string, body: string): Promise<boolean>;
+interface ValidationResult {
+  isValid: boolean;
+  errors: string[];
 }
 
-interface UserValidator {
-  validate(data: CreateUserRequest): { isValid: boolean; errors: string[] };
-}
-
-// ユーザーバリデーター
-class UserValidatorImpl implements UserValidator {
-  validate(data: CreateUserRequest): { isValid: boolean; errors: string[] } {
+class ProductValidatorImpl implements ProductValidator {
+  validate(product: Product): ValidationResult {
     const errors: string[] = [];
 
-    if (!data.name || data.name.trim().length === 0) {
-      errors.push("Name is required");
+    if (!product.name || product.name.trim().length === 0) {
+      errors.push("商品名は必須です");
     }
 
-    if (!data.email || !data.email.includes("@")) {
-      errors.push("Valid email is required");
+    if (product.name && product.name.length > 100) {
+      errors.push("商品名は100文字以内である必要があります");
     }
 
-    if (data.age !== undefined && data.age < 0) {
-      errors.push("Age must be positive");
+    if (product.price <= 0) {
+      errors.push("価格は0より大きい値である必要があります");
+    }
+
+    if (product.price > 10000000) {
+      errors.push("価格は1000万円以下である必要があります");
+    }
+
+    if (!product.category || product.category.trim().length === 0) {
+      errors.push("カテゴリは必須です");
     }
 
     return {
@@ -380,913 +304,680 @@ class UserValidatorImpl implements UserValidator {
   }
 }
 
-// コンポジションを使用したユーザーサービス
-class CompositeUserService {
-  constructor(
-    private logger: Logger,
-    private database: Database,
-    private emailService: EmailService,
-    private validator: UserValidator
-  ) {}
+class InMemoryProductRepository implements ProductRepository {
+  private products = new Map<string, Product>();
 
-  async createUser(request: CreateUserRequest): Promise<User | null> {
-    this.logger.log("info", `Creating user: ${request.name}`);
-
-    // バリデーション
-    const validation = this.validator.validate(request);
-    if (!validation.isValid) {
-      this.logger.log("error", `Validation failed: ${validation.errors.join(", ")}`);
-      return null;
-    }
-
-    try {
-      // ユーザー作成
-      const user: User = {
-        id: Math.floor(Math.random() * 1000),
-        name: request.name,
-        email: request.email,
-        createdAt: new Date()
-      };
-
-      // データベース保存
-      const userId = await this.database.save("users", user);
-      this.logger.log("info", `User saved with ID: ${userId}`);
-
-      // ウェルカムメール送信
-      await this.emailService.sendEmail(
-        user.email,
-        "Welcome!",
-        `Hello ${user.name}, welcome to our service!`
-      );
-
-      this.logger.log("info", `Welcome email sent to: ${user.email}`);
-      return user;
-
-    } catch (error) {
-      this.logger.log("error", `Failed to create user: ${error}`);
-      return null;
-    }
-  }
-}
-
-// 具体的な実装
-class ConsoleLogger implements Logger {
-  log(level: "info" | "warn" | "error", message: string): void {
-    const timestamp = new Date().toISOString();
-    console.log(`[${timestamp}] ${level.toUpperCase()}: ${message}`);
-  }
-}
-
-class MemoryDatabase implements Database {
-  private data = new Map<string, Map<string, any>>();
-
-  async save(collection: string, data: any): Promise<string> {
-    if (!this.data.has(collection)) {
-      this.data.set(collection, new Map());
-    }
-    
-    const id = Math.random().toString(36);
-    this.data.get(collection)!.set(id, data);
-    return id;
+  async save(product: Product): Promise<string> {
+    this.products.set(product.id, product);
+    return product.id;
   }
 
-  async find(collection: string, id: string): Promise<any | null> {
-    const collectionData = this.data.get(collection);
-    return collectionData?.get(id) || null;
+  async findById(id: string): Promise<Product | null> {
+    return this.products.get(id) || null;
   }
 
-  async update(collection: string, id: string, data: any): Promise<boolean> {
-    const collectionData = this.data.get(collection);
-    const existing = collectionData?.get(id);
-    if (existing) {
-      collectionData!.set(id, { ...existing, ...data });
+  async findByCategory(category: string): Promise<Product[]> {
+    return Array.from(this.products.values())
+      .filter(product => product.category === category);
+  }
+
+  async update(product: Product): Promise<boolean> {
+    if (this.products.has(product.id)) {
+      this.products.set(product.id, product);
       return true;
     }
     return false;
   }
 
-  async delete(collection: string, id: string): Promise<boolean> {
-    const collectionData = this.data.get(collection);
-    return collectionData?.delete(id) || false;
+  async delete(id: string): Promise<boolean> {
+    return this.products.delete(id);
   }
 }
 
-class MockEmailService implements EmailService {
-  async sendEmail(to: string, subject: string, body: string): Promise<boolean> {
-    console.log(`📧 Email sent to ${to}: ${subject}`);
+class ProductService {
+  constructor(
+    private repository: ProductRepository,
+    private validator: ProductValidator
+  ) {}
+
+  async createProduct(name: string, price: number, category: string): Promise<Product> {
+    const product = new Product(name, price, category);
+    
+    const validation = this.validator.validate(product);
+    if (!validation.isValid) {
+      throw new Error(`商品の検証に失敗しました: ${validation.errors.join(", ")}`);
+    }
+
+    await this.repository.save(product);
+    return product;
+  }
+
+  async getProductsByCategory(category: string): Promise<Product[]> {
+    return await this.repository.findByCategory(category);
+  }
+}
+
+// 使用例
+async function demonstrateProductService() {
+  const repository = new InMemoryProductRepository();
+  const validator = new ProductValidatorImpl();
+  const productService = new ProductService(repository, validator);
+
+  try {
+    const product1 = await productService.createProduct("TypeScript入門", 2980, "書籍");
+    const product2 = await productService.createProduct("JavaScript基礎", 2500, "書籍");
+    
+    console.log("作成された商品1:", product1.getInfo());
+    console.log("作成された商品2:", product2.getInfo());
+
+    const books = await productService.getProductsByCategory("書籍");
+    console.log("書籍カテゴリの商品数:", books.length);
+  } catch (error) {
+    console.error("エラー:", error.message);
+  }
+}
+
+demonstrateProductService();
+```
+
+---
+
+## 抽象クラスと高度な設計パターン
+
+### ステップ6: 抽象クラスによる共通処理の実装
+```typescript
+// abstract-product.ts
+
+abstract class BaseProduct {
+  protected _id: string;
+  protected _createdAt: Date;
+  protected _updatedAt: Date;
+
+  constructor(
+    public name: string,
+    public price: number,
+    public category: string
+  ) {
+    this._id = this.generateId();
+    this._createdAt = new Date();
+    this._updatedAt = new Date();
+  }
+
+  // 具象メソッド（共通実装）
+  get id(): string {
+    return this._id;
+  }
+
+  get createdAt(): Date {
+    return this._createdAt;
+  }
+
+  protected generateId(): string {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+  }
+
+  protected updateTimestamp(): void {
+    this._updatedAt = new Date();
+  }
+
+  public updatePrice(newPrice: number): void {
+    this.validatePrice(newPrice);
+    this.price = newPrice;
+    this.updateTimestamp();
+  }
+
+  protected validatePrice(price: number): void {
+    if (price <= 0) {
+      throw new Error("価格は0より大きい値である必要があります");
+    }
+  }
+
+  // 抽象メソッド（継承クラスで実装必須）
+  abstract calculateShippingCost(destination: string): number;
+  abstract getProductType(): string;
+  abstract canBeShipped(): boolean;
+
+  // テンプレートメソッド
+  public getFullInfo(): string {
+    const shippingInfo = this.canBeShipped() ? 
+      `送料: ¥${this.calculateShippingCost("東京都")}` : 
+      "配送不要";
+    
+    return `${this.getProductType()}: ${this.name} - ¥${this.price} (${shippingInfo})`;
+  }
+}
+
+// 物理商品
+class PhysicalProduct extends BaseProduct {
+  constructor(
+    name: string,
+    price: number,
+    category: string,
+    private weight: number,
+    private fragile: boolean = false
+  ) {
+    super(name, price, category);
+  }
+
+  calculateShippingCost(destination: string): number {
+    let baseCost = this.weight * 100;
+    
+    // 壊れやすい商品は追加料金
+    if (this.fragile) {
+      baseCost += 500;
+    }
+    
+    // 地域による配送料金の違い
+    const regionMultiplier = this.getRegionMultiplier(destination);
+    return Math.round(baseCost * regionMultiplier);
+  }
+
+  private getRegionMultiplier(destination: string): number {
+    const remoteAreas = ["沖縄県", "北海道"];
+    return remoteAreas.includes(destination) ? 1.5 : 1.0;
+  }
+
+  getProductType(): string {
+    return "物理商品";
+  }
+
+  canBeShipped(): boolean {
     return true;
   }
 }
 
-// 使用例
-async function demonstrateComposition() {
-  const logger = new ConsoleLogger();
-  const database = new MemoryDatabase();
-  const emailService = new MockEmailService();
-  const validator = new UserValidator();
+// デジタル商品
+class DigitalProduct extends BaseProduct {
+  constructor(
+    name: string,
+    price: number,
+    category: string,
+    private fileSize: number,
+    private downloadUrl: string
+  ) {
+    super(name, price, category);
+  }
 
-  const userService = new CompositeUserService(
-    logger,
-    database,
-    emailService,
-    validator
-  );
+  calculateShippingCost(destination: string): number {
+    return 0; // デジタル商品は送料無料
+  }
 
-  // 正常なユーザー作成
-  const validUser = await userService.createUser({
-    name: "Alice",
-    email: "alice@example.com",
-    age: 30
-  });
+  getProductType(): string {
+    return "デジタル商品";
+  }
 
-  // バリデーションエラーのケース
-  const invalidUser = await userService.createUser({
-    name: "",
-    email: "invalid-email",
-    age: -5
-  });
+  canBeShipped(): boolean {
+    return false; // 物理的な配送は不要
+  }
 
-  console.log("Valid user:", validUser);
-  console.log("Invalid user:", invalidUser);
+  public getDownloadInfo(): { url: string; size: string } {
+    return {
+      url: this.downloadUrl,
+      size: this.formatFileSize(this.fileSize)
+    };
+  }
+
+  private formatFileSize(bytes: number): string {
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    if (bytes === 0) return '0 Bytes';
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
+  }
 }
 
-demonstrateComposition();
+// 使用例
+const physicalBook = new PhysicalProduct("TypeScript実践ガイド", 3500, "書籍", 0.8, false);
+const digitalBook = new DigitalProduct("TypeScript完全マスター（PDF）", 2500, "電子書籍", 25165824, "https://example.com/download");
+
+console.log("=== 商品情報 ===");
+console.log(physicalBook.getFullInfo());
+console.log(digitalBook.getFullInfo());
+
+console.log("\n=== 詳細情報 ===");
+console.log("デジタル商品ダウンロード情報:", digitalBook.getDownloadInfo());
 ```
 
-**学習ポイント**:
-- 依存性注入（Dependency Injection）
-- インターフェース分離原則の適用
-- テスタブルな設計
-- 関心の分離
+### ステップ7: デザインパターンの実装
+```typescript
+// design-patterns.ts
+
+// Strategy Pattern - 価格計算戦略
+interface PricingStrategy {
+  calculatePrice(basePrice: number, quantity: number): number;
+}
+
+class RegularPricing implements PricingStrategy {
+  calculatePrice(basePrice: number, quantity: number): number {
+    return basePrice * quantity;
+  }
+}
+
+class BulkDiscountPricing implements PricingStrategy {
+  constructor(private discountThreshold: number, private discountRate: number) {}
+
+  calculatePrice(basePrice: number, quantity: number): number {
+    const total = basePrice * quantity;
+    if (quantity >= this.discountThreshold) {
+      return total * (1 - this.discountRate);
+    }
+    return total;
+  }
+}
+
+// Factory Pattern - 商品ファクトリー
+abstract class ProductFactory {
+  abstract createProduct(data: any): BaseProduct;
+  
+  // Template Method
+  public processProductCreation(data: any): BaseProduct {
+    this.validateData(data);
+    const product = this.createProduct(data);
+    this.logCreation(product);
+    return product;
+  }
+
+  protected validateData(data: any): void {
+    if (!data.name || !data.price || !data.category) {
+      throw new Error("必須フィールドが不足しています");
+    }
+  }
+
+  protected logCreation(product: BaseProduct): void {
+    console.log(`商品が作成されました: ${product.getProductType()} - ${product.name}`);
+  }
+}
+
+class PhysicalProductFactory extends ProductFactory {
+  createProduct(data: any): PhysicalProduct {
+    return new PhysicalProduct(
+      data.name,
+      data.price,
+      data.category,
+      data.weight || 1.0,
+      data.fragile || false
+    );
+  }
+}
+
+class DigitalProductFactory extends ProductFactory {
+  createProduct(data: any): DigitalProduct {
+    return new DigitalProduct(
+      data.name,
+      data.price,
+      data.category,
+      data.fileSize || 1024,
+      data.downloadUrl || "https://example.com/download"
+    );
+  }
+}
+
+// Observer Pattern - 在庫通知
+interface StockObserver {
+  onStockChanged(productId: string, newQuantity: number): void;
+}
+
+class EmailNotificationObserver implements StockObserver {
+  onStockChanged(productId: string, newQuantity: number): void {
+    if (newQuantity <= 5) {
+      console.log(`📧 在庫警告メール送信: 商品 ${productId} の在庫が ${newQuantity} 個になりました`);
+    }
+  }
+}
+
+class InventoryManager {
+  private inventory = new Map<string, number>();
+  private observers: StockObserver[] = [];
+
+  addObserver(observer: StockObserver): void {
+    this.observers.push(observer);
+  }
+
+  private notifyObservers(productId: string, quantity: number): void {
+    this.observers.forEach(observer => observer.onStockChanged(productId, quantity));
+  }
+
+  updateStock(productId: string, quantity: number): void {
+    this.inventory.set(productId, quantity);
+    this.notifyObservers(productId, quantity);
+  }
+
+  getStock(productId: string): number {
+    return this.inventory.get(productId) || 0;
+  }
+}
+
+// 使用例
+console.log("=== Strategy Pattern Demo ===");
+const regularPricing = new RegularPricing();
+const bulkPricing = new BulkDiscountPricing(10, 0.1); // 10個以上で10%割引
+
+console.log("通常価格 (5個):", regularPricing.calculatePrice(1000, 5));
+console.log("大量割引 (15個):", bulkPricing.calculatePrice(1000, 15));
+
+console.log("\n=== Factory Pattern Demo ===");
+const physicalFactory = new PhysicalProductFactory();
+const digitalFactory = new DigitalProductFactory();
+
+const book = physicalFactory.processProductCreation({
+  name: "TypeScript実践本",
+  price: 3000,
+  category: "書籍",
+  weight: 0.5
+});
+
+console.log("\n=== Observer Pattern Demo ===");
+const inventoryManager = new InventoryManager();
+const emailObserver = new EmailNotificationObserver();
+
+inventoryManager.addObserver(emailObserver);
+inventoryManager.updateStock("prod_001", 10);
+inventoryManager.updateStock("prod_001", 3); // 警告が発生
+```
 
 ---
 
-## 実用的なデータモデル設計
+## Storeシステムの実装例
 
-### ステップ7: Eコマースシステムのデータモデル
+### ステップ8: 完全なStoreシステム
 ```typescript
-// ecommerce-model.ts
+// store-system.ts
 
-// 基本エンティティ
-interface BaseEntity {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-// 商品関連
-interface Product extends BaseEntity {
-  name: string;
-  description: string;
-  price: number;
-  category: Category;
-  inventory: Inventory;
-  images: ProductImage[];
-  attributes: ProductAttribute[];
-}
-
-interface Category {
+// === ドメインエンティティ ===
+interface Customer {
   id: string;
   name: string;
-  parentId?: string;
-  slug: string;
-}
-
-interface Inventory {
-  quantity: number;
-  reserved: number;
-  available: number;
-  reorderLevel: number;
-}
-
-interface ProductImage {
-  id: string;
-  url: string;
-  alt: string;
-  isPrimary: boolean;
-  order: number;
-}
-
-interface ProductAttribute {
-  name: string;
-  value: string;
-  type: "text" | "number" | "boolean" | "select";
-}
-
-// ユーザー関連
-interface Customer extends BaseEntity {
   email: string;
-  firstName: string;
-  lastName: string;
-  phone?: string;
-  addresses: Address[];
-  preferences: CustomerPreferences;
+  membershipLevel: MembershipLevel;
+  address: Address;
 }
 
 interface Address {
-  id: string;
-  type: "billing" | "shipping";
-  street: string;
+  prefecture: string;
   city: string;
-  state: string;
-  zipCode: string;
-  country: string;
-  isDefault: boolean;
+  street: string;
+  postalCode: string;
 }
 
-interface CustomerPreferences {
-  newsletter: boolean;
-  notifications: {
-    email: boolean;
-    sms: boolean;
-    push: boolean;
-  };
-  language: string;
-  currency: string;
+enum MembershipLevel {
+  REGULAR = "regular",
+  PREMIUM = "premium",
+  VIP = "vip"
 }
-
-// 注文関連
-interface Order extends BaseEntity {
-  orderNumber: string;
-  customerId: string;
-  status: OrderStatus;
-  items: OrderItem[];
-  shipping: ShippingInfo;
-  billing: BillingInfo;
-  totals: OrderTotals;
-  notes?: string;
-}
-
-type OrderStatus = 
-  | "pending"
-  | "confirmed"
-  | "processing"
-  | "shipped"
-  | "delivered"
-  | "cancelled"
-  | "refunded";
 
 interface OrderItem {
   productId: string;
-  productName: string;
   quantity: number;
   unitPrice: number;
-  totalPrice: number;
-  attributes?: ProductAttribute[];
 }
 
-interface ShippingInfo {
-  address: Address;
-  method: ShippingMethod;
-  trackingNumber?: string;
-  estimatedDelivery?: Date;
-  actualDelivery?: Date;
-}
-
-interface ShippingMethod {
+interface Order {
   id: string;
-  name: string;
-  price: number;
-  estimatedDays: number;
+  customerId: string;
+  items: OrderItem[];
+  totalAmount: number;
+  status: OrderStatus;
+  createdAt: Date;
 }
 
-interface BillingInfo {
-  address: Address;
-  paymentMethod: PaymentMethod;
-  transactionId?: string;
+enum OrderStatus {
+  PENDING = "pending",
+  CONFIRMED = "confirmed",
+  SHIPPED = "shipped",
+  DELIVERED = "delivered",
+  CANCELLED = "cancelled"
 }
 
-interface PaymentMethod {
-  type: "credit_card" | "debit_card" | "paypal" | "bank_transfer";
-  last4?: string; // クレジットカードの場合
-  expiryMonth?: number;
-  expiryYear?: number;
-}
+// === ビジネスルール ===
+class StoreBusinessRules {
+  static readonly MINIMUM_ORDER_AMOUNT = 1000;
+  static readonly FREE_SHIPPING_THRESHOLD = 5000;
 
-interface OrderTotals {
-  subtotal: number;
-  tax: number;
-  shipping: number;
-  discount: number;
-  total: number;
-}
+  static validateOrder(order: Order, inventory: Map<string, number>): ValidationResult {
+    const errors: string[] = [];
 
-// ショッピングカート
-interface Cart {
-  id: string;
-  customerId?: string; // ゲストの場合はundefined
-  items: CartItem[];
-  totals: CartTotals;
-  expiresAt: Date;
-}
+    // 最小注文金額チェック
+    if (order.totalAmount < this.MINIMUM_ORDER_AMOUNT) {
+      errors.push(`最小注文金額は¥${this.MINIMUM_ORDER_AMOUNT}です`);
+    }
 
-interface CartItem {
-  productId: string;
-  quantity: number;
-  addedAt: Date;
-  selectedAttributes?: ProductAttribute[];
-}
-
-interface CartTotals {
-  itemCount: number;
-  subtotal: number;
-  estimatedTax: number;
-  estimatedTotal: number;
-}
-
-// サービスインターフェース
-interface ProductService {
-  getProduct(id: string): Promise<Product | null>;
-  searchProducts(query: ProductSearchQuery): Promise<ProductSearchResult>;
-  updateInventory(productId: string, quantity: number): Promise<boolean>;
-}
-
-interface ProductSearchQuery {
-  keyword?: string;
-  categoryId?: string;
-  priceRange?: {
-    min: number;
-    max: number;
-  };
-  attributes?: Record<string, string>;
-  sortBy?: "price" | "name" | "popularity" | "newest";
-  sortOrder?: "asc" | "desc";
-  page: number;
-  limit: number;
-}
-
-interface ProductSearchResult {
-  products: Product[];
-  totalCount: number;
-  page: number;
-  totalPages: number;
-  filters: SearchFilter[];
-}
-
-interface SearchFilter {
-  name: string;
-  type: "range" | "select" | "checkbox";
-  options: FilterOption[];
-}
-
-interface FilterOption {
-  value: string;
-  label: string;
-  count: number;
-}
-
-interface OrderService {
-  createOrder(cart: Cart, shipping: ShippingInfo, billing: BillingInfo): Promise<Order>;
-  getOrder(id: string): Promise<Order | null>;
-  updateOrderStatus(id: string, status: OrderStatus): Promise<boolean>;
-  cancelOrder(id: string, reason: string): Promise<boolean>;
-}
-
-interface CartService {
-  getCart(id: string): Promise<Cart | null>;
-  addItem(cartId: string, productId: string, quantity: number): Promise<Cart>;
-  removeItem(cartId: string, productId: string): Promise<Cart>;
-  updateQuantity(cartId: string, productId: string, quantity: number): Promise<Cart>;
-  clearCart(cartId: string): Promise<boolean>;
-}
-
-// 使用例
-class EcommerceDemo {
-  static createSampleData(): {
-    product: Product;
-    customer: Customer;
-    cart: Cart;
-  } {
-    const product: Product = {
-      id: "prod-001",
-      name: "TypeScript Programming Book",
-      description: "Learn TypeScript from basics to advanced",
-      price: 29.99,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      category: {
-        id: "cat-books",
-        name: "Programming Books",
-        slug: "programming-books"
-      },
-      inventory: {
-        quantity: 100,
-        reserved: 5,
-        available: 95,
-        reorderLevel: 10
-      },
-      images: [
-        {
-          id: "img-001",
-          url: "https://example.com/book-cover.jpg",
-          alt: "TypeScript Programming Book Cover",
-          isPrimary: true,
-          order: 1
-        }
-      ],
-      attributes: [
-        { name: "Author", value: "John Doe", type: "text" },
-        { name: "Pages", value: "350", type: "number" },
-        { name: "Format", value: "Paperback", type: "select" }
-      ]
-    };
-
-    const customer: Customer = {
-      id: "cust-001",
-      email: "alice@example.com",
-      firstName: "Alice",
-      lastName: "Johnson",
-      phone: "+1-555-0123",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      addresses: [
-        {
-          id: "addr-001",
-          type: "shipping",
-          street: "123 Main St",
-          city: "Anytown",
-          state: "CA",
-          zipCode: "12345",
-          country: "US",
-          isDefault: true
-        }
-      ],
-      preferences: {
-        newsletter: true,
-        notifications: {
-          email: true,
-          sms: false,
-          push: true
-        },
-        language: "en",
-        currency: "USD"
+    // 在庫チェック
+    for (const item of order.items) {
+      const availableStock = inventory.get(item.productId) || 0;
+      if (availableStock < item.quantity) {
+        errors.push(`商品 ${item.productId} の在庫が不足しています（在庫: ${availableStock}, 注文: ${item.quantity}）`);
       }
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
+  }
+
+  static calculateMembershipDiscount(amount: number, level: MembershipLevel): number {
+    const discountRates = {
+      [MembershipLevel.REGULAR]: 0,
+      [MembershipLevel.PREMIUM]: 0.05,
+      [MembershipLevel.VIP]: 0.1
     };
 
-    const cart: Cart = {
-      id: "cart-001",
-      customerId: customer.id,
-      items: [
-        {
-          productId: product.id,
-          quantity: 2,
-          addedAt: new Date(),
-          selectedAttributes: [
-            { name: "Format", value: "Paperback", type: "select" }
-          ]
-        }
-      ],
-      totals: {
-        itemCount: 2,
-        subtotal: 59.98,
-        estimatedTax: 4.80,
-        estimatedTotal: 64.78
-      },
-      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24時間後
-    };
+    return amount * discountRates[level];
+  }
 
-    return { product, customer, cart };
+  static calculateShippingCost(order: Order, customer: Customer): number {
+    if (order.totalAmount >= this.FREE_SHIPPING_THRESHOLD) {
+      return 0; // 送料無料
+    }
+
+    // 地域による送料計算
+    const baseCost = 500;
+    const remoteAreas = ["沖縄県", "北海道"];
+    
+    if (remoteAreas.includes(customer.address.prefecture)) {
+      return baseCost * 2;
+    }
+
+    return baseCost;
   }
 }
 
-// デモ実行
-const sampleData = EcommerceDemo.createSampleData();
-console.log("Sample Product:", JSON.stringify(sampleData.product, null, 2));
-console.log("Sample Customer:", JSON.stringify(sampleData.customer, null, 2));
-console.log("Sample Cart:", JSON.stringify(sampleData.cart, null, 2));
-```
-
-**学習ポイント**:
-- 複雑なドメインモデルの設計
-- 関連エンティティの適切な分離
-- 実用的なサービスインターフェース設計
-- 型安全なデータ構造
-
-## ブログシステム設計
-
-**実装要件**:
-- ユーザー管理（認証・役割管理）
-- 記事CRUD操作（作成・更新・削除・取得）
-- カテゴリ・タグ管理
-- コメント機能（ネスト構造対応）
-- 検索・フィルタリング機能
-- ページネーション対応
-- 型安全なAPI設計
-
-```typescript
-// blog-system.ts
-
-// 基本エンティティ
-interface BaseEntity {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
+// === サービス層 ===
+interface CustomerRepository {
+  findById(id: string): Promise<Customer | null>;
 }
 
-// ユーザー関連
-interface User extends BaseEntity {
-  username: string;
-  email: string;
-  displayName: string;
-  bio?: string;
-  avatar?: string;
-  role: UserRole;
-  isActive: boolean;
+interface InventoryService {
+  getAllInventory(): Promise<Map<string, number>>;
+  reserveStock(productId: string, quantity: number): Promise<boolean>;
+  releaseStock(productId: string, quantity: number): Promise<void>;
 }
 
-type UserRole = "admin" | "editor" | "author" | "subscriber";
-
-// ブログ記事関連
-interface BlogPost extends BaseEntity {
-  title: string;
-  slug: string;
-  content: string;
-  excerpt?: string;
-  featuredImage?: string;
-  status: PostStatus;
-  publishedAt?: Date;
-  author: User;
-  categories: Category[];
-  tags: Tag[];
-  comments: Comment[];
-  metadata: PostMetadata;
-}
-
-type PostStatus = "draft" | "published" | "archived" | "scheduled";
-
-interface PostMetadata {
-  viewCount: number;
-  likeCount: number;
-  shareCount: number;
-  readingTime: number; // 分単位
-  seoTitle?: string;
-  seoDescription?: string;
-  seoKeywords?: string[];
-}
-
-// カテゴリとタグ
-interface Category extends BaseEntity {
-  name: string;
-  slug: string;
-  description?: string;
-  parentId?: string;
-  color?: string;
-  postCount: number;
-}
-
-interface Tag extends BaseEntity {
-  name: string;
-  slug: string;
-  color?: string;
-  postCount: number;
-}
-
-// コメント関連
-interface Comment extends BaseEntity {
-  content: string;
-  author: CommentAuthor;
-  postId: string;
-  parentId?: string; // 返信コメントの場合
-  status: CommentStatus;
-  replies?: Comment[];
-}
-
-type CommentStatus = "pending" | "approved" | "spam" | "trash";
-
-interface CommentAuthor {
-  name: string;
-  email: string;
-  website?: string;
-  isRegistered: boolean;
-  userId?: string;
-}
-
-// ブログサービスインターフェース
-interface BlogService {
-  // 記事管理
-  createPost(data: CreatePostRequest): Promise<BlogPost>;
-  updatePost(id: string, data: UpdatePostRequest): Promise<BlogPost>;
-  deletePost(id: string): Promise<boolean>;
-  getPost(id: string): Promise<BlogPost | null>;
-  getPostBySlug(slug: string): Promise<BlogPost | null>;
-  
-  // 記事一覧
-  getPosts(options: GetPostsOptions): Promise<BlogPostPaginatedResult>;
-  getPostsByCategory(categoryId: string, options: PaginationOptions): Promise<BlogPostPaginatedResult>;
-  getPostsByTag(tagId: string, options: PaginationOptions): Promise<BlogPostPaginatedResult>;
-  getPostsByAuthor(authorId: string, options: PaginationOptions): Promise<BlogPostPaginatedResult>;
-
-  // 検索
-  searchPosts(query: string, options: SearchOptions): Promise<BlogPostPaginatedResult>;
-}
-
-// リクエスト・レスポンス型
-interface CreatePostRequest {
-  title: string;
-  content: string;
-  excerpt?: string;
-  featuredImage?: string;
-  status: PostStatus;
-  publishedAt?: Date;
-  categoryIds: string[];
-  tagNames: string[];
-  metadata?: {
-    description?: string;
-    keywords?: string[];
-    ogImage?: string;
-    canonicalUrl?: string;
-  };
-}
-
-interface UpdatePostRequest {
-  title?: string;
-  content?: string;
-  excerpt?: string;
-  categoryId?: string;
-  tagNames?: string[];
-  metadata?: {
-    description?: string;
-    keywords?: string[];
-    ogImage?: string;
-    canonicalUrl?: string;
-  };
-  slug?: string;
-}
-
-interface GetPostsOptions extends PaginationOptions {
-  status?: PostStatus;
-  authorId?: string;
-  categoryId?: string;
-  tagId?: string;
-  sortBy?: "createdAt" | "publishedAt" | "title" | "viewCount";
-  sortOrder?: "asc" | "desc";
-}
-
-interface SearchOptions extends PaginationOptions {
-  fields?: ("title" | "content" | "excerpt")[];
-  categoryIds?: string[];
-  tagIds?: string[];
-  authorIds?: string[];
-}
-
-interface PaginationOptions {
-  page: number;
-  limit: number;
-}
-
-interface BlogPostPaginatedResult {
-  data: BlogPost[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-    hasNext: boolean;
-    hasPrev: boolean;
-  };
-}
-
-// 実装例
-class BlogServiceImpl implements BlogService {
+class OrderService {
   constructor(
-    private postRepository: BlogPostRepository,
-    private userRepository: UserRepository,
-    private categoryRepository: CategoryRepository,
-    private tagRepository: TagRepository
+    private productRepository: ProductRepository,
+    private customerRepository: CustomerRepository,
+    private inventoryService: InventoryService
   ) {}
 
-  async createPost(data: CreatePostRequest): Promise<BlogPost> {
-    // スラッグ生成
-    const slug = this.generateSlug(data.title);
+  async createOrder(customerId: string, items: OrderItem[]): Promise<Order> {
+    // 顧客情報取得
+    const customer = await this.customerRepository.findById(customerId);
+    if (!customer) {
+      throw new Error("顧客が見つかりません");
+    }
+
+    // 商品情報と価格計算
+    let totalAmount = 0;
+    for (const item of items) {
+      const product = await this.productRepository.findById(item.productId);
+      if (!product) {
+        throw new Error(`商品が見つかりません: ${item.productId}`);
+      }
+      totalAmount += item.unitPrice * item.quantity;
+    }
+
+    // 会員割引適用
+    const discount = StoreBusinessRules.calculateMembershipDiscount(totalAmount, customer.membershipLevel);
+    totalAmount -= discount;
+
+    // 注文作成
+    const order: Order = {
+      id: "order_" + Date.now(),
+      customerId,
+      items,
+      totalAmount,
+      status: OrderStatus.PENDING,
+      createdAt: new Date()
+    };
+
+    // ビジネスルール検証
+    const inventory = await this.inventoryService.getAllInventory();
+    const validation = StoreBusinessRules.validateOrder(order, inventory);
     
-    // カテゴリとタグの取得・作成
-    const categories = await this.getOrCreateCategories(data.categoryIds);
-    const tags = await this.getOrCreateTags(data.tagNames);
-    
-    // 記事作成
-    const post: BlogPost = {
-      id: this.generateId(),
-      title: data.title,
-      slug,
-      content: data.content,
-      excerpt: data.excerpt || this.generateExcerpt(data.content),
-      featuredImage: data.featuredImage,
-      status: data.status,
-      publishedAt: data.publishedAt,
-      author: await this.getCurrentUser(),
-      categories,
-      tags,
-      comments: [],
-      metadata: {
-        viewCount: 0,
-        likeCount: 0,
-        shareCount: 0,
-        readingTime: this.calculateReadingTime(data.content),
-        ...data.metadata
-      },
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
+    if (!validation.isValid) {
+      throw new Error(`注文の検証に失敗しました: ${validation.errors.join(", ")}`);
+    }
 
-    return await this.postRepository.save(post);
+    // 在庫予約
+    for (const item of items) {
+      const reserved = await this.inventoryService.reserveStock(item.productId, item.quantity);
+      if (!reserved) {
+        throw new Error(`在庫の予約に失敗しました: ${item.productId}`);
+      }
+    }
+
+    return order;
   }
 
-  async getPosts(options: GetPostsOptions): Promise<BlogPostPaginatedResult> {
-    const query = this.buildQuery(options);
-    const posts = await this.postRepository.findMany(query);
-    const total = await this.postRepository.count(query);
-
-    return {
-      data: posts,
-      pagination: this.buildPagination(options, total)
-    };
-  }
-
-  async searchPosts(query: string, options: SearchOptions): Promise<BlogPostPaginatedResult> {
-    const searchQuery = this.buildSearchQuery(query, options);
-    const posts = await this.postRepository.search(searchQuery);
-    const total = await this.postRepository.countSearch(searchQuery);
-
-    return {
-      data: posts,
-      pagination: this.buildPagination(options, total)
-    };
-  }
-
-  // ヘルパーメソッド
-  private generateSlug(title: string): string {
-    return title
-      .toLowerCase()
-      .replace(/[^\w\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .trim();
-  }
-
-  private generateExcerpt(content: string, maxLength: number = 160): string {
-    const plainText = content.replace(/<[^>]*>/g, '');
-    return plainText.length > maxLength 
-      ? plainText.substring(0, maxLength) + '...'
-      : plainText;
-  }
-
-  private calculateReadingTime(content: string): number {
-    const wordsPerMinute = 200;
-    const wordCount = content.split(/\s+/).length;
-    return Math.ceil(wordCount / wordsPerMinute);
-  }
-
-  private async getOrCreateCategories(categoryIds: string[]): Promise<Category[]> {
-    // カテゴリの取得・作成ロジック
-    return [];
-  }
-
-  private async getOrCreateTags(tagNames: string[]): Promise<Tag[]> {
-    // タグの取得・作成ロジック
-    return [];
-  }
-
-  private async getCurrentUser(): Promise<User> {
-    // 現在のユーザー取得ロジック
-    return {} as User;
-  }
-
-  private generateId(): string {
-    return Math.random().toString(36).substring(2, 15);
-  }
-
-  private buildQuery(options: GetPostsOptions): any {
-    // クエリ構築ロジック
-    return {};
-  }
-
-  private buildSearchQuery(query: string, options: SearchOptions): any {
-    // 検索クエリ構築ロジック
-    return {};
-  }
-
-  private buildPagination(options: PaginationOptions, total: number): any {
-    const totalPages = Math.ceil(total / options.limit);
-    return {
-      page: options.page,
-      limit: options.limit,
-      total,
-      totalPages,
-      hasNext: options.page < totalPages,
-      hasPrev: options.page > 1
-    };
+  async confirmOrder(orderId: string): Promise<void> {
+    // 注文確認処理
+    console.log(`注文 ${orderId} が確認されました`);
   }
 }
 
-// 使用例
-async function demonstrateBlogSystem() {
-  const blogService = new BlogServiceImpl(
-    {} as BlogPostRepository,
-    {} as UserRepository,
-    {} as CategoryRepository,
-    {} as TagRepository
+// === 実装例 ===
+class InMemoryCustomerRepository implements CustomerRepository {
+  private customers = new Map<string, Customer>();
+
+  constructor() {
+    // サンプルデータ
+    this.customers.set("cust_001", {
+      id: "cust_001",
+      name: "田中太郎",
+      email: "tanaka@example.com",
+      membershipLevel: MembershipLevel.PREMIUM,
+      address: {
+        prefecture: "東京都",
+        city: "渋谷区",
+        street: "渋谷1-1-1",
+        postalCode: "150-0002"
+      }
+    });
+  }
+
+  async findById(id: string): Promise<Customer | null> {
+    return this.customers.get(id) || null;
+  }
+}
+
+class InMemoryInventoryService implements InventoryService {
+  private inventory = new Map<string, number>();
+  private reserved = new Map<string, number>();
+
+  constructor() {
+    // サンプル在庫データ
+    this.inventory.set("prod_001", 100);
+    this.inventory.set("prod_002", 50);
+    this.inventory.set("prod_003", 25);
+  }
+
+  async getAllInventory(): Promise<Map<string, number>> {
+    return new Map(this.inventory);
+  }
+
+  async reserveStock(productId: string, quantity: number): Promise<boolean> {
+    const available = (this.inventory.get(productId) || 0) - (this.reserved.get(productId) || 0);
+    if (available >= quantity) {
+      const currentReserved = this.reserved.get(productId) || 0;
+      this.reserved.set(productId, currentReserved + quantity);
+      return true;
+    }
+    return false;
+  }
+
+  async releaseStock(productId: string, quantity: number): Promise<void> {
+    const currentReserved = this.reserved.get(productId) || 0;
+    this.reserved.set(productId, Math.max(0, currentReserved - quantity));
+  }
+}
+
+// === 使用例 ===
+async function demonstrateStoreSystem() {
+  const productRepository = new InMemoryProductRepository();
+  const customerRepository = new InMemoryCustomerRepository();
+  const inventoryService = new InMemoryInventoryService();
+  
+  const orderService = new OrderService(
+    productRepository,
+    customerRepository,
+    inventoryService
   );
 
-  // 新しい記事を作成
-  const newPost = await blogService.createPost({
-    title: "TypeScriptでブログシステムを作る",
-    content: "TypeScriptを使用してブログシステムを構築する方法について説明します...",
-    excerpt: "TypeScriptでブログシステムを構築する実践的なガイド",
-    status: "published",
-    categoryIds: ["tech", "typescript"],
-    tagNames: ["TypeScript", "ブログ", "開発"]
-  });
+  try {
+    // 商品を事前に作成
+    const productService = new ProductService(productRepository, new ProductValidatorImpl());
+    await productService.createProduct("TypeScript入門書", 2980, "書籍");
+    await productService.createProduct("JavaScript基礎", 2500, "書籍");
 
-  console.log("作成された記事:", newPost);
+    // 注文作成
+    const orderItems: OrderItem[] = [
+      { productId: "prod_001", quantity: 2, unitPrice: 2980 },
+      { productId: "prod_002", quantity: 1, unitPrice: 2500 }
+    ];
 
-  // 記事一覧を取得
-  const posts = await blogService.getPosts({
-    page: 1,
-    limit: 10,
-    status: "published",
-    sortBy: "publishedAt",
-    sortOrder: "desc"
-  });
+    const order = await orderService.createOrder("cust_001", orderItems);
+    console.log("注文が作成されました:", {
+      orderId: order.id,
+      totalAmount: order.totalAmount,
+      status: order.status
+    });
 
-  console.log("記事一覧:", posts);
-
-  // 記事を検索
-  const searchResults = await blogService.searchPosts("TypeScript", {
-    page: 1,
-    limit: 5,
-    fields: ["title", "content"]
-  });
-
-  console.log("検索結果:", searchResults);
-}
-
-// Repository インターフェース（参考）
-// 汎用Repositoryインターフェース（参考）
-interface GenericRepository {
-  save(entity: any): Promise<any>;
-  findById(id: string): Promise<any | null>;
-  findMany(query: any): Promise<any[]>;
-  count(query: any): Promise<number>;
-  search(query: any): Promise<any[]>;
-  countSearch(query: any): Promise<number>;
-  update(id: string, data: any): Promise<any>;
-  delete(id: string): Promise<boolean>;
-}
-```
-
-**学習ポイント**:
-- 複雑なドメインモデルの設計
-- エンティティ間の関係性の表現
-- サービス層のインターフェース設計
-- 型安全なAPI設計
-- ページネーションとソート機能
-- 検索機能の型定義
-- 実用的なヘルパーメソッドの実装
-
-**設計の特徴**:
-- **単一責任の原則**: 各インターフェースが明確な責任を持つ
-- **拡張性**: 新しい機能を追加しやすい設計
-- **型安全性**: すべての操作が型チェックされる
-- **実用性**: 実際のブログシステムで使用できるレベルの設計
----
-
-## 🎯 実行とテストの方法
-
-### 基本的な実行方法
-```bash
-# TypeScriptファイルを直接実行
-npx ts-node filename.ts
-
-# コンパイルしてから実行
-npx tsc filename.ts
-node filename.js
-```
-
-### 開発用の設定
-```bash
-# package.jsonにスクリプトを追加
-{
-  "scripts": {
-    "dev": "ts-node src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "test": "jest"
+    await orderService.confirmOrder(order.id);
+  } catch (error) {
+    console.error("エラー:", error.message);
   }
 }
 
-# 実行
-npm run dev
+demonstrateStoreSystem();
 ```
 
 ---
 
 ## 📚 学習の進め方
 
-1. **段階的に進める**: 基本的なインターフェースから始めて、徐々に複雑な設計に挑戦
-2. **実際に動かす**: コードをコピーして実際に実行してみる
-3. **改造してみる**: 既存のコードを改造して理解を深める
-4. **設計を考える**: なぜその設計にしたのかを考える
-5. **他の方法を試す**: 同じ機能を異なる方法で実装してみる
+### 1. 段階的な実践
+1. **基本**: インターフェースの定義から始める
+2. **応用**: クラス設計とインターフェース実装
+3. **発展**: 抽象クラスとデザインパターン
+4. **統合**: 完全なシステム設計
 
----
+### 2. コード実行とテスト
+```bash
+# TypeScriptコンパイラのインストール
+npm install -g typescript
 
-**📌 重要**: これらのコード例は実際のプロジェクトで使用できる実用的なパターンです。インターフェース設計の考え方を身につけて、保守性の高いコードを書けるようになりましょう。
+# コードの実行
+npx ts-node filename.ts
+
+# 型チェックのみ
+tsc --noEmit filename.ts
+```
+
+### 3. 実践的な学習方法
+- **写経**: コード例を実際に入力して動作確認
+- **改造**: 既存コードを修正して動作の変化を確認
+- **拡張**: 新しい機能を追加して理解を深める
+- **設計**: 自分なりのシステムを設計してみる
+
+### 4. デバッグとトラブルシューティング
+- **型エラー**: Type

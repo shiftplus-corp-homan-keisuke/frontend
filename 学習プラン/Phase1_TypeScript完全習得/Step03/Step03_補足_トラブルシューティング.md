@@ -1,13 +1,13 @@
 # Step03 トラブルシューティング
 
-> 💡 **このファイルについて**: インターフェースとオブジェクト型でよくあるエラーと解決方法をまとめたガイドです。
+> 💡 **このファイルについて**: インターフェース、クラス設計、抽象クラスでよくあるエラーと解決方法をまとめたガイドです。
 
 ## 📋 目次
 1. [インターフェース関連のエラー](#インターフェース関連のエラー)
-2. [型エイリアス関連のエラー](#型エイリアス関連のエラー)
-3. [継承・実装関連のエラー](#継承実装関連のエラー)
-4. [構造的型付け関連のエラー](#構造的型付け関連のエラー)
-5. [デザインパターン実装時のエラー](#デザインパターン実装時のエラー)
+2. [クラス設計関連のエラー](#クラス設計関連のエラー)
+3. [抽象クラス関連のエラー](#抽象クラス関連のエラー)
+4. [アクセス修飾子関連のエラー](#アクセス修飾子関連のエラー)
+5. [Storeシステム実装時のエラー](#storeシステム実装時のエラー)
 
 ---
 
@@ -18,46 +18,45 @@
 
 **エラー例**:
 ```typescript
-interface User {
-  id: number;
+interface Product {
+  id: string;
   name: string;
-  email: string;
+  price: number;
+  category: string;
 }
 
-// Error: Property 'email' is missing in type
-const user: User = {
-  id: 1,
-  name: "Alice"
-  // email が不足
+// Error: Property 'category' is missing in type
+const product: Product = {
+  id: "prod_001",
+  name: "TypeScript入門書",
+  price: 2980
+  // category が不足
 };
 ```
 
 **解決方法**:
 ```typescript
 // 解決方法1: 不足しているプロパティを追加
-const user: User = {
-  id: 1,
-  name: "Alice",
-  email: "alice@example.com" // 追加
+const product: Product = {
+  id: "prod_001",
+  name: "TypeScript入門書",
+  price: 2980,
+  category: "書籍" // 追加
 };
 
 // 解決方法2: オプショナルプロパティにする
-interface User {
-  id: number;
+interface Product {
+  id: string;
   name: string;
-  email?: string; // オプショナルにする
+  price: number;
+  category?: string; // オプショナルにする
 }
 
 // 解決方法3: Partialユーティリティ型を使用
-const partialUser: {
-  id?: number;
-  name?: string;
-  email?: string;
-  age?: number;
-} = {
-  id: 1,
-  name: "Alice"
-  // emailは省略可能
+const partialProduct: Partial<Product> = {
+  id: "prod_001",
+  name: "TypeScript入門書"
+  // price, categoryは省略可能
 };
 ```
 
@@ -66,39 +65,42 @@ const partialUser: {
 
 **エラー例**:
 ```typescript
-interface User {
-  id: number;
+interface Product {
+  id: string;
   name: string;
+  price: number;
 }
 
-function getValue(user: User, key: string): any {
-  return user[key]; // Error: Element implicitly has an 'any' type
+function getProductProperty(product: Product, key: string): any {
+  return product[key]; // Error: Element implicitly has an 'any' type
 }
 ```
 
 **解決方法**:
 ```typescript
 // 解決方法1: インデックスシグネチャを追加
-interface User {
-  id: number;
+interface Product {
+  id: string;
   name: string;
+  price: number;
   [key: string]: any; // インデックスシグネチャ
 }
 
 // 解決方法2: keyof演算子を使用
-function getValue<T, K extends keyof T>(obj: T, key: K): T[K] {
+function getProductProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
   return obj[key];
 }
 
 // 解決方法3: Record型を使用
-interface User extends Record<string, any> {
-  id: number;
+interface Product extends Record<string, any> {
+  id: string;
   name: string;
+  price: number;
 }
 
 // 解決方法4: 型アサーションを使用（注意して使用）
-function getValue(user: User, key: string): any {
-  return (user as any)[key];
+function getProductProperty(product: Product, key: string): any {
+  return (product as any)[key];
 }
 ```
 
@@ -107,211 +109,87 @@ function getValue(user: User, key: string): any {
 
 **エラー例**:
 ```typescript
-interface User {
+interface Product {
   name: string;
 }
 
-interface User { // Error: Duplicate identifier 'User'
-  age: number;
+interface Product { // Error: Duplicate identifier 'Product'
+  price: number;
 }
 ```
 
 **解決方法**:
 ```typescript
 // 解決方法1: インターフェースマージを活用（意図的な場合）
-interface User {
+interface Product {
   name: string;
 }
 
-interface User {
-  age: number; // 自動的にマージされる
+interface Product {
+  price: number; // 自動的にマージされる
 }
 
 // 解決方法2: 異なる名前を使用
-interface User {
+interface Product {
   name: string;
 }
 
-interface ExtendedUser {
-  age: number;
+interface ExtendedProduct {
+  price: number;
 }
 
 // 解決方法3: 継承を使用
-interface User {
+interface Product {
   name: string;
 }
 
-interface UserWithAge extends User {
-  age: number;
+interface ProductWithPrice extends Product {
+  price: number;
 }
 ```
 
 ---
 
-## 型エイリアス関連のエラー
-
-### "Type alias 'xxx' circularly references itself"
-**原因**: 型エイリアスが自分自身を循環参照している
-
-**エラー例**:
-```typescript
-// Error: Type alias 'Node' circularly references itself
-type Node = {
-  value: string;
-  children: Node[]; // 直接的な循環参照
-};
-```
-
-**解決方法**:
-```typescript
-// 解決方法1: インターフェースを使用
-interface Node {
-  value: string;
-  children: Node[]; // インターフェースは循環参照可能
-}
-
-// 解決方法2: 間接的な参照を使用
-type NodeChildren = Node[];
-type Node = {
-  value: string;
-  children: NodeChildren;
-};
-
-// 解決方法3: 再帰的な型定義を明示的に行う
-type UserTreeNode = {
-  value: User;
-  children?: UserTreeNode[];
-};
-```
-
-### "A union type cannot be used here"
-**原因**: ユニオン型が使用できない場所でユニオン型を使用している
-
-**エラー例**:
-```typescript
-// Error: A computed property name must be of type 'string', 'number', 'symbol', or 'any'
-type Keys = "name" | "age";
-type User = {
-  [K in Keys]: string; // 正しい構文ではない
-};
-```
-
-**解決方法**:
-```typescript
-// 解決方法1: Mapped Typesを正しく使用
-type Keys = "name" | "age";
-type User = {
-  [K in Keys]: string;
-};
-
-// 解決方法2: Record型を使用
-type User = Record<Keys, string>;
-
-// 解決方法3: 個別に定義
-type User = {
-  name: string;
-  age: string;
-};
-```
-
-### "Type 'xxx' is not assignable to type 'yyy'"
-**原因**: ユニオン型の型ガードが不適切
-
-**エラー例**:
-```typescript
-type Shape = 
-  | { kind: "circle"; radius: number }
-  | { kind: "rectangle"; width: number; height: number };
-
-function getArea(shape: Shape): number {
-  // Error: Property 'radius' does not exist on type 'Shape'
-  return Math.PI * shape.radius * shape.radius;
-}
-```
-
-**解決方法**:
-```typescript
-// 解決方法1: 型ガードを使用
-function getArea(shape: Shape): number {
-  if (shape.kind === "circle") {
-    return Math.PI * shape.radius * shape.radius;
-  } else {
-    return shape.width * shape.height;
-  }
-}
-
-// 解決方法2: switch文を使用
-function getArea(shape: Shape): number {
-  switch (shape.kind) {
-    case "circle":
-      return Math.PI * shape.radius * shape.radius;
-    case "rectangle":
-      return shape.width * shape.height;
-    default:
-      // 網羅性チェック
-      const _exhaustive: never = shape;
-      throw new Error(`Unhandled shape: ${_exhaustive}`);
-  }
-}
-
-// 解決方法3: in演算子を使用
-function getArea(shape: Shape): number {
-  if ("radius" in shape) {
-    return Math.PI * shape.radius * shape.radius;
-  } else {
-    return shape.width * shape.height;
-  }
-}
-```
-
----
-
-## 継承・実装関連のエラー
+## クラス設計関連のエラー
 
 ### "Class 'xxx' incorrectly implements interface 'yyy'"
 **原因**: クラスがインターフェースを正しく実装していない
 
 **エラー例**:
 ```typescript
-interface Flyable {
-  fly(): void;
-  altitude: number;
+interface ProductRepository {
+  save(product: Product): Promise<void>;
+  findById(id: string): Promise<Product | null>;
 }
 
-// Error: Class 'Bird' incorrectly implements interface 'Flyable'
-class Bird implements Flyable {
-  fly() {
-    console.log("Flying");
+// Error: Class 'InMemoryProductRepository' incorrectly implements interface 'ProductRepository'
+class InMemoryProductRepository implements ProductRepository {
+  save(product: Product): void { // 戻り値の型が違う
+    console.log("Saving product");
   }
-  // altitude プロパティが不足
+  // findById メソッドが不足
 }
 ```
 
 **解決方法**:
 ```typescript
-// 解決方法1: 不足しているメンバーを追加
-class Bird implements Flyable {
-  altitude: number = 0;
-  
-  fly(): void {
-    console.log("Flying");
-    this.altitude = 100;
+// 解決方法1: 不足しているメンバーを追加し、型を修正
+class InMemoryProductRepository implements ProductRepository {
+  private products = new Map<string, Product>();
+
+  async save(product: Product): Promise<void> { // 正しい戻り値の型
+    this.products.set(product.id, product);
+  }
+
+  async findById(id: string): Promise<Product | null> { // 不足していたメソッドを追加
+    return this.products.get(id) || null;
   }
 }
 
-// 解決方法2: コンストラクタで初期化
-class Bird implements Flyable {
-  constructor(public altitude: number = 0) {}
-  
-  fly(): void {
-    console.log("Flying");
-  }
-}
-
-// 解決方法3: インターフェースを修正（オプショナルにする）
-interface Flyable {
-  fly(): void;
-  altitude?: number; // オプショナルにする
+// 解決方法2: インターフェースを修正（必要に応じて）
+interface ProductRepository {
+  save(product: Product): void; // 同期処理に変更
+  findById(id: string): Product | null; // 同期処理に変更
 }
 ```
 
@@ -320,9 +198,10 @@ interface Flyable {
 
 **エラー例**:
 ```typescript
-class User {
-  id: number; // Error: Property 'id' has no initializer
+class Product {
+  id: string; // Error: Property 'id' has no initializer
   name: string; // Error: Property 'name' has no initializer
+  price: number; // Error: Property 'price' has no initializer
   
   constructor() {
     // プロパティが初期化されていない
@@ -333,38 +212,44 @@ class User {
 **解決方法**:
 ```typescript
 // 解決方法1: コンストラクタで初期化
-class User {
-  id: number;
+class Product {
+  id: string;
   name: string;
+  price: number;
   
-  constructor(id: number, name: string) {
+  constructor(id: string, name: string, price: number) {
     this.id = id;
     this.name = name;
+    this.price = price;
   }
 }
 
 // 解決方法2: プロパティ初期化子を使用
-class User {
-  id: number = 0;
+class Product {
+  id: string = "";
   name: string = "";
+  price: number = 0;
 }
 
 // 解決方法3: 確定代入アサーション（!）を使用
-class User {
-  id!: number; // 後で確実に代入されることを保証
+class Product {
+  id!: string; // 後で確実に代入されることを保証
   name!: string;
+  price!: number;
   
-  initialize(id: number, name: string) {
+  initialize(id: string, name: string, price: number) {
     this.id = id;
     this.name = name;
+    this.price = price;
   }
 }
 
 // 解決方法4: コンストラクタパラメータプロパティを使用
-class User {
+class Product {
   constructor(
-    public id: number,
-    public name: string
+    public id: string,
+    public name: string,
+    public price: number
   ) {}
 }
 ```
@@ -374,331 +259,525 @@ class User {
 
 **エラー例**:
 ```typescript
-interface Animal {
+interface BaseProduct {
+  id: string;
   name: string;
-  age: number;
-  makeSound(): void;
+  price: number;
+  getInfo(): string;
 }
 
-interface Dog extends Animal {
-  breed: string;
+interface DigitalProduct extends BaseProduct {
+  downloadUrl: string;
+  fileSize: number;
 }
 
-// Error: Type is missing properties 'age', 'makeSound'
-const dog: Dog = {
-  name: "Buddy",
-  breed: "Golden Retriever"
+// Error: Type is missing properties 'price', 'getInfo'
+const digitalProduct: DigitalProduct = {
+  id: "dig_001",
+  name: "TypeScript完全ガイド",
+  downloadUrl: "https://example.com/download",
+  fileSize: 1024
 };
 ```
 
 **解決方法**:
 ```typescript
 // 解決方法1: 不足しているプロパティを追加
-const dog: Dog = {
-  name: "Buddy",
-  breed: "Golden Retriever",
-  age: 3,
-  makeSound() {
-    console.log("Woof!");
+const digitalProduct: DigitalProduct = {
+  id: "dig_001",
+  name: "TypeScript完全ガイド",
+  price: 2980, // 追加
+  downloadUrl: "https://example.com/download",
+  fileSize: 1024,
+  getInfo() { // 追加
+    return `${this.name} - ¥${this.price}`;
   }
 };
 
 // 解決方法2: 基底インターフェースを修正
-interface Animal {
+interface BaseProduct {
+  id: string;
   name: string;
-  age?: number; // オプショナルにする
-  makeSound?(): void; // オプショナルにする
+  price?: number; // オプショナルにする
+  getInfo?(): string; // オプショナルにする
 }
 
 // 解決方法3: Partialを使用
-const partialDog: {
-  name?: string;
-  breed?: string;
-  age?: number;
-} = {
-  name: "Buddy",
-  breed: "Golden Retriever"
+const partialDigitalProduct: Partial<DigitalProduct> = {
+  id: "dig_001",
+  name: "TypeScript完全ガイド",
+  downloadUrl: "https://example.com/download"
 };
 ```
 
 ---
 
-## 構造的型付け関連のエラー
+## 抽象クラス関連のエラー
+
+### "Cannot create an instance of an abstract class"
+**原因**: 抽象クラスを直接インスタンス化しようとしている
+
+**エラー例**:
+```typescript
+abstract class BaseProduct {
+  constructor(public name: string, public price: number) {}
+  
+  abstract getProductType(): string;
+  
+  getInfo(): string {
+    return `${this.getProductType()}: ${this.name} - ¥${this.price}`;
+  }
+}
+
+// Error: Cannot create an instance of an abstract class
+const product = new BaseProduct("商品", 1000);
+```
+
+**解決方法**:
+```typescript
+// 解決方法1: 具象クラスを作成してインスタンス化
+class PhysicalProduct extends BaseProduct {
+  constructor(name: string, price: number, public weight: number) {
+    super(name, price);
+  }
+  
+  getProductType(): string {
+    return "物理商品";
+  }
+}
+
+const product = new PhysicalProduct("TypeScript本", 2980, 0.5);
+
+// 解決方法2: 抽象クラスではなく通常のクラスにする（必要に応じて）
+class BaseProduct {
+  constructor(public name: string, public price: number) {}
+  
+  getProductType(): string {
+    return "基本商品"; // デフォルト実装を提供
+  }
+  
+  getInfo(): string {
+    return `${this.getProductType()}: ${this.name} - ¥${this.price}`;
+  }
+}
+```
+
+### "Non-abstract class 'xxx' does not implement inherited abstract member 'yyy'"
+**原因**: 抽象クラスを継承したクラスで抽象メソッドが実装されていない
+
+**エラー例**:
+```typescript
+abstract class BaseProduct {
+  constructor(public name: string, public price: number) {}
+  
+  abstract calculateShippingCost(): number;
+  abstract getProductType(): string;
+}
+
+// Error: Non-abstract class 'PhysicalProduct' does not implement inherited abstract member 'calculateShippingCost'
+class PhysicalProduct extends BaseProduct {
+  constructor(name: string, price: number, public weight: number) {
+    super(name, price);
+  }
+  
+  getProductType(): string {
+    return "物理商品";
+  }
+  // calculateShippingCost メソッドが実装されていない
+}
+```
+
+**解決方法**:
+```typescript
+// 解決方法1: 不足している抽象メソッドを実装
+class PhysicalProduct extends BaseProduct {
+  constructor(name: string, price: number, public weight: number) {
+    super(name, price);
+  }
+  
+  getProductType(): string {
+    return "物理商品";
+  }
+  
+  calculateShippingCost(): number { // 実装を追加
+    return this.weight * 100;
+  }
+}
+
+// 解決方法2: クラスも抽象クラスにする
+abstract class PhysicalProduct extends BaseProduct {
+  constructor(name: string, price: number, public weight: number) {
+    super(name, price);
+  }
+  
+  getProductType(): string {
+    return "物理商品";
+  }
+  
+  // calculateShippingCost は継承クラスで実装
+}
+```
+
+### "Abstract method 'xxx' cannot have an implementation"
+**原因**: 抽象メソッドに実装を提供しようとしている
+
+**エラー例**:
+```typescript
+abstract class BaseProduct {
+  constructor(public name: string, public price: number) {}
+  
+  // Error: Abstract method 'calculateShippingCost' cannot have an implementation
+  abstract calculateShippingCost(): number {
+    return 500; // 抽象メソッドに実装を提供
+  }
+}
+```
+
+**解決方法**:
+```typescript
+// 解決方法1: 抽象メソッドから実装を削除
+abstract class BaseProduct {
+  constructor(public name: string, public price: number) {}
+  
+  abstract calculateShippingCost(): number; // 実装を削除
+}
+
+// 解決方法2: 通常のメソッドにしてデフォルト実装を提供
+abstract class BaseProduct {
+  constructor(public name: string, public price: number) {}
+  
+  calculateShippingCost(): number { // abstractを削除
+    return 500; // デフォルト実装
+  }
+  
+  // 必要に応じて他の抽象メソッドを定義
+  abstract getProductType(): string;
+}
+
+// 解決方法3: protectedメソッドとして共通実装を提供
+abstract class BaseProduct {
+  constructor(public name: string, public price: number) {}
+  
+  protected getBaseShippingCost(): number {
+    return 500; // 共通実装
+  }
+  
+  abstract calculateShippingCost(): number; // 抽象メソッド
+}
+
+class PhysicalProduct extends BaseProduct {
+  calculateShippingCost(): number {
+    return this.getBaseShippingCost() + 200; // 共通実装を利用
+  }
+}
+```
+
+---
+
+## アクセス修飾子関連のエラー
+
+### "Property 'xxx' is private and only accessible within class 'yyy'"
+**原因**: privateプロパティにクラス外部からアクセスしようとしている
+
+**エラー例**:
+```typescript
+class Product {
+  private _id: string;
+  
+  constructor(id: string, public name: string) {
+    this._id = id;
+  }
+}
+
+const product = new Product("prod_001", "TypeScript本");
+console.log(product._id); // Error: Property '_id' is private
+```
+
+**解決方法**:
+```typescript
+// 解決方法1: getterメソッドを提供
+class Product {
+  private _id: string;
+  
+  constructor(id: string, public name: string) {
+    this._id = id;
+  }
+  
+  get id(): string { // getter追加
+    return this._id;
+  }
+}
+
+const product = new Product("prod_001", "TypeScript本");
+console.log(product.id); // OK
+
+// 解決方法2: アクセス修飾子を変更
+class Product {
+  public readonly id: string; // publicかつ読み取り専用
+  
+  constructor(id: string, public name: string) {
+    this.id = id;
+  }
+}
+
+// 解決方法3: protectedにして継承クラスからアクセス可能にする
+class Product {
+  protected _id: string; // protectedに変更
+  
+  constructor(id: string, public name: string) {
+    this._id = id;
+  }
+}
+
+class ExtendedProduct extends Product {
+  getProductId(): string {
+    return this._id; // 継承クラスからアクセス可能
+  }
+}
+```
+
+### "Property 'xxx' is protected and only accessible within class 'yyy' and its subclasses"
+**原因**: protectedプロパティにクラス外部からアクセスしようとしている
+
+**エラー例**:
+```typescript
+class BaseProduct {
+  protected price: number;
+  
+  constructor(price: number) {
+    this.price = price;
+  }
+}
+
+const product = new BaseProduct(1000);
+console.log(product.price); // Error: Property 'price' is protected
+```
+
+**解決方法**:
+```typescript
+// 解決方法1: publicメソッドを提供
+class BaseProduct {
+  protected price: number;
+  
+  constructor(price: number) {
+    this.price = price;
+  }
+  
+  getPrice(): number { // publicメソッド追加
+    return this.price;
+  }
+}
+
+const product = new BaseProduct(1000);
+console.log(product.getPrice()); // OK
+
+// 解決方法2: アクセス修飾子を変更
+class BaseProduct {
+  public readonly price: number; // publicに変更
+  
+  constructor(price: number) {
+    this.price = price;
+  }
+}
+
+// 解決方法3: 継承クラス内でアクセス
+class PhysicalProduct extends BaseProduct {
+  constructor(price: number, public weight: number) {
+    super(price);
+  }
+  
+  getProductInfo(): string {
+    return `価格: ¥${this.price}, 重量: ${this.weight}kg`; // 継承クラス内ではアクセス可能
+  }
+}
+```
+
+---
+
+## Storeシステム実装時のエラー
 
 ### "Argument of type 'xxx' is not assignable to parameter of type 'yyy'"
-**原因**: 構造的型付けの理解不足による型の不一致
+**原因**: Storeシステムでの型の不一致
 
 **エラー例**:
 ```typescript
-interface Point2D {
-  x: number;
-  y: number;
+enum OrderStatus {
+  PENDING = "pending",
+  CONFIRMED = "confirmed",
+  SHIPPED = "shipped"
 }
 
-interface Point3D {
-  x: number;
-  y: number;
-  z: number;
+interface Order {
+  id: string;
+  status: OrderStatus;
+  totalAmount: number;
 }
 
-function distance2D(p1: Point2D, p2: Point2D): number {
-  return Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2);
+function updateOrderStatus(order: Order, status: string): void {
+  order.status = status; // Error: Type 'string' is not assignable to type 'OrderStatus'
 }
-
-const point3D: Point3D = { x: 1, y: 2, z: 3 };
-const point2D: Point2D = { x: 4, y: 5 };
-
-// これは実際にはOK（構造的型付け）
-distance2D(point3D, point2D); // Point3DはPoint2Dの構造を含む
-```
-
-**理解すべきポイント**:
-```typescript
-// TypeScriptは構造的型付け
-// より多くのプロパティを持つ型は、より少ないプロパティの型に代入可能
-
-interface Minimal {
-  name: string;
-}
-
-interface Extended {
-  name: string;
-  age: number;
-  email: string;
-}
-
-function processMinimal(obj: Minimal): void {
-  console.log(obj.name);
-}
-
-const extended: Extended = {
-  name: "Alice",
-  age: 30,
-  email: "alice@example.com"
-};
-
-processMinimal(extended); // OK: ExtendedはMinimalの構造を含む
-
-// 逆は不可
-function processExtended(obj: Extended): void {
-  console.log(obj.name, obj.age, obj.email);
-}
-
-const minimal: Minimal = { name: "Bob" };
-// processExtended(minimal); // Error: age, emailが不足
-```
-
-### "Object literal may only specify known properties"
-**原因**: 余剰プロパティチェックによるエラー
-
-**エラー例**:
-```typescript
-interface User {
-  name: string;
-  age: number;
-}
-
-// Error: Object literal may only specify known properties
-const user: User = {
-  name: "Alice",
-  age: 30,
-  email: "alice@example.com" // 余剰プロパティ
-};
 ```
 
 **解決方法**:
 ```typescript
-// 解決方法1: インターフェースにプロパティを追加
-interface User {
-  name: string;
-  age: number;
-  email?: string; // 追加
+// 解決方法1: 正しい型を使用
+function updateOrderStatus(order: Order, status: OrderStatus): void {
+  order.status = status; // OK
 }
 
-// 解決方法2: インデックスシグネチャを追加
-interface User {
-  name: string;
-  age: number;
-  [key: string]: any; // 任意のプロパティを許可
+// 使用例
+updateOrderStatus(order, OrderStatus.CONFIRMED);
+
+// 解決方法2: 型ガードを使用
+function updateOrderStatus(order: Order, status: string): void {
+  if (Object.values(OrderStatus).includes(status as OrderStatus)) {
+    order.status = status as OrderStatus;
+  } else {
+    throw new Error(`無効なステータス: ${status}`);
+  }
 }
 
-// 解決方法3: 型アサーションを使用
-const user: User = {
-  name: "Alice",
-  age: 30,
-  email: "alice@example.com"
-} as User;
+// 解決方法3: ユニオン型を使用
+type OrderStatusType = "pending" | "confirmed" | "shipped";
 
-// 解決方法4: 変数を経由する
-const userData = {
-  name: "Alice",
-  age: 30,
-  email: "alice@example.com"
-};
-const user: User = userData; // 余剰プロパティチェックが回避される
+interface Order {
+  id: string;
+  status: OrderStatusType;
+  totalAmount: number;
+}
+
+function updateOrderStatus(order: Order, status: OrderStatusType): void {
+  order.status = status; // OK
+}
 ```
 
----
+### "Object is possibly 'null' or 'undefined'"
+**原因**: null/undefinedチェックが不十分
 
-## デザインパターン実装時のエラー
+**エラー例**:
+```typescript
+interface ProductRepository {
+  findById(id: string): Promise<Product | null>;
+}
+
+async function getProductPrice(repository: ProductRepository, id: string): Promise<number> {
+  const product = await repository.findById(id);
+  return product.price; // Error: Object is possibly 'null'
+}
+```
+
+**解決方法**:
+```typescript
+// 解決方法1: null チェックを追加
+async function getProductPrice(repository: ProductRepository, id: string): Promise<number> {
+  const product = await repository.findById(id);
+  if (!product) {
+    throw new Error(`商品が見つかりません: ${id}`);
+  }
+  return product.price; // OK
+}
+
+// 解決方法2: Optional Chaining と Nullish Coalescing を使用
+async function getProductPrice(repository: ProductRepository, id: string): Promise<number> {
+  const product = await repository.findById(id);
+  return product?.price ?? 0; // 商品が見つからない場合は0を返す
+}
+
+// 解決方法3: 型アサーションを使用（注意して使用）
+async function getProductPrice(repository: ProductRepository, id: string): Promise<number> {
+  const product = await repository.findById(id);
+  return (product as Product).price; // 商品が存在することを保証
+}
+
+// 解決方法4: 戻り値の型を変更
+async function getProductPrice(repository: ProductRepository, id: string): Promise<number | null> {
+  const product = await repository.findById(id);
+  return product?.price ?? null;
+}
+```
 
 ### "This condition will always return 'false'"
-**原因**: 型ガードの条件が不適切
+**原因**: 型の範囲チェックが不適切
 
 **エラー例**:
 ```typescript
-interface Cat {
-  type: "cat";
-  meow(): void;
+enum MembershipLevel {
+  REGULAR = "regular",
+  PREMIUM = "premium",
+  VIP = "vip"
 }
 
-interface Dog {
-  type: "dog";
-  bark(): void;
-}
-
-type Animal = Cat | Dog;
-
-function makeSound(animal: Animal): void {
-  if (animal.type === "cat") {
-    animal.meow();
-  } else if (animal.type === "dog") {
-    animal.bark();
-  } else if (animal.type === "bird") { // Error: This condition will always return 'false'
-    // 'bird'はAnimal型に含まれていない
-  }
+function validateMembershipLevel(level: MembershipLevel): boolean {
+  // Error: This condition will always return 'false'
+  return level === "gold"; // "gold" は MembershipLevel に存在しない
 }
 ```
 
 **解決方法**:
 ```typescript
-// 解決方法1: 型定義を修正
-interface Bird {
-  type: "bird";
-  chirp(): void;
+// 解決方法1: 正しい値を使用
+function validateMembershipLevel(level: MembershipLevel): boolean {
+  return level === MembershipLevel.VIP; // OK
 }
 
-type Animal = Cat | Dog | Bird;
+// 解決方法2: 複数の値をチェック
+function isPremiumOrVip(level: MembershipLevel): boolean {
+  return level === MembershipLevel.PREMIUM || level === MembershipLevel.VIP;
+}
 
-// 解決方法2: never型を使用した網羅性チェック
-function makeSound(animal: Animal): void {
-  switch (animal.type) {
-    case "cat":
-      animal.meow();
-      break;
-    case "dog":
-      animal.bark();
-      break;
+// 解決方法3: switch文を使用
+function getMembershipDiscount(level: MembershipLevel): number {
+  switch (level) {
+    case MembershipLevel.REGULAR:
+      return 0;
+    case MembershipLevel.PREMIUM:
+      return 0.05;
+    case MembershipLevel.VIP:
+      return 0.1;
     default:
       // 網羅性チェック
-      const _exhaustive: never = animal;
-      throw new Error(`Unhandled animal type: ${_exhaustive}`);
-  }
-}
-```
-
-### "Cannot invoke an object which is possibly 'undefined'"
-**原因**: オプショナルメソッドの呼び出し時の null/undefined チェック不足
-
-**エラー例**:
-```typescript
-interface EventHandler {
-  onClick?(): void;
-  onHover?(): void;
-}
-
-function triggerClick(handler: EventHandler): void {
-  handler.onClick(); // Error: Cannot invoke an object which is possibly 'undefined'
-}
-```
-
-**解決方法**:
-```typescript
-// 解決方法1: オプショナルチェーンを使用
-function triggerClick(handler: EventHandler): void {
-  handler.onClick?.();
-}
-
-// 解決方法2: 条件分岐を使用
-function triggerClick(handler: EventHandler): void {
-  if (handler.onClick) {
-    handler.onClick();
+      const _exhaustive: never = level;
+      throw new Error(`未対応の会員レベル: ${_exhaustive}`);
   }
 }
 
-// 解決方法3: デフォルト実装を提供
-function triggerClick(handler: EventHandler): void {
-  const onClick = handler.onClick || (() => {});
-  onClick();
+// 解決方法4: 型ガードを使用
+function isValidMembershipLevel(value: string): value is MembershipLevel {
+  return Object.values(MembershipLevel).includes(value as MembershipLevel);
 }
-
-// 解決方法4: 必須メソッドと分離
-interface RequiredEventHandler {
-  onClick(): void;
-}
-
-interface OptionalEventHandler {
-  onHover?(): void;
-}
-
-type EventHandler = RequiredEventHandler & OptionalEventHandler;
 ```
 
 ---
 
-## 🚨 緊急時の対処法
-
-### 型エラーが大量に発生した場合
-```typescript
-// 一時的にany型を使用（本番では推奨されない）
-const data: any = complexApiResponse;
-
-// 段階的に型を追加
-interface PartialResponse {
-  status: string;
-  // 他のプロパティは後で追加
-}
-
-// unknown型を使用してより安全に
-const data: unknown = complexApiResponse;
-if (typeof data === 'object' && data !== null) {
-  // 型ガードを使用して安全にアクセス
-}
-```
-
-### コンパイルエラーを一時的に無視
-```typescript
-// @ts-ignore を使用（最後の手段）
-// @ts-ignore
-const result = problematicCode();
-
-// @ts-expect-error を使用（エラーが期待される場合）
-// @ts-expect-error
-const result = definitelyWrongCode();
-```
-
----
-
-## 📚 デバッグのコツ
+## 🛠️ デバッグのコツ
 
 ### 1. 型情報の確認
 ```typescript
-// 型を確認するヘルパー
-// 型を確認するヘルパー（具体的な型で定義）
-type UserType = User; // Userの型を確認
+// 型情報を確認するためのヘルパー
+type TypeOf<T> = T;
 
-// コンパイラに型を表示させる
-const user: User = {} as any;
-// user. と入力してIDEで型情報を確認
+// 使用例
+const product = { id: "1", name: "商品", price: 1000 };
+type ProductType = TypeOf<typeof product>; // { id: string; name: string; price: number; }
 ```
 
 ### 2. 段階的な型チェック
 ```typescript
 // 複雑な型を段階的に構築
-type Step1 = { name: string };
-type Step2 = Step1 & { age: number };
-type Step3 = Step2 & { email: string };
-type FinalType = Step3;
+type BaseEntity = {
+  id: string;
+  createdAt: Date;
+};
+
+type Product = BaseEntity & {
+  name: string;
+  price: number;
+};
+
+type DigitalProduct = Product & {
+  downloadUrl: string;
+  fileSize: number;
+};
 ```
 
 ### 3. 型の互換性テスト
@@ -714,10 +793,15 @@ type Test2 = IsAssignable<string | number, string>; // false
 
 ## 📚 参考リンク
 
-- [TypeScript Error Reference](https://www.typescriptlang.org/docs/handbook/error-reference.html)
-- [TypeScript FAQ](https://github.com/Microsoft/TypeScript/wiki/FAQ)
-- [TypeScript Deep Dive - Common Errors](https://basarat.gitbook.io/typescript/type-system)
+### TypeScript公式ドキュメント
+- [Interfaces](https://www.typescriptlang.org/docs/handbook/interfaces.html)
+- [Classes](https://www.typescriptlang.org/docs/handbook/classes.html)
+- [Advanced Types](https://www.typescriptlang.org/docs/handbook/advanced-types.html)
+
+### エラー解決リソース
+- [TypeScript Error Translator](https://ts-error-translator.vercel.app/)
+- [Stack Overflow - TypeScript](https://stackoverflow.com/questions/tagged/typescript)
 
 ---
 
-**📌 重要**: エラーが発生した時は慌てずに、エラーメッセージをよく読んで原因を特定しましょう。TypeScriptの型システムは複雑ですが、理解すれば非常に強力なツールになります。
+**🌟 重要**: エラーが発生した際は、まず型の定義と使用方法を確認し、段階的にデバッグを行いましょう。Storeシステムの実装では、特にnull/undefinedチェックとビジネスルールの検証が重要です！

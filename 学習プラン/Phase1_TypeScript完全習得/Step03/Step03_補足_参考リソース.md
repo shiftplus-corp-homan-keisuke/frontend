@@ -1,6 +1,6 @@
 # Step03 参考リソース
 
-> 💡 **このファイルについて**: インターフェースとオブジェクト型の学習に役立つリンク集とリソースをまとめました。
+> 💡 **このファイルについて**: インターフェース、クラス設計、抽象クラスの学習に役立つリンク集とリソースをまとめました。
 
 ## 📋 目次
 1. [公式ドキュメント](#公式ドキュメント)
@@ -21,15 +21,16 @@
   - 実用的な例とベストプラクティス
   - 他言語との比較
 
+- **[Classes](https://www.typescriptlang.org/docs/handbook/classes.html)** - クラスの公式ガイド
+  - クラスの基本構文
+  - アクセス修飾子の使用方法
+  - 継承とポリモーフィズム
+  - 抽象クラスの実装
+
 - **[Advanced Types](https://www.typescriptlang.org/docs/handbook/advanced-types.html)** - 高度な型機能
   - ユニオン型とインターセクション型
   - 型ガードと判別ユニオン
   - 条件型とマップ型
-
-- **[Classes](https://www.typescriptlang.org/docs/handbook/classes.html)** - クラスとインターフェース
-  - クラスの実装
-  - インターフェースとの関係
-  - 継承とポリモーフィズム
 
 - **[Type Compatibility](https://www.typescriptlang.org/docs/handbook/type-compatibility.html)** - 型の互換性
   - 構造的型付けの詳細
@@ -39,7 +40,8 @@
 ### TypeScript Playground
 - **[TypeScript Playground](https://www.typescriptlang.org/play)** - オンライン実行環境
   - インターフェース設計の実験
-  - 型の互換性テスト
+  - クラス設計のテスト
+  - 抽象クラスの動作確認
   - コード共有機能
 
 ---
@@ -52,13 +54,18 @@
   - 実践的な例
   - 練習問題付き
 
-- **[Learn TypeScript - Interfaces](https://learntypescript.dev/04/l1-creating-interfaces)** - インタラクティブ学習
+- **[TypeScript Tutorial - Classes](https://www.typescripttutorial.net/typescript-tutorial/typescript-class/)** - クラス学習
+  - クラスの基本概念
+  - 継承とポリモーフィズム
+  - 実践的な使用例
+
+- **[Learn TypeScript - Object-Oriented Programming](https://learntypescript.dev/)** - インタラクティブ学習
   - ハンズオン形式
   - 即座にフィードバック
   - 段階的な難易度
 
 ### 中級・上級者向け
-- **[TypeScript Deep Dive - Interfaces](https://basarat.gitbook.io/typescript/type-system/interfaces)** - 詳細解説
+- **[TypeScript Deep Dive - Classes](https://basarat.gitbook.io/typescript/future-javascript/classes)** - 詳細解説
   - 深い理解のための解説
   - 実践的なパターン
   - 設計原則との関連
@@ -68,6 +75,17 @@
   - 実用的なパターン
   - パフォーマンス考慮事項
 
+### Storeシステム設計
+- **[Domain-Driven Design with TypeScript](https://khalilstemmler.com/articles/domain-driven-design-intro/)** - DDD入門
+  - ドメインモデリング
+  - 値オブジェクトとエンティティ
+  - リポジトリパターン
+
+- **[Clean Architecture in TypeScript](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)** - クリーンアーキテクチャ
+  - 層分離の設計
+  - インターフェースの役割
+  - 依存関係の管理
+
 ---
 
 ## オンラインツール
@@ -75,7 +93,7 @@
 ### 設計・モデリングツール
 - **[TypeScript AST Viewer](https://ts-ast-viewer.com/)** - AST確認ツール
   - インターフェースの内部構造確認
-  - コンパイル結果の理解
+  - クラスのコンパイル結果の理解
   - デバッグ支援
 
 - **[JSON to TypeScript](https://transform.tools/json-to-typescript)** - JSON→TypeScript変換
@@ -98,6 +116,17 @@
   - 型情報の取得
   - カスタムツール作成
   - 高度な型操作
+
+### UML・設計図ツール
+- **[PlantUML](https://plantuml.com/)** - UML図作成
+  - クラス図の作成
+  - インターフェース関係の可視化
+  - システム設計の文書化
+
+- **[Draw.io](https://app.diagrams.net/)** - 図表作成ツール
+  - システム構成図
+  - クラス関係図
+  - データフロー図
 
 ---
 
@@ -131,10 +160,10 @@
   - インターフェースの役割
   - 依存関係の管理
 
-- **[Domain-Driven Design with TypeScript](https://khalilstemmler.com/articles/domain-driven-design-intro/)** - DDD入門
-  - ドメインモデリング
-  - 値オブジェクトとエンティティ
-  - リポジトリパターン
+- **[Hexagonal Architecture with TypeScript](https://herbertograca.com/2017/11/16/explicit-architecture-01-ddd-hexagonal-onion-clean-cqrs-how-i-put-it-all-together/)** - ヘキサゴナルアーキテクチャ
+  - ポート・アダプターパターン
+  - ドメイン中心設計
+  - テスタビリティの向上
 
 ---
 
@@ -167,15 +196,36 @@
   - シリアライゼーション
   - 型安全な変換
 
+- **[InversifyJS](https://github.com/inversify/InversifyJS)** - 依存性注入コンテナ
+  - IoC（制御の反転）の実装
+  - デコレータベースDI
+  - 大規模アプリケーション対応
+
+### Eコマース・Storeシステム参考
+- **[Medusa](https://github.com/medusajs/medusa)** - オープンソースEコマース
+  - TypeScriptで構築
+  - モジュラー設計
+  - 実際のビジネスロジック
+
+- **[Vendure](https://github.com/vendure-ecommerce/vendure)** - Eコマースフレームワーク
+  - GraphQL API
+  - プラグインアーキテクチャ
+  - 商品・注文管理の実装
+
 ---
 
 ## コミュニティ・質問サイト
 
 ### 質問・回答サイト
-- **[Stack Overflow - TypeScript Interfaces](https://stackoverflow.com/questions/tagged/typescript+interface)** - 質問・回答
+- **[Stack Overflow - TypeScript Classes](https://stackoverflow.com/questions/tagged/typescript+class)** - 質問・回答
   - 実際の問題と解決例
   - コミュニティの知見
   - ベストプラクティス
+
+- **[Stack Overflow - TypeScript Interfaces](https://stackoverflow.com/questions/tagged/typescript+interface)** - インターフェース関連
+  - 設計に関する質問
+  - 実装のベストプラクティス
+  - トラブルシューティング
 
 - **[Reddit - TypeScript](https://www.reddit.com/r/typescript/)** - ディスカッション
   - 最新情報の共有
@@ -211,8 +261,8 @@
 ### 日本語書籍
 1. **「実践TypeScript」** - 吉井健文著
    - インターフェース設計の実践
+   - クラス設計のベストプラクティス
    - 実際のプロジェクトでの使用例
-   - 設計原則の適用
 
 2. **「TypeScript実践プログラミング」** - 今村謙士著
    - オブジェクト指向設計
@@ -256,14 +306,19 @@
    - 複雑なシステム設計
    - 実践的なアプローチ
 
+4. **「Clean Architecture」** - Robert C. Martin著
+   - アーキテクチャ設計
+   - 依存関係の管理
+   - 保守性の向上
+
 ---
 
 ## 📚 学習ロードマップ
 
 ### Phase 1: 基礎理解（1-2週間）
-1. TypeScript Handbook のインターフェース章
-2. TypeScript Tutorial での実践
-3. 基本的なデザインパターンの学習
+1. TypeScript Handbook のインターフェース・クラス章
+2. 基本的なデザインパターンの学習
+3. SOLID原則の理解
 
 ### Phase 2: 実践応用（2-3週間）
 1. 実際のプロジェクトでの実装
@@ -271,9 +326,9 @@
 3. 設計原則の適用
 
 ### Phase 3: 高度な活用（3-4週間）
-1. 高度な型機能の学習
+1. 抽象クラスと高度なパターンの学習
 2. アーキテクチャパターンの実装
-3. パフォーマンス最適化
+3. Storeシステムの設計・実装
 
 ### Phase 4: 継続学習
 1. 最新機能のキャッチアップ
@@ -291,8 +346,9 @@
 
 ### 2. 段階的な学習
 - 基本的なインターフェースから開始
-- 徐々に複雑な設計に挑戦
-- 実際のプロジェクトで応用
+- クラス設計の基礎を固める
+- 抽象クラスと高度なパターンに挑戦
+- 実際のStoreシステムで応用
 
 ### 3. コミュニティ活用
 - 質問を積極的にする
@@ -316,4 +372,16 @@
 
 ---
 
-**🌟 重要**: インターフェースとオブジェクト型の設計は、TypeScriptの核心的な機能です。これらのリソースを活用して、実践的なスキルを身につけましょう。継続的な学習と実践が成功の鍵です！
+## 🌟 Storeシステム特化リソース
+
+### ビジネスロジック設計
+- **[Domain Modeling Made Functional](https://pragprog.com/titles/swdddf/domain-modeling-made-functional/)** - 関数型ドメインモデリング
+- **[Implementing Domain-Driven Design](https://www.amazon.com/Implementing-Domain-Driven-Design-Vaughn-Vernon/dp/0321834577)** - DDD実装ガイド
+
+### Eコマースパターン
+- **[Patterns of Enterprise Application Architecture](https://martinfowler.com/books/eaa.html)** - エンタープライズパターン
+- **[Microservices Patterns](https://www.manning.com/books/microservices-patterns)** - マイクロサービス設計
+
+---
+
+**🌟 重要**: インターフェース、クラス設計、抽象クラスの学習は、TypeScriptでの効果的なオブジェクト指向設計の基盤です。これらのリソースを活用して、実践的なStoreシステムの設計・実装スキルを身につけましょう。継続的な学習と実践が成功の鍵です！

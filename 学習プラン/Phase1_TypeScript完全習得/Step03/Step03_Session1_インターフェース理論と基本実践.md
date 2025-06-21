@@ -21,7 +21,7 @@
 **学習目標**:
 
 - [ ] インターフェースの基本概念と設計原則の理解
-- [ ] オプショナルプロパティ・読み取り専用プロパティの習得
+- [ ] インターフェースの継承とポリモーフィズムの習得
 - [ ] 基本的なインターフェース設計の実践
 - [ ] 型安全なオブジェクト操作の実装
 
@@ -155,119 +155,124 @@ function findProduct(products: Product[], id: number): Product | undefined {
 }
 ```
 
-#### 2. オプショナルプロパティ
+#### 2. インターフェースの継承
 
-**💡 なぜオプショナルプロパティが重要なのか**
+**💡 なぜインターフェース継承が重要なのか**
 
-実際のアプリケーション開発では、「必須ではないデータ」を型安全に扱う必要があります。
+インターフェースの継承は、共通の構造を持つ型を効率的に設計するための強力な機能です。継承を使うことで、以下のメリットが得られます：
 
-例えば：
-
-- ユーザーのプロフィール画像や自己紹介文など、「登録時には入力しなくてもよい」情報
-- 商品の割引価格やレビューなど、「後から追加されるかもしれない」データ
-- API のレスポンスで、状況によって含まれたり含まれなかったりする項目
-
-このような場合、オプショナルプロパティ（?）を使うことで「そのプロパティがあってもなくても OK」と型で表現でき、柔軟かつ安全にデータを扱えます。
+- **コードの重複削減**: 共通のプロパティを一度定義すれば、複数のインターフェースで再利用できます
+- **型の階層構造**: 基本型から特化型への自然な関係を表現できます
+- **保守性の向上**: 共通部分の変更が必要な場合、基底インターフェースを変更するだけで全体に反映されます
 
 ```typescript
-interface UserProfile {
+// 基本的な人物情報
+interface Person {
   id: number;
   name: string;
   email: string;
-  age?: number; // オプショナル
-  bio?: string; // オプショナル
-  avatar?: string; // オプショナル
 }
 
-// 必須フィールドのみでも有効
-let basicUser: UserProfile = {
+// 従業員情報（Personを継承）
+interface Employee extends Person {
+  employeeId: string;
+  department: string;
+  salary: number;
+}
+
+// 顧客情報（Personを継承）
+interface Customer extends Person {
+  customerId: string;
+  membershipLevel: "bronze" | "silver" | "gold";
+  purchaseHistory: string[];
+}
+
+// 使用例
+let employee: Employee = {
   id: 1,
-  name: "Alice",
-  email: "alice@example.com",
+  name: "田中太郎",
+  email: "tanaka@company.com",
+  employeeId: "EMP001",
+  department: "開発部",
+  salary: 5000000,
 };
 
-// オプショナルフィールドありでも有効
-let detailedUser: UserProfile = {
+let customer: Customer = {
   id: 2,
-  name: "Bob",
-  email: "bob@example.com",
-  age: 25,
-  bio: "Web developer",
+  name: "佐藤花子",
+  email: "sato@example.com",
+  customerId: "CUST001",
+  membershipLevel: "gold",
+  purchaseHistory: ["product1", "product2"],
 };
-```
-
-**🎯 実践的な使用例**
-
-```typescript
-// ユーザー登録フォームでの活用
-interface CreateUserRequest {
-  name: string;
-  email: string;
-  password: string;
-  age?: number; // 任意項目
-  newsletter?: boolean; // 任意項目
-}
-
-function createUser(userData: CreateUserRequest): User {
-  return {
-    id: generateId(),
-    name: userData.name,
-    email: userData.email,
-    age: userData.age || 0, // デフォルト値
-    newsletter: userData.newsletter || false,
-  };
-}
-```
-
-#### 3. 読み取り専用プロパティ
-
-**💡 なぜ読み取り専用プロパティが重要なのか**
-
-データの不変性を保証し、意図しない変更を防ぐための重要な仕組みです。
-
-```typescript
-interface ReadonlyUser {
-  readonly id: number; // 変更不可
-  readonly createdAt: Date; // 変更不可
-  name: string; // 変更可能
-  email: string; // 変更可能
-}
-
-let user: ReadonlyUser = {
-  id: 1,
-  createdAt: new Date(),
-  name: "Alice",
-  email: "alice@example.com",
-};
-
-// user.id = 2; // エラー！readonlyプロパティは変更不可
-user.name = "Alice Smith"; // OK: 変更可能
 ```
 
 **🚀 実際のプロジェクトでの活用例**
 
 ```typescript
-// 注文情報の型定義
-interface Order {
-  readonly id: string;
-  readonly orderNumber: string;
-  readonly customerId: string;
-  readonly createdAt: Date;
-  readonly totalAmount: number; // 注文後は変更不可
-
-  // 変更可能なプロパティ
-  status: "pending" | "confirmed" | "shipped" | "delivered";
-  notes?: string;
+// 基本的なコンテンツ情報
+interface BaseContent {
+  id: string;
+  title: string;
+  createdAt: Date;
+  author: string;
 }
 
-// 注文ステータス更新（安全な更新）
-function updateOrderStatus(order: Order, newStatus: Order["status"]): Order {
-  return {
-    ...order,
-    status: newStatus,
-    // id, orderNumber等は自動的に保持される（readonly）
-  };
+// 記事情報（BaseContentを継承）
+interface Article extends BaseContent {
+  content: string;
+  tags: string[];
+  category: string;
 }
+
+// 動画情報（BaseContentを継承）
+interface Video extends BaseContent {
+  duration: number;
+  videoUrl: string;
+  thumbnailUrl: string;
+}
+
+// コンテンツ管理関数
+function displayContent(content: BaseContent): void {
+  console.log(`${content.title} by ${content.author}`);
+}
+
+// 記事と動画の両方に使用可能
+displayContent(article); // OK
+displayContent(video); // OK
+```
+
+#### 3. 複数インターフェースの継承
+
+```typescript
+// 複数のインターフェースから継承
+interface Timestamped {
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface Categorized {
+  category: string;
+  tags: string[];
+}
+
+// 複数のインターフェースを継承
+interface BlogPost extends BaseContent, Timestamped, Categorized {
+  content: string;
+  publishedAt?: Date;
+}
+
+let blogPost: BlogPost = {
+  id: "post1",
+  title: "TypeScript継承について",
+  createdAt: new Date("2025-01-01"),
+  author: "開発者",
+  updatedAt: new Date("2025-01-15"),
+  category: "技術",
+  tags: ["TypeScript", "プログラミング"],
+  content: "インターフェース継承は...",
+  publishedAt: new Date("2025-01-10"),
+};
 ```
 
 ---
@@ -276,66 +281,77 @@ function updateOrderStatus(order: Order, newStatus: Order["status"]): Order {
 
 > 💻 **実践サポート**: [実践コード例 - 練習問題の解法例](./Step03_補足_実践コード例.md#練習問題の解法例) | [トラブルシューティング - よくあるエラー](./Step03_補足_トラブルシューティング.md#よくあるエラー)
 
-### 練習問題 1: 基本的なインターフェース設計 🔰
+### 練習問題 1: 基本的なインターフェース設計と継承 🔰
 
 **要件**:
-学生情報を管理するシステムの型定義を作成してください。
+図書館システムの型定義を作成してください。
 
 ```typescript
-// TODO: 以下の要件を満たすStudentインターフェースを定義してください
-// - id: 数値（変更不可）
-// - studentNumber: 文字列（変更不可）
-// - name: 文字列
-// - email: 文字列
-// - grade: 数値（1-4年生）
-// - club: 文字列（任意）
+// TODO: 以下の要件を満たすインターフェースを定義してください
 
-// ここにStudentインターフェースを定義
+// 1. BaseItemインターフェース（基本アイテム情報）
+// - id: 数値
+// - title: 文字列
+// - author: 文字列
+// - publishedYear: 数値
+
+// 2. Bookインターフェース（BaseItemを継承）
+// - isbn: 文字列
+// - pages: 数値
+// - genre: 文字列
+
+// 3. Magazineインターフェース（BaseItemを継承）
+// - issueNumber: 数値
+// - monthlyEdition: 文字列
+
+// ここにインターフェースを定義
 
 // 使用例
-const student1: Student = {
+const book: Book = {
   id: 1,
-  studentNumber: "S2024001",
-  name: "田中太郎",
-  email: "tanaka@university.ac.jp",
-  grade: 2,
+  title: "TypeScript入門",
+  author: "山田太郎",
+  publishedYear: 2024,
+  isbn: "978-4-123456-78-9",
+  pages: 300,
+  genre: "技術書",
 };
 
-const student2: Student = {
+const magazine: Magazine = {
   id: 2,
-  studentNumber: "S2024002",
-  name: "佐藤花子",
-  email: "sato@university.ac.jp",
-  grade: 3,
-  club: "プログラミング研究会",
+  title: "月刊プログラミング",
+  author: "編集部",
+  publishedYear: 2025,
+  issueNumber: 123,
+  monthlyEdition: "2025年6月号",
 };
 ```
 
-### 練習問題 2: 関数との組み合わせ 🔰
+### 練習問題 2: 継承を活用した関数設計 🔰
 
 **要件**:
-学生情報を操作する関数を作成してください。
+図書館アイテムを操作する関数を作成してください。
 
 ```typescript
 // TODO: 以下の関数を実装してください
 
-// 1. 学生一覧を表示する関数
+// 1. 基本アイテム情報を表示する関数（BookとMagazine両方に対応）
 // 期待される出力例:
-// 田中太郎 (2年生)
-// 佐藤花子 (3年生) (プログラミング研究会)
-function displayStudents(students: Student[]): void {
-  // 実装してください
-  // ヒント: 各学生の名前と学年を表示し、部活動があれば併せて表示する
-}
-
-// 2. 学生IDで検索する関数
-function findStudentById(students: Student[], id: number): Student | undefined {
+// TypeScript入門 by 山田太郎 (2024年)
+// 月刊プログラミング by 編集部 (2025年)
+function displayItemInfo(item: BaseItem): void {
   // 実装してください
 }
 
-// 3. 学年でフィルタリングする関数
-function filterStudentsByGrade(students: Student[], grade: number): Student[] {
+// 2. 著者で検索する関数（BookとMagazine両方を検索対象）
+function findItemsByAuthor(items: BaseItem[], author: string): BaseItem[] {
   // 実装してください
+}
+
+// 3. 本のみをフィルタリングする関数
+function filterBooks(items: (Book | Magazine)[]): Book[] {
+  // 実装してください
+  // ヒント: typeof演算子またはin演算子を使用
 }
 ```
 
@@ -346,32 +362,38 @@ function filterStudentsByGrade(students: Student[], grade: number): Student[] {
 ### 練習問題 1 解答
 
 ```typescript
-interface Student {
-  readonly id: number;
-  readonly studentNumber: string;
-  name: string;
-  email: string;
-  grade: number;
-  club?: string;
+interface BaseItem {
+  id: number;
+  title: string;
+  author: string;
+  publishedYear: number;
+}
+
+interface Book extends BaseItem {
+  isbn: string;
+  pages: number;
+  genre: string;
+}
+
+interface Magazine extends BaseItem {
+  issueNumber: number;
+  monthlyEdition: string;
 }
 ```
 
 ### 練習問題 2 解答
 
 ```typescript
-function displayStudents(students: Student[]): void {
-  students.forEach((student) => {
-    const clubInfo = student.club ? ` (${student.club})` : "";
-    console.log(`${student.name} (${student.grade}年生)${clubInfo}`);
-  });
+function displayItemInfo(item: BaseItem): void {
+  console.log(`${item.title} by ${item.author} (${item.publishedYear}年)`);
 }
 
-function findStudentById(students: Student[], id: number): Student | undefined {
-  return students.find((student) => student.id === id);
+function findItemsByAuthor(items: BaseItem[], author: string): BaseItem[] {
+  return items.filter((item) => item.author === author);
 }
 
-function filterStudentsByGrade(students: Student[], grade: number): Student[] {
-  return students.filter((student) => student.grade === grade);
+function filterBooks(items: (Book | Magazine)[]): Book[] {
+  return items.filter((item): item is Book => "isbn" in item);
 }
 ```
 
@@ -382,9 +404,9 @@ function filterStudentsByGrade(students: Student[], grade: number): Student[] {
 **確認ポイント**:
 
 - [ ] インターフェースの基本概念を理解できた
-- [ ] オプショナルプロパティの使い方を習得した
-- [ ] 読み取り専用プロパティの重要性を理解した
-- [ ] 基本的なインターフェース設計ができるようになった
+- [ ] インターフェースの継承の仕組みを習得した
+- [ ] 複数インターフェースの継承について理解した
+- [ ] 継承を活用したインターフェース設計ができるようになった
 
 ### 質疑応答
 
@@ -392,6 +414,8 @@ function filterStudentsByGrade(students: Student[], grade: number): Student[] {
 
 - Q: 「型エイリアスとインターフェースの違いは？」
 - A: 「次回 Session2 で詳しく学習します。基本的にはオブジェクト型にはインターフェースを使用することが推奨されます」
+- Q: 「継承の階層はどこまで深くできますか？」
+- A: 「技術的な制限はありませんが、保守性を考えると 3-4 階層程度が実用的です」
 
 ---
 

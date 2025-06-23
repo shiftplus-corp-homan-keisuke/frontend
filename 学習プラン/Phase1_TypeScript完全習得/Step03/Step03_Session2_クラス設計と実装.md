@@ -1,8 +1,8 @@
-# Session2: クラス設計と実装（60 分）
+# Session2: クラス設計と実装（45 分）
 
-> 💡 **対象**: 他言語経験者（Session1 完了者）  
-> 🎯 **形式**: 講師サポート付き学習  
-> ⏰ **時間**: 60 分（集中学習）
+> 💡 **対象**: 他言語経験者（Session1 完了者）
+> 🎯 **形式**: 講師サポート付き学習
+> ⏰ **時間**: 45 分（集中学習）
 
 ## 📚 関連補足資料
 
@@ -34,12 +34,12 @@
 
 ## ⏰ 詳細タイムテーブル
 
-| 時間         | 内容                   | 講師の役割           | 学習者の活動     | 成果物       |
-| ------------ | ---------------------- | -------------------- | ---------------- | ------------ |
-| **0-5 分**   | 前回復習・今回目標     | 復習確認・目標提示   | 振り返り・質問   | 理解確認     |
-| **5-35 分**  | クラス基本概念と実装   | 実演・個別指導       | ハンズオン・実践 | クラス実装   |
-| **35-55 分** | 実践演習・練習問題     | コードレビュー・助言 | 個人開発         | 実践コード   |
-| **55-60 分** | 振り返り・次回予告     | まとめ・予告         | 質問・確認       | 学習計画     |
+| 時間         | 内容                 | 講師の役割           | 学習者の活動     | 成果物     |
+| ------------ | -------------------- | -------------------- | ---------------- | ---------- |
+| **0-3 分**   | 前回復習・今回目標   | 復習確認・目標提示   | 振り返り・質問   | 理解確認   |
+| **3-25 分**  | クラス基本概念と実装 | 実演・個別指導       | ハンズオン・実践 | クラス実装 |
+| **25-42 分** | 実践演習・練習問題   | コードレビュー・助言 | 個人開発         | 実践コード |
+| **42-45 分** | 振り返り・次回予告   | まとめ・予告         | 質問・確認       | 学習計画   |
 
 ---
 
@@ -96,7 +96,13 @@ class Product {
   description?: string;
 
   // コンストラクタ
-  constructor(id: number, name: string, price: number, category: string, description?: string) {
+  constructor(
+    id: number,
+    name: string,
+    price: number,
+    category: string,
+    description?: string
+  ) {
     this.id = id;
     this.name = name;
     this.price = price;
@@ -114,13 +120,19 @@ class Product {
   }
 
   getInfo(): string {
-    const desc = this.description ? ` - ${this.description}` : '';
+    const desc = this.description ? ` - ${this.description}` : "";
     return `${this.getDisplayName()}${desc}`;
   }
 }
 
 // クラスの使用例
-const product1 = new Product(1, "TypeScript入門書", 3000, "書籍", "初心者向けの解説書");
+const product1 = new Product(
+  1,
+  "TypeScript入門書",
+  3000,
+  "書籍",
+  "初心者向けの解説書"
+);
 const product2 = new Product(2, "ワイヤレスマウス", 2500, "PC周辺機器");
 
 console.log(product1.getInfo());
@@ -147,7 +159,12 @@ class BankAccount {
   // protected: クラス内部と継承先からアクセス可能
   protected accountType: string;
 
-  constructor(accountNumber: string, ownerName: string, initialBalance: number, pin: string) {
+  constructor(
+    accountNumber: string,
+    ownerName: string,
+    initialBalance: number,
+    pin: string
+  ) {
     this.accountNumber = accountNumber;
     this.ownerName = ownerName;
     this.balance = initialBalance;
@@ -269,7 +286,7 @@ console.log(`新しい位置: ${JSON.stringify(circle.getPosition())}`);
 ### 練習問題 1: 基本的なクラス設計 🔰
 
 **要件**:
-書籍管理システムのBookクラスを作成してください。
+書籍管理システムの Book クラスを作成してください。
 
 ```typescript
 // TODO: 以下の要件を満たすBookクラスを定義してください
@@ -330,7 +347,11 @@ interface Searchable {
 // ここにDocumentクラスを定義
 
 // 使用例
-const doc = new Document(1, "設計書", "システム設計の内容...", ["設計", "システム", "TypeScript"]);
+const doc = new Document(1, "設計書", "システム設計の内容...", [
+  "設計",
+  "システム",
+  "TypeScript",
+]);
 console.log(doc.save());
 console.log(doc.search("TypeScript"));
 console.log(doc.getSearchResults());
@@ -351,7 +372,13 @@ class Book {
   public publishedYear: number;
   private isAvailable: boolean;
 
-  constructor(id: number, title: string, author: string, price: number, publishedYear: number) {
+  constructor(
+    id: number,
+    title: string,
+    author: string,
+    price: number,
+    publishedYear: number
+  ) {
     this.id = id;
     this.title = title;
     this.author = author;
@@ -398,18 +425,15 @@ class Book {
 ### 練習問題 2 解答
 
 ```typescript
-class Document implements Storable, Searchable {
+class Document implements Storable {
   private id: number;
   public title: string;
   private content: string;
-  private tags: string[];
-  private searchResults: string[] = [];
 
-  constructor(id: number, title: string, content: string, tags: string[]) {
+  constructor(id: number, title: string, content: string) {
     this.id = id;
     this.title = title;
     this.content = content;
-    this.tags = tags;
   }
 
   // Storable インターフェースの実装
@@ -421,35 +445,6 @@ class Document implements Storable, Searchable {
   load(): boolean {
     console.log(`ドキュメント "${this.title}" を読み込みました`);
     return true;
-  }
-
-  delete(): boolean {
-    console.log(`ドキュメント "${this.title}" を削除しました`);
-    return true;
-  }
-
-  // Searchable インターフェースの実装
-  search(keyword: string): boolean {
-    this.searchResults = [];
-    
-    if (this.title.includes(keyword)) {
-      this.searchResults.push(`タイトル: ${this.title}`);
-    }
-    
-    if (this.content.includes(keyword)) {
-      this.searchResults.push(`内容: ${keyword}が見つかりました`);
-    }
-    
-    const matchingTags = this.tags.filter(tag => tag.includes(keyword));
-    if (matchingTags.length > 0) {
-      this.searchResults.push(`タグ: ${matchingTags.join(', ')}`);
-    }
-    
-    return this.searchResults.length > 0;
-  }
-
-  getSearchResults(): string[] {
-    return [...this.searchResults];
   }
 }
 ```

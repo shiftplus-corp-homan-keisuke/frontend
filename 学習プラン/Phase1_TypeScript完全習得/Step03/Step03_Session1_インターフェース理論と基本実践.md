@@ -1,8 +1,8 @@
-# Session1: インターフェース理論と基本実践（60 分）
+# Session1: インターフェース理論と基本実践（45 分）
 
 > 💡 **対象**: 他言語経験者（JavaScript 基礎・TypeScript 基本型知識あり）
 > 🎯 **形式**: 講師サポート付き学習
-> ⏰ **時間**: 60 分（集中学習）
+> ⏰ **時間**: 45 分（集中学習）
 
 ## 📚 関連補足資料
 
@@ -36,10 +36,10 @@
 
 | 時間         | 内容                     | 講師の役割         | 学習者の活動   | 成果物     |
 | ------------ | ------------------------ | ------------------ | -------------- | ---------- |
-| **0-5 分**   | 前 Step 復習・今回目標   | 復習確認・目標提示 | 振り返り・質問 | 理解確認   |
-| **5-35 分**  | インターフェース理論学習 | 実演・解説         | 理解・メモ     | 基本知識   |
-| **35-55 分** | 基本実践・練習問題       | 個別サポート       | ハンズオン     | 基本コード |
-| **55-60 分** | 振り返り・次回予告       | まとめ・予告       | 質問・確認     | 学習計画   |
+| **0-3 分**   | 前 Step 復習・今回目標   | 復習確認・目標提示 | 振り返り・質問 | 理解確認   |
+| **3-25 分**  | インターフェース理論学習 | 実演・解説         | 理解・メモ     | 基本知識   |
+| **25-42 分** | 基本実践・練習問題       | 個別サポート       | ハンズオン     | 基本コード |
+| **42-45 分** | 振り返り・次回予告       | まとめ・予告       | 質問・確認     | 学習計画   |
 
 ---
 
@@ -159,11 +159,11 @@ function findProduct(products: Product[], id: number): Product | undefined {
 
 **💡 なぜインターフェース継承が重要なのか**
 
-インターフェースの継承は、共通の構造を持つ型を効率的に設計するための強力な機能です。継承を使うことで、以下のメリットが得られます：
+インターフェースの継承により、共通の構造を効率的に設計できます：
 
-- **コードの重複削減**: 共通のプロパティを一度定義すれば、複数のインターフェースで再利用できます
-- **型の階層構造**: 基本型から特化型への自然な関係を表現できます
-- **保守性の向上**: 共通部分の変更が必要な場合、基底インターフェースを変更するだけで全体に反映されます
+- **コードの重複削減**: 共通プロパティの再利用
+- **型の階層構造**: 基本型から特化型への関係表現
+- **保守性の向上**: 基底インターフェースの変更で全体に反映
 
 ```typescript
 // 基本的な人物情報
@@ -242,7 +242,7 @@ displayContent(article); // OK
 displayContent(video); // OK
 ```
 
-#### 3. 複数インターフェースの継承
+#### 3. 複数インターフェースの継承（概要）
 
 ```typescript
 // 複数のインターフェースから継承
@@ -262,6 +262,7 @@ interface BlogPost extends BaseContent, Timestamped, Categorized {
   publishedAt?: Date;
 }
 
+// 使用例（詳細は次回Session2で実践）
 let blogPost: BlogPost = {
   id: "post1",
   title: "TypeScript継承について",
@@ -366,18 +367,11 @@ interface BaseItem {
   id: number;
   title: string;
   author: string;
-  publishedYear: number;
 }
 
 interface Book extends BaseItem {
   isbn: string;
   pages: number;
-  genre: string;
-}
-
-interface Magazine extends BaseItem {
-  issueNumber: number;
-  monthlyEdition: string;
 }
 ```
 
@@ -385,15 +379,7 @@ interface Magazine extends BaseItem {
 
 ```typescript
 function displayItemInfo(item: BaseItem): void {
-  console.log(`${item.title} by ${item.author} (${item.publishedYear}年)`);
-}
-
-function findItemsByAuthor(items: BaseItem[], author: string): BaseItem[] {
-  return items.filter((item) => item.author === author);
-}
-
-function filterBooks(items: (Book | Magazine)[]): Book[] {
-  return items.filter((item): item is Book => "isbn" in item);
+  console.log(`${item.title} by ${item.author}`);
 }
 ```
 

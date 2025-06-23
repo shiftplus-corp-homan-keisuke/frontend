@@ -1,8 +1,8 @@
-# Session3: 抽象クラスと高度な設計パターン（60 分）
+# Session3: 抽象クラスと高度な設計パターン（45 分）
 
-> 💡 **対象**: 他言語経験者（Session1-2 完了者）  
-> 🎯 **形式**: 講師サポート付き学習  
-> ⏰ **時間**: 60 分（集中学習）
+> 💡 **対象**: 他言語経験者（Session1-2 完了者）
+> 🎯 **形式**: 講師サポート付き学習
+> ⏰ **時間**: 45 分（集中学習）
 
 ## 📚 関連補足資料
 
@@ -11,7 +11,7 @@
 - 📖 **[専門用語集](./Step03_補足_専門用語集.md)** - 抽象クラス・継承・ポリモーフィズムの詳細解説
 - 💻 **[実践コード例](./Step03_補足_実践コード例.md)** - 高度な設計パターンの実装例
 - 🚨 **[トラブルシューティング](./Step03_補足_トラブルシューティング.md)** - 継承・抽象クラス関連のエラー解決ガイド
-- 🌐 **[参考リソース](./Step03_補足_参考リソース.md)** - 設計パターン・SOLID原則の学習リソース
+- 🌐 **[参考リソース](./Step03_補足_参考リソース.md)** - 設計パターン・SOLID 原則の学習リソース
 - 📋 **[補足資料](./Step03_補足資料.md)** - その他の重要な補足情報
 
 > 💡 **活用方法**: 学習中に疑問が生じた際や、より深く理解したい場合に参照してね 🐰
@@ -35,12 +35,12 @@
 
 ## ⏰ 詳細タイムテーブル
 
-| 時間         | 内容                           | 講師の役割                 | 学習者の活動   | 成果物       |
-| ------------ | ------------------------------ | -------------------------- | -------------- | ------------ |
-| **0-5 分**   | 前回復習・今回目標             | 復習確認・目標提示         | 振り返り・質問 | 理解確認     |
-| **5-35 分**  | 抽象クラスと継承の理論・実践   | 実演・個別指導             | ハンズオン     | 抽象クラス   |
-| **35-55 分** | 高度な設計パターン実践演習     | コードレビュー・デザイン指導 | 設計・実装     | 設計パターン |
-| **55-60 分** | 振り返り・総括                 | まとめ・フィードバック     | 質問・確認     | 学習成果     |
+| 時間         | 内容                         | 講師の役割                   | 学習者の活動   | 成果物       |
+| ------------ | ---------------------------- | ---------------------------- | -------------- | ------------ |
+| **0-3 分**   | 前回復習・今回目標           | 復習確認・目標提示           | 振り返り・質問 | 理解確認     |
+| **3-25 分**  | 抽象クラスと継承の理論・実践 | 実演・個別指導               | ハンズオン     | 抽象クラス   |
+| **25-42 分** | 基本的な設計パターン実践演習 | コードレビュー・デザイン指導 | 設計・実装     | 設計パターン |
+| **42-45 分** | 振り返り・総括               | まとめ・フィードバック       | 質問・確認     | 学習成果     |
 
 ---
 
@@ -58,11 +58,11 @@ interface Drawable {
 
 class Circle implements Drawable {
   private radius: number;
-  
+
   constructor(radius: number) {
     this.radius = radius;
   }
-  
+
   draw(): void {
     console.log(`円を描画: 半径${this.radius}`);
   }
@@ -144,7 +144,9 @@ class Circle extends Shape {
   }
 
   draw(): void {
-    console.log(`${this.color}の円を (${this.x}, ${this.y}) に描画: 半径${this.radius}`);
+    console.log(
+      `${this.color}の円を (${this.x}, ${this.y}) に描画: 半径${this.radius}`
+    );
   }
 
   // クラス独自のメソッド
@@ -157,7 +159,13 @@ class Rectangle extends Shape {
   private width: number;
   private height: number;
 
-  constructor(x: number, y: number, color: string, width: number, height: number) {
+  constructor(
+    x: number,
+    y: number,
+    color: string,
+    width: number,
+    height: number
+  ) {
     super(x, y, color);
     this.width = width;
     this.height = height;
@@ -172,7 +180,9 @@ class Rectangle extends Shape {
   }
 
   draw(): void {
-    console.log(`${this.color}の長方形を (${this.x}, ${this.y}) に描画: ${this.width}×${this.height}`);
+    console.log(
+      `${this.color}の長方形を (${this.x}, ${this.y}) に描画: ${this.width}×${this.height}`
+    );
   }
 
   getDimensions(): { width: number; height: number } {
@@ -273,44 +283,29 @@ class Dog extends Animal {
 }
 ```
 
-#### 3. ポリモーフィズムの活用
+#### 3. ポリモーフィズムの基本活用
 
 ```typescript
 // ポリモーフィズム: 同じインターフェースで異なる実装を扱う
-function processAnimals(animals: Animal[]): void {
-  animals.forEach(animal => {
-    console.log(`動物: ${animal.getName()}, 年齢: ${animal.getAge()}`);
-    animal.makeSound(); // 各クラスの実装が呼ばれる
-    animal.move();      // 各クラスの実装が呼ばれる
-    console.log('---');
-  });
-}
-
 function processShapes(shapes: Shape[]): void {
   let totalArea = 0;
-  
-  shapes.forEach(shape => {
+
+  shapes.forEach((shape) => {
     shape.draw();
     const area = shape.getArea();
     totalArea += area;
     console.log(`面積: ${area}`);
   });
-  
+
   console.log(`総面積: ${totalArea}`);
 }
 
 // 使用例
-const animals: Animal[] = [
-  new Bird("スズメ", 2),
-  new Dog("ポチ", 5)
-];
-
 const shapes: Shape[] = [
   new Circle(0, 0, "赤", 3),
-  new Rectangle(10, 10, "青", 4, 6)
+  new Rectangle(10, 10, "青", 4, 6),
 ];
 
-processAnimals(animals);
 processShapes(shapes);
 ```
 
@@ -329,45 +324,27 @@ processShapes(shapes);
 // TODO: 以下の要件を満たす抽象クラスVehicleを定義してください
 // 共通プロパティ:
 // - brand: 文字列（protected）
-// - model: 文字列（protected）
-// - year: 数値（protected）
-// - fuelLevel: 数値（private、初期値100）
 
 // 共通メソッド:
 // - getBrand(): ブランド名を返す
-// - getModel(): モデル名を返す
-// - getYear(): 年式を返す
-// - refuel(): 燃料を満タンにする
-// - getFuelLevel(): 燃料レベルを返す
 
 // 抽象メソッド:
 // - start(): エンジン始動
-// - stop(): エンジン停止
-// - getMaxSpeed(): 最高速度を返す
 
 // ここにVehicle抽象クラスを定義
 
-// TODO: Vehicleを継承したCarクラスとMotorcycleクラスを実装してください
-// Car: 4輪、最高速度180km/h
-// Motorcycle: 2輪、最高速度250km/h
+// TODO: Vehicleを継承したCarクラスを実装してください
 
 // 使用例
-const car = new Car("Toyota", "Camry", 2023);
-const motorcycle = new Motorcycle("Honda", "CBR", 2024);
-
+const car = new Car("Toyota");
 car.start();
-console.log(`最高速度: ${car.getMaxSpeed()}km/h`);
-car.stop();
-
-motorcycle.start();
-console.log(`最高速度: ${motorcycle.getMaxSpeed()}km/h`);
-motorcycle.stop();
+console.log(`ブランド: ${car.getBrand()}`);
 ```
 
-### 練習問題 2: 高度な設計パターン 🔰
+### 練習問題 2: 基本的な設計パターン 🔰
 
 **要件**:
-ファイル処理システムを設計してください。
+シンプルなファイル処理システムを設計してください。
 
 ```typescript
 // インターフェース定義
@@ -375,47 +352,35 @@ interface Readable {
   read(): string;
 }
 
-interface Writable {
-  write(content: string): boolean;
-}
-
-interface Compressible {
-  compress(): boolean;
-  decompress(): boolean;
-}
-
 // TODO: 以下の要件を満たす抽象クラスFileHandlerを定義してください
 // 共通プロパティ:
 // - fileName: 文字列（protected）
 // - fileSize: 数値（protected）
-// - lastModified: Date（protected）
 
 // 共通メソッド:
 // - getFileName(): ファイル名を返す
 // - getFileSize(): ファイルサイズを返す
-// - getLastModified(): 最終更新日を返す
-// - updateLastModified(): 最終更新日を現在時刻に更新
 
 // 抽象メソッド:
 // - open(): ファイルを開く
 // - close(): ファイルを閉じる
 // - getFileType(): ファイルタイプを返す
 
-// TODO: FileHandlerを継承し、適切なインターフェースを実装したクラスを作成
-// - TextFile: Readable, Writable を実装
+// TODO: FileHandlerを継承したクラスを作成
+// - TextFile: Readable を実装
 // - ImageFile: Readable を実装
-// - ArchiveFile: Readable, Writable, Compressible を実装
 
 // 使用例
 const textFile = new TextFile("document.txt", 1024);
 const imageFile = new ImageFile("photo.jpg", 2048);
-const archiveFile = new ArchiveFile("backup.zip", 4096);
 
 // ポリモーフィズムのテスト
-const files: FileHandler[] = [textFile, imageFile, archiveFile];
-files.forEach(file => {
+const files: FileHandler[] = [textFile, imageFile];
+files.forEach((file) => {
   file.open();
-  console.log(`${file.getFileName()} (${file.getFileType()}): ${file.getFileSize()}bytes`);
+  console.log(
+    `${file.getFileName()} (${file.getFileType()}): ${file.getFileSize()}bytes`
+  );
   file.close();
 });
 ```
@@ -429,75 +394,25 @@ files.forEach(file => {
 ```typescript
 abstract class Vehicle {
   protected brand: string;
-  protected model: string;
-  protected year: number;
-  private fuelLevel: number = 100;
 
-  constructor(brand: string, model: string, year: number) {
+  constructor(brand: string) {
     this.brand = brand;
-    this.model = model;
-    this.year = year;
   }
 
   getBrand(): string {
     return this.brand;
   }
 
-  getModel(): string {
-    return this.model;
-  }
-
-  getYear(): number {
-    return this.year;
-  }
-
-  refuel(): void {
-    this.fuelLevel = 100;
-    console.log("燃料を満タンにしました");
-  }
-
-  getFuelLevel(): number {
-    return this.fuelLevel;
-  }
-
   abstract start(): void;
-  abstract stop(): void;
-  abstract getMaxSpeed(): number;
 }
 
 class Car extends Vehicle {
-  constructor(brand: string, model: string, year: number) {
-    super(brand, model, year);
+  constructor(brand: string) {
+    super(brand);
   }
 
   start(): void {
-    console.log(`${this.brand} ${this.model}のエンジンを始動しました（4輪車）`);
-  }
-
-  stop(): void {
-    console.log(`${this.brand} ${this.model}のエンジンを停止しました`);
-  }
-
-  getMaxSpeed(): number {
-    return 180;
-  }
-}
-
-class Motorcycle extends Vehicle {
-  constructor(brand: string, model: string, year: number) {
-    super(brand, model, year);
-  }
-
-  start(): void {
-    console.log(`${this.brand} ${this.model}のエンジンを始動しました（2輪車）`);
-  }
-
-  stop(): void {
-    console.log(`${this.brand} ${this.model}のエンジンを停止しました`);
-  }
-
-  getMaxSpeed(): number {
-    return 250;
+    console.log(`${this.brand}の車のエンジンを始動しました`);
   }
 }
 ```
@@ -505,136 +420,27 @@ class Motorcycle extends Vehicle {
 ### 練習問題 2 解答
 
 ```typescript
-abstract class FileHandler {
-  protected fileName: string;
-  protected fileSize: number;
-  protected lastModified: Date;
+abstract class Shape {
+  protected color: string;
 
-  constructor(fileName: string, fileSize: number) {
-    this.fileName = fileName;
-    this.fileSize = fileSize;
-    this.lastModified = new Date();
+  constructor(color: string) {
+    this.color = color;
   }
 
-  getFileName(): string {
-    return this.fileName;
+  getColor(): string {
+    return this.color;
   }
 
-  getFileSize(): number {
-    return this.fileSize;
-  }
-
-  getLastModified(): Date {
-    return this.lastModified;
-  }
-
-  updateLastModified(): void {
-    this.lastModified = new Date();
-  }
-
-  abstract open(): void;
-  abstract close(): void;
-  abstract getFileType(): string;
+  abstract draw(): void;
 }
 
-class TextFile extends FileHandler implements Readable, Writable {
-  private content: string = "";
-
-  constructor(fileName: string, fileSize: number) {
-    super(fileName, fileSize);
+class Circle extends Shape {
+  constructor(color: string) {
+    super(color);
   }
 
-  open(): void {
-    console.log(`テキストファイル ${this.fileName} を開きました`);
-  }
-
-  close(): void {
-    console.log(`テキストファイル ${this.fileName} を閉じました`);
-  }
-
-  getFileType(): string {
-    return "Text";
-  }
-
-  read(): string {
-    return this.content;
-  }
-
-  write(content: string): boolean {
-    this.content = content;
-    this.updateLastModified();
-    console.log(`テキストファイルに書き込みました: ${content.substring(0, 20)}...`);
-    return true;
-  }
-}
-
-class ImageFile extends FileHandler implements Readable {
-  constructor(fileName: string, fileSize: number) {
-    super(fileName, fileSize);
-  }
-
-  open(): void {
-    console.log(`画像ファイル ${this.fileName} を開きました`);
-  }
-
-  close(): void {
-    console.log(`画像ファイル ${this.fileName} を閉じました`);
-  }
-
-  getFileType(): string {
-    return "Image";
-  }
-
-  read(): string {
-    return `画像データ: ${this.fileName}`;
-  }
-}
-
-class ArchiveFile extends FileHandler implements Readable, Writable, Compressible {
-  private isCompressed: boolean = false;
-
-  constructor(fileName: string, fileSize: number) {
-    super(fileName, fileSize);
-  }
-
-  open(): void {
-    console.log(`アーカイブファイル ${this.fileName} を開きました`);
-  }
-
-  close(): void {
-    console.log(`アーカイブファイル ${this.fileName} を閉じました`);
-  }
-
-  getFileType(): string {
-    return "Archive";
-  }
-
-  read(): string {
-    return `アーカイブデータ: ${this.fileName}`;
-  }
-
-  write(content: string): boolean {
-    console.log(`アーカイブファイルに追加しました: ${content}`);
-    this.updateLastModified();
-    return true;
-  }
-
-  compress(): boolean {
-    if (!this.isCompressed) {
-      this.isCompressed = true;
-      console.log(`${this.fileName} を圧縮しました`);
-      return true;
-    }
-    return false;
-  }
-
-  decompress(): boolean {
-    if (this.isCompressed) {
-      this.isCompressed = false;
-      console.log(`${this.fileName} を展開しました`);
-      return true;
-    }
-    return false;
+  draw(): void {
+    console.log(`${this.color}の円を描画しました`);
   }
 }
 ```
@@ -658,10 +464,10 @@ class ArchiveFile extends FileHandler implements Readable, Writable, Compressibl
 - A: 「共通実装がある場合は抽象クラス、純粋な契約定義のみの場合はインターフェースを使用します。抽象クラスは『is-a』関係、インターフェースは『can-do』関係を表現します」
 
 - Q: 「継承の階層が深くなりすぎませんか？」
-- A: 「適切な設計では3-4階層程度に留めるのが一般的です。過度な継承よりもコンポジション（組み合わせ）を検討することも重要です」
+- A: 「適切な設計では 3-4 階層程度に留めるのが一般的です。過度な継承よりもコンポジション（組み合わせ）を検討することも重要です」
 
 ---
 
 **❗ 重要**: Session3 で学習した抽象クラスと設計パターンは、実際のプロジェクトでの設計力向上に直結します。これらの概念をしっかりと理解して実践に活かしましょう！
 
-**🌟 次のステップ**: これまでの学習を統合して、実践的なStoreシステムの設計と実装に挑戦します！**
+**🌟 次のステップ**: これまでの学習を統合して、実践的な Store システムの設計と実装に挑戦します！\*\*

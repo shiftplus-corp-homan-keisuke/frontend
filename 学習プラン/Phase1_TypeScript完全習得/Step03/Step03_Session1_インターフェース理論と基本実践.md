@@ -1,21 +1,5 @@
 # Session1: インターフェース理論と基本実践（45 分）
 
-> 💡 **対象**: 他言語経験者（JavaScript 基礎・TypeScript 基本型知識あり）
-> 🎯 **形式**: 講師サポート付き学習
-> ⏰ **時間**: 45 分（集中学習）
-
-## 📚 関連補足資料
-
-このセッションの学習をサポートする補足資料をご用意しています：
-
-- 📖 **[専門用語集](./Step03_補足_専門用語集.md)** - インターフェース・型設計の詳細解説
-- 💻 **[実践コード例](./Step03_補足_実践コード例.md)** - 段階的な実装例とベストプラクティス
-- 🚨 **[トラブルシューティング](./Step03_補足_トラブルシューティング.md)** - インターフェース関連のエラー解決ガイド
-- 🌐 **[参考リソース](./Step03_補足_参考リソース.md)** - TypeScript 型システム学習リソース集
-- 📋 **[補足資料](./Step03_補足資料.md)** - その他の重要な補足情報
-
-> 💡 **活用方法**: 学習中に疑問が生じた際や、より深く理解したい場合に参照してね 🐰
-
 ## 📅 セッション概要
 
 **学習目標**:
@@ -87,47 +71,91 @@ let user: {
 インターフェースは、TypeScript における「契約」の概念です。オブジェクトがどのような形状（プロパティとメソッド）を持つべきかを定義することで、以下の価値を提供します：
 
 - **型安全性の確保**:
-- インターフェースを使うことで、オブジェクトが「決められた構造」を持っているかどうかを TypeScript がコンパイル時に自動でチェックします。これにより、間違ったプロパティ名や型のミスを事前に防げます。
-- **コードの可読性向上**:
-- インターフェースを定義することで、「このオブジェクトはどんな形なのか？」が一目で分かります。複雑な型注釈を毎回書く必要がなくなり、コード全体がすっきりします。
-- **チーム開発での契約**:
-- インターフェースは「この形でデータをやり取りしよう」という“約束”です。API 設計やコンポーネント間の連携で、誰が見ても仕様が明確になり、認識のズレやバグを減らせます。
-- **リファクタリングの安全性**:
-- もしインターフェースの構造を変更した場合、影響を受ける箇所がすぐに分かります。型エラーとして検出されるので、修正漏れを防ぎやすくなります。
-
-#### 1. 基本的なインターフェース定義
+  インターフェースを使うことで、オブジェクトが「決められた構造」を持っているかどうかを TypeScript がコンパイル時に自動でチェックします。これにより、間違ったプロパティ名や型のミスを事前に防げます。
 
 ```typescript
-// Step02のオブジェクト型注釈
-let user: {
-  id: number;
-  name: string;
-  email: string;
-} = {
-  id: 1,
-  name: "Alice",
-  email: "alice@example.com",
-};
-
-// ↓ インターフェースで改善
-
 interface User {
-  id: number;
   name: string;
-  email: string;
+  age: number;
 }
 
-let user: User = {
-  id: 1,
-  name: "Alice",
-  email: "alice@example.com",
+const user: User = {
+  name: "Taro",
+  age: 25,
+  // email: "taro@example.com" // ← これを追加すると型エラー
 };
 
-// 再利用可能
-let anotherUser: User = {
-  id: 2,
-  name: "Bob",
-  email: "bob@example.com",
+// 間違ったプロパティ名も検出される
+const invalidUser: User = {
+  name: "Hanako",
+  // age: 30  // ← 必須プロパティが不足していると型エラー
+};
+```
+
+- **コードの可読性向上**:
+  インターフェースを定義することで、「このオブジェクトはどんな形なのか？」が一目で分かります。複雑な型注釈を毎回書く必要がなくなり、コード全体がすっきりします。
+
+```typescript
+interface Product {
+  id: number;
+  title: string;
+  price: number;
+  description: string;
+}
+
+// インターフェースなしの場合（複雑で読みにくい）
+function displayProduct(product: {
+  id: number;
+  title: string;
+  price: number;
+  description: string;
+}) {
+  console.log(`${product.title}: ¥${product.price}`);
+}
+
+// インターフェースありの場合（シンプルで分かりやすい）
+function displayProductWithInterface(product: Product) {
+  console.log(`${product.title}: ¥${product.price}`);
+}
+```
+
+- **チーム開発での契約**:
+  インターフェースは「この形でデータをやり取りしよう」という“約束”です。API 設計やコンポーネント間の連携で、誰が見ても仕様が明確になり、認識のズレやバグを減らせます。
+- **リファクタリングの安全性**:
+  もしインターフェースの構造を変更した場合、影響を受ける箇所がすぐに分かります。型エラーとして検出されるので、修正漏れを防ぎやすくなります。
+
+```typescript
+interface Book {
+  title: string;
+  author: string;
+  publishedYear: number;
+}
+
+const book: Book = {
+  title: "TypeScript入門",
+  author: "山田太郎",
+  publishedYear: 2023,
+};
+
+function displayBook(book: Book) {
+  console.log(`${book.title} by ${book.author} (${book.publishedYear})`);
+}
+
+// もしBookインターフェースを変更した場合...
+interface Book {
+  title: string;
+  authorName: string; // author → authorName に変更
+  publishedYear: number;
+  isbn?: string; // 新しいプロパティを追加
+}
+
+// 上記の変更により、既存のコードで型エラーが発生
+// → 修正が必要な箇所が一目で分かる
+const updatedBook: Book = {
+  title: "TypeScript入門",
+  authorName: "山田太郎", // プロパティ名を修正
+  publishedYear: 2023,
+  isbn: "978-4-1234-5678-9", // 新しいプロパティは任意なので追加しなくてもOK
 };
 ```
 
@@ -155,7 +183,7 @@ function findProduct(products: Product[], id: number): Product | undefined {
 }
 ```
 
-#### 2. インターフェースの継承
+#### 1. インターフェースの継承
 
 **💡 なぜインターフェース継承が重要なのか**
 
@@ -242,7 +270,7 @@ displayContent(article); // OK
 displayContent(video); // OK
 ```
 
-#### 3. 複数インターフェースの継承（概要）
+#### 2. 複数インターフェースの継承（概要）
 
 ```typescript
 // 複数のインターフェースから継承

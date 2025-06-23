@@ -18,55 +18,21 @@
 
 ## ⏰ 詳細タイムテーブル
 
-| 時間         | 内容                     | 講師の役割         | 学習者の活動   | 成果物     |
-| ------------ | ------------------------ | ------------------ | -------------- | ---------- |
-| **0-3 分**   | 前 Step 復習・今回目標   | 復習確認・目標提示 | 振り返り・質問 | 理解確認   |
-| **3-25 分**  | インターフェース理論学習 | 実演・解説         | 理解・メモ     | 基本知識   |
-| **25-42 分** | 基本実践・練習問題       | 個別サポート       | ハンズオン     | 基本コード |
-| **42-45 分** | 振り返り・次回予告       | まとめ・予告       | 質問・確認     | 学習計画   |
+| 時間         | 内容                     | 講師の役割   | 学習者の活動 | 成果物     |
+| ------------ | ------------------------ | ------------ | ------------ | ---------- |
+| **0-25 分**  | インターフェース理論学習 | 実演・解説   | 理解・メモ   | 基本知識   |
+| **25-42 分** | 基本実践・練習問題       | 個別サポート | ハンズオン   | 基本コード |
+| **42-45 分** | 振り返り・次回予告       | まとめ・予告 | 質問・確認   | 学習計画   |
+
+
 
 ---
 
 ## 📚 学習内容
 
-### Section 1: 前 Step 復習（要点のみ）
-
-#### 🔍 Step02 の重要ポイント確認
-
-**基本型システムの復習**
-
-```typescript
-// Step02で学習した基本型
-let userName: string = "Alice";
-let userAge: number = 30;
-let isActive: boolean = true;
-
-// 型エイリアス
-type UserId = number;
-type UserStatus = "active" | "inactive" | "pending";
-
-// 配列とオブジェクトの型注釈
-let scores: number[] = [85, 92, 78];
-let user: {
-  id: UserId;
-  name: string;
-  status: UserStatus;
-} = {
-  id: 1,
-  name: "Alice",
-  status: "active",
-};
-```
-
----
-
-### Section 2: インターフェースの基本概念
-
-> 📚 **関連資料**: [専門用語集 - インターフェース基礎概念](./Step03_補足_専門用語集.md#インターフェース基礎概念) | [実践コード例 - 基本的なインターフェース設計](./Step03_補足_実践コード例.md#基本的なインターフェース設計)
+### Section 1: インターフェースの基本概念
 
 #### 🎯 インターフェースとは何か
-
-**💡 なぜインターフェースが重要なのか**
 
 インターフェースは、TypeScript における「契約」の概念です。オブジェクトがどのような形状（プロパティとメソッド）を持つべきかを定義することで、以下の価値を提供します：
 
@@ -157,39 +123,9 @@ const updatedBook: Book = {
 };
 ```
 
-**🚀 実際のプロジェクトでの活用例**
-
-```typescript
-// 商品情報の型定義
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  category: string;
-}
-
-// 商品一覧の表示
-function displayProducts(products: Product[]): void {
-  products.forEach((product) => {
-    console.log(`${product.name}: ¥${product.price}`);
-  });
-}
-
-// 商品検索
-function findProduct(products: Product[], id: number): Product | undefined {
-  return products.find((product) => product.id === id);
-}
-```
-
 #### 1. インターフェースの継承
 
-**💡 なぜインターフェース継承が重要なのか**
-
 インターフェースの継承により、共通の構造を効率的に設計できます：
-
-- **コードの重複削減**: 共通プロパティの再利用
-- **型の階層構造**: 基本型から特化型への関係表現
-- **保守性の向上**: 基底インターフェースの変更で全体に反映
 
 ```typescript
 // 基本的な人物情報
@@ -233,45 +169,10 @@ let customer: Customer = {
 };
 ```
 
-**🚀 実際のプロジェクトでの活用例**
+**2. 複数インターフェースの継承
 
 ```typescript
-// 基本的なコンテンツ情報
-interface BaseContent {
-  id: string;
-  title: string;
-  createdAt: Date;
-  author: string;
-}
-
-// 記事情報（BaseContentを継承）
-interface Article extends BaseContent {
-  content: string;
-  tags: string[];
-  category: string;
-}
-
-// 動画情報（BaseContentを継承）
-interface Video extends BaseContent {
-  duration: number;
-  videoUrl: string;
-  thumbnailUrl: string;
-}
-
-// コンテンツ管理関数
-function displayContent(content: BaseContent): void {
-  console.log(`${content.title} by ${content.author}`);
-}
-
-// 記事と動画の両方に使用可能
-displayContent(article); // OK
-displayContent(video); // OK
-```
-
-#### 2. 複数インターフェースの継承（概要）
-
-```typescript
-// 複数のインターフェースから継承
+// 複数のインターフェースを組み合わせ
 interface Timestamped {
   createdAt: Date;
   updatedAt: Date;
@@ -285,21 +186,7 @@ interface Categorized {
 // 複数のインターフェースを継承
 interface BlogPost extends BaseContent, Timestamped, Categorized {
   content: string;
-  publishedAt?: Date;
 }
-
-// 使用例（詳細は次回Session2で実践）
-let blogPost: BlogPost = {
-  id: "post1",
-  title: "TypeScript継承について",
-  createdAt: new Date("2025-01-01"),
-  author: "開発者",
-  updatedAt: new Date("2025-01-15"),
-  category: "技術",
-  tags: ["TypeScript", "プログラミング"],
-  content: "インターフェース継承は...",
-  publishedAt: new Date("2025-01-10"),
-};
 ```
 
 ---
@@ -357,28 +244,21 @@ const magazine: Magazine = {
 ### 練習問題 2: 継承を活用した関数設計 🔰
 
 **要件**:
-図書館アイテムを操作する関数を作成してください。
+図書館アイテムを操作する簡単な関数を作成してください。
 
 ```typescript
 // TODO: 以下の関数を実装してください
 
 // 1. 基本アイテム情報を表示する関数（BookとMagazine両方に対応）
-// 期待される出力例:
-// TypeScript入門 by 山田太郎 (2024年)
-// 月刊プログラミング by 編集部 (2025年)
 function displayItemInfo(item: BaseItem): void {
   // 実装してください
+  // 期待される出力例: "TypeScript入門 by 山田太郎 (2024年)"
 }
 
-// 2. 著者で検索する関数（BookとMagazine両方を検索対象）
-function findItemsByAuthor(items: BaseItem[], author: string): BaseItem[] {
-  // 実装してください
-}
-
-// 3. 本のみをフィルタリングする関数
+// 2. 本のみをフィルタリングする関数
 function filterBooks(items: (Book | Magazine)[]): Book[] {
   // 実装してください
-  // ヒント: typeof演算子またはin演算子を使用
+  // ヒント: 'isbn' プロパティの存在で判定
 }
 ```
 
@@ -389,24 +269,49 @@ function filterBooks(items: (Book | Magazine)[]): Book[] {
 ### 練習問題 1 解答
 
 ```typescript
+// 1. BaseItemインターフェース（基本アイテム情報）
 interface BaseItem {
   id: number;
   title: string;
   author: string;
+  publishedYear: number;
 }
 
+// 2. Bookインターフェース（BaseItemを継承）
 interface Book extends BaseItem {
   isbn: string;
   pages: number;
+  genre: string;
+}
+
+// 3. Magazineインターフェース（BaseItemを継承）
+interface Magazine extends BaseItem {
+  issueNumber: number;
+  monthlyEdition: string;
 }
 ```
 
 ### 練習問題 2 解答
 
 ```typescript
+// 1. 基本アイテム情報を表示する関数
 function displayItemInfo(item: BaseItem): void {
-  console.log(`${item.title} by ${item.author}`);
+  console.log(`${item.title} by ${item.author} (${item.publishedYear}年)`);
 }
+
+// 2. 本のみをフィルタリングする関数
+function filterBooks(items: (Book | Magazine)[]): Book[] {
+  return items.filter((item): item is Book => "isbn" in item);
+}
+
+// 使用例
+const library: (Book | Magazine)[] = [book, magazine];
+
+displayItemInfo(book); // TypeScript入門 by 山田太郎 (2024年)
+displayItemInfo(magazine); // 月刊プログラミング by 編集部 (2025年)
+
+const booksOnly = filterBooks(library);
+console.log(booksOnly); // [book] （本のみ）
 ```
 
 ---
@@ -431,6 +336,6 @@ function displayItemInfo(item: BaseItem): void {
 
 ---
 
-**❗ 重要**: Session1 で学習した内容は、Session2 でクラス設計と実装に発展させます。基本概念をしっかりと理解して次回に臨みましょう！
+**❗ 重要**: Session1 で学習した内容は、Session2 でインターフェースの高度な機能（オプションプロパティ、読み取り専用、メソッド定義など）に発展させます。基本概念をしっかりと理解して次回に臨みましょう！
 
-**🌟 次回（Session2）は、クラス設計と実装（コンストラクタ、プロパティ、メソッド、アクセス修飾子）に挑戦します！**
+**🌟 次回（Session2）は、インターフェースの高度な機能（オプションプロパティ、readonly、メソッド定義、関数型インターフェース）に挑戦します！**

@@ -35,8 +35,8 @@
 
 ## ⏰ 詳細タイムテーブル
 
-| 時間               | 内容                   | 講師の役割           | 学習者の活動     | 成果物       |
-| ------------------ | ---------------------- | -------------------- | ---------------- | ------------ |
+| 時間         | 内容                   | 講師の役割           | 学習者の活動     | 成果物       |
+| ------------ | ---------------------- | -------------------- | ---------------- | ------------ |
 | **0-10 分**  | 前回復習・今回目標設定 | 復習確認・目標提示   | 振り返り・質問   | 理解確認     |
 | **10-50 分** | 複合型の実践演習       | 実演・個別指導       | ハンズオン・実践 | 複合型コード |
 | **50-80 分** | 関数型の実践演習       | コードレビュー・助言 | 個人開発・実装   | 関数型コード |
@@ -499,40 +499,66 @@ function updateConfig(
 // TODO: 以下の型定義と関数を完成させてください
 
 // 1. 成績データのタプル型定義
+// 科目名（文字列）、点数（数値）、満点（数値）、試験日（Date型）
 type SubjectScore = [
-// 科目名（文字列）
-// 点数（数値）
-// 満点（数値）
-// 試験日（Date型）];
+  subject: string,
+  score: number,
+  maxScore: number,
+  testDate: Date
+];
 
 // 2. 学生の成績記録タプル型
+// 学生ID（数値）、学生名（文字列）、学年（1-6の数値）、成績配列（SubjectScore[]）
 type StudentGradeRecord = [
-// 学生ID（数値）
-// 学生名（文字列）
-// 学年（1-6の数値）
-// 成績配列（SubjectScore[]）];
+  studentId: number,
+  name: string,
+  grade: 1 | 2 | 3 | 4 | 5 | 6,
+  scores: SubjectScore[]
+];
 
 // 3. 成績分析結果のタプル型
+// 平均点（数値）、最高点（数値）、最低点（数値）、合格科目数（数値）
 type GradeAnalysis = [
-// 平均点（数値）
-// 最高点（数値）
-// 最低点（数値）
-// 合格科目数（数値）];
+  average: number,
+  maxScore: number,
+  minScore: number,
+  passedCount: number
+];
 
 // 4. 成績処理関数（関数オーバーロード）
-// 成績データを分析して統計情報を返す関数オーバーロード
+// 引数の数で処理を分ける、関数オーバーロード
 function analyzeGrades(scores: SubjectScore[]): GradeAnalysis;
-function analyzeGrades(student: StudentGradeRecord): GradeAnalysis;
 function analyzeGrades(
-  input: SubjectScore[] | StudentGradeRecord
+  studentId: number,
+  scores: SubjectScore[]
+): GradeAnalysis;
+function analyzeGrades(
+  scoresOrId: SubjectScore[] | number,
+  scores?: SubjectScore[]
 ): GradeAnalysis {
   // TODO: 実装してください
-  // - SubjectScore[]の場合：直接分析
-  // - StudentGradeRecordの場合：成績部分を抽出して分析
+  // - 引数が1つの場合：SubjectScore[]として処理
+  // - 引数が2つの場合：studentIdは無視してscoresを処理
   // - 合格基準は60点以上とする
+
+  // ヒント：引数の判定は scores の有無で行う
+ 
+
+  // 分析処理を実装してください
+  // 1. 平均点の計算
+  // 2. 最高点の取得
+  // 3. 最低点の取得
+  // 4. 合格科目数の計算（60点以上）
 }
 
-// 5. 成績データの作成と分析
+// 5. 追加の便利関数
+// 科目名の配列を取得する関数
+function getSubjectNames(scores: SubjectScore[]): string[] {
+  // TODO: 実装してください
+  // ヒント：map関数と分割代入を使用
+}
+
+// 6. 成績データの作成と分析
 const mathScore: SubjectScore = ["数学", 85, 100, new Date("2024-06-01")];
 const englishScore: SubjectScore = ["英語", 92, 100, new Date("2024-06-02")];
 const scienceScore: SubjectScore = ["理科", 78, 100, new Date("2024-06-03")];
@@ -546,108 +572,11 @@ const studentRecord: StudentGradeRecord = [
 
 // 使用例
 const analysis1 = analyzeGrades([mathScore, englishScore, scienceScore]);
-const analysis2 = analyzeGrades(studentRecord);
-```
+const analysis2 = analyzeGrades(1, [mathScore, englishScore, scienceScore]);
 
-### 演習 2: 関数オーバーロードを活用した学生検索システム（15 分）
-
-以下の要件に従って、関数オーバーロードを活用した検索システムを作成してください：
-
-```typescript
-// TODO: 以下の関数オーバーロードを完成させてください
-
-// 学生データ（サンプル）
-const students: Student[] = [
-  {
-    id: 1,
-    name: "田中太郎",
-    grade: 3,
-    subjects: ["数学", "英語"],
-    gpa: 3.8,
-    enrollmentDate: new Date("2022-04-01"),
-  },
-  {
-    id: 2,
-    name: "佐藤花子",
-    grade: 2,
-    subjects: ["国語", "理科"],
-    gpa: 3.9,
-    enrollmentDate: new Date("2023-04-01"),
-  },
-  {
-    id: 3,
-    name: "鈴木次郎",
-    grade: 3,
-    subjects: ["数学", "社会"],
-    gpa: 3.2,
-    enrollmentDate: new Date("2022-04-01"),
-  },
-  {
-    id: 4,
-    name: "田中花子",
-    grade: 1,
-    subjects: ["国語", "算数"],
-    gpa: 3.5,
-    enrollmentDate: new Date("2024-04-01"),
-  },
-];
-
-// 1. 学生検索関数のオーバーロード定義
-// 引数の型に応じて異なる学生検索を行う関数オーバーロード
-function searchStudents(id: number): Student | null;
-function searchStudents(name: string): Student[];
-function searchStudents(criteria: {
-  grade?: number;
-  minGpa?: number;
-  subject?: string;
-}): Student[];
-function searchStudents(
-  input: number | string | { grade?: number; minGpa?: number; subject?: string }
-): Student | Student[] | null {
-  // TODO: 実装してください
-  // - number: IDで検索（単一学生またはnull）
-  // - string: 名前で部分一致検索（学生配列）
-  // - object: 条件で検索（学生配列）
-}
-
-// 2. 成績フォーマット関数のオーバーロード定義
-// 学生情報を指定されたフォーマットで表示用文字列に変換する関数オーバーロード
-function formatStudentInfo(student: Student): string;
-function formatStudentInfo(students: Student[]): string[];
-function formatStudentInfo(student: Student, format: "detailed"): string;
-function formatStudentInfo(students: Student[], format: "summary"): string;
-function formatStudentInfo(
-  input: Student | Student[],
-  format?: "detailed" | "summary"
-): string | string[] {
-  // TODO: 実装してください
-  // - 単一学生: 基本情報または詳細情報
-  // - 複数学生: 個別情報配列またはサマリー文字列
-}
-
-// 3. 使用例とテスト
-console.log("=== 学生検索システムのテスト ===");
-
-// ID検索
-const studentById = searchStudents(1);
-console.log("ID検索:", studentById);
-
-// 名前検索
-const studentsByName = searchStudents("田中");
-console.log("名前検索:", studentsByName);
-
-// 条件検索
-const highPerformers = searchStudents({ minGpa: 3.5 });
-console.log("高成績者:", highPerformers);
-
-// フォーマット
-const basicInfo = formatStudentInfo(students[0]);
-const detailedInfo = formatStudentInfo(students[0], "detailed");
-const summaryInfo = formatStudentInfo(students, "summary");
-
-console.log("基本情報:", basicInfo);
-console.log("詳細情報:", detailedInfo);
-console.log("サマリー:", summaryInfo);
+// 科目名取得のテスト
+const subjects = getSubjectNames([mathScore, englishScore, scienceScore]);
+console.log("履修科目:", subjects);
 ```
 
 ---
@@ -666,140 +595,3 @@ console.log("サマリー:", summaryInfo);
 **📌 重要**: Session2 では高度な型機能を学習しました。タプル型と関数オーバーロードを活用して、より柔軟で型安全なコードを書けるようになりましょう。
 
 **🌟 次回（Session3）は、学生管理システムの発展版を完成させ、Step02 の学習を総括します！**
-
----
-
-## 🎯 実践演習
-
-> 🛠️ **演習サポート**: [トラブルシューティング - 実践演習でのよくある問題](./Step02_補足_トラブルシューティング.md#実践演習でのよくある問題) | [実践コード例 - 演習解答例とヒント](./Step02_補足_実践コード例.md#演習解答例とヒント)
-
-### 演習 1: ショッピングカート管理システム（30 分）
-
-以下の要件に従って、型安全なショッピングカートシステムを作成してください：
-
-```typescript
-// TODO: 以下の型定義と関数を完成させてください
-
-// 1. 商品の型定義
-type Product = {
-  id: number; // 商品ID（数値）
-  name: string; // 商品名（文字列）
-  price: number; // 価格（数値）
-  category: string; // カテゴリ（文字列）
-  inStock: boolean; // 在庫状況（真偽値）
-};
-
-// 2. カートアイテムの型定義
-type CartItem = {
-  product: Product; // 商品情報（Product型）
-  quantity: number; // 数量（数値）
-  addedAt: Date; // 追加日時（Date型）
-};
-
-// 3. カートの操作関数
-class ShoppingCart {
-  private items: CartItem[] = [];
-
-  // 商品をカートに追加する
-  addItem(product: Product, quantity: number): void {
-    // TODO: 実装
-  }
-
-  // 指定された商品IDの商品をカートから削除する
-  removeItem(productId: number): void {
-    // TODO: 実装
-  }
-
-  // カート内の全商品一覧を読み取り専用で取得する
-  getItems(): readonly CartItem[] {
-    // TODO: 実装
-  }
-
-  // カート内の全商品の合計金額を計算する
-  getTotalPrice(): number {
-    // TODO: 実装
-  }
-
-  // カート内の商品の総数量を取得する
-  getItemCount(): number {
-    // TODO: 実装
-  }
-}
-
-// 4. 使用例のテストコード
-const cart = new ShoppingCart();
-const laptop: Product = {
-  id: 1,
-  name: "Gaming Laptop",
-  price: 150000,
-  category: "Electronics",
-  inStock: true,
-};
-
-cart.addItem(laptop, 1);
-console.log(`Total: ${cart.getTotalPrice()}円`);
-console.log(`Items: ${cart.getItemCount()}個`);
-```
-
-### 演習 2: データ変換パイプライン（20 分）
-
-以下の要件に従って、型安全なデータ変換システムを作成してください：
-
-```typescript
-// TODO: 以下の型定義と関数を完成させてください
-
-// 1. 生データの型定義
-type RawUserData = {
-  id: string; // 文字列のID
-  full_name: string; // フルネーム
-  email_address: string; // メールアドレス
-  is_active: string; // "true" または "false"
-  created_at: string; // ISO日付文字列
-};
-
-// 2. 変換後のデータ型定義
-type ProcessedUser = {
-  id: number; // 数値のID
-  name: string; // 名前
-  email: string; // メールアドレス
-  isActive: boolean; // 真偽値
-  createdAt: Date; // Date型
-};
-
-// 生データを処理済みデータに変換する
-function transformUserData(rawData: RawUserData[]): ProcessedUser[] {
-  // TODO: 実装
-  // - IDを数値に変換
-  // - full_nameをnameにリネーム
-  // - email_addressをemailにリネーム
-  // - is_activeを真偽値に変換
-  // - created_atをDate型に変換
-}
-
-// アクティブなユーザーのみを抽出する
-function filterActiveUsers(users: ProcessedUser[]): ProcessedUser[] {
-  // TODO: アクティブなユーザーのみを返す
-}
-
-// ユーザーを名前順でソートする
-function sortUsersByName(users: ProcessedUser[]): ProcessedUser[] {
-  // TODO: 名前でソートして返す
-}
-```
-
----
-
-## 📝 学習ポイント
-
-### ✅ 今回のセッションで習得すべきこと
-
-1. **配列型の実践活用**: 型安全な配列操作、読み取り専用配列の使用
-2. **タプル型の理解**: 固定長配列、名前付きタプル、オプショナル要素
-3. **オブジェクト型の設計**: インターフェース、オプショナルプロパティ、読み取り専用プロパティ
-4. **関数型の詳細**: 関数型注釈、オプショナルパラメータ、関数オーバーロード
-
----
-
-**📌 重要**: Session2 では実践的なコーディングを通じて型システムの活用を体感します。完璧を目指さず、まずは動くコードを作ることを重視しましょう。
-
-**🌟 次回（Session3）は、プロジェクトの完成と学習の総括を行います！**

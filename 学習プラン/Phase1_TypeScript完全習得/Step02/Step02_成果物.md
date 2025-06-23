@@ -30,9 +30,9 @@
 
 ## ⏰ 作成手順（推奨時間配分：合計 30 分）
 
-### Phase 1: 既存コードの理解（8 分）
+### Phase 1: 既存コードの理解（6 分）
 
-#### ステップ 1-1: 提供された JavaScript コードを理解する（8 分）
+#### ステップ 1-1: 提供された JavaScript コードを理解する（6 分）
 
 以下の JavaScript コードを読んで、どんな型が必要か考えてください：
 
@@ -43,21 +43,16 @@ let nextId = 1;
 
 // 学生の基本情報
 const GRADES = [1, 2, 3, 4, 5, 6];
-const CLASSES = ["A", "B", "C"];
-const STATUSES = ["active", "inactive", "graduated", "transferred"];
+const STATUSES = ["active", "inactive"];
 
 // 新しい学生を登録して学生配列に追加する
-function addStudent(name, grade, className, birthDate, guardianContact) {
+function addStudent(name, grade, status) {
   const student = {
     id: nextId++,
     name: name,
     grade: grade,
-    class: className,
-    status: "active",
-    birthDate: new Date(birthDate),
-    guardianContact: guardianContact,
+    status: status || "active",
     enrollmentDate: new Date(),
-    updatedAt: new Date(),
   };
 
   students.push(student);
@@ -69,21 +64,11 @@ function addStudent(name, grade, className, birthDate, guardianContact) {
   };
 }
 
-// 検索タイプと値に基づいて学生を検索する（ID検索は単一、その他は複数結果）
-function findStudent(searchType, value) {
-  let result;
+// IDで学生を検索する
+function findStudent(id) {
+  const student = students.find((s) => s.id === id);
 
-  if (searchType === "id") {
-    result = students.find((s) => s.id === value);
-  } else if (searchType === "name") {
-    result = students.filter((s) => s.name.includes(value));
-  } else if (searchType === "grade") {
-    result = students.filter((s) => s.grade === value);
-  } else if (searchType === "class") {
-    result = students.filter((s) => s.class === value);
-  }
-
-  if (!result || (Array.isArray(result) && result.length === 0)) {
+  if (!student) {
     return {
       success: false,
       data: null,
@@ -93,7 +78,7 @@ function findStudent(searchType, value) {
 
   return {
     success: true,
-    data: result,
+    data: student,
     message: "検索が完了しました",
   };
 }
@@ -114,7 +99,6 @@ function updateStudent(id, updates) {
   const updatedStudent = {
     ...student,
     ...updates,
-    updatedAt: new Date(),
   };
 
   students[studentIndex] = updatedStudent;
@@ -126,100 +110,38 @@ function updateStudent(id, updates) {
   };
 }
 
-// 指定された学年の学生一覧をタプル形式で取得する
-function getStudentsByGrade(grade) {
-  const gradeStudents = students.filter((s) => s.grade === grade);
-
-  return gradeStudents.map((student) => [
-    student.id,
-    student.name,
-    student.class,
-    student.status,
-  ]);
-}
-
-// 指定された学年とクラスの統計情報を計算する
-function getClassStatistics(grade, className) {
-  const classStudents = students.filter(
-    (s) => s.grade === grade && s.class === className
-  );
-
-  const activeCount = classStudents.filter((s) => s.status === "active").length;
-  const totalCount = classStudents.length;
-  const averageAge =
-    classStudents.reduce((sum, student) => {
-      const age = new Date().getFullYear() - student.birthDate.getFullYear();
-      return sum + age;
-    }, 0) / totalCount || 0;
-
+// 全学生を取得する
+function getStudents() {
   return {
-    grade: grade,
-    class: className,
-    totalStudents: totalCount,
-    activeStudents: activeCount,
-    averageAge: Math.round(averageAge * 10) / 10,
+    success: true,
+    data: students,
+    message: "学生一覧を取得しました",
   };
 }
 
-// 学校全体の統計レポートを生成する（学年別・ステータス別集計を含む）
-function generateReport() {
-  const report = {
-    totalStudents: students.length,
-    byGrade: {},
-    byStatus: {
-      active: 0,
-      inactive: 0,
-      graduated: 0,
-      transferred: 0,
-    },
-    generatedAt: new Date(),
-  };
-
-  // 学年別集計
-  GRADES.forEach((grade) => {
-    const gradeStudents = students.filter((s) => s.grade === grade);
-    report.byGrade[grade] = gradeStudents.length;
-  });
-
-  // ステータス別集計
-  students.forEach((student) => {
-    report.byStatus[student.status]++;
-  });
-
-  return report;
-}
-
-// システムの動作確認用デモ関数（各機能をテストする）
+// システムの動作確認用デモ関数
 function runExample() {
-  console.log("=== 学生管理システム発展版のデモ ===");
+  console.log("=== 学生管理システム基本版のデモ ===");
 
   // 学生登録
-  console.log(addStudent("田中太郎", 3, "A", "2015-04-15", "090-1234-5678"));
-  console.log(addStudent("佐藤花子", 3, "B", "2015-06-20", "080-9876-5432"));
-  console.log(addStudent("鈴木次郎", 4, "A", "2014-03-10"));
+  console.log(addStudent("田中太郎", 3, "active"));
+  console.log(addStudent("佐藤花子", 4, "active"));
 
   // 学生検索
-  console.log(findStudent("name", "田中"));
-  console.log(findStudent("grade", 3));
+  console.log(findStudent(1));
 
   // 学生情報更新
-  console.log(updateStudent(1, { class: "B", status: "active" }));
+  console.log(updateStudent(1, { status: "inactive" }));
 
-  // 学年別学生一覧（タプル形式）
-  console.log("3年生一覧:", getStudentsByGrade(3));
-
-  // クラス統計
-  console.log("3年A組統計:", getClassStatistics(3, "A"));
-
-  // 全体レポート
-  console.log("全体レポート:", generateReport());
+  // 全学生取得
+  console.log(getStudents());
 }
 
 // 実行
 runExample();
 ```
 
-### Phase 2: 基本的な型注釈の追加（18 分）
+### Phase 2: 基本的な型注釈の追加（20 分）
 
 #### ステップ 2-1: 必要な型を定義する（8 分）
 
@@ -227,8 +149,8 @@ runExample();
 
 1. **学生の基本型**
 
-   - 学年、クラス、ステータスのリテラル型
-   - 学生オブジェクトの型
+   - 学年、ステータスのリテラル型
+   - 学生オブジェクトの型（シンプル版）
 
 2. **操作結果の型**
    - 成功・失敗を表現する Union 型
@@ -238,24 +160,26 @@ runExample();
 ```typescript
 // TODO: 以下の定数にconst assertionを適用してください
 const GRADES = [1, 2, 3, 4, 5, 6];
-const CLASSES = ["A", "B", "C"];
-const STATUSES = ["active", "inactive", "graduated", "transferred"];
+const STATUSES = ["active", "inactive"];
 ```
 
-#### ステップ 2-3: 基本的な関数に型注釈を追加する（7 分）
+#### ステップ 2-3: 基本的な関数に型注釈を追加する（9 分）
 
 ```typescript
 // TODO: 以下に適切な型注釈を追加してください
 let students = [];
 let nextId = 1;
 
-function addStudent(name, grade, className, birthDate, guardianContact) {
+function addStudent(name, grade, status) {
   /* ... */
 }
-function findStudent(searchType, value) {
+function findStudent(id) {
   /* ... */
 }
 function updateStudent(id, updates) {
+  /* ... */
+}
+function getStudents() {
   /* ... */
 }
 ```
@@ -334,8 +258,8 @@ const GRADES = [1, 2, 3, 4, 5, 6] as const;
 type Grade = (typeof GRADES)[number]; // 1 | 2 | 3 | 4 | 5 | 6
 
 // Union型
-type OperationResult<T> =
-  | { success: true; data: T; message: string }
+type OperationResult =
+  | { success: true; data: Student | Student[]; message: string }
   | { success: false; data: null; message: string };
 
 // 学生型
@@ -364,37 +288,28 @@ type Student = {
    const GRADES = [1, 2, 3, 4, 5, 6] as const; // readonly [1, 2, 3, 4, 5, 6]型
    ```
 
-2. **関数オーバーロードの型不一致**
+2. **Union 型の定義ミス**
 
    ```typescript
-   // ❌ 間違い：実装の型がオーバーロードと一致しない
-   function findStudent(searchType: "id", value: number): Student;
-   function findStudent(searchType: string, value: any) {
-     // 戻り値の型が不一致
-     // ...
-   }
+   // ❌ 間違い：文字列リテラルではなく一般的なstring型
+   type StudentStatus = string;
 
-   // ✅ 正解
-   function findStudent(
-     searchType: "id",
-     value: number
-   ): OperationResult<Student | null>;
-   function findStudent(
-     searchType: string,
-     value: any
-   ): OperationResult<Student | Student[] | null> {
-     // ...
-   }
+   // ✅ 正解：具体的なリテラル型
+   type StudentStatus = "active" | "inactive";
    ```
 
-3. **タプル型の要素順序間違い**
+3. **関数の戻り値型の不一致**
 
    ```typescript
-   // ❌ 間違い：要素の順序が実際のデータと一致しない
-   type StudentSummary = [string, number, string, StudentStatus]; // 名前, ID, クラス, ステータス
-
-   // ✅ 正解：実際のデータ順序と一致
-   type StudentSummary = [number, string, string, StudentStatus]; // ID, 名前, クラス, ステータス
+   // ❌ 間違い：戻り値の型が実際の実装と一致しない
+   function findStudent(id: number): Student {
+     // 実際にはOperationResult<Student>を返している
+   }
+   
+   // ✅ 正解
+   function findStudent(id: number): OperationResult {
+     // ...
+   }
    ```
 
 ---
@@ -405,62 +320,54 @@ type Student = {
 <summary>⚠️ 注意：まず自分で考えてから見てください</summary>
 
 ```typescript
-// const assertion
+// const assertion（シンプル版）
 const GRADES = [1, 2, 3, 4, 5, 6] as const;
-const CLASSES = ["A", "B", "C"] as const;
-const STATUSES = ["active", "inactive", "graduated", "transferred"] as const;
+const STATUSES = ["active", "inactive"] as const;
 
 // 型定義
 type Grade = (typeof GRADES)[number];
-type ClassName = (typeof CLASSES)[number];
 type StudentStatus = (typeof STATUSES)[number];
 
 type Student = {
   id: number;
   name: string;
   grade: Grade;
-  class: ClassName;
   status: StudentStatus;
-  birthDate: Date;
-  guardianContact?: string;
   enrollmentDate: Date;
-  updatedAt: Date;
 };
 
-type OperationResult<T> =
-  | { success: true; data: T; message: string }
+type OperationResult =
+  | { success: true; data: Student | Student[]; message: string }
   | { success: false; data: null; message: string };
 
 // 変数の型注釈
 let students: Student[] = [];
 let nextId: number = 1;
 
-// 新しい学生を登録する（保護者連絡先はオプショナル）
+// 新しい学生を登録する
 function addStudent(
   name: string,
   grade: Grade,
-  className: ClassName,
-  birthDate: string,
-  guardianContact?: string
-): OperationResult<Student> {
+  status?: StudentStatus
+): OperationResult {
   // 実装
 }
 
-// 学生を検索する
-function findStudent(
-  searchType: string,
-  value: any
-): OperationResult<Student | Student[] | null> {
+// 学生をIDで検索する
+function findStudent(id: number): OperationResult {
   // 実装
 }
 
-// 学生情報を部分的に更新する
+// 学生情報を更新する
 function updateStudent(
   id: number,
-  updates: Partial<
-    Pick<Student, "name" | "grade" | "class" | "status" | "guardianContact">
-  >
-): OperationResult<Student> {
+  updates: { name?: string; grade?: Grade; status?: StudentStatus }
+): OperationResult {
+  // 実装
+}
+
+// 全学生を取得する
+function getStudents(): OperationResult {
   // 実装
 }
 ```
@@ -474,9 +381,9 @@ function updateStudent(
 余裕がある場合は以下にも挑戦してみてください：
 
 - [ ] より厳密な型ガードの実装
-- [ ] タプル型を使った学生一覧表示
-- [ ] 関数オーバーロードの実装
-- [ ] より複雑な型システムの理解
+- [ ] 学年別フィルタリング機能の追加
+- [ ] エラーハンドリングの強化
+- [ ] より複雑な検索機能の実装
 
 ---
 

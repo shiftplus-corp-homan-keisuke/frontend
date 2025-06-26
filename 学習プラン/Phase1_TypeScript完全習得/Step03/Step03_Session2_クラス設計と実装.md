@@ -20,8 +20,7 @@
 
 | 時間         | 内容                 | 講師の役割           | 学習者の活動     | 成果物     |
 | ------------ | -------------------- | -------------------- | ---------------- | ---------- |
-| **0-3 分**   | 前回復習・今回目標   | 復習確認・目標提示   | 振り返り・質問   | 理解確認   |
-| **3-25 分**  | クラス基本概念と実装 | 実演・個別指導       | ハンズオン・実践 | クラス実装 |
+| **0-25 分**  | クラス基本概念と実装 | 実演・個別指導       | ハンズオン・実践 | クラス実装 |
 | **25-42 分** | 実践演習・練習問題   | コードレビュー・助言 | 個人開発         | 実践コード |
 | **42-45 分** | 振り返り・次回予告   | まとめ・予告         | 質問・確認       | 学習計画   |
 
@@ -29,26 +28,7 @@
 
 ## 📚 学習内容
 
-### Section 1: 前回復習（要点確認）
-
-#### 🔍 Session1 の重要ポイント確認
-
-```typescript
-// Session1で学習したインターフェース
-interface Product {
-  readonly id: number;
-  name: string;
-  price: number;
-  category: string;
-  description?: string;
-}
-
-// 今日はこれをクラスで実装します
-```
-
----
-
-### Section 2: TypeScript クラスの基本概念
+### Section 1: TypeScript クラスの基本概念
 
 > 📚 **関連資料**: [専門用語集 - クラス基礎概念](./Step03_補足_専門用語集.md#クラス基礎概念) | [実践コード例 - 基本的なクラス設計](./Step03_補足_実践コード例.md#基本的なクラス設計)
 
@@ -60,12 +40,108 @@ interface Product {
 
 - **データとロジックの統合**:
   関連するデータ（プロパティ）と処理（メソッド）を一つの単位にまとめることで、コードの構造が明確になり、保守性が向上します。
+
+  ```typescript
+  // データとロジックを統合したクラス
+  class Student {
+    private score: number = 0;
+
+    addScore(points: number): void {
+      this.score += points;
+    }
+
+    getScore(): number {
+      return this.score;
+    }
+
+    getGrade(): string {
+      if (this.score >= 90) return "A";
+      if (this.score >= 80) return "B";
+      if (this.score >= 70) return "C";
+      return "D";
+    }
+  }
+  ```
+
 - **再利用性の向上**:
   一度定義したクラスから複数のインスタンス（オブジェクト）を作成できるため、同じ構造を持つオブジェクトを効率的に生成できます。
+
+  ```typescript
+  // 同じクラスから複数のインスタンスを作成
+  class User {
+    constructor(public name: string, public email: string) {}
+
+    greet(): string {
+      return `こんにちは、${this.name}さん！`;
+    }
+  }
+
+  const user1 = new User("田中", "tanaka@example.com");
+  const user2 = new User("佐藤", "sato@example.com");
+  console.log(user1.greet()); // "こんにちは、田中さん！"
+  console.log(user2.greet()); // "こんにちは、佐藤さん！"
+  ```
+
 - **カプセル化による安全性**:
   アクセス修飾子を使ってデータの可視性を制御し、意図しない変更から重要なデータを保護できます。
+
+  ```typescript
+  // アクセス修飾子でデータを保護
+  class StudentRecord {
+    private studentId: string;
+    private password: string;
+    public name: string;
+
+    constructor(studentId: string, password: string, name: string) {
+      this.studentId = studentId;
+      this.password = password;
+      this.name = name;
+    }
+
+    // 安全な方法で学籍番号の一部のみ表示
+    getMaskedStudentId(): string {
+      return `****${this.studentId.slice(-4)}`;
+    }
+
+    // パスワードの変更（安全な方法）
+    changePassword(oldPassword: string, newPassword: string): boolean {
+      if (this.password === oldPassword) {
+        this.password = newPassword;
+        return true;
+      }
+      return false;
+    }
+  }
+
+  const student = new StudentRecord("20240001", "mypassword", "田中太郎");
+  console.log(student.name); // アクセス可能
+  console.log(student.getMaskedStudentId()); // "****0001"
+  // console.log(student.studentId); // エラー：privateなのでアクセス不可
+  // console.log(student.password); // エラー：privateなのでアクセス不可
+  ```
+
 - **型安全性の確保**:
   TypeScript のクラスは強力な型システムと組み合わさることで、コンパイル時にエラーを検出し、実行時エラーを防げます。
+
+  ```typescript
+  // 型安全性を確保するクラス
+  class Calculator {
+    add(a: number, b: number): number {
+      return a + b;
+    }
+
+    divide(a: number, b: number): number {
+      if (b === 0) {
+        throw new Error("ゼロで割ることはできません");
+      }
+      return a / b;
+    }
+  }
+
+  const calc = new Calculator();
+  console.log(calc.add(5, 3)); // 8
+  // calc.add("5", "3"); // コンパイルエラー：文字列は受け付けない
+  ```
 
 #### 1. 基本的なクラス定義
 

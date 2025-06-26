@@ -169,7 +169,7 @@ let customer: Customer = {
 };
 ```
 
-**2. 複数インターフェースの継承
+**2. 複数インターフェースの継承**
 
 ```typescript
 // 複数のインターフェースを組み合わせ
@@ -204,10 +204,7 @@ interface BlogPost extends BaseContent, Timestamped, Categorized {
 // TODO: 以下の要件を満たすインターフェースを定義してください
 
 // 1. BaseItemインターフェース（基本アイテム情報）
-// - id: 数値
-// - title: 文字列
-// - author: 文字列
-// - publishedYear: 数値
+// 使用例を確認して基本アイテムとして定義すべきものを確認しましょう
 
 // 2. Bookインターフェース（BaseItemを継承）
 // - isbn: 文字列

@@ -153,7 +153,7 @@ function Counter(): JSX.Element {
 
 ```tsx
 // React の仮想DOM活用例
-function Counter(): JSX.Element {
+function Counter() {
   const [count, setCount] = useState(0);
 
   return (
@@ -180,7 +180,7 @@ interface ButtonProps {
   variant?: "primary" | "secondary";
 }
 
-function Button({ text, onClick, variant = "primary" }: ButtonProps): JSX.Element {
+function Button({ text, onClick, variant = "primary" }: ButtonProps) {
   return (
     <button onClick={onClick} className={`btn btn-${variant}`}>
       {text}
@@ -200,7 +200,7 @@ interface AppState {
   settings: Settings;
 }
 
-function App(): JSX.Element {
+function App(){
   const [appState, setAppState] = useState<AppState>({...});
 
   return (
@@ -1562,20 +1562,18 @@ export default TodoApp;
    - 適切な interface 定義
    - Props の型注釈
    - useState の型指定
-
 2. **機能実装（35%）**
 
    - 要件通りの動作
    - エラーハンドリング
    - ユーザビリティ
-
 3. **コード品質（25%）**
 
    - コンポーネントの分割
    - 関数の責任分離
    - 命名規則
-
 4. **React パターン（15%）**
+
    - 適切な useState 使用
    - イベントハンドラーの実装
    - 条件付きレンダリング
@@ -1622,7 +1620,6 @@ export default TodoApp;
 - [ ] TypeScript エラーを理解し解決できる
 
 ### 成果物
-
 
 ## 🔄 Step 2 への準備
 

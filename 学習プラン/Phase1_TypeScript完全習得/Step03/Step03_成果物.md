@@ -4,18 +4,19 @@
 
 ## 🎯 プロジェクトの目的
 
-**あなたが挑戦する課題**: Step03で学習した内容を実践する簡単なプロジェクト
+**あなたが挑戦する課題**: Step03 で学習した内容を実践する簡単なプロジェクト
 
 **なぜ作るのか**: インターフェース、クラス、抽象クラスの基本を**実際に使って**理解するため
 
 **学習目標**:
+
 - [ ] インターフェースでデータの形を決める
 - [ ] クラスでデータを管理する
 - [ ] 抽象クラスで共通の機能を作る
 - [ ] ポリモーフィズムの基本概念を理解する
 - [ ] 複数のストアを通じた継承の実践
 
-**⏰ 推定完了時間**: 30分
+**⏰ 推定完了時間**: 30 分
 
 ---
 
@@ -26,6 +27,7 @@
 **簡単なデータ管理システム（ユーザー＋チャンネル）**
 
 **基本機能**:
+
 - ✅ **ユーザーの管理**: 新しいユーザーの登録・表示・削除
 - ✅ **チャンネルの管理**: 新しいチャンネルの登録・表示・削除
 - ✅ **ポリモーフィズムの実践**: 共通の操作で異なるデータを管理
@@ -33,12 +35,14 @@
 **扱うデータ**:
 
 **ユーザーデータ**:
+
 - **ID**: ユーザーを識別する番号
 - **名前**: ユーザーの名前
 - **メール**: ユーザーのメールアドレス
 - **アクティブ状態**: ユーザーが有効かどうか
 
 **チャンネルデータ**:
+
 - **ID**: チャンネルを識別する番号
 - **名前**: チャンネルの名前
 - **タイプ**: チャンネルの種類（テキスト/音声）
@@ -48,33 +52,148 @@
 
 ## 📊 システム設計図
 
-### 🏗️ 基本構造
+### 🏗️ アーキテクチャ概要図
 
-```
-インターフェース（データの形を決める）
-    ↓
-クラス（実際のデータを作る）
-    ↓
-抽象クラス（共通の機能を定義）
-    ↓
-具体クラス（実際の管理機能を実装）
-    ↓
-ポリモーフィズム（同じ操作で異なるデータを扱う）
+```mermaid
+graph TB
+    subgraph L1 ["🎯 Interface Layer"]
+        A["👤 User Interface<br/>id: number<br/>name: string<br/>email: string<br/>isActive: boolean"]
+        B["📺 Channel Interface<br/>id: number<br/>name: string<br/>type: ChannelType<br/>description?: string"]
+    end
+
+    subgraph L2 ["📦 Entity Layer"]
+        C["👤 UserEntity<br/>constructor<br/>getInfo()<br/>setActiveStatus()"]
+        D["📺 ChannelEntity<br/>constructor<br/>getInfo()<br/>updateDescription()"]
+    end
+
+    subgraph L3 ["🏗️ Abstract Store Layer"]
+        E["🗃️ BaseStore<br/>items: Entity[]<br/>getAll()<br/>count()<br/>add(abstract)<br/>findById(abstract)<br/>remove(abstract)"]
+    end
+
+    subgraph L4 ["⚡ Concrete Store Layer"]
+        G["👥 UserStore<br/>extends BaseStore<br/>add(user)<br/>findById(id)<br/>remove(id)"]
+        H["📡 ChannelStore<br/>extends BaseStore<br/>add(channel)<br/>findById(id)<br/>remove(id)"]
+    end
+
+    subgraph L5 ["✨ Polymorphism"]
+        I["🔄 同じメソッド名で<br/>異なるデータを操作<br/>count()<br/>getAll()<br/>add()<br/>findById()<br/>remove()"]
+    end
+
+    A -->|implements| C
+    B -->|implements| D
+    C -->|managed by| E
+    D -->|managed by| E
+    E -->|extends| G
+    E -->|extends| H
+    G -->|polymorphism| I
+    H -->|polymorphism| I
+
+    classDef interface fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef entity fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef abstract fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef concrete fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef polymorphism fill:#fff8e1,stroke:#f57f17,stroke-width:3px
+
+    class A,B interface
+    class C,D entity
+    class E,F abstract
+    class G,H concrete
+    class I polymorphism
 ```
 
-### 📋 簡単な関係図
+### 🔍 詳細クラス関係図
 
+```mermaid
+classDiagram
+    class User {
+        <<interface>>
+        +readonly id: number
+        +name: string
+        +email: string
+        +isActive: boolean
+    }
+
+    class Channel {
+        <<interface>>
+        +readonly id: number
+        +name: string
+        +type: ChannelType
+        +description?: string
+    }
+
+    class UserEntity {
+        +readonly id: number
+        +name: string
+        +email: string
+        +isActive: boolean
+        +constructor(id, name, email)
+        +getInfo(): string
+        +setActiveStatus(isActive: boolean): void
+    }
+
+    class ChannelEntity {
+        +readonly id: number
+        +name: string
+        +type: ChannelType
+        +description?: string
+        +constructor(id, name, type, description?)
+        +getInfo(): string
+        +updateDescription(description: string): void
+    }
+
+    class BaseStore {
+        <<abstract>>
+        #items: Entity[]
+        +getAll(): Entity[]
+        +count(): number
+        +add(item: Entity): boolean*
+        +findById(id: number): Entity | undefined*
+        +remove(id: number): boolean*
+    }
+
+    class UserStore {
+        +add(user: UserEntity): boolean
+        +findById(id: number): UserEntity | undefined
+        +remove(id: number): boolean
+    }
+
+    class ChannelStore {
+        +add(channel: ChannelEntity): boolean
+        +findById(id: number): ChannelEntity | undefined
+        +remove(id: number): boolean
+    }
+
+    User <|.. UserEntity : implements
+    Channel <|.. ChannelEntity : implements
+    BaseStore <|-- UserStore : extends
+    BaseStore <|-- ChannelStore : extends
+    UserEntity --* BaseStore : manages
+    ChannelEntity --* BaseStore : manages
 ```
-User（インターフェース）          Channel（インターフェース）
-    ↓ implements（実装）              ↓ implements（実装）
-UserEntity（クラス）              ChannelEntity（クラス）
-    ↓ 管理される                      ↓ 管理される
-BaseStore（抽象クラス）←─────────────────┘
-    ↓ extends（継承）
-UserStore（具体クラス）          ChannelStore（具体クラス）
-    ↓                              ↓
-    └─── ポリモーフィズム ──────────┘
-    （同じメソッドで異なるデータを操作）
+
+### 🎯 段階的学習フロー
+
+```mermaid
+flowchart TD
+    Start([🚀 学習開始]) --> Step1
+
+    Step1[📋 Phase 1: Interface<br/>・データの形を定義<br/>・User / Channel<br/>・型の契約を作る] --> Step2
+
+    Step2[🏭 Phase 2: Entity Classes<br/>・実際のデータクラス<br/>・UserEntity / ChannelEntity<br/>・メソッドの実装] --> Step3
+
+    Step3[🏗️ Phase 3: Abstract Store<br/>・共通機能の定義<br/>・BaseUserStore / BaseChannelStore<br/>・抽象メソッドの宣言] --> Step4
+
+    Step4[⚡ Phase 4: Concrete Store<br/>・具体的な実装<br/>・UserStore / ChannelStore<br/>・抽象メソッドの実装] --> Step5
+
+    Step5[✨ Phase 5: Polymorphism<br/>・同じ操作で異なるデータ<br/>・統一されたインターフェース<br/>・拡張性の確保] --> End
+
+    End([🎉 完了<br/>オブジェクト指向マスター！])
+
+    classDef startEnd fill:#ffcdd2,stroke:#d32f2f,stroke-width:3px
+    classDef phase fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+
+    class Start,End startEnd
+    class Step1,Step2,Step3,Step4,Step5 phase
 ```
 
 ---
@@ -93,7 +212,7 @@ UserStore（具体クラス）          ChannelStore（具体クラス）
 
 ## 🚀 実践課題：段階的実装
 
-### Phase 1: インターフェース作成 ⏰12分
+### Phase 1: インターフェース作成 ⏰12 分
 
 **ファイル**: `store.ts`
 
@@ -122,7 +241,7 @@ export interface Channel {
 }
 ```
 
-### Phase 2: クラス作成 ⏰12分
+### Phase 2: クラス作成 ⏰12 分
 
 **ファイル**: `store.ts`（続き）
 
@@ -157,7 +276,12 @@ export class ChannelEntity implements Channel {
   public readonly id: number;
   // 他のプロパティも追加...
 
-  constructor(id: number, name: string, type: ChannelType, description?: string) {
+  constructor(
+    id: number,
+    name: string,
+    type: ChannelType,
+    description?: string
+  ) {
     // TODO: プロパティを初期化
   }
 
@@ -173,19 +297,24 @@ export class ChannelEntity implements Channel {
 }
 ```
 
-### Phase 3: 抽象クラス作成 ⏰10分
+### Phase 3: 抽象クラス作成 ⏰10 分
 
 **ファイル**: `store.ts`（続き）
 
 ```typescript
 // TODO: 抽象クラスを作成してください
 
-// ユーザー用の抽象クラス
-export abstract class BaseUserStore {
-  protected items: UserEntity[] = [];
+// 共通のエンティティインターフェース
+interface Entity {
+  readonly id: number;
+}
+
+// 統一された抽象クラス
+export abstract class BaseStore {
+  protected items: Entity[] = [];
 
   // 共通メソッド
-  public getAll(): UserEntity[] {
+  public getAll(): Entity[] {
     return [...this.items];
   }
 
@@ -194,31 +323,12 @@ export abstract class BaseUserStore {
   }
 
   // 抽象メソッド（継承先で実装必須）
-  abstract add(item: UserEntity): boolean;
-  abstract findById(id: number): UserEntity | undefined;
+  abstract add(item: Entity): boolean;
+  abstract findById(id: number): Entity | undefined;
   abstract remove(id: number): boolean;
 }
 
-// チャンネル用の抽象クラス
-export abstract class BaseChannelStore {
-  protected items: ChannelEntity[] = [];
-
-  // 共通メソッド
-  public getAll(): ChannelEntity[] {
-    return [...this.items];
-  }
-
-  public count(): number {
-    return this.items.length;
-  }
-
-  // 抽象メソッド（継承先で実装必須）
-  abstract add(item: ChannelEntity): boolean;
-  abstract findById(id: number): ChannelEntity | undefined;
-  abstract remove(id: number): boolean;
-}
-
-export class UserStore extends BaseUserStore {
+export class UserStore extends BaseStore {
   // TODO: 抽象メソッドを実装してください
 
   public add(user: UserEntity): boolean {
@@ -237,7 +347,7 @@ export class UserStore extends BaseUserStore {
   }
 }
 
-export class ChannelStore extends BaseChannelStore {
+export class ChannelStore extends BaseStore {
   // TODO: 抽象メソッドを実装してください
 
   public add(channel: ChannelEntity): boolean {
@@ -257,7 +367,7 @@ export class ChannelStore extends BaseChannelStore {
 }
 ```
 
-### Phase 4: 動作確認とポリモーフィズム実演 ⏰6分
+### Phase 4: 動作確認とポリモーフィズム実演 ⏰6 分
 
 **ファイル**: `main.ts`
 
@@ -288,13 +398,13 @@ function testDataManagement(): void {
   // 結果を表示
   console.log(`登録ユーザー数: ${userStore.count()}`);
   console.log("ユーザー一覧:");
-  userStore.getAll().forEach(user => {
+  userStore.getAll().forEach((user) => {
     console.log(`- ${user.getInfo()}`);
   });
 
   console.log(`登録チャンネル数: ${channelStore.count()}`);
   console.log("チャンネル一覧:");
-  channelStore.getAll().forEach(channel => {
+  channelStore.getAll().forEach((channel) => {
     console.log(`- ${channel.getInfo()}`);
   });
 
@@ -329,9 +439,10 @@ testPolymorphism();
 **簡単に言うと**: 「同じ操作で、異なる種類のデータを扱える仕組み」
 
 **身近な例で理解しよう**:
+
 - **リモコン**: テレビもエアコンも「電源ボタン」で操作できる
 - **コンセント**: 掃除機もドライヤーも同じコンセントに挿せる
-- **プログラム**: UserStoreもChannelStoreも同じ`count()`メソッドで件数を取得できる
+- **プログラム**: UserStore も ChannelStore も同じ`count()`メソッドで件数を取得できる
 
 ### 🔍 今回のプロジェクトでのポリモーフィズム
 
@@ -341,11 +452,11 @@ const userStore = new UserStore();
 const channelStore = new ChannelStore();
 
 // 同じ操作で異なるデータを扱える
-console.log(userStore.count());    // ユーザー数を取得
+console.log(userStore.count()); // ユーザー数を取得
 console.log(channelStore.count()); // チャンネル数を取得
 
 // 同じメソッド名だが、扱うデータが違う
-userStore.getAll();    // UserEntity[]を返す
+userStore.getAll(); // UserEntity[]を返す
 channelStore.getAll(); // ChannelEntity[]を返す
 ```
 
@@ -364,7 +475,7 @@ function printStoreInfo(store: BaseUserStore | BaseChannelStore) {
   // UserStoreでもChannelStoreでも同じコードで動く！
 }
 
-printStoreInfo(userStore);    // ユーザー件数を表示
+printStoreInfo(userStore); // ユーザー件数を表示
 printStoreInfo(channelStore); // チャンネル件数を表示
 ```
 
@@ -390,31 +501,36 @@ UserStore（具体クラス）
 ## ✅ 完了チェックリスト
 
 ### インターフェースの確認
+
 - [ ] `User` インターフェースが定義されている
 - [ ] `Channel` インターフェースが定義されている
 - [ ] `ChannelType` 型エイリアスが定義されている
 - [ ] `readonly` プロパティが使用されている
 
 ### クラスの確認
+
 - [ ] `UserEntity` クラスが `User` インターフェースを実装している
 - [ ] `ChannelEntity` クラスが `Channel` インターフェースを実装している
 - [ ] 両クラスのコンストラクタが正しく実装されている
 - [ ] `getInfo()` メソッドが両クラスに実装されている
 
 ### 抽象クラスの確認
-- [ ] `BaseUserStore` 抽象クラスが定義されている
-- [ ] `BaseChannelStore` 抽象クラスが定義されている
-- [ ] `UserStore` が `BaseUserStore` を継承している
-- [ ] `ChannelStore` が `BaseChannelStore` を継承している
+
+- [ ] `BaseStore` 抽象クラスが定義されている
+- [ ] 共通の Entity インターフェースを使用している
+- [ ] `UserStore` が `BaseStore` を継承している
+- [ ] `ChannelStore` が `BaseStore` を継承している
 - [ ] 全ての抽象メソッドが実装されている
 
 ### ポリモーフィズムの確認
+
 - [ ] 両ストアが同じメソッド名（`count()`, `getAll()`）を持っている
 - [ ] 異なるデータ型を同じ操作で扱えることを確認
 - [ ] ポリモーフィズムの実演コードが動作する
 
 ### 動作確認
-- [ ] TypeScriptエラーがない
+
+- [ ] TypeScript エラーがない
 - [ ] `main.ts` が正常に実行される
 - [ ] ユーザーとチャンネルの追加・表示が動作する
 - [ ] ポリモーフィズムのテストが動作する
@@ -426,6 +542,7 @@ UserStore（具体クラス）
 詰まった場合は以下を参考にしてください：
 
 **インターフェース**：
+
 ```typescript
 export interface User {
   readonly id: number;
@@ -445,6 +562,7 @@ export interface Channel {
 ```
 
 **クラス**：
+
 ```typescript
 export class UserEntity implements User {
   public readonly id: number;
@@ -475,7 +593,12 @@ export class ChannelEntity implements Channel {
   public type: ChannelType;
   public description?: string;
 
-  constructor(id: number, name: string, type: ChannelType, description?: string) {
+  constructor(
+    id: number,
+    name: string,
+    type: ChannelType,
+    description?: string
+  ) {
     this.id = id;
     this.name = name;
     this.type = type;
@@ -495,15 +618,21 @@ export class ChannelEntity implements Channel {
 ```
 
 **抽象クラス**：
+
 ```typescript
-export abstract class BaseUserStore {
-  protected items: UserEntity[] = [];
+// 共通のエンティティインターフェース
+interface Entity {
+  readonly id: number;
+}
 
-  abstract add(item: UserEntity): boolean;
-  abstract findById(id: number): UserEntity | undefined;
+export abstract class BaseStore {
+  protected items: Entity[] = [];
+
+  abstract add(item: Entity): boolean;
+  abstract findById(id: number): Entity | undefined;
   abstract remove(id: number): boolean;
 
-  public getAll(): UserEntity[] {
+  public getAll(): Entity[] {
     return [...this.items];
   }
 
@@ -512,23 +641,7 @@ export abstract class BaseUserStore {
   }
 }
 
-export abstract class BaseChannelStore {
-  protected items: ChannelEntity[] = [];
-
-  abstract add(item: ChannelEntity): boolean;
-  abstract findById(id: number): ChannelEntity | undefined;
-  abstract remove(id: number): boolean;
-
-  public getAll(): ChannelEntity[] {
-    return [...this.items];
-  }
-
-  public count(): number {
-    return this.items.length;
-  }
-}
-
-export class UserStore extends BaseUserStore {
+export class UserStore extends BaseStore {
   public add(user: UserEntity): boolean {
     if (user.name && user.email) {
       this.items.push(user);
@@ -538,11 +651,11 @@ export class UserStore extends BaseUserStore {
   }
 
   public findById(id: number): UserEntity | undefined {
-    return this.items.find(user => user.id === id);
+    return this.items.find((user) => user.id === id) as UserEntity | undefined;
   }
 
   public remove(id: number): boolean {
-    const index = this.items.findIndex(user => user.id === id);
+    const index = this.items.findIndex((user) => user.id === id);
     if (index !== -1) {
       this.items.splice(index, 1);
       return true;
@@ -551,7 +664,7 @@ export class UserStore extends BaseUserStore {
   }
 }
 
-export class ChannelStore extends BaseChannelStore {
+export class ChannelStore extends BaseStore {
   public add(channel: ChannelEntity): boolean {
     if (channel.name && channel.type) {
       this.items.push(channel);
@@ -561,11 +674,13 @@ export class ChannelStore extends BaseChannelStore {
   }
 
   public findById(id: number): ChannelEntity | undefined {
-    return this.items.find(channel => channel.id === id);
+    return this.items.find((channel) => channel.id === id) as
+      | ChannelEntity
+      | undefined;
   }
 
   public remove(id: number): boolean {
-    const index = this.items.findIndex(channel => channel.id === id);
+    const index = this.items.findIndex((channel) => channel.id === id);
     if (index !== -1) {
       this.items.splice(index, 1);
       return true;
@@ -576,6 +691,7 @@ export class ChannelStore extends BaseChannelStore {
 ```
 
 **ポリモーフィズムの実演例**：
+
 ```typescript
 function testPolymorphism(): void {
   console.log("=== ポリモーフィズム実演 ===");
@@ -592,7 +708,7 @@ function testPolymorphism(): void {
   console.log(`チャンネル数: ${channelStore.count()}`);
 
   // 共通の操作を関数化
-  function printStoreInfo(store: BaseUserStore | BaseChannelStore, storeName: string) {
+  function printStoreInfo(store: BaseStore, storeName: string) {
     console.log(`${storeName}の件数: ${store.count()}`);
   }
 
@@ -608,33 +724,37 @@ function testPolymorphism(): void {
 ## 🎓 学習のポイント
 
 ### 今回学んだこと
-1. **インターフェース**: データの形を決める契約（UserとChannel）
-2. **クラス**: 実際のデータとメソッドを持つ（UserEntityとChannelEntity）
-3. **抽象クラス**: 共通機能と実装必須メソッドを定義（BaseUserStore、BaseChannelStore）
+
+1. **インターフェース**: データの形を決める契約（User と Channel）
+2. **クラス**: 実際のデータとメソッドを持つ（UserEntity と ChannelEntity）
+3. **抽象クラス**: 共通機能と実装必須メソッドを定義（BaseStore）
 4. **継承**: 親クラスの機能を受け継ぐ（UserStore、ChannelStore）
 5. **ポリモーフィズム**: 同じ操作で異なるデータを扱う仕組み
 
 ### ポリモーフィズムの重要性
+
 - **コードの再利用**: 同じメソッド名で異なるデータを操作
 - **拡張性**: 新しいストアを追加しても既存コードを変更不要
 - **保守性**: 統一されたインターフェースで理解しやすい
 - **設計の美しさ**: オブジェクト指向の真価を体験
 
 ### 実際の開発での応用
-- **Webアプリ**: ユーザー管理、チャンネル管理、商品管理
+
+- **Web アプリ**: ユーザー管理、チャンネル管理、商品管理
 - **ゲーム**: プレイヤー管理、アイテム管理、スキル管理
 - **業務システム**: 顧客管理、在庫管理、注文管理
-- **API設計**: 統一されたCRUD操作の提供
+- **API 設計**: 統一された CRUD 操作の提供
 
 ### 次のステップ
+
 - ジェネリクスを使った型安全なストア設計
 - より複雑なデータ構造の管理
 - エラーハンドリングの追加
 - データベースとの連携
-- デザインパターンの学習（Factory、Observer等）
+- デザインパターンの学習（Factory、Observer 等）
 
 ---
 
 **🎉 お疲れさまでした！**
 
-このデータ管理システムを通じて、TypeScriptの基本的なオブジェクト指向プログラミングの概念と**ポリモーフィズム**を実践できました。UserStoreとChannelStoreという異なるデータを同じ操作で扱えることで、オブジェクト指向の真価を体験できたはずです。次のStepでは、より高度な機能を学習していきましょう。
+このデータ管理システムを通じて、TypeScript の基本的なオブジェクト指向プログラミングの概念と**ポリモーフィズム**を実践できました。UserStore と ChannelStore という異なるデータを同じ操作で扱えることで、オブジェクト指向の真価を体験できたはずです。次の Step では、より高度な機能を学習していきましょう。

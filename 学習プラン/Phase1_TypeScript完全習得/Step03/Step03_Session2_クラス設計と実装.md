@@ -45,15 +45,15 @@
   // データとロジックを統合したクラス
   class Student {
     private score: number = 0;
-
+  
     addScore(points: number): void {
       this.score += points;
     }
-
+  
     getScore(): number {
       return this.score;
     }
-
+  
     getGrade(): string {
       if (this.score >= 90) return "A";
       if (this.score >= 80) return "B";
@@ -70,12 +70,12 @@
   // 同じクラスから複数のインスタンスを作成
   class User {
     constructor(public name: string, public email: string) {}
-
+  
     greet(): string {
       return `こんにちは、${this.name}さん！`;
     }
   }
-
+  
   const user1 = new User("田中", "tanaka@example.com");
   const user2 = new User("佐藤", "sato@example.com");
   console.log(user1.greet()); // "こんにちは、田中さん！"
@@ -91,18 +91,18 @@
     private studentId: string;
     private password: string;
     public name: string;
-
+  
     constructor(studentId: string, password: string, name: string) {
       this.studentId = studentId;
       this.password = password;
       this.name = name;
     }
-
+  
     // 安全な方法で学籍番号の一部のみ表示
     getMaskedStudentId(): string {
       return `****${this.studentId.slice(-4)}`;
     }
-
+  
     // パスワードの変更（安全な方法）
     changePassword(oldPassword: string, newPassword: string): boolean {
       if (this.password === oldPassword) {
@@ -112,7 +112,7 @@
       return false;
     }
   }
-
+  
   const student = new StudentRecord("20240001", "mypassword", "田中太郎");
   console.log(student.name); // アクセス可能
   console.log(student.getMaskedStudentId()); // "****0001"
@@ -129,7 +129,7 @@
     add(a: number, b: number): number {
       return a + b;
     }
-
+  
     divide(a: number, b: number): number {
       if (b === 0) {
         throw new Error("ゼロで割ることはできません");
@@ -137,7 +137,7 @@
       return a / b;
     }
   }
-
+  
   const calc = new Calculator();
   console.log(calc.add(5, 3)); // 8
   // calc.add("5", "3"); // コンパイルエラー：文字列は受け付けない
@@ -356,15 +356,15 @@ console.log(`新しい位置: ${JSON.stringify(circle.getPosition())}`);
 // - author: 文字列（public）
 // - price: 数値（private）
 // - publishedYear: 数値（public）
-// - isAvailable: 真偽値（private、初期値はtrue）
+// - isAvailable: 真偽値（private、初期値はtrue, 貸出可能かどうか）
 
 // メソッド:
 // - constructor(id, title, author, price, publishedYear)
 // - getPrice(): 価格を返す
 // - setPrice(newPrice): 価格を設定（正の値のみ）
 // - borrow(): 貸出処理（利用可能な場合のみ）
-// - return(): 返却処理
-// - getInfo(): 書籍情報を文字列で返す
+// - returnBook(): 返却処理
+// - getInfo(): 書籍情報を文字列で返す(例 タイトル by 著者 発行日 - 利用可能)
 
 // ここにBookクラスを定義
 
@@ -376,7 +376,7 @@ console.log(`価格: ¥${book1.getPrice()}`);
 book1.borrow();
 console.log(`貸出後の状態: ${book1.getInfo()}`);
 
-book1.return();
+book1.returnBook();
 console.log(`返却後の状態: ${book1.getInfo()}`);
 ```
 

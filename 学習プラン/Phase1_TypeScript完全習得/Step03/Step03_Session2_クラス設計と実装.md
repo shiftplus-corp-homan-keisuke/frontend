@@ -45,15 +45,15 @@
   // データとロジックを統合したクラス
   class Student {
     private score: number = 0;
-  
+
     addScore(points: number): void {
       this.score += points;
     }
-  
+
     getScore(): number {
       return this.score;
     }
-  
+
     getGrade(): string {
       if (this.score >= 90) return "A";
       if (this.score >= 80) return "B";
@@ -70,12 +70,12 @@
   // 同じクラスから複数のインスタンスを作成
   class User {
     constructor(public name: string, public email: string) {}
-  
+
     greet(): string {
       return `こんにちは、${this.name}さん！`;
     }
   }
-  
+
   const user1 = new User("田中", "tanaka@example.com");
   const user2 = new User("佐藤", "sato@example.com");
   console.log(user1.greet()); // "こんにちは、田中さん！"
@@ -91,18 +91,18 @@
     private studentId: string;
     private password: string;
     public name: string;
-  
+
     constructor(studentId: string, password: string, name: string) {
       this.studentId = studentId;
       this.password = password;
       this.name = name;
     }
-  
+
     // 安全な方法で学籍番号の一部のみ表示
     getMaskedStudentId(): string {
       return `****${this.studentId.slice(-4)}`;
     }
-  
+
     // パスワードの変更（安全な方法）
     changePassword(oldPassword: string, newPassword: string): boolean {
       if (this.password === oldPassword) {
@@ -112,7 +112,7 @@
       return false;
     }
   }
-  
+
   const student = new StudentRecord("20240001", "mypassword", "田中太郎");
   console.log(student.name); // アクセス可能
   console.log(student.getMaskedStudentId()); // "****0001"
@@ -129,7 +129,7 @@
     add(a: number, b: number): number {
       return a + b;
     }
-  
+
     divide(a: number, b: number): number {
       if (b === 0) {
         throw new Error("ゼロで割ることはできません");
@@ -137,7 +137,7 @@
       return a / b;
     }
   }
-  
+
   const calc = new Calculator();
   console.log(calc.add(5, 3)); // 8
   // calc.add("5", "3"); // コンパイルエラー：文字列は受け付けない
@@ -515,10 +515,10 @@ class Document implements Storable {
 
 **確認ポイント**:
 
-- [ ] TypeScript クラスの基本概念を理解できた
-- [ ] コンストラクタ、プロパティ、メソッドの定義方法を習得した
-- [ ] アクセス修飾子の使い方と重要性を理解した
-- [ ] インターフェースの実装（implements）ができるようになった
+- [x] TypeScript クラスの基本概念を理解できた
+- [x] コンストラクタ、プロパティ、メソッドの定義方法を習得した
+- [x] アクセス修飾子の使い方と重要性を理解した
+- [x] インターフェースの実装（implements）ができるようになった
 
 ### 質疑応答
 

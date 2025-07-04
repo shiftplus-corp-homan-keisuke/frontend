@@ -184,7 +184,7 @@ interface Categorized {
 }
 
 // 複数のインターフェースを継承
-interface BlogPost extends BaseContent, Timestamped, Categorized {
+interface BlogPost extends Timestamped, Categorized {
   content: string;
 }
 ```
@@ -317,10 +317,10 @@ console.log(booksOnly); // [book] （本のみ）
 
 **確認ポイント**:
 
-- [ ] インターフェースの基本概念を理解できた
-- [ ] インターフェースの継承の仕組みを習得した
-- [ ] 複数インターフェースの継承について理解した
-- [ ] 継承を活用したインターフェース設計ができるようになった
+- [x] インターフェースの基本概念を理解できた
+- [x] インターフェースの継承の仕組みを習得した
+- [x] 複数インターフェースの継承について理解した
+- [x] 継承を活用したインターフェース設計ができるようになった
 
 ### 質疑応答
 

@@ -773,7 +773,6 @@ function testInheritance(): void {
 2. **クラス**: 実際のデータとメソッドを持つ（UserEntity と ChannelEntity）
 3. **抽象クラス**: 共通機能と実装必須メソッドを定義（BaseStore）
 4. **継承**: 親クラスの機能を受け継ぐ（UserStore、ChannelStore）
-5. **シンプル設計**: 理解しやすく、保守しやすい設計の重要性
 
 ### 継承の重要性
 

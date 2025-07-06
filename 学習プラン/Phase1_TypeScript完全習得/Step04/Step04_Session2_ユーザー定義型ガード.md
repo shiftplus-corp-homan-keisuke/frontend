@@ -1,8 +1,8 @@
-# Session2: ユーザー定義型ガード（40分）
+# Session2: ユーザー定義型ガード（40 分）
 
 > 💡 **対象**: 他言語経験者（基本型ガード知識あり）
 > 🎯 **形式**: 講師サポート付き学習
-> ⏰ **時間**: 40分
+> ⏰ **時間**: 40 分
 
 ## 📚 関連補足資料
 
@@ -27,18 +27,18 @@
 
 **前提知識**:
 
-- Session1: 基本型ガード（typeof, instanceof, in演算子）
+- Session1: 基本型ガード（typeof, instanceof, in 演算子）
 
 ---
 
 ## ⏰ 詳細タイムテーブル
 
-| 時間         | 内容                           | 講師の役割           | 学習者の活動     | 成果物     |
-| ------------ | ------------------------------ | -------------------- | ---------------- | ---------- |
-| **0-5分**    | 前回復習・今回目標             | 復習確認・目標提示   | 振り返り・質問   | 理解確認   |
-| **5-25分**   | ユーザー定義型ガード実装       | 実演・個別指導       | ハンズオン・実践 | 実践コード |
-| **25-35分**  | カスタムバリデーション演習     | コードレビュー・助言 | 個人開発         | 演習成果   |
-| **35-40分**  | 成果共有・次回予告             | ファシリテート       | 発表・討論       | 学習確認   |
+| 時間         | 内容                         | 学習活動         | 成果物     |
+| ------------ | ---------------------------- | ---------------- | ---------- |
+| **0-3 分**   | 前回復習・今回目標           | 振り返り・質問   | 理解確認   |
+| **3-15 分**  | ユーザー定義型ガード理論     | 理解・メモ       | 基本知識   |
+| **15-32 分** | 段階的なオブジェクト検証実装 | ハンズオン・実践 | 実践コード |
+| **32-40 分** | 実践的な練習問題             | 個人演習・確認   | 演習成果   |
 
 ---
 
@@ -46,7 +46,7 @@
 
 ### Section 1: 前回復習（要点のみ）
 
-#### 🔍 Session1の重要ポイント確認
+#### 🔍 Session1 の重要ポイント確認
 
 ```typescript
 // 基本的な型ガード
@@ -69,8 +69,12 @@ interface User {
   name: string;
 }
 
-function hasUserProperties(obj: unknown): obj is { id: unknown; name: unknown } {
-  return typeof obj === "object" && obj !== null && "id" in obj && "name" in obj;
+function hasUserProperties(
+  obj: unknown
+): obj is { id: unknown; name: unknown } {
+  return (
+    typeof obj === "object" && obj !== null && "id" in obj && "name" in obj
+  );
 }
 ```
 
@@ -93,7 +97,7 @@ function hasUserProperties(obj: unknown): obj is { id: unknown; name: unknown } 
 - **再利用性**: 同じ型チェックロジックを複数箇所で使用
 - **可読性**: 複雑な型チェックを分かりやすい関数名で表現
 - **保守性**: 型チェックロジックの変更が一箇所で済む
-- **型安全性**: TypeScriptが型の絞り込みを理解
+- **型安全性**: TypeScript が型の絞り込みを理解
 
 #### 1. 基本的なユーザー定義型ガード
 
@@ -154,7 +158,12 @@ function isUserProfile(value: unknown): value is UserProfile {
   const obj = value as any;
 
   // 必須プロパティの存在チェック
-  if (!("id" in obj) || !("name" in obj) || !("email" in obj) || !("isActive" in obj)) {
+  if (
+    !("id" in obj) ||
+    !("name" in obj) ||
+    !("email" in obj) ||
+    !("isActive" in obj)
+  ) {
     return false;
   }
 
@@ -176,7 +185,10 @@ function isUserProfile(value: unknown): value is UserProfile {
   }
 
   // オプショナルプロパティのチェック
-  if (obj.age !== undefined && (typeof obj.age !== "number" || obj.age < 0 || obj.age > 150)) {
+  if (
+    obj.age !== undefined &&
+    (typeof obj.age !== "number" || obj.age < 0 || obj.age > 150)
+  ) {
     return false;
   }
 
@@ -203,22 +215,28 @@ function isValidUserProfile(value: unknown): value is UserProfile {
 ```typescript
 // 配列の型ガード
 function isStringArray(value: unknown): value is string[] {
-  return Array.isArray(value) && value.every(item => typeof item === "string");
+  return (
+    Array.isArray(value) && value.every((item) => typeof item === "string")
+  );
 }
 
 function isUserProfileArray(value: unknown): value is UserProfile[] {
-  return Array.isArray(value) && value.every(item => isUserProfile(item));
+  return Array.isArray(value) && value.every((item) => isUserProfile(item));
 }
 
 // より複雑な配列型ガード
 function isNonEmptyStringArray(value: unknown): value is [string, ...string[]] {
-  return isStringArray(value) && value.length > 0 && value.every(str => str.trim().length > 0);
+  return (
+    isStringArray(value) &&
+    value.length > 0 &&
+    value.every((str) => str.trim().length > 0)
+  );
 }
 
 // 使用例
 function processUserList(data: unknown): string {
   if (isUserProfileArray(data)) {
-    const activeUsers = data.filter(user => user.isActive);
+    const activeUsers = data.filter((user) => user.isActive);
     return `${data.length}人中${activeUsers.length}人がアクティブです`;
   }
   return "無効なユーザーリストです";
@@ -288,7 +306,7 @@ function isValidPhoneNumber(value: unknown): value is string {
 
 **💡 実際の開発でよく使われるパターン**
 
-実際のWebアプリケーションでは、複数の型ガードを組み合わせて、段階的にデータを検証することが重要です。
+実際の Web アプリケーションでは、複数の型ガードを組み合わせて、段階的にデータを検証することが重要です。
 
 #### 1. 段階的バリデーション
 
@@ -306,7 +324,10 @@ function validateContactForm(input: unknown): ValidationResult<ContactForm> {
 
   // 基本的なオブジェクトチェック
   if (typeof input !== "object" || input === null) {
-    return { isValid: false, errors: ["入力データはオブジェクトである必要があります"] };
+    return {
+      isValid: false,
+      errors: ["入力データはオブジェクトである必要があります"],
+    };
   }
 
   const data = input as any;
@@ -343,9 +364,9 @@ function validateContactForm(input: unknown): ValidationResult<ContactForm> {
         name: data.name,
         email: data.email,
         message: data.message,
-        phone: data.phone
+        phone: data.phone,
       },
-      errors: []
+      errors: [],
     };
   } else {
     return { isValid: false, errors };
@@ -353,65 +374,47 @@ function validateContactForm(input: unknown): ValidationResult<ContactForm> {
 }
 ```
 
-#### 2. 型ガードファクトリー
+#### 2. 基本的なオブジェクト型ガード
 
 ```typescript
-// 汎用的な型ガードファクトリー
-function createStringValidator(
-  minLength: number = 0,
-  maxLength: number = Infinity,
-  pattern?: RegExp
-) {
-  return function(value: unknown): value is string {
-    if (typeof value !== "string") {
-      return false;
-    }
-
-    if (value.length < minLength || value.length > maxLength) {
-      return false;
-    }
-
-    if (pattern && !pattern.test(value)) {
-      return false;
-    }
-
-    return true;
-  };
-}
-
-function createNumberValidator(min: number = -Infinity, max: number = Infinity) {
-  return function(value: unknown): value is number {
-    return typeof value === "number" && value >= min && value <= max;
-  };
-}
-
-// 使用例
-const isValidName = createStringValidator(2, 50);
-const isValidAge = createNumberValidator(0, 150);
-const isValidZipCode = createStringValidator(7, 7, /^\d{3}-\d{4}$/);
-
-// 商品データの型ガード
+// シンプルなオブジェクト型ガード
 interface Product {
   id: number;
   name: string;
   price: number;
-  category: string;
 }
 
 function isProduct(value: unknown): value is Product {
+  // まずオブジェクトかどうかチェック
   if (typeof value !== "object" || value === null) {
     return false;
   }
 
   const obj = value as any;
 
+  // 各プロパティの存在と型をチェック
   return (
-    createNumberValidator(1)(obj.id) &&
-    createStringValidator(1, 100)(obj.name) &&
-    createNumberValidator(0)(obj.price) &&
-    createStringValidator(1, 50)(obj.category)
+    typeof obj.id === "number" &&
+    typeof obj.name === "string" &&
+    typeof obj.price === "number"
   );
 }
+
+// 使用例
+function processProduct(data: unknown): string {
+  if (isProduct(data)) {
+    // この時点でdataはProduct型として扱われる
+    return `商品: ${data.name} - ¥${data.price}`;
+  }
+  return "無効な商品データです";
+}
+
+// テスト
+const validProduct = { id: 1, name: "ノートPC", price: 80000 };
+const invalidProduct = { id: "1", name: "ノートPC" }; // priceがない
+
+console.log(processProduct(validProduct)); // "商品: ノートPC - ¥80000"
+console.log(processProduct(invalidProduct)); // "無効な商品データです"
 ```
 
 #### 3. 条件付き型ガード
@@ -506,93 +509,26 @@ function isUser(value: unknown): value is User {
 
 > 📚 **サポート資料**: [実践コード例 - ユーザー定義型ガード練習](./Step04_補足_実践コード例.md#ユーザー定義型ガード練習) | [トラブルシューティング](./Step04_補足_トラブルシューティング.md#よくあるエラー)
 
-### 練習問題 2.1: 基本的なユーザー定義型ガード 🔰
-
-以下の要件を満たすユーザー定義型ガードを実装してください。
+### 練習問題 2.1: ユーザー定義型ガード（8分） 🔰
 
 ```typescript
-// 要件1: パスワードの強度をチェックする型ガード
-// - 8文字以上
-// - 大文字・小文字・数字を含む
-function isStrongPassword(value: unknown): value is string {
+// 要件: 以下のユーザー定義型ガードを実装してください
+function isValidEmail(value: unknown): value is string {
   /* ここを実装 */
 }
 
-// 要件2: 日本の郵便番号形式をチェックする型ガード
-// - "123-4567"の形式
-function isValidJapaneseZipCode(value: unknown): value is string {
-  /* ここを実装 */
+// テスト用関数
+function processEmail(input: unknown): string {
+  if (isValidEmail(input)) {
+    return `有効なメール: ${input}`;
+  } else {
+    return "無効なメールアドレス";
+  }
 }
 
-// 要件3: 上記の型ガードを使用する関数
-function validateUserRegistration(data: unknown): { isValid: boolean; errors: string[] } {
-  /* ここを実装 */
-}
-```
-
-### 練習問題 2.2: 複雑なオブジェクト型ガード 🔰
-
-```typescript
-interface BlogPost {
-  id: number;
-  title: string;
-  content: string;
-  author: string;
-  tags: string[];
-  publishedAt?: Date;
-  isPublished: boolean;
-}
-
-// 要件: BlogPost型かどうかを判定するユーザー定義型ガードを実装
-function isBlogPost(value: unknown): value is BlogPost {
-  /* ここを実装 */
-}
-
-// 要件: BlogPost配列かどうかを判定する型ガード
-function isBlogPostArray(value: unknown): value is BlogPost[] {
-  /* ここを実装 */
-}
-```
-
-### 練習問題 2.3: 条件付き型ガード 🔰
-
-```typescript
-interface PaymentMethod {
-  type: "credit" | "debit" | "paypal";
-}
-
-interface CreditCardPayment extends PaymentMethod {
-  type: "credit";
-  cardNumber: string;
-  expiryDate: string;
-  cvv: string;
-}
-
-interface DebitCardPayment extends PaymentMethod {
-  type: "debit";
-  cardNumber: string;
-  pin: string;
-}
-
-interface PayPalPayment extends PaymentMethod {
-  type: "paypal";
-  email: string;
-}
-
-type Payment = CreditCardPayment | DebitCardPayment | PayPalPayment;
-
-// 要件: 各支払い方法の型ガードを実装
-function isCreditCardPayment(value: unknown): value is CreditCardPayment {
-  /* ここを実装 */
-}
-
-function isDebitCardPayment(value: unknown): value is DebitCardPayment {
-  /* ここを実装 */
-}
-
-function isPayPalPayment(value: unknown): value is PayPalPayment {
-  /* ここを実装 */
-}
+// テストケース
+console.log(processEmail("test@example.com")); // "有効なメール: test@example.com"
+console.log(processEmail("invalid-email"));    // "無効なメールアドレス"
 ```
 
 ---
@@ -602,138 +538,34 @@ function isPayPalPayment(value: unknown): value is PayPalPayment {
 ### 練習問題 2.1 解答
 
 ```typescript
-function isStrongPassword(value: unknown): value is string {
+function isValidEmail(value: unknown): value is string {
   if (typeof value !== "string") {
     return false;
   }
-
-  if (value.length < 8) {
-    return false;
-  }
-
-  const hasUpperCase = /[A-Z]/.test(value);
-  const hasLowerCase = /[a-z]/.test(value);
-  const hasNumber = /\d/.test(value);
-
-  return hasUpperCase && hasLowerCase && hasNumber;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(value);
 }
 
-function isValidJapaneseZipCode(value: unknown): value is string {
-  if (typeof value !== "string") {
-    return false;
-  }
-
-  const zipCodeRegex = /^\d{3}-\d{4}$/;
-  return zipCodeRegex.test(value);
-}
-
-function validateUserRegistration(data: unknown): { isValid: boolean; errors: string[] } {
-  const errors: string[] = [];
-
-  if (typeof data !== "object" || data === null) {
-    return { isValid: false, errors: ["無効なデータ形式です"] };
-  }
-
-  const obj = data as any;
-
-  if (!isNonEmptyString(obj.email) || !isValidEmail(obj.email)) {
-    errors.push("有効なメールアドレスが必要です");
-  }
-
-  if (!isStrongPassword(obj.password)) {
-    errors.push("パスワードは8文字以上で、大文字・小文字・数字を含む必要があります");
-  }
-
-  if (!isValidJapaneseZipCode(obj.zipCode)) {
-    errors.push("郵便番号は123-4567の形式で入力してください");
-  }
-
-  return { isValid: errors.length === 0, errors };
+function isPositiveNumber(value: unknown): value is number {
+  return typeof value === "number" && value > 0;
 }
 ```
 
 ### 練習問題 2.2 解答
 
 ```typescript
-function isBlogPost(value: unknown): value is BlogPost {
-  if (typeof value !== "object" || value === null) {
-    return false;
-  }
-
-  const obj = value as any;
-
-  // 必須プロパティのチェック
-  if (
-    typeof obj.id !== "number" ||
-    !isNonEmptyString(obj.title) ||
-    !isNonEmptyString(obj.content) ||
-    !isNonEmptyString(obj.author) ||
-    !Array.isArray(obj.tags) ||
-    typeof obj.isPublished !== "boolean"
-  ) {
-    return false;
-  }
-
-  // tagsの各要素が文字列かチェック
-  if (!obj.tags.every((tag: unknown) => typeof tag === "string")) {
-    return false;
-  }
-
-  // オプショナルプロパティのチェック
-  if (obj.publishedAt !== undefined && !(obj.publishedAt instanceof Date)) {
-    return false;
-  }
-
-  return true;
-}
-
-function isBlogPostArray(value: unknown): value is BlogPost[] {
-  return Array.isArray(value) && value.every(item => isBlogPost(item));
-}
-```
-
-### 練習問題 2.3 解答
-
-```typescript
-function isCreditCardPayment(value: unknown): value is CreditCardPayment {
-  if (typeof value !== "object" || value === null) {
-    return false;
-  }
-
-  const obj = value as any;
-
+function isProduct(value: unknown): value is Product {
   return (
-    obj.type === "credit" &&
-    isNonEmptyString(obj.cardNumber) &&
-    isNonEmptyString(obj.expiryDate) &&
-    isNonEmptyString(obj.cvv)
-  );
-}
-
-function isDebitCardPayment(value: unknown): value is DebitCardPayment {
-  if (typeof value !== "object" || value === null) {
-    return false;
-  }
-
-  const obj = value as any;
-
-  return (
-    obj.type === "debit" &&
-    isNonEmptyString(obj.cardNumber) &&
-    isNonEmptyString(obj.pin)
-  );
-}
-
-function isPayPalPayment(value: unknown): value is PayPalPayment {
-  if (typeof value !== "object" || value === null) {
-    return false;
-  }
-
-  const obj = value as any;
-
-  return (
-    obj.type === "paypal" &&
-    isValidEmail(obj.email)
+    typeof value === "object" &&
+    value !== null &&
+    "id" in value &&
+    "name" in value &&
+    "price" in value &&
+    "inStock" in value &&
+    typeof (value as any).id === "number" &&
+    typeof (value as any).name === "string" &&
+    typeof (value as any).price === "number" &&
+    typeof (value as any).inStock === "boolean"
   );
 }
 ```
@@ -746,6 +578,7 @@ function isPayPalPayment(value: unknown): value is PayPalPayment {
 
 **Q: ユーザー定義型ガードが複雑になりがちです。良い設計方法はありますか？**
 A: 以下のアプローチを推奨します：
+
 1. **小さな型ガードの組み合わせ**: 基本的な型ガードを作成し、それらを組み合わせる
 2. **段階的検証**: まず基本的な構造をチェックし、その後詳細をチェック
 3. **ファクトリー関数**: 似たような型ガードは関数で生成する
@@ -753,6 +586,7 @@ A: 以下のアプローチを推奨します：
 
 **Q: 型ガードのパフォーマンスが心配です。**
 A: 型ガードは実行時に動作するため、以下の点に注意してください：
+
 - 早期リターン: 最も可能性の高い失敗条件を最初にチェック
 - キャッシュ: 同じデータを何度もチェックしない
 - 必要最小限のチェック: 過度に厳密な検証は避ける
@@ -770,13 +604,14 @@ A: 型ガードは実行時に動作するため、以下の点に注意して�
 - [ ] 段階的バリデーションシステムを構築できる
 
 ### 次回への準備
+
 > 📚 **準備資料**: [開発環境ガイド](./Step04_補足_開発環境ガイド.md) | [参考リソース - 継続学習](./Step04_補足_参考リソース.md#学習継続のコツ)
 
 - [ ] 作成した型ガード関数の動作確認
 - [ ] 理解できなかった部分の整理
-- [ ] Session3で学習するアサーション関数の予習
+- [ ] Session3 で学習するアサーション関数の予習
 
-**📌 重要**: Session2では再利用可能な型ガード関数の作成に重点を置いています。完璧を目指さず、まずは動く型ガードを作ることを重視しましょう。
+**📌 重要**: Session2 では再利用可能な型ガード関数の作成に重点を置いています。完璧を目指さず、まずは動く型ガードを作ることを重視しましょう。
 
 ---
 

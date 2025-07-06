@@ -105,28 +105,28 @@ function hasUserProperties(
 
 **シナリオ：様々な種類の通知を処理するシステム**
 
-あるシステムが、メール、SMS、プッシュ通知の3種類の通知を扱っているとします。それぞれの通知には異なるプロパティがあります。
+あるシステムが、メール、SMS、プッシュ通知の 3 種類の通知を扱っているとします。それぞれの通知には異なるプロパティがあります。
 
 ```typescript
 interface EmailNotification {
-  type: 'email';
+  type: "email";
   recipient: string;
   subject: string;
   body: string;
 }
 
 interface SMSNotification {
-  type: 'sms';
+  type: "sms";
   phoneNumber: string;
   message: string;
 }
 
 interface PushNotification {
-  type: 'push';
+  type: "push";
   deviceId: string;
   title: string;
   content: string;
-  priority: 'high' | 'normal' | 'low';
+  priority: "high" | "normal" | "low";
 }
 
 type Notification = EmailNotification | SMSNotification | PushNotification;
@@ -147,14 +147,16 @@ type Notification = EmailNotification | SMSNotification | PushNotification;
 function sendNotification(notification: Notification) {
   // 緊急性の高いプッシュ通知であるかをチェック
   if (
-    notification.type === 'push' &&
-    notification.deviceId !== '' &&
-    notification.title !== '' &&
-    notification.priority === 'high'
+    notification.type === "push" &&
+    notification.deviceId !== "" &&
+    notification.title !== "" &&
+    notification.priority === "high"
   ) {
     // notification は PushNotification 型として扱われる
     // さらに、緊急性の高いプッシュ通知としての処理を行う
-    console.log(`緊急プッシュ通知を送信: [${notification.title}] to ${notification.deviceId}`);
+    console.log(
+      `緊急プッシュ通知を送信: [${notification.title}] to ${notification.deviceId}`
+    );
   } else {
     // ... 他の通知タイプの処理
   }
@@ -169,20 +171,25 @@ function sendNotification(notification: Notification) {
 
 ```typescript
 // ユーザー定義型ガード：複雑なビジネスルールを分かりやすい関数名で表現
-function isHighPriorityPushNotification(notification: Notification): notification is PushNotification {
+function isHighPriorityPushNotification(
+  notification: Notification
+): notification is PushNotification {
   return (
-    notification.type === 'push' &&          // 判別プロパティによる型絞り込み
-    notification.deviceId !== '' &&           // 値の条件1
-    notification.title !== '' &&              // 値の条件2
-    notification.priority === 'high'          // 値の条件3
+    notification.type === "push" && // 判別プロパティによる型絞り込み
+    notification.deviceId !== "" && // 値の条件1
+    notification.title !== "" && // 値の条件2
+    notification.priority === "high" // 値の条件3
   );
 }
 
 function sendNotification(notification: Notification) {
-  if (isHighPriorityPushNotification(notification)) { // 非常に分かりやすい！
+  if (isHighPriorityPushNotification(notification)) {
+    // 非常に分かりやすい！
     // notification は PushNotification 型として扱われる
     // さらに、isHighPriorityPushNotification関数が保証する条件を満たしている
-    console.log(`緊急プッシュ通知を送信: [${notification.title}] to ${notification.deviceId}`);
+    console.log(
+      `緊急プッシュ通知を送信: [${notification.title}] to ${notification.deviceId}`
+    );
   } else {
     // ... 他の通知タイプの処理
   }
@@ -193,7 +200,7 @@ function sendNotification(notification: Notification) {
 
 **💡 `parameter is Type` の動作に関する重要な補足**
 
-ユーザー定義型ガードの `value is Type` 構文は、TypeScriptコンパイラに対して「この関数が `true` を返した場合、引数 `value` は `Type` であると断言できる」と伝えます。
+ユーザー定義型ガードの `value is Type` 構文は、TypeScript コンパイラに対して「この関数が `true` を返した場合、引数 `value` は `Type` であると断言できる」と伝えます。
 
 重要なのは、**この関数が `false` を返した場合でも、引数 `value` が `Type` ではないと自動的に推論するわけではない**という点です。単に、この型ガードの条件（ビジネスルール）を満たさなかった、という事実を伝えるだけです。
 
@@ -210,11 +217,13 @@ function processNotification(notification: Notification) {
   } else {
     // ここでは notification は isHighPriorityPushNotification の条件を満たさなかったもの。
     // まだ Notification 型のままであり、PushNotification である可能性も残っている。
-    if (notification.type === 'push') {
+    if (notification.type === "push") {
       // ここでは notification は PushNotification 型として扱われるが、
       // priority は 'normal' または 'low' であることがわかる
-      console.log(`通常のプッシュ通知を処理: ${notification.title} (Priority: ${notification.priority})`);
-    } else if (notification.type === 'email') {
+      console.log(
+        `通常のプッシュ通知を処理: ${notification.title} (Priority: ${notification.priority})`
+      );
+    } else if (notification.type === "email") {
       console.log(`メール通知を処理: ${notification.subject}`);
     }
   }
@@ -223,28 +232,6 @@ function processNotification(notification: Notification) {
 
 このように、ユーザー定義型ガードは、単に型を絞り込むだけでなく、**特定のビジネスロジックや状態を定義する複数の条件（値のチェックを含む）を、一つの分かりやすい関数名にカプセル化する**点に真の価値があります。
 
-```mermaid
-graph TD
-    A[入力: Notification型] --> B{isHighPriorityPushNotification(notification) ?};
-    B -- Yes (notification is PushNotification & priority='high') --> C[緊急プッシュ通知として処理];
-    B -- No --> D[isHighPriorityPushNotificationの条件を満たさない];
-    D --> E{notification.type === 'push' ?};
-    E -- Yes (notification is PushNotification & priority!='high') --> F[通常のプッシュ通知として処理];
-    E -- No --> G[他の通知タイプとして処理];
-
-    subgraph isHighPriorityPushNotification関数
-        I[notification.type === 'push'] --> J[&& notification.deviceId !== ''];
-        J --> K[&& notification.title !== ''];
-        K --> L[&& notification.priority === 'high'];
-        L --> M[戻り値: notification is PushNotification];
-    end
-
-    B -- 内部ロジック --> I;
-    style B fill:#f9f,stroke:#333,stroke-width:2px
-    style C fill:#afa,stroke:#333,stroke-width:2px
-    style F fill:#add8e6,stroke:#333,stroke-width:2px
-    style G fill:#faa,stroke:#333,stroke-width:2px
-```
 #### 1. 基本的なユーザー定義型ガード
 
 ```typescript
@@ -655,7 +642,7 @@ function isUser(value: unknown): value is User {
 
 > 📚 **サポート資料**: [実践コード例 - ユーザー定義型ガード練習](./Step04_補足_実践コード例.md#ユーザー定義型ガード練習) | [トラブルシューティング](./Step04_補足_トラブルシューティング.md#よくあるエラー)
 
-### 練習問題 2.1: ユーザー定義型ガード（8分） 🔰
+### 練習問題 2.1: ユーザー定義型ガード（8 分） 🔰
 
 ```typescript
 // 要件: 以下のユーザー定義型ガードを実装してください
@@ -674,7 +661,7 @@ function processEmail(input: unknown): string {
 
 // テストケース
 console.log(processEmail("test@example.com")); // "有効なメール: test@example.com"
-console.log(processEmail("invalid-email"));    // "無効なメールアドレス"
+console.log(processEmail("invalid-email")); // "無効なメールアドレス"
 ```
 
 ---

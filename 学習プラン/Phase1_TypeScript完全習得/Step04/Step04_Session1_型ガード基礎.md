@@ -154,17 +154,12 @@ function checkUserType(user: User | AdminUser): string {
 
 > 📚 **サポート資料**: [実践コード例 - 型ガードの練習](./Step04_補足_実践コード例.md#型ガードの練習)
 
-#### 🔧 基本的な型ガードの実装
+#### 🔧 基本型ガードの実装
 
 ```typescript
-// 基本的な型ガード関数
-function isString(value: unknown): value is string {
-  return typeof value === "string";
-}
-
-// 型ガードを使った安全な処理
+// 基本型ガードを使った安全な処理
 function processValue(input: unknown): string {
-  if (isString(input)) {
+  if (typeof input === "string") {
     return `文字列: ${input.toUpperCase()}`;
   } else if (typeof input === "number") {
     return `数値: ${input.toFixed(2)}`;
@@ -182,27 +177,19 @@ function processValue(input: unknown): string {
 
 > 📚 **サポート資料**: [実践コード例 - 型ガードの練習](./Step04_補足_実践コード例.md#型ガードの練習) | [トラブルシューティング](./Step04_補足_トラブルシューティング.md#よくあるエラー)
 
-### 練習問題 1.1: 基本的な型ガード（8分） 🔰
+### 練習問題 1.1: 基本型ガード（8分） 🔰
 
 ```typescript
-// 要件: 以下の型ガード関数を実装してください
-function isPositiveNumber(value: unknown): value is number {
+// 要件: 以下の関数を基本型ガードを使って実装してください
+function processInput(input: unknown): string {
+  // typeof, instanceof, in演算子を使って型を判定し、適切な処理を行う
   /* ここを実装 */
 }
 
-// テスト用関数
-function processInput(input: unknown): string {
-  if (isPositiveNumber(input)) {
-    return `正の数値: ${input}`;
-  } else {
-    return "正の数値ではありません";
-  }
-}
-
 // テストケース
-console.log(processInput(42));   // "正の数値: 42"
-console.log(processInput(-5));   // "正の数値ではありません"
-console.log(processInput("10")); // "正の数値ではありません"
+console.log(processInput(42));     // "数値: 42"
+console.log(processInput("hello")); // "文字列: HELLO"
+console.log(processInput(true));   // "その他の型"
 ```
 
 ---

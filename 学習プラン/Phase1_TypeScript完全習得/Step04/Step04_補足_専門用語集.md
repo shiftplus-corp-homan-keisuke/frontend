@@ -320,7 +320,7 @@ function getExtendedArea(shape: ExtendedShape): number {
 ## 型アサーション関連用語
 
 ### 型アサーション（Type Assertion）
-**定義**: 開発者がTypeScriptコンパイラに対して「この値は特定の型である」と明示的に伝える仕組み
+**定義**: 開発者がTypeScriptコンパイラに対して「この値は特定の型として扱ってほしい」と明示的に指示する仕組み（コンパイル時のみ有効で、実行時の型チェックは行わない）
 
 **構文**: `value as Type` または `<Type>value`
 

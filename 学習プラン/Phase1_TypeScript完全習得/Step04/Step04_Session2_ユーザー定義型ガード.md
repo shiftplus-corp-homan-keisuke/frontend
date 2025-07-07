@@ -35,8 +35,7 @@
 
 | 時間         | 内容                         | 学習活動         | 成果物     |
 | ------------ | ---------------------------- | ---------------- | ---------- |
-| **0-3 分**   | 前回復習・今回目標           | 振り返り・質問   | 理解確認   |
-| **3-15 分**  | ユーザー定義型ガード理論     | 理解・メモ       | 基本知識   |
+| **0-15 分**  | ユーザー定義型ガード理論     | 理解・メモ       | 基本知識   |
 | **15-32 分** | 段階的なオブジェクト検証実装 | ハンズオン・実践 | 実践コード |
 | **32-40 分** | 実践的な練習問題             | 個人演習・確認   | 演習成果   |
 
@@ -44,47 +43,9 @@
 
 ## 📚 学習内容
 
-### Section 1: 前回復習（要点のみ）
-
-#### 🔍 Session1 の重要ポイント確認
-
-```typescript
-// 基本的な型ガード
-function isString(value: unknown): value is string {
-  return typeof value === "string";
-}
-
-function isNumber(value: unknown): value is number {
-  return typeof value === "number";
-}
-
-// DOM要素の型ガード
-function isInputElement(element: Element): element is HTMLInputElement {
-  return element instanceof HTMLInputElement;
-}
-
-// オブジェクトプロパティの型ガード
-interface User {
-  id: number;
-  name: string;
-}
-
-function hasUserProperties(
-  obj: unknown
-): obj is { id: unknown; name: unknown } {
-  return (
-    typeof obj === "object" && obj !== null && "id" in obj && "name" in obj
-  );
-}
-```
-
-**💡 今日学ぶ内容との関係**
-
-今日は、これらの基本型ガードを組み合わせて、より複雑で実用的なユーザー定義型ガード関数を作成します。
-
 ---
 
-### Section 2: ユーザー定義型ガードの実装
+### Section 1: ユーザー定義型ガードの実装
 
 > 📚 **関連資料**: [実践コード例 - ユーザー定義型ガード](./Step04_補足_実践コード例.md#ユーザー定義型ガード) | [専門用語集 - value is Type](./Step04_補足_専門用語集.md#value-is-type)
 
@@ -98,6 +59,45 @@ function hasUserProperties(
 - **可読性**: 複雑な型チェックを分かりやすい関数名で表現
 - **保守性**: 型チェックロジックの変更が一箇所で済む
 - **型安全性**: TypeScript が型の絞り込みを理解
+
+#### 1. 基本的なユーザー定義型ガード
+
+```typescript
+// 基本的なプリミティブ型ガード
+// 文字列型で空文字でない場合はvalueはstring型だとコンパイラーに伝える
+// value is Type 構文を使った型チェック関数はbooleanを返す trueを返したときTypeが確定する
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+function isPositiveNumber(value: unknown): value is number {
+  return typeof value === "number" && value > 0;
+}
+
+function isValidEmail(value: unknown): value is string {
+  if (typeof value !== "string") {
+    return false;
+  }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(value);
+}
+
+// 使用例
+function processUserInput(input: unknown): string {
+  if (isValidEmail(input)) {
+    // この時点でinputはstring型として扱われる
+    return `有効なメールアドレス: ${input}`;
+  } else if (isPositiveNumber(input)) {
+    // この時点でinputはnumber型として扱われる
+    return `正の数値: ${input}`;
+  } else if (isNonEmptyString(input)) {
+    // この時点でinputはstring型として扱われる
+    return `文字列: ${input}`;
+  } else {
+    return "無効な入力です";
+  }
+}
+```
 
 #### 💡 「複雑な型チェックを分かりやすい関数名で表現」の具体例
 
@@ -232,118 +232,7 @@ function processNotification(notification: Notification) {
 
 このように、ユーザー定義型ガードは、単に型を絞り込むだけでなく、**特定のビジネスロジックや状態を定義する複数の条件（値のチェックを含む）を、一つの分かりやすい関数名にカプセル化する**点に真の価値があります。
 
-#### 1. 基本的なユーザー定義型ガード
-
-```typescript
-// 基本的なプリミティブ型ガード
-function isNonEmptyString(value: unknown): value is string {
-  return typeof value === "string" && value.trim().length > 0;
-}
-
-function isPositiveNumber(value: unknown): value is number {
-  return typeof value === "number" && value > 0;
-}
-
-function isValidEmail(value: unknown): value is string {
-  if (typeof value !== "string") {
-    return false;
-  }
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(value);
-}
-
-// 使用例
-function processUserInput(input: unknown): string {
-  if (isValidEmail(input)) {
-    // この時点でinputはstring型として扱われる
-    return `有効なメールアドレス: ${input}`;
-  } else if (isPositiveNumber(input)) {
-    // この時点でinputはnumber型として扱われる
-    return `正の数値: ${input}`;
-  } else if (isNonEmptyString(input)) {
-    // この時点でinputはstring型として扱われる
-    return `文字列: ${input}`;
-  } else {
-    return "無効な入力です";
-  }
-}
-```
-
-#### 2. 複雑なオブジェクト型ガード
-
-```typescript
-// ユーザープロファイルの型定義
-interface UserProfile {
-  id: number;
-  name: string;
-  email: string;
-  age?: number;
-  isActive: boolean;
-}
-
-// 段階的な型ガード実装
-function isUserProfile(value: unknown): value is UserProfile {
-  // まず基本的なオブジェクトチェック
-  if (typeof value !== "object" || value === null) {
-    return false;
-  }
-
-  const obj = value as any;
-
-  // 必須プロパティの存在チェック
-  if (
-    !("id" in obj) ||
-    !("name" in obj) ||
-    !("email" in obj) ||
-    !("isActive" in obj)
-  ) {
-    return false;
-  }
-
-  // 各プロパティの型チェック
-  if (typeof obj.id !== "number" || obj.id <= 0) {
-    return false;
-  }
-
-  if (!isNonEmptyString(obj.name)) {
-    return false;
-  }
-
-  if (!isValidEmail(obj.email)) {
-    return false;
-  }
-
-  if (typeof obj.isActive !== "boolean") {
-    return false;
-  }
-
-  // オプショナルプロパティのチェック
-  if (
-    obj.age !== undefined &&
-    (typeof obj.age !== "number" || obj.age < 0 || obj.age > 150)
-  ) {
-    return false;
-  }
-
-  return true;
-}
-
-// より堅牢なバリデーション関数
-function isValidUserProfile(value: unknown): value is UserProfile {
-  if (!isUserProfile(value)) {
-    return false;
-  }
-
-  // 追加のビジネスロジック検証
-  return (
-    value.name.length >= 2 &&
-    value.name.length <= 50 &&
-    value.email.length <= 100
-  );
-}
-```
-
-#### 3. 配列型ガード
+#### 2. 配列型ガード
 
 ```typescript
 // 配列の型ガード
@@ -367,7 +256,7 @@ function processUserList(data: unknown): string {
 }
 ```
 
-#### 4. 型ガードの組み合わせパターン
+#### 3. 型ガードの組み合わせパターン
 
 ```typescript
 // フォームデータの型定義
@@ -422,7 +311,7 @@ function isValidPhoneNumber(value: unknown): value is string {
 
 ---
 
-### Section 3: カスタムバリデーション演習
+### Section2: カスタムバリデーション演習
 
 > 📚 **関連資料**: [実践コード例 - カスタムバリデーション](./Step04_補足_実践コード例.md#カスタムバリデーション) | [トラブルシューティング - バリデーションエラー](./Step04_補足_トラブルシューティング.md#バリデーションエラー)
 

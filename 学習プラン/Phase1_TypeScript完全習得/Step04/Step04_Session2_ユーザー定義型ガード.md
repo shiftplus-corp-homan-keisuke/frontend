@@ -357,15 +357,6 @@ function isUserProfileArray(value: unknown): value is UserProfile[] {
   return Array.isArray(value) && value.every((item) => isUserProfile(item));
 }
 
-// より複雑な配列型ガード
-function isNonEmptyStringArray(value: unknown): value is [string, ...string[]] {
-  return (
-    isStringArray(value) &&
-    value.length > 0 &&
-    value.every((str) => str.trim().length > 0)
-  );
-}
-
 // 使用例
 function processUserList(data: unknown): string {
   if (isUserProfileArray(data)) {
@@ -444,15 +435,15 @@ function isValidPhoneNumber(value: unknown): value is string {
 #### 1. 段階的バリデーション
 
 ```typescript
-// バリデーション結果の型定義
-interface ValidationResult<T> {
+// バリデーション結果の型定義（ContactForm専用）
+interface ContactFormValidationResult {
   isValid: boolean;
-  data?: T;
+  data?: ContactForm;
   errors: string[];
 }
 
 // 段階的バリデーション関数
-function validateContactForm(input: unknown): ValidationResult<ContactForm> {
+function validateContactForm(input: unknown): ContactFormValidationResult {
   const errors: string[] = [];
 
   // 基本的なオブジェクトチェック

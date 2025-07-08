@@ -99,6 +99,85 @@ function processUserInput(input: unknown): string {
 }
 ```
 
+#### 2. 配列型ガード
+
+```typescript
+// 配列の型ガード
+function isStringArray(value: unknown): value is string[] {
+  return (
+    Array.isArray(value) && value.every((item) => typeof item === "string")
+  );
+}
+
+function isUserProfileArray(value: unknown): value is UserProfile[] {
+  return Array.isArray(value) && value.every((item) => isUserProfile(item));
+}
+
+// 使用例
+function processUserList(data: unknown): string {
+  if (isUserProfileArray(data)) {
+    const activeUsers = data.filter((user) => user.isActive);
+    return `${data.length}人中${activeUsers.length}人がアクティブです`;
+  }
+  return "無効なユーザーリストです";
+}
+```
+
+#### 3. 型ガードの組み合わせパターン
+
+```typescript
+// フォームデータの型定義
+interface ContactForm {
+  name: string;
+  email: string;
+  message: string;
+  phone?: string;
+}
+
+// 小さな型ガードを組み合わせる
+function isContactForm(value: unknown): value is ContactForm {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const obj = value as any;
+
+  // 必須フィールドのチェック
+  if (!isNonEmptyString(obj.name) || obj.name.length > 50) {
+    return false;
+  }
+
+  if (!isValidEmail(obj.email)) {
+    return false;
+  }
+
+  if (!isNonEmptyString(obj.message) || obj.message.length > 1000) {
+    return false;
+  }
+
+  // オプショナルフィールドのチェック
+  if (obj.phone !== undefined) {
+    if (!isValidPhoneNumber(obj.phone)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+// 電話番号の型ガード
+function isValidPhoneNumber(value: unknown): value is string {
+  if (typeof value !== "string") {
+    return false;
+  }
+  // 簡単な電話番号形式チェック（日本の形式）
+  const phoneRegex = /^(\+81|0)\d{1,4}-?\d{1,4}-?\d{4}$/;
+  return phoneRegex.test(value.replace(/\s/g, ""));
+}
+```
+
+---
+
 #### 💡 「複雑な型チェックを分かりやすい関数名で表現」の具体例
 
 ユーザー定義型ガードの大きな利点の一つは、複数の条件を組み合わせた複雑な型チェックを、意味のある関数名でカプセル化し、コードの可読性を大幅に向上させる点にあります。
@@ -230,86 +309,7 @@ function processNotification(notification: Notification) {
 }
 ```
 
-このように、ユーザー定義型ガードは、単に型を絞り込むだけでなく、**特定のビジネスロジックや状態を定義する複数の条件（値のチェックを含む）を、一つの分かりやすい関数名にカプセル化する**点に真の価値があります。
-
-#### 2. 配列型ガード
-
-```typescript
-// 配列の型ガード
-function isStringArray(value: unknown): value is string[] {
-  return (
-    Array.isArray(value) && value.every((item) => typeof item === "string")
-  );
-}
-
-function isUserProfileArray(value: unknown): value is UserProfile[] {
-  return Array.isArray(value) && value.every((item) => isUserProfile(item));
-}
-
-// 使用例
-function processUserList(data: unknown): string {
-  if (isUserProfileArray(data)) {
-    const activeUsers = data.filter((user) => user.isActive);
-    return `${data.length}人中${activeUsers.length}人がアクティブです`;
-  }
-  return "無効なユーザーリストです";
-}
-```
-
-#### 3. 型ガードの組み合わせパターン
-
-```typescript
-// フォームデータの型定義
-interface ContactForm {
-  name: string;
-  email: string;
-  message: string;
-  phone?: string;
-}
-
-// 小さな型ガードを組み合わせる
-function isContactForm(value: unknown): value is ContactForm {
-  if (typeof value !== "object" || value === null) {
-    return false;
-  }
-
-  const obj = value as any;
-
-  // 必須フィールドのチェック
-  if (!isNonEmptyString(obj.name) || obj.name.length > 50) {
-    return false;
-  }
-
-  if (!isValidEmail(obj.email)) {
-    return false;
-  }
-
-  if (!isNonEmptyString(obj.message) || obj.message.length > 1000) {
-    return false;
-  }
-
-  // オプショナルフィールドのチェック
-  if (obj.phone !== undefined) {
-    if (!isValidPhoneNumber(obj.phone)) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-// 電話番号の型ガード
-function isValidPhoneNumber(value: unknown): value is string {
-  if (typeof value !== "string") {
-    return false;
-  }
-  // 簡単な電話番号形式チェック（日本の形式）
-  const phoneRegex = /^(\+81|0)\d{1,4}-?\d{1,4}-?\d{4}$/;
-  return phoneRegex.test(value.replace(/\s/g, ""));
-}
-```
-
----
+## このように、ユーザー定義型ガードは、単に型を絞り込むだけでなく、**特定のビジネスロジックや状態を定義する複数の条件（値のチェックを含む）を、一つの分かりやすい関数名にカプセル化する**点に真の価値があります。
 
 ### Section2: カスタムバリデーション演習
 

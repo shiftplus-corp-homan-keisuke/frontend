@@ -4,11 +4,11 @@
 
 ## 📋 学習方式の選択
 
-### 🎯 推奨：3セッション分割学習（他言語経験者・講師サポート付き）
+### 🎯 推奨：2セッション分割学習（他言語経験者・講師サポート付き）
 
 **対象**: 他言語経験者（TypeScript基本型・インターフェース・ユニオン型知識あり）
 **形式**: 講師サポート付き学習
-**総時間**: 120分（2時間）
+**総時間**: 80分（1時間20分）
 
 #### 📚 セッション構成
 
@@ -21,10 +21,6 @@
   - カスタム型ガード関数（`value is Type`構文）
   - 複雑なオブジェクト検証とバリデーション
   - 型ガードの組み合わせパターン
-
-- 🎯 **[Session3: アサーション関数](./Step04_Session3_アサーション関数.md)** (40分)
-  - アサーション関数（`asserts`キーワード）の実装
-  - エラーハンドリングパターン
   - 型安全なフォーム処理システム完成
 
 #### 👨‍🏫 講師向けリソース
@@ -37,20 +33,19 @@
 
 **対象**: 自習者・復習者
 **形式**: 個人学習
-**総時間**: 2時間
+**総時間**: 1時間30分
 
 #### 🎯 Step04 到達目標
 
 - [ ] 基本型ガード（typeof, instanceof, in演算子）の実装
 - [ ] ユーザー定義型ガード関数の作成
-- [ ] アサーション関数を使ったエラーハンドリング
 - [ ] 型安全なフォーム処理システムの構築
 
 #### 💡 補足資料
 
 詳細な解説は以下の補足資料をご参照ください：
 
-- 📖 [専門用語集](./Step04_補足_専門用語集.md) - 型ガード・アサーション関数関連の重要概念
+- 📖 [専門用語集](./Step04_補足_専門用語集.md) - 型ガード関連の重要概念
 - 💻 [実践コード例](./Step04_補足_実践コード例.md) - 段階的な学習用コード集
 - 🚨 [トラブルシューティング](./Step04_補足_トラブルシューティング.md) - よくあるエラーと解決方法
 - 📚 [参考リソース](./Step04_補足_参考リソース.md) - 学習に役立つリンク集
@@ -59,7 +54,7 @@
 ## 📅 学習期間・目標（従来版）
 
 **期間**: Step04
-**総学習時間**: 2時間
+**総学習時間**: 1時間30分
 **学習スタイル**: 理論 30% + 実践コード 50% + 演習 20%
 
 ## 📚 理論学習内容
@@ -289,101 +284,87 @@ function processUserList(data: unknown): string {
 }
 ```
 
-### Section 3: アサーション関数の実装
+### Section 3: 実践的な型ガード活用パターン
 
-#### 🔧 アサーション関数の基礎
+#### 🎯 型ガードの組み合わせパターン
 
-**💡 なぜアサーション関数が重要なのか**
+**💡 複数の型ガードを組み合わせた堅牢な検証**
 
-アサーション関数は、条件が満たされない場合にエラーを投げることで、その後のコードで型が保証されることをTypeScriptに伝える機能です。これにより、より安全で読みやすいコードを書くことができます。
+実際の開発では、複数の型ガードを組み合わせて、より堅牢な型検証システムを構築します。
 
-##### 1. 基本的なアサーション関数
+##### 1. 段階的な型ガード
 
 ```typescript
-function assertIsString(value: unknown): asserts value is string {
-  if (typeof value !== "string") {
-    throw new Error("値は文字列である必要があります");
+// 段階的に型を絞り込む
+function processApiResponse(response: unknown): string {
+  // 第1段階: オブジェクトかどうか
+  if (typeof response !== "object" || response === null) {
+    return "無効なレスポンス形式です";
   }
-}
 
-function assertIsNumber(value: unknown): asserts value is number {
-  if (typeof value !== "number") {
-    throw new Error("値は数値である必要があります");
+  // 第2段階: 必要なプロパティが存在するか
+  if (!("data" in response)) {
+    return "データが含まれていません";
   }
-}
 
-// 使用例
-function processValue(input: unknown): string {
-  assertIsString(input);
-  // この時点でinputはstring型として扱われる
-  return input.toUpperCase();
+  // 第3段階: データの型を確認
+  const data = (response as any).data;
+  if (isUserProfileArray(data)) {
+    return `${data.length}人のユーザーデータを取得しました`;
+  }
+
+  return "データ形式が正しくありません";
 }
 ```
 
-##### 2. 複雑なアサーション関数
+##### 2. 型ガードの合成
 
 ```typescript
-function assertIsUserProfile(value: unknown): asserts value is UserProfile {
-  if (!isValidUserProfile(value)) {
-    throw new Error("無効なユーザープロファイルです");
-  }
+// 複数の条件を組み合わせた型ガード
+function isValidAge(value: unknown): value is number {
+  return isNumber(value) && value >= 0 && value <= 150;
 }
 
-function assertIsNonEmpty<T>(array: T[]): asserts array is [T, ...T[]] {
-  if (array.length === 0) {
-    throw new Error("配列は空にできません");
+function isValidName(value: unknown): value is string {
+  return isNonEmptyString(value) && value.length <= 50;
+}
+
+function isCompleteUserProfile(value: unknown): value is UserProfile {
+  return (
+    isUserProfile(value) &&
+    isValidName(value.name) &&
+    isValidEmail(value.email) &&
+    (value.age === undefined || isValidAge(value.age))
+  );
+}
+```
+
+##### 3. エラーハンドリングパターン
+
+```typescript
+// Result型を使った安全なエラーハンドリング
+type Result<T, E = string> =
+  | { success: true; data: T }
+  | { success: false; error: E };
+
+function validateUserInput(input: unknown): Result<UserProfile> {
+  if (!isCompleteUserProfile(input)) {
+    return { success: false, error: "無効なユーザープロファイルです" };
   }
+
+  return { success: true, data: input };
 }
 
 // 使用例
-function processUsers(data: unknown): string {
-  assertIsUserProfileArray(data);
-  assertIsNonEmpty(data);
+function processUserRegistration(input: unknown): string {
+  const result = validateUserInput(input);
   
-  // この時点でdataは空でないUserProfile[]として扱われる
-  const firstUser = data[0]; // エラーなし
-  return `最初のユーザー: ${firstUser.name}`;
-}
-```
-
-##### 3. フォーム処理でのアサーション関数
-
-```typescript
-interface FormData {
-  name: string;
-  email: string;
-  age: number;
-}
-
-function assertIsValidFormData(value: unknown): asserts value is FormData {
-  if (typeof value !== "object" || value === null) {
-    throw new Error("フォームデータはオブジェクトである必要があります");
+  if (!result.success) {
+    return `登録失敗: ${result.error}`;
   }
 
-  const data = value as any;
-
-  if (!isNonEmptyString(data.name)) {
-    throw new Error("名前は必須です");
-  }
-
-  if (!isNonEmptyString(data.email) || !isValidEmail(data.email)) {
-    throw new Error("有効なメールアドレスが必要です");
-  }
-
-  if (!isNumber(data.age) || data.age < 0 || data.age > 150) {
-    throw new Error("年齢は0-150の範囲で入力してください");
-  }
-}
-
-// 使用例
-function submitForm(formData: unknown): string {
-  try {
-    assertIsValidFormData(formData);
-    // この時点でformDataはFormData型として扱われる
-    return `フォーム送信成功: ${formData.name} (${formData.email})`;
-  } catch (error) {
-    return `フォーム送信失敗: ${error.message}`;
-  }
+  // この時点でresult.dataはUserProfile型として扱われる
+  return `登録成功: ${result.data.name}さん`;
 }
 ```
 
@@ -435,16 +416,23 @@ function isProductArray(value: unknown): value is Product[] {
 }
 ```
 
-### 練習問題 3: アサーション関数
+### 練習問題 3: 型ガードの組み合わせ
 
 ```typescript
-// 要件: 値がnullまたはundefinedでないことをアサートする関数
-function assertIsDefined<T>(value: T | null | undefined): asserts value is T {
+// 要件: APIレスポンスの型ガード
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
+
+// 要件: ApiResponse<Product[]>型かどうかを判定する型ガード関数を実装
+function isProductApiResponse(value: unknown): value is ApiResponse<Product[]> {
   /* ここを実装 */
 }
 
-// 要件: 配列が空でないことをアサートする関数
-function assertIsNonEmptyArray<T>(array: T[]): asserts array is [T, ...T[]] {
+// 要件: 成功したAPIレスポンスかどうかを判定する型ガード関数を実装
+function isSuccessfulResponse<T>(response: ApiResponse<T>): response is ApiResponse<T> & { success: true } {
   /* ここを実装 */
 }
 ```
@@ -495,16 +483,22 @@ function isProductArray(value: unknown): value is Product[] {
 ### 練習問題 3 解答
 
 ```typescript
-function assertIsDefined<T>(value: T | null | undefined): asserts value is T {
-  if (value === null || value === undefined) {
-    throw new Error("値はnullまたはundefinedにできません");
-  }
+// 前提: Product型とisProduct、isProductArray関数は練習問題2で定義済み
+
+function isProductApiResponse(value: unknown): value is ApiResponse<Product[]> {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "success" in value &&
+    "data" in value &&
+    typeof (value as any).success === "boolean" &&
+    isProductArray((value as any).data) &&
+    ((value as any).message === undefined || typeof (value as any).message === "string")
+  );
 }
 
-function assertIsNonEmptyArray<T>(array: T[]): asserts array is [T, ...T[]] {
-  if (array.length === 0) {
-    throw new Error("配列は空にできません");
-  }
+function isSuccessfulResponse<T>(response: ApiResponse<T>): response is ApiResponse<T> & { success: true } {
+  return response.success === true;
 }
 ```
 
@@ -514,8 +508,8 @@ function assertIsNonEmptyArray<T>(array: T[]): asserts array is [T, ...T[]] {
 
 ### 🤔 よくある質問
 
-**Q: 型ガードとアサーション関数の使い分けが難しいです。**
-A: 型ガードは条件分岐で使用し、アサーション関数はエラーを投げることで型を保証します。型ガードは「もしかしたら違う型かもしれない」場合に、アサーション関数は「この型でなければエラー」という場合に使用します。
+**Q: 複雑な型ガードの組み合わせが難しいです。**
+A: 複雑な型ガードは小さな型ガード関数に分割し、それらを組み合わせることで可読性を向上させることができます。また、段階的に型を絞り込むアプローチを取ることで、より理解しやすいコードになります。
 
 **Q: ユーザー定義型ガードが複雑になりがちです。**
 A: 複雑な型ガードは小さな型ガード関数に分割し、それらを組み合わせることで可読性を向上させることができます。また、ライブラリ（zod、io-tsなど）の使用も検討してください。
@@ -528,7 +522,7 @@ A: 複雑な型ガードは小さな型ガード関数に分割し、それら�
 
 - [ ] typeof、instanceof、in演算子を使った基本型ガードを実装できる
 - [ ] ユーザー定義型ガード関数（`value is Type`）を作成できる
-- [ ] アサーション関数（`asserts`）を使ったエラーハンドリングができる
+- [ ] 型ガードを組み合わせた堅牢な検証システムを構築できる
 - [ ] 型安全なフォーム処理システムを構築できる
 - [ ] 複雑なオブジェクトの型検証ができる
 

@@ -359,17 +359,10 @@ function validateProduct(input: unknown): ValidationResult {
     errors.push("在庫状況はboolean値である必要があります");
   }
   
-  // エラーがある場合は失敗
-  if (errors.length > 0) {
-    return { isValid: false, errors };
-  }
-  
-  // 全体の型ガードチェック
-  if (isProduct(input)) {
-    return { isValid: true, data: input, errors: [] };
-  }
-  
-  return { isValid: false, errors: ["予期しないエラーが発生しました"] };
+  // エラーがなければ成功（個別チェックで十分なため、isProductの重複チェック不要）
+  return errors.length === 0
+    ? { isValid: true, data: input as Product, errors: [] }
+    : { isValid: false, errors };
 }
 
 // テスト実行

@@ -17,17 +17,6 @@
 
 ---
 
-## 📋 必須提出物
-
-以下の1つのファイルのみ提出してください：
-
-```
-📁 提出物/
-└── product-validator.ts    # 商品情報バリデーター（必須）
-```
-
----
-
 ## ⏰ 作成手順（推奨時間配分：合計30分）
 
 ### Phase 1: 基本設計（5分）
@@ -265,7 +254,7 @@ function hasRequiredProperties(value: unknown): value is { name: unknown; price:
    function isProduct(value: unknown): value is Product {
      return typeof value === "object" && value !== null;
    }
-
+   
    // ✅ 正解：複数の型ガードを組み合わせて厳密にチェック
    function isProduct(value: unknown): value is Product {
      if (typeof value !== "object" || value === null) return false;

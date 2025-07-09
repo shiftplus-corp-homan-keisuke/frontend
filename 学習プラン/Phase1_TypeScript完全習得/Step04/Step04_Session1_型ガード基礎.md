@@ -175,9 +175,11 @@ function processValue(input: unknown): string {
 ### 練習問題 1.1: 基本型ガード（8 分） 🔰
 
 ```typescript
-// 要件: 以下の関数を基本型ガードを使って実装してください
+// 要件: 以下の関数を基本型ガードを使って実装してください。
+// - inputがnumber型の場合: "数値: [数値]" の形式で返す。
+// - inputがstring型の場合: "文字列: [文字列を大文字にしたもの]" の形式で返す。
+// - inputがnumber型でもstring型でもない場合（例: boolean, object, null, undefinedなど）: "未対応の型です" という固定文字列を返す。
 function processInput(input: unknown): string {
-  // typeof, instanceof, in演算子を使って型を判定し、適切な処理を行う
   /* ここを実装 */
 }
 
@@ -189,34 +191,277 @@ console.log(processInput(true)); // "その他の型"
 
 ---
 
+### 練習問題 1.2: instanceof 型ガード（8 分） 🚀
+
+```typescript
+// 要件: 以下のクラスと関数を定義し、instanceof 型ガードを使って適切なメッセージを返す関数を実装してください。
+class Dog {
+  constructor(public name: string) {}
+  bark() {
+    return `${this.name}がワンと吠えます！`;
+  }
+}
+
+class Cat {
+  constructor(public name: string) {}
+  meow() {
+    return `${this.name}がニャーと鳴きます。`;
+  }
+}
+
+type Animal = Dog | Cat;
+
+function describeAnimal(animal: Animal): string {
+  /* ここを実装 */
+}
+
+// テストケース
+console.log(describeAnimal(new Dog("ポチ"))); // "ポチがワンと吠えます！"
+console.log(describeAnimal(new Cat("タマ"))); // "タマがニャーと鳴きます。"
+```
+
+---
+
+### 練習問題 1.3: in 演算子型ガード（8 分） 🌟
+
+```typescript
+// 要件: 以下のインターフェースと関数を定義し、in 演算子型ガードを使って適切なメッセージを返す関数を実装してください。
+interface Car {
+  brand: string;
+  model: string;
+  drive(): string;
+}
+
+interface Bicycle {
+  brand: string;
+  pedal(): string;
+}
+
+type Vehicle = Car | Bicycle;
+
+function getVehicleDetails(vehicle: Vehicle): string {
+  /* ここを実装 */
+}
+
+// テストケース
+const myCar: Car = {
+  brand: "トヨタ",
+  model: "プリウス",
+  drive: () => "ドライブ中...",
+};
+const myBicycle: Bicycle = {
+  brand: "ブリヂストン",
+  pedal: () => "ペダルを漕いでいます...",
+};
+console.log(getVehicleDetails(myCar)); // "トヨタ プリウス: ドライブ中..."
+console.log(getVehicleDetails(myBicycle)); // "ブリヂストン: ペダルを漕いでいます..."
+```
+
+---
+
+### 練習問題 1.4: 複合型ガード（8 分） 💡
+
+```typescript
+// 要件: 以下の型と関数を定義し、複数の型ガード（typeof, instanceof, in）を組み合わせて、
+// 複雑なユニオン型の値を安全に処理する関数を実装してください。
+interface SuccessResponse {
+  status: "success";
+  data: string | number;
+}
+
+interface ErrorResponse {
+  status: "error";
+  message: string;
+  code?: number;
+}
+
+class CustomError extends Error {
+  constructor(message: string, public errorCode: number) {
+    super(message);
+    this.name = "CustomError";
+  }
+}
+
+type ApiResponse = SuccessResponse | ErrorResponse | CustomError | string;
+
+function handleApiResponse(response: ApiResponse): string {
+  /* ここを実装 */
+}
+
+// テストケース
+console.log(handleApiResponse({ status: "success", data: "データ取得成功" })); // "成功: データ取得成功"
+console.log(handleApiResponse({ status: "success", data: 123 })); // "成功: 123"
+console.log(
+  handleApiResponse({ status: "error", message: "認証失敗", code: 401 })
+); // "エラー (401): 認証失敗"
+console.log(handleApiResponse(new CustomError("ネットワークエラー", 500))); // "カスタムエラー (500): ネットワークエラー"
+console.log(handleApiResponse("不明なレスポンス")); // "不明なレスポンス形式"
+```
+
+---
+
+### 練習問題 1.5: フォーム入力値の検証（8 分） 📝
+
+```typescript
+// 要件: 以下の関数を実装し、ユーザーからのフォーム入力値を型ガードを使って検証してください。
+// inputが文字列、数値、真偽値のいずれかであるかを判定し、適切なメッセージを返します。
+// - 文字列の場合: 空文字でなければその文字列を大文字にして返す。空文字なら「空の文字列です」
+// - 数値の場合: 0より大きければ「有効な数値: [数値]」、そうでなければ「無効な数値です」
+// - 真偽値の場合: trueなら「承認されました」、falseなら「拒否されました」
+// - その他の型の場合: 「未対応の入力形式です」
+
+function validateFormInput(input: unknown): string {
+  /* ここを実装 */
+}
+
+// テストケース
+console.log(validateFormInput("hello world")); // "HELLO WORLD"
+console.log(validateFormInput("")); // "空の文字列です"
+console.log(validateFormInput(123)); // "有効な数値: 123"
+console.log(validateFormInput(0)); // "無効な数値です"
+console.log(validateFormInput(true)); // "承認されました"
+console.log(validateFormInput(false)); // "拒否されました"
+console.log(validateFormInput(null)); // "未対応の入力形式です"
+console.log(validateFormInput({})); // "未対応の入力形式です"
+```
+
+---
+
 ## 📝 解答例
 
 ### 練習問題 1.1 解答
 
 ```typescript
-function isPositiveNumber(value: unknown): value is number {
-  return typeof value === "number" && value > 0;
-}
-
-function isNonEmptyString(value: unknown): value is string {
-  return typeof value === "string" && value.trim().length > 0;
+function processInput(input: unknown): string {
+  if (typeof input === "number") {
+    return `数値: ${input}`;
+  } else if (typeof input === "string") {
+    return `文字列: ${input.toUpperCase()}`;
+  } else {
+    return "未対応の型です";
+  }
 }
 ```
 
 ### 練習問題 1.2 解答
 
 ```typescript
-function isUser(value: unknown): value is User {
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    "id" in value &&
-    "name" in value &&
-    "email" in value &&
-    typeof (value as any).id === "number" &&
-    typeof (value as any).name === "string" &&
-    typeof (value as any).email === "string"
-  );
+class Dog {
+  constructor(public name: string) {}
+  bark() {
+    return `${this.name}がワンと吠えます！`;
+  }
+}
+
+class Cat {
+  constructor(public name: string) {}
+  meow() {
+    return `${this.name}がニャーと鳴きます。`;
+  }
+}
+
+type Animal = Dog | Cat;
+
+function describeAnimal(animal: Animal): string {
+  if (animal instanceof Dog) {
+    return animal.bark();
+  } else if (animal instanceof Cat) {
+    return animal.meow();
+  }
+  // ここには到達しないはずだが、念のため
+  return "不明な動物です。";
+}
+```
+
+### 練習問題 1.3 解答
+
+```typescript
+interface Car {
+  brand: string;
+  model: string;
+  drive(): string;
+}
+
+interface Bicycle {
+  brand: string;
+  pedal(): string;
+}
+
+type Vehicle = Car | Bicycle;
+
+function getVehicleDetails(vehicle: Vehicle): string {
+  if ("model" in vehicle) {
+    // この分岐内では vehicle は Car 型
+    return `${vehicle.brand} ${vehicle.model}: ${vehicle.drive()}`;
+  } else {
+    // この分岐内では vehicle は Bicycle 型
+    return `${vehicle.brand}: ${vehicle.pedal()}`;
+  }
+}
+```
+
+### 練習問題 1.4 解答
+
+```typescript
+interface SuccessResponse {
+  status: "success";
+  data: string | number;
+}
+
+interface ErrorResponse {
+  status: "error";
+  message: string;
+  code?: number;
+}
+
+class CustomError extends Error {
+  constructor(message: string, public errorCode: number) {
+    super(message);
+    this.name = "CustomError";
+  }
+}
+
+type ApiResponse = SuccessResponse | ErrorResponse | CustomError | string;
+
+function handleApiResponse(response: ApiResponse): string {
+  if (typeof response === "string") {
+    return `不明なレスポンス形式: ${response}`;
+  } else if (response instanceof CustomError) {
+    return `カスタムエラー (${response.errorCode}): ${response.message}`;
+  } else if ("status" in response) {
+    if (response.status === "success") {
+      return `成功: ${response.data}`;
+    } else {
+      // response.status === "error"
+      const errorCode = response.code ? ` (${response.code})` : "";
+      return `エラー${errorCode}: ${response.message}`;
+    }
+  }
+  return "予期せぬレスポンスです。"; // ここには到達しないはず
+}
+```
+
+### 練習問題 1.5 解答
+
+```typescript
+function validateFormInput(input: unknown): string {
+  if (typeof input === "string") {
+    if (input.trim().length > 0) {
+      return input.toUpperCase();
+    } else {
+      return "空の文字列です";
+    }
+  } else if (typeof input === "number") {
+    if (input > 0) {
+      return `有効な数値: ${input}`;
+    } else {
+      return "無効な数値です";
+    }
+  } else if (typeof input === "boolean") {
+    return input ? "承認されました" : "拒否されました";
+  } else {
+    return "未対応の入力形式です";
+  }
 }
 ```
 

@@ -1,12 +1,264 @@
 # Step05 専門用語集
 
-> 💡 **このファイルについて**: Step05で出てくるジェネリクス関連の重要な専門用語と概念の詳細解説集です。
+> 💡 **このファイルについて**: Step05で出てくる高階関数・ジェネリクス関連の重要な専門用語と概念の詳細解説集です。
 
 ## 📋 目次
-1. [ジェネリクス基本用語](#ジェネリクス基本用語)
-2. [型パラメータ関連用語](#型パラメータ関連用語)
-3. [制約関連用語](#制約関連用語)
-4. [高度なジェネリクス用語](#高度なジェネリクス用語)
+1. [高階関数基本用語](#高階関数基本用語)
+2. [関数型プログラミング用語](#関数型プログラミング用語)
+3. [ジェネリクス基本用語](#ジェネリクス基本用語)
+4. [型パラメータ関連用語](#型パラメータ関連用語)
+5. [制約関連用語](#制約関連用語)
+6. [高度なジェネリクス用語](#高度なジェネリクス用語)
+
+---
+
+## 高階関数基本用語
+
+### 高階関数（Higher-Order Function）
+**定義**: 関数を引数として受け取ったり、関数を戻り値として返したりする関数
+
+**特徴**:
+- 関数の抽象化レベルを向上させる
+- コードの再利用性を高める
+- 関数型プログラミングの基礎概念
+
+**コード例**:
+```typescript
+// 関数を引数として受け取る高階関数
+function executeOperation<T>(
+  value: T,
+  operation: (arg: T) => T
+): T {
+  return operation(value);
+}
+
+// 関数を戻り値として返す高階関数
+function createMultiplier(factor: number): (x: number) => number {
+  return (x: number) => x * factor;
+}
+
+// 使用例
+const double = createMultiplier(2);
+const result = executeOperation(5, double); // 10
+```
+
+### コールバック関数（Callback Function）
+**定義**: 他の関数に引数として渡される関数
+
+**用途**:
+- 非同期処理の完了時の処理
+- イベントハンドリング
+- 配列操作（map、filter、reduceなど）
+
+**コード例**:
+```typescript
+// 基本的なコールバック関数
+function processData(
+  data: string[],
+  callback: (item: string) => string
+): string[] {
+  return data.map(callback);
+}
+
+// 非同期処理でのコールバック
+function fetchData(
+  url: string,
+  onSuccess: (data: any) => void,
+  onError: (error: Error) => void
+): void {
+  // 非同期処理の実装
+}
+```
+
+### クロージャ（Closure）
+**定義**: 関数が定義された時点のスコープを「記憶」し、そのスコープの変数にアクセスできる仕組み
+
+**特徴**:
+- プライベート変数の実現
+- 状態を保持する関数の作成
+- ファクトリーパターンの実装
+
+**コード例**:
+```typescript
+// 基本的なクロージャ
+function createCounter(initialValue: number = 0): () => number {
+  let count = initialValue; // プライベート変数
+
+  return function(): number {
+    return ++count;
+  };
+}
+
+// 使用例
+const counter = createCounter(10);
+console.log(counter()); // 11
+console.log(counter()); // 12
+
+// より複雑なクロージャ
+function createBankAccount(initialBalance: number) {
+  let balance = initialBalance;
+
+  return {
+    deposit: (amount: number) => {
+      balance += amount;
+      return balance;
+    },
+    withdraw: (amount: number) => {
+      if (amount <= balance) {
+        balance -= amount;
+        return balance;
+      }
+      throw new Error('Insufficient funds');
+    },
+    getBalance: () => balance
+  };
+}
+```
+
+### カリー化（Currying）
+**定義**: 複数の引数を取る関数を、一つの引数を取る関数の連鎖に変換する技法
+
+**利点**:
+- 関数の部分適用が可能
+- 関数の合成が容易
+- 再利用性の向上
+
+**コード例**:
+```typescript
+// 通常の関数
+function add(x: number, y: number, z: number): number {
+  return x + y + z;
+}
+
+// カリー化された関数
+function curriedAdd(x: number): (y: number) => (z: number) => number {
+  return (y: number) => (z: number) => x + y + z;
+}
+
+// 使用例
+const add5 = curriedAdd(5);
+const add5And3 = add5(3);
+const result = add5And3(2); // 10
+
+// 汎用的なカリー化関数
+function curry2<A, B, R>(fn: (a: A, b: B) => R): (a: A) => (b: B) => R {
+  return (a: A) => (b: B) => fn(a, b);
+}
+```
+
+### 部分適用（Partial Application）
+**定義**: 関数の一部の引数を固定して、新しい関数を作成する技法
+
+**カリー化との違い**:
+- カリー化: 関数の構造を変換
+- 部分適用: 引数の一部を固定
+
+**コード例**:
+```typescript
+// 部分適用の実装
+function partial<T extends any[], U extends any[], R>(
+  fn: (...args: [...T, ...U]) => R,
+  ...partialArgs: T
+): (...args: U) => R {
+  return (...remainingArgs: U) => fn(...partialArgs, ...remainingArgs);
+}
+
+// 使用例
+function greet(greeting: string, name: string, punctuation: string): string {
+  return `${greeting}, ${name}${punctuation}`;
+}
+
+const sayHello = partial(greet, "Hello");
+const sayHelloToAlice = partial(sayHello, "Alice");
+
+console.log(sayHelloToAlice("!")); // "Hello, Alice!"
+```
+
+---
+
+## 関数型プログラミング用語
+
+### 純粋関数（Pure Function）
+**定義**: 同じ入力に対して常に同じ出力を返し、副作用を持たない関数
+
+**特徴**:
+- 予測可能な動作
+- テストが容易
+- 並列処理に適している
+
+**コード例**:
+```typescript
+// 純粋関数の例
+function add(x: number, y: number): number {
+  return x + y; // 副作用なし、同じ入力で同じ出力
+}
+
+// 非純粋関数の例
+let counter = 0;
+function impureIncrement(): number {
+  return ++counter; // 外部状態を変更（副作用あり）
+}
+
+// 純粋関数版
+function pureIncrement(current: number): number {
+  return current + 1; // 副作用なし
+}
+```
+
+### 不変性（Immutability）
+**定義**: データが作成後に変更されないという性質
+
+**利点**:
+- 予期しない変更を防ぐ
+- 並行処理での安全性
+- デバッグの容易さ
+
+**コード例**:
+```typescript
+// 不変性を保つ配列操作
+const originalArray = [1, 2, 3];
+
+// ❌ 元の配列を変更（可変操作）
+// originalArray.push(4);
+
+// ✅ 新しい配列を作成（不変操作）
+const newArray = [...originalArray, 4];
+
+// 不変性を保つオブジェクト操作
+const originalUser = { name: "Alice", age: 25 };
+
+// ✅ 新しいオブジェクトを作成
+const updatedUser = { ...originalUser, age: 26 };
+```
+
+### 関数合成（Function Composition）
+**定義**: 複数の関数を組み合わせて新しい関数を作成する技法
+
+**コード例**:
+```typescript
+// 基本的な関数合成
+function compose<A, B, C>(
+  f: (b: B) => C,
+  g: (a: A) => B
+): (a: A) => C {
+  return (a: A) => f(g(a));
+}
+
+// 使用例
+const addOne = (x: number) => x + 1;
+const multiplyByTwo = (x: number) => x * 2;
+
+const addOneThenMultiplyByTwo = compose(multiplyByTwo, addOne);
+console.log(addOneThenMultiplyByTwo(3)); // (3 + 1) * 2 = 8
+
+// パイプライン演算子風の実装
+function pipe<T>(...fns: Array<(arg: T) => T>): (value: T) => T {
+  return (value: T) => fns.reduce((acc, fn) => fn(acc), value);
+}
+
+const pipeline = pipe(addOne, multiplyByTwo);
+console.log(pipeline(3)); // (3 + 1) * 2 = 8
+```
 
 ---
 

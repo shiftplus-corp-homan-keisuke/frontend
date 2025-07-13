@@ -1,8 +1,8 @@
-# Session0: 高階関数基礎（90分）
+# Session0: 高階関数基礎（90 分）
 
-> 💡 **対象**: Step01-04完了者（基本型・インターフェース・ユニオン型・型ガード習得済み）
+> 💡 **対象**: Step01-04 完了者（基本型・インターフェース・ユニオン型・型ガード習得済み）
 > 🎯 **形式**: 講師サポート付き学習
-> ⏰ **時間**: 90分（休憩含む）
+> ⏰ **時間**: 90 分（休憩含む）
 
 ## 📚 関連補足資料
 
@@ -28,23 +28,23 @@
 
 **前提知識**:
 
-- Step01-04の内容（基本型、インターフェース、ユニオン型、型ガード）
+- Step01-04 の内容（基本型、インターフェース、ユニオン型、型ガード）
 - 関数・クラスの基本的な実装経験
-- TypeScriptの型システムの基礎理解
+- TypeScript の型システムの基礎理解
 
 ---
 
 ## ⏰ 詳細タイムテーブル
 
-| 時間         | 内容                           | 講師の役割           | 学習者の活動   | 成果物     |
-| ------------ | ------------------------------ | -------------------- | -------------- | ---------- |
-| **0-10分**   | 全体概要・目標設定             | 説明・質疑応答       | 聞く・質問     | 理解確認   |
-| **10-25分**  | 高階関数の定義と基本概念       | 要点解説・図解説明   | 個人学習・確認 | 知識整理   |
-| **25-40分**  | 配列メソッド（map、filter）    | 実演・個別サポート   | ハンズオン     | 基本コード |
-| **40-55分**  | コールバック関数の実践         | 実演・個別サポート   | ハンズオン     | 応用コード |
-| **55-70分**  | カリー化の基本理解             | 実演・個別サポート   | ハンズオン     | 応用コード |
-| **70-85分**  | 練習問題1-2                    | 巡回サポート・ヒント | 個人作業       | 練習成果   |
-| **85-90分**  | 振り返り・次回予告             | まとめ・予告         | 質問・確認     | 学習計画   |
+| 時間         | 内容                        | 講師の役割           | 学習者の活動   | 成果物     |
+| ------------ | --------------------------- | -------------------- | -------------- | ---------- |
+| **0-10 分**  | 全体概要・目標設定          | 説明・質疑応答       | 聞く・質問     | 理解確認   |
+| **10-25 分** | 高階関数の定義と基本概念    | 要点解説・図解説明   | 個人学習・確認 | 知識整理   |
+| **25-40 分** | 配列メソッド（map、filter） | 実演・個別サポート   | ハンズオン     | 基本コード |
+| **40-55 分** | コールバック関数の実践      | 実演・個別サポート   | ハンズオン     | 応用コード |
+| **55-70 分** | カリー化の基本理解          | 実演・個別サポート   | ハンズオン     | 応用コード |
+| **70-85 分** | 練習問題 1-2                | 巡回サポート・ヒント | 個人作業       | 練習成果   |
+| **85-90 分** | 振り返り・次回予告          | まとめ・予告         | 質問・確認     | 学習計画   |
 
 ---
 
@@ -60,24 +60,51 @@
 
 高階関数（Higher-Order Function）とは、以下のいずれか（または両方）の特徴を持つ関数です：
 
-1. **関数を引数として受け取る**関数
-2. **関数を戻り値として返す**関数
+###### 事前知識 :
 
-```
-📊 高階関数の基本パターン
+javascriptの関数は変数に関数式を代入することが出来ます
 
-パターン1: 関数を引数として受け取る
-┌─────────┐    ┌─────────────┐    ┌─────────┐
-│  関数   │───▶│  高階関数   │───▶│  結果   │
-└─────────┘    └─────────────┘    └─────────┘
-
-パターン2: 関数を戻り値として返す
-┌─────────┐    ┌─────────────┐    ┌─────────┐
-│  設定   │───▶│  高階関数   │───▶│  関数   │
-└─────────┘    └─────────────┘    └─────────┘
+```js
+// logという変数に関数を代入
+const log = function(message){
+    console.log(message);
+}
+// アロー関数の例
+const log = (message) => {
+    console.log(message);
+}
 ```
 
-#### 1. パターン1：関数を引数として受け取る高階関数
+このようにして変数に代入された関数は通常の関数と同じように`()` をつけて呼び出すことが出来ます。
+
+```js
+log('hello');
+```
+
+通常関数の引数には変数に代入することが可能なオブジェクト(string, number, Array, Objectなど)を指定することが可能なので、引数に関数を指定することが出来ます。
+
+#### 1. パターン 1：関数を引数として受け取る高階関数
+
+**🏭 工場の例で理解しよう**
+
+![パターン1: 関数を引数として受け取る](./images/higher-order-function-pattern1.svg)
+
+```
+🏭 executeOperation工場の仕組み
+
+材料: 5 (数値)
+道具: double関数 (x => x * 2)
+
+工場での作業:
+1. 材料「5」を受け取る
+2. 道具「double関数」を受け取る
+3. 道具を使って材料を加工: double(5)
+4. 完成品「10」を出荷
+
+🔄 同じ工場で違う道具を使うと...
+材料: 5, 道具: square関数 → 完成品: 25
+材料: 5, 道具: addTen関数 → 完成品: 15
+```
 
 **🔍 最もシンプルな例**
 
@@ -85,7 +112,7 @@
 // 高階関数の定義
 function executeOperation(
   value: number,
-  operation: (x: number) => number  // ← 関数を引数として受け取る
+  operation: (x: number) => number // ← 関数を引数として受け取る
 ): number {
   return operation(value);
 }
@@ -96,25 +123,9 @@ const square = (x: number): number => x * x;
 const addTen = (x: number): number => x + 10;
 
 // 高階関数の使用
-console.log(executeOperation(5, double));  // 10
-console.log(executeOperation(5, square));  // 25
-console.log(executeOperation(5, addTen));  // 15
-```
-
-**📊 仕組みの図解**
-
-```
-executeOperation(5, double) の実行過程：
-
-1. executeOperation が呼び出される
-   ├─ value: 5
-   └─ operation: double関数
-
-2. operation(value) が実行される
-   ├─ double(5) が実行される
-   └─ 5 * 2 = 10 が返される
-
-3. 結果: 10
+console.log(executeOperation(5, double)); // 10
+console.log(executeOperation(5, square)); // 25
+console.log(executeOperation(5, addTen)); // 15
 ```
 
 **💡 なぜこれが便利なのか？**
@@ -123,10 +134,8 @@ executeOperation(5, double) の実行過程：
 
 ```typescript
 // 文字列版の高階関数
-function processString(
-  text: string,
-  processor: (s: string) => string
-): string {
+function processStringWithLog(text: string, processor: (s: string) => string): string {
+  console.log(text);
   return processor(text);
 }
 
@@ -135,19 +144,43 @@ const toUpperCase = (s: string): string => s.toUpperCase();
 const addExclamation = (s: string): string => s + "!";
 const reverse = (s: string): string => s.split("").reverse().join("");
 
-console.log(processString("hello", toUpperCase));     // "HELLO"
-console.log(processString("hello", addExclamation));  // "hello!"
-console.log(processString("hello", reverse));         // "olleh"
+console.log(processString("hello", toUpperCase)); // "HELLO"
+console.log(processString("hello", addExclamation)); // "hello!"
+console.log(processString("hello", reverse)); // "olleh"
 ```
 
-#### 2. パターン2：関数を戻り値として返す高階関数
+#### 2. パターン 2：関数を戻り値として返す高階関数
+
+**🏭 専用道具工場の例で理解しよう**
+
+![パターン2: 関数を戻り値として返す](./images/higher-order-function-pattern2.svg)
+
+```
+🏭 createMultiplier工場の仕組み
+
+注文書: 「2倍にする道具が欲しい」
+
+工場での作業:
+1. 注文書を受け取る: factor = 2
+2. 設計図を作成: (x) => x * 2
+3. 専用道具を製造して出荷
+
+👨‍🔧 お客さんの使い方:
+const double = createMultiplier(2)  ← 「2倍道具」を注文
+double(5) → 10  ← その道具で5を加工
+double(3) → 6   ← 同じ道具で3を加工
+
+🔄 別の注文もできる:
+const triple = createMultiplier(3)  ← 「3倍道具」を注文
+triple(4) → 12  ← その道具で4を加工
+```
 
 **🔍 関数ファクトリーの例**
 
 ```typescript
 // 高階関数：設定に基づいて関数を生成する
 function createMultiplier(factor: number): (x: number) => number {
-  return (x: number): number => x * factor;  // ← 関数を返す
+  return (x: number): number => x * factor; // ← 関数を返す
 }
 
 // 特定の倍数を計算する関数を生成
@@ -156,27 +189,9 @@ const triple = createMultiplier(3);
 const tenTimes = createMultiplier(10);
 
 // 生成された関数を使用
-console.log(double(5));    // 10
-console.log(triple(4));    // 12
-console.log(tenTimes(3));  // 30
-```
-
-**📊 仕組みの図解**
-
-```
-createMultiplier(2) の実行過程：
-
-1. createMultiplier(2) が呼び出される
-   └─ factor: 2
-
-2. 新しい関数が作成される
-   └─ (x: number) => x * 2
-
-3. この関数が返される
-   └─ double = この関数
-
-4. double(5) を呼び出すと
-   └─ 5 * 2 = 10 が返される
+console.log(double(5)); // 10
+console.log(triple(4)); // 12
+console.log(tenTimes(3)); // 30
 ```
 
 **💡 実用的な例：バリデーション関数の生成**
@@ -189,8 +204,8 @@ function createValidator(
 ): (value: number) => { isValid: boolean; error?: string } {
   return (value: number) => {
     const isValid = condition(value);
-    return isValid 
-      ? { isValid: true } 
+    return isValid
+      ? { isValid: true }
       : { isValid: false, error: errorMessage };
   };
 }
@@ -207,10 +222,10 @@ const isEven = createValidator(
 );
 
 // 使用例
-console.log(isPositive(5));   // { isValid: true }
-console.log(isPositive(-1));  // { isValid: false, error: "値は正の数である必要があります" }
-console.log(isEven(4));       // { isValid: true }
-console.log(isEven(3));       // { isValid: false, error: "値は偶数である必要があります" }
+console.log(isPositive(5)); // { isValid: true }
+console.log(isPositive(-1)); // { isValid: false, error: "値は正の数である必要があります" }
+console.log(isEven(4)); // { isValid: true }
+console.log(isEven(3)); // { isValid: false, error: "値は偶数である必要があります" }
 ```
 
 #### 🎯 高階関数の重要なポイント
@@ -218,7 +233,7 @@ console.log(isEven(3));       // { isValid: false, error: "値は偶数である
 1. **再利用性**: 同じ処理の枠組みを異なる内容で使い回せる
 2. **抽象化**: 具体的な処理内容を後から指定できる
 3. **柔軟性**: 処理をカスタマイズ可能にできる
-4. **型安全性**: TypeScriptの型システムで安全に設計できる
+4. **型安全性**: TypeScript の型システムで安全に設計できる
 
 ---
 
@@ -226,7 +241,9 @@ console.log(isEven(3));       // { isValid: false, error: "値は偶数である
 
 > 📚 **関連資料**: [実践コード例 - 配列メソッドの活用](./Step05_補足_実践コード例.md#配列メソッドの活用)
 
-#### 🎯 なぜmap、filterが高階関数なのか？
+#### 🎯 なぜ map、filter が高階関数なのか？
+
+![map と filter の仕組み](./images/map-filter-explanation.svg)
 
 **💡 重要な理解ポイント**
 
@@ -234,7 +251,7 @@ console.log(isEven(3));       // { isValid: false, error: "値は偶数である
 
 #### 1. map - データ変換の高階関数
 
-**📊 mapの仕組み**
+**📊 map の仕組み**
 
 ```
 map の動作原理：
@@ -270,11 +287,11 @@ console.log(withMessage); // ["数値: 1", "数値: 2", "数値: 3", "数値: 4"
 // mapの内部的な動作（簡略版）
 function myMapNumbers(
   array: number[],
-  transformFunction: (item: number) => number  // ← 関数を引数として受け取る
+  transformFunction: (item: number) => number // ← 関数を引数として受け取る
 ): number[] {
   const result: number[] = [];
   for (const item of array) {
-    result.push(transformFunction(item));  // ← 受け取った関数を使用
+    result.push(transformFunction(item)); // ← 受け取った関数を使用
   }
   return result;
 }
@@ -303,14 +320,14 @@ interface ProductDisplay {
 const products: Product[] = [
   { id: 1, name: "ノートPC", price: 80000 },
   { id: 2, name: "マウス", price: 2000 },
-  { id: 3, name: "キーボード", price: 5000 }
+  { id: 3, name: "キーボード", price: 5000 },
 ];
 
 // map で Product を ProductDisplay に変換
 const productDisplays: ProductDisplay[] = products.map((product: Product) => ({
   id: product.id,
   displayName: `商品: ${product.name}`,
-  formattedPrice: `¥${product.price.toLocaleString()}`
+  formattedPrice: `¥${product.price.toLocaleString()}`,
 }));
 
 console.log(productDisplays);
@@ -323,7 +340,7 @@ console.log(productDisplays);
 
 #### 2. filter - データフィルタリングの高階関数
 
-**📊 filterの仕組み**
+**📊 filter の仕組み**
 
 ```
 filter の動作原理：
@@ -358,11 +375,12 @@ console.log(singleDigit); // [1, 2, 3, 4, 5, 6, 7, 8, 9]
 // filterの内部的な動作（簡略版）
 function myFilterNumbers(
   array: number[],
-  conditionFunction: (item: number) => boolean  // ← 関数を引数として受け取る
+  conditionFunction: (item: number) => boolean // ← 関数を引数として受け取る
 ): number[] {
   const result: number[] = [];
   for (const item of array) {
-    if (conditionFunction(item)) {  // ← 受け取った関数を使用
+    if (conditionFunction(item)) {
+      // ← 受け取った関数を使用
       result.push(item);
     }
   }
@@ -389,7 +407,7 @@ const users: User[] = [
   { id: 1, name: "Alice", age: 25, isActive: true },
   { id: 2, name: "Bob", age: 17, isActive: false },
   { id: 3, name: "Charlie", age: 30, isActive: true },
-  { id: 4, name: "Diana", age: 16, isActive: true }
+  { id: 4, name: "Diana", age: 16, isActive: true },
 ];
 
 // アクティブな成人ユーザーのみを抽出
@@ -428,17 +446,18 @@ const sales: Sale[] = [
   { id: 1, productName: "ノートPC", amount: 80000, category: "電子機器" },
   { id: 2, productName: "マウス", amount: 2000, category: "電子機器" },
   { id: 3, productName: "本", amount: 1500, category: "書籍" },
-  { id: 4, productName: "ペン", amount: 300, category: "文房具" }
+  { id: 4, productName: "ペン", amount: 300, category: "文房具" },
 ];
 
 // 1. 1000円以上の売上のみを抽出（filter）
 // 2. 表示用フォーマットに変換（map）
 const processedSales = sales
-  .filter((sale: Sale) => sale.amount >= 1000)  // 高階関数1
-  .map((sale: Sale) => ({                       // 高階関数2
+  .filter((sale: Sale) => sale.amount >= 1000) // 高階関数1
+  .map((sale: Sale) => ({
+    // 高階関数2
     id: sale.id,
     displayName: `${sale.category}: ${sale.productName}`,
-    formattedAmount: `¥${sale.amount.toLocaleString()}`
+    formattedAmount: `¥${sale.amount.toLocaleString()}`,
   }));
 
 console.log(processedSales);
@@ -493,18 +512,18 @@ map(変換関数) ← 高階関数（変換関数を受け取る）
 // 時間のかかる処理をシミュレートする関数
 function processData(
   data: number[],
-  onComplete: (result: number) => void  // ← コールバック関数
+  onComplete: (result: number) => void // ← コールバック関数
 ): void {
   console.log("データ処理を開始...");
-  
+
   // 処理をシミュレート
   let sum = 0;
   for (const num of data) {
     sum += num;
   }
-  
+
   console.log("データ処理が完了しました");
-  
+
   // 処理完了後にコールバック関数を呼び出し
   onComplete(sum);
 }
@@ -560,14 +579,14 @@ function fetchUserData(
   onError: (error: string) => void
 ): void {
   console.log(`ユーザー ${userId} のデータを取得中...`);
-  
+
   // データ取得をシミュレート
   if (userId > 0) {
     // 成功の場合
     const user = {
       id: userId,
       name: `User${userId}`,
-      email: `user${userId}@example.com`
+      email: `user${userId}@example.com`,
     };
     onSuccess(user);
   } else {
@@ -595,7 +614,7 @@ fetchUserData(
     console.log("成功:", user);
   },
   (error) => {
-    console.error("失敗:", error);  // これが実行される
+    console.error("失敗:", error); // これが実行される
   }
 );
 ```
@@ -610,7 +629,7 @@ fetchUserData(
 // 文字列配列用の関数
 function findFirstString(
   items: string[],
-  condition: (item: string) => boolean  // ← コールバック関数
+  condition: (item: string) => boolean // ← コールバック関数
 ): string | undefined {
   for (const item of items) {
     if (condition(item)) {
@@ -623,7 +642,7 @@ function findFirstString(
 // 数値配列用の関数
 function findFirstNumber(
   items: number[],
-  condition: (item: number) => boolean  // ← コールバック関数
+  condition: (item: number) => boolean // ← コールバック関数
 ): number | undefined {
   for (const item of items) {
     if (condition(item)) {
@@ -676,7 +695,7 @@ class SimpleEventEmitter {
 
   // イベントを発火（すべてのコールバック関数を実行）
   emit(data: any): void {
-    this.listeners.forEach(callback => callback(data));
+    this.listeners.forEach((callback) => callback(data));
   }
 }
 
@@ -706,7 +725,7 @@ eventEmitter.on((event: UserEvent) => {
 eventEmitter.emit({
   userId: 123,
   action: "ログイン",
-  timestamp: new Date()
+  timestamp: new Date(),
 });
 
 // 出力:
@@ -766,7 +785,7 @@ add(1)(2)(3) = 6  ← 段階的に指定
   └─ 1が決まった関数
 ```
 
-**💡 カリー化の3つの重要なポイント**
+**💡 カリー化の 3 つの重要なポイント**
 
 1. **段階的な設定**: 引数を一つずつ決めていける
 2. **部分適用**: 途中まで設定した「専用関数」を作れる
@@ -776,7 +795,7 @@ add(1)(2)(3) = 6  ← 段階的に指定
 
 **🔍 最もシンプルな例から始めよう**
 
-まず、2つの数を足す関数から始めます：
+まず、2 つの数を足す関数から始めます：
 
 ```typescript
 // 通常の関数：2つの引数を一度に受け取る
@@ -797,8 +816,8 @@ function curriedAdd(x: number): (y: number) => number {
 }
 
 // 使用例
-const addThree = curriedAdd(3);  // 3を足す専用関数ができる
-const result2 = addThree(5);     // 8
+const addThree = curriedAdd(3); // 3を足す専用関数ができる
+const result2 = addThree(5); // 8
 
 // または一度に書くこともできる
 const result3 = curriedAdd(3)(5); // 8
@@ -814,7 +833,7 @@ curriedAdd(3) を実行すると...
 その関数に5を渡すと、3 + 5 = 8 が計算される
 ```
 
-**📊 3つの引数の例**
+**📊 3 つの引数の例**
 
 ```typescript
 // 通常の関数：3つの引数を一度に受け取る
@@ -831,9 +850,9 @@ function curriedAdd3(x: number): (y: number) => (z: number) => number {
 }
 
 // 段階的な使用例
-const step1 = curriedAdd3(1);        // 1が決まった関数
-const step2 = step1(2);              // 1と2が決まった関数
-const result2 = step2(3);            // 最終結果: 6
+const step1 = curriedAdd3(1); // 1が決まった関数
+const step2 = step1(2); // 1と2が決まった関数
+const result2 = step2(3); // 最終結果: 6
 
 // 一度に書く場合
 const result3 = curriedAdd3(1)(2)(3); // 6
@@ -862,14 +881,14 @@ curriedAdd3(1)(2)(3) の実行過程：
 ```typescript
 // 「1を足す関数」を作って再利用
 const addOne = curriedAdd(1);
-console.log(addOne(5));  // 6
+console.log(addOne(5)); // 6
 console.log(addOne(10)); // 11
 console.log(addOne(20)); // 21
 
 // 「10を足す関数」を作って再利用
 const addTen = curriedAdd(10);
-console.log(addTen(5));  // 15
-console.log(addTen(3));  // 13
+console.log(addTen(5)); // 15
+console.log(addTen(3)); // 13
 ```
 
 #### 2. カリー化の実用的な活用
@@ -886,9 +905,9 @@ const triple = multiply(3);
 const tenTimes = multiply(10);
 
 // 使用例
-console.log(double(5));    // 10
-console.log(triple(4));    // 12
-console.log(tenTimes(3));  // 30
+console.log(double(5)); // 10
+console.log(triple(4)); // 12
+console.log(tenTimes(3)); // 30
 
 // 配列に適用
 const numbers = [1, 2, 3, 4, 5];
@@ -900,7 +919,8 @@ console.log(doubled); // [2, 4, 6, 8, 10]
 
 ```typescript
 // 文字列フォーマットのカリー化
-const formatMessage = (prefix: string) => (message: string) => `${prefix}: ${message}`;
+const formatMessage = (prefix: string) => (message: string) =>
+  `${prefix}: ${message}`;
 
 // 特定のプレフィックス用の関数を生成
 const logInfo = formatMessage("INFO");
@@ -908,9 +928,9 @@ const logError = formatMessage("ERROR");
 const logWarning = formatMessage("WARNING");
 
 // 使用例
-console.log(logInfo("アプリケーションが開始されました"));     // "INFO: アプリケーションが開始されました"
-console.log(logError("データベース接続に失敗しました"));       // "ERROR: データベース接続に失敗しました"
-console.log(logWarning("メモリ使用量が高くなっています"));     // "WARNING: メモリ使用量が高くなっています"
+console.log(logInfo("アプリケーションが開始されました")); // "INFO: アプリケーションが開始されました"
+console.log(logError("データベース接続に失敗しました")); // "ERROR: データベース接続に失敗しました"
+console.log(logWarning("メモリ使用量が高くなっています")); // "WARNING: メモリ使用量が高くなっています"
 ```
 
 #### 3. より実用的なカリー化の例
@@ -919,7 +939,8 @@ console.log(logWarning("メモリ使用量が高くなっています"));     //
 
 ```typescript
 // バリデーション関数のカリー化
-const createValidator = (condition: (value: number) => boolean) =>
+const createValidator =
+  (condition: (value: number) => boolean) =>
   (errorMessage: string) =>
   (value: number) => {
     const isValid = condition(value);
@@ -931,49 +952,57 @@ const createValidator = (condition: (value: number) => boolean) =>
 // 条件関数を定義
 const isPositive = (x: number) => x > 0;
 const isEven = (x: number) => x % 2 === 0;
-const isInRange = (min: number, max: number) => (x: number) => x >= min && x <= max;
+const isInRange = (min: number, max: number) => (x: number) =>
+  x >= min && x <= max;
 
 // バリデーターを生成
-const positiveValidator = createValidator(isPositive)("値は正の数である必要があります");
+const positiveValidator =
+  createValidator(isPositive)("値は正の数である必要があります");
 const evenValidator = createValidator(isEven)("値は偶数である必要があります");
-const rangeValidator = createValidator(isInRange(1, 100))("値は1から100の間である必要があります");
+const rangeValidator = createValidator(isInRange(1, 100))(
+  "値は1から100の間である必要があります"
+);
 
 // 使用例
-console.log(positiveValidator(5));   // { isValid: true, value: 5 }
-console.log(positiveValidator(-1));  // { isValid: false, error: "値は正の数である必要があります" }
-console.log(evenValidator(4));       // { isValid: true, value: 4 }
-console.log(evenValidator(3));       // { isValid: false, error: "値は偶数である必要があります" }
+console.log(positiveValidator(5)); // { isValid: true, value: 5 }
+console.log(positiveValidator(-1)); // { isValid: false, error: "値は正の数である必要があります" }
+console.log(evenValidator(4)); // { isValid: true, value: 4 }
+console.log(evenValidator(3)); // { isValid: false, error: "値は偶数である必要があります" }
 ```
 
-**🔍 API呼び出しのカリー化**
+**🔍 API 呼び出しのカリー化**
 
 ```typescript
 // HTTP リクエストのカリー化
-type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 
-const createApiCall = (baseUrl: string) =>
+const createApiCall =
+  (baseUrl: string) =>
   (method: HttpMethod) =>
   (endpoint: string) =>
   (data?: any) => {
     const url = `${baseUrl}${endpoint}`;
-    console.log(`${method} ${url}`, data ? `with data: ${JSON.stringify(data)}` : '');
+    console.log(
+      `${method} ${url}`,
+      data ? `with data: ${JSON.stringify(data)}` : ""
+    );
     // 実際のHTTPリクエストはここで実行
     return { method, url, data };
   };
 
 // API呼び出し関数を生成
-const apiCall = createApiCall('https://api.example.com');
-const getRequest = apiCall('GET');
-const postRequest = apiCall('POST');
+const apiCall = createApiCall("https://api.example.com");
+const getRequest = apiCall("GET");
+const postRequest = apiCall("POST");
 
 // 特定のエンドポイント用の関数を生成
-const getUsers = getRequest('/users');
-const getUserById = getRequest('/users/');
-const createUser = postRequest('/users');
+const getUsers = getRequest("/users");
+const getUserById = getRequest("/users/");
+const createUser = postRequest("/users");
 
 // 使用例
-getUsers();                                    // GET https://api.example.com/users
-createUser({ name: 'Alice', email: 'alice@example.com' }); // POST https://api.example.com/users with data
+getUsers(); // GET https://api.example.com/users
+createUser({ name: "Alice", email: "alice@example.com" }); // POST https://api.example.com/users with data
 ```
 
 #### 🎯 カリー化の重要なポイント
@@ -981,7 +1010,7 @@ createUser({ name: 'Alice', email: 'alice@example.com' }); // POST https://api.e
 1. **部分適用**: 一部の引数を固定した新しい関数を作成できる
 2. **再利用性**: 共通の設定を持つ関数を効率的に生成できる
 3. **関数合成**: 小さな関数を組み合わせて複雑な処理を構築できる
-4. **型安全性**: TypeScriptの型システムで安全に設計できる
+4. **型安全性**: TypeScript の型システムで安全に設計できる
 
 ---
 
@@ -1060,17 +1089,22 @@ interface Product {
 }
 
 const products: Product[] = [
-  { id: 1, name: "ノートPC", price: 80000, category: "電子機器", inStock: true },
+  {
+    id: 1,
+    name: "ノートPC",
+    price: 80000,
+    category: "電子機器",
+    inStock: true,
+  },
   { id: 2, name: "マウス", price: 2000, category: "電子機器", inStock: false },
   { id: 3, name: "本", price: 1500, category: "書籍", inStock: true },
-  { id: 4, name: "ペン", price: 300, category: "文房具", inStock: true }
+  { id: 4, name: "ペン", price: 300, category: "文房具", inStock: true },
 ];
 
 // 1. カテゴリでフィルタリングする関数を生成するカリー化関数
-const createCategoryFilter = (category: string) =>
-  (products: Product[]) => {
-    // 実装してください
-  };
+const createCategoryFilter = (category: string) => (products: Product[]) => {
+  // 実装してください
+};
 
 // 2. 価格範囲でフィルタリングし、表示用フォーマットに変換する関数
 function getProductsInPriceRange(
@@ -1094,9 +1128,8 @@ console.log(affordableProducts); // 1000円〜5000円の商品を表示用フォ
 **解答例:**
 
 ```typescript
-const createCategoryFilter = (category: string) =>
-  (products: Product[]) =>
-    products.filter(product => product.category === category);
+const createCategoryFilter = (category: string) => (products: Product[]) =>
+  products.filter((product) => product.category === category);
 
 function getProductsInPriceRange(
   products: Product[],
@@ -1104,10 +1137,10 @@ function getProductsInPriceRange(
   maxPrice: number
 ): Array<{ name: string; formattedPrice: string }> {
   return products
-    .filter(product => product.price >= minPrice && product.price <= maxPrice)
-    .map(product => ({
+    .filter((product) => product.price >= minPrice && product.price <= maxPrice)
+    .map((product) => ({
       name: product.name,
-      formattedPrice: `¥${product.price.toLocaleString()}`
+      formattedPrice: `¥${product.price.toLocaleString()}`,
     }));
 }
 ```
@@ -1125,20 +1158,22 @@ A: 同じ処理の枠組みを異なる内容で繰り返し使いたい場合�
 A: 関数の部分適用が有効な場面で使用します。例えば、設定値を固定した関数を作成したい場合や、関数型プログラミングのパイプライン処理で使用する場合などです。
 
 **Q: 高階関数は難しくないですか？**
-A: 最初は複雑に感じるかもしれませんが、「関数を引数に取る」「関数を返す」という2つの基本パターンを理解すれば、実は日常的に使っているmap、filterなども高階関数だと分かります。
+A: 最初は複雑に感じるかもしれませんが、「関数を引数に取る」「関数を返す」という 2 つの基本パターンを理解すれば、実は日常的に使っている map、filter なども高階関数だと分かります。
 
-**Q: TypeScriptでの型安全性はどう保てばよいですか？**
-A: 関数の引数と戻り値に明確な型注釈を付けることで、コンパイル時にエラーを検出できます。Step01-04で学習した基本型、インターフェース、ユニオン型を活用することで、安全で理解しやすい高階関数を作成できます。
+**Q: TypeScript での型安全性はどう保てばよいですか？**
+A: 関数の引数と戻り値に明確な型注釈を付けることで、コンパイル時にエラーを検出できます。Step01-04 で学習した基本型、インターフェース、ユニオン型を活用することで、安全で理解しやすい高階関数を作成できます。
 
 ### 🔧 実践的なヒント
 
 **高階関数設計のベストプラクティス**:
+
 1. **型安全性を重視**: 明確な型注釈を使って型安全な高階関数を設計する
 2. **単一責任の原則**: 一つの高階関数は一つの責任のみを持つ
 3. **純粋関数を心がける**: 副作用を避け、同じ入力に対して同じ出力を返す
 4. **適切な命名**: 関数の目的と動作が明確に分かる名前を付ける
 
 **学習を深めるための次のステップ**:
+
 - ジェネリクスと組み合わせた高階関数の設計
 - 非同期処理でのコールバック関数の活用
 - 関数型プログラミングのパターンの学習
@@ -1147,12 +1182,12 @@ A: 関数の引数と戻り値に明確な型注釈を付けることで、コ�
 
 ## 🌟 次回予告
 
-**📌 重要**: Session0で高階関数の基礎をしっかりと習得しました。これらの概念は次回のジェネリクス学習で重要な基盤となります。
+**📌 重要**: Session0 で高階関数の基礎をしっかりと習得しました。これらの概念は次回のジェネリクス学習で重要な基盤となります。
 
 **🎯 学習完了チェックリスト**
 
 - [ ] 高階関数の定義を説明できる
-- [ ] map、filterが高階関数である理由を理解している
+- [ ] map、filter が高階関数である理由を理解している
 - [ ] コールバック関数を実装できる
 - [ ] カリー化の基本概念を理解している
 - [ ] 練習問題を解くことができる

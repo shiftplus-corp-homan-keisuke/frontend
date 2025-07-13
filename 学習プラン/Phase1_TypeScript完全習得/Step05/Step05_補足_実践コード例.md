@@ -1,12 +1,323 @@
 # Step05 実践コード例
 
-> 💡 **このファイルについて**: ジェネリクスの段階的な学習のためのコード例集です。
+> 💡 **このファイルについて**: 高階関数・ジェネリクスの段階的な学習のためのコード例集です。
 
 ## 📋 目次
-1. [基本的なジェネリクス](#基本的なジェネリクス)
-2. [ジェネリック制約の活用](#ジェネリック制約の活用)
-3. [実用的なジェネリックライブラリ](#実用的なジェネリックライブラリ)
-4. [高度なジェネリクスパターン](#高度なジェネリクスパターン)
+1. [高階関数の基礎](#高階関数の基礎)
+2. [コールバック関数の実践](#コールバック関数の実践)
+3. [配列メソッドの活用](#配列メソッドの活用)
+4. [クロージャの実践](#クロージャの実践)
+5. [カリー化の実践](#カリー化の実践)
+6. [デコレータパターンの実践](#デコレータパターンの実践)
+7. [基本的なジェネリクス](#基本的なジェネリクス)
+8. [ジェネリック制約の活用](#ジェネリック制約の活用)
+## 高階関数の基礎
+
+### ステップ1: 基本的な高階関数
+```typescript
+// higher-order-functions-basic.ts
+
+// 1. 関数を引数として受け取る高階関数
+function executeOperation<T>(
+  value: T,
+  operation: (arg: T) => T
+): T {
+  console.log(`実行前の値: ${value}`);
+  const result = operation(value);
+  console.log(`実行後の値: ${result}`);
+  return result;
+}
+
+// 操作関数の例
+const double = (x: number): number => x * 2;
+const uppercase = (s: string): string => s.toUpperCase();
+
+// 使用例
+console.log(executeOperation(5, double)); // 10
+console.log(executeOperation("hello", uppercase)); // "HELLO"
+
+// 2. 関数を戻り値として返す高階関数
+function createValidator<T>(
+  predicate: (value: T) => boolean,
+  errorMessage: string
+): (value: T) => { isValid: boolean; error?: string } {
+  return (value: T) => {
+    const isValid = predicate(value);
+    return isValid 
+      ? { isValid: true } 
+      : { isValid: false, error: errorMessage };
+  };
+}
+
+// 使用例
+const isPositiveNumber = createValidator(
+  (x: number) => x > 0,
+  "数値は正の値である必要があります"
+);
+
+console.log(isPositiveNumber(5)); // { isValid: true }
+console.log(isPositiveNumber(-1)); // { isValid: false, error: "..." }
+```
+
+---
+
+## コールバック関数の実践
+
+### ステップ1: 型安全なイベントエミッター
+```typescript
+// callback-patterns.ts
+
+type EventCallback<T> = (data: T) => void;
+
+class TypedEventEmitter<T> {
+  private listeners: EventCallback<T>[] = [];
+
+  on(callback: EventCallback<T>): void {
+    this.listeners.push(callback);
+  }
+
+  emit(data: T): void {
+    this.listeners.forEach(callback => callback(data));
+  }
+
+  off(callback: EventCallback<T>): void {
+    const index = this.listeners.indexOf(callback);
+    if (index > -1) {
+      this.listeners.splice(index, 1);
+    }
+  }
+}
+
+// 使用例
+interface UserEvent {
+  userId: number;
+  action: string;
+  timestamp: Date;
+}
+
+const userEventEmitter = new TypedEventEmitter<UserEvent>();
+
+userEventEmitter.on((event) => {
+  console.log(`ユーザー ${event.userId} が ${event.action} を実行しました`);
+});
+
+userEventEmitter.emit({
+  userId: 123,
+  action: 'ログイン',
+  timestamp: new Date()
+});
+```
+
+---
+
+## 配列メソッドの活用
+
+### ステップ1: 実践的な配列操作
+```typescript
+// array-methods-practical.ts
+
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  category: string;
+  inStock: boolean;
+  rating: number;
+}
+
+const products: Product[] = [
+  { id: 1, name: "ノートPC", price: 80000, category: "電子機器", inStock: true, rating: 4.5 },
+  { id: 2, name: "マウス", price: 2000, category: "電子機器", inStock: true, rating: 4.2 },
+  { id: 3, name: "本", price: 1500, category: "書籍", inStock: false, rating: 4.8 }
+];
+
+// チェーンメソッドの活用
+const processedProducts = products
+  .filter(product => product.inStock)
+  .filter(product => product.rating >= 4.0)
+  .map(product => ({
+    ...product,
+    discountedPrice: product.price * 0.9,
+    priceCategory: product.price > 5000 ? '高価格' : '標準価格'
+  }))
+  .sort((a, b) => b.rating - a.rating);
+
+console.log('処理済み商品:', processedProducts);
+```
+
+---
+
+## クロージャの実践
+
+### ステップ1: カウンターとタイマー
+```typescript
+// closure-practical.ts
+
+// カウンター関数
+function createCounter(initialValue: number = 0) {
+  let count = initialValue;
+
+  return {
+    increment: (): number => ++count,
+    decrement: (): number => --count,
+    getValue: (): number => count,
+    reset: (): void => { count = initialValue; }
+  };
+}
+
+// メモ化関数
+function createMemoizedFunction<T extends any[], R>(
+  fn: (...args: T) => R
+): (...args: T) => R {
+  const cache = new Map<string, R>();
+
+  return (...args: T): R => {
+    const key = JSON.stringify(args);
+    
+    if (cache.has(key)) {
+      console.log(`キャッシュヒット: ${key}`);
+      return cache.get(key)!;
+    }
+
+    console.log(`新規計算: ${key}`);
+    const result = fn(...args);
+    cache.set(key, result);
+    return result;
+  };
+}
+
+// 使用例
+const counter = createCounter(10);
+console.log(counter.increment()); // 11
+
+const expensiveCalculation = (x: number, y: number): number => x * y;
+const memoized = createMemoizedFunction(expensiveCalculation);
+console.log(memoized(5, 3)); // 新規計算
+console.log(memoized(5, 3)); // キャッシュヒット
+```
+
+---
+
+## カリー化の実践
+
+### ステップ1: 基本的なカリー化
+```typescript
+// currying-practical.ts
+
+// 汎用カリー化関数
+function curry2<A, B, R>(fn: (a: A, b: B) => R): (a: A) => (b: B) => R {
+  return (a: A) => (b: B) => fn(a, b);
+}
+
+// ログ関数のカリー化
+type LogLevel = 'info' | 'warn' | 'error';
+
+const createLogger = (level: LogLevel) => 
+  (category: string) => 
+  (message: string) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] ${level.toUpperCase()} [${category}]: ${message}`);
+  };
+
+// 使用例
+const logInfo = createLogger('info');
+const userLogger = logInfo('USER');
+userLogger('ユーザーがログインしました');
+
+// バリデーション関数のカリー化
+const createValidator = <T>(predicate: (value: T) => boolean) => 
+  (errorMessage: string) => 
+  (value: T) => ({
+    isValid: predicate(value),
+    error: predicate(value) ? undefined : errorMessage
+  });
+
+const isRequired = createValidator((value: string) => value.length > 0);
+const requiredValidator = isRequired('この項目は必須です');
+
+console.log(requiredValidator('test')); // { isValid: true }
+console.log(requiredValidator('')); // { isValid: false, error: "..." }
+```
+
+---
+
+## デコレータパターンの実践
+
+### ステップ1: 基本的なデコレータ
+```typescript
+// decorator-practical.ts
+
+// ログ機能デコレータ
+function withLogging<T extends any[], R>(
+  fn: (...args: T) => R,
+  functionName: string
+): (...args: T) => R {
+  return (...args: T): R => {
+    console.log(`[LOG] ${functionName} 呼び出し:`, args);
+    const result = fn(...args);
+    console.log(`[LOG] ${functionName} 結果:`, result);
+    return result;
+  };
+}
+
+// 実行時間測定デコレータ
+function withTiming<T extends any[], R>(
+  fn: (...args: T) => R,
+  functionName: string
+): (...args: T) => R {
+  return (...args: T): R => {
+    const start = performance.now();
+    const result = fn(...args);
+    const end = performance.now();
+    console.log(`[TIMING] ${functionName}: ${end - start}ms`);
+    return result;
+  };
+}
+
+// エラーハンドリングデコレータ
+function withErrorHandling<T extends any[], R>(
+  fn: (...args: T) => R,
+  errorHandler?: (error: Error) => R
+): (...args: T) => R | undefined {
+  return (...args: T): R | undefined => {
+    try {
+      return fn(...args);
+    } catch (error) {
+      console.error('エラーが発生:', error);
+      return errorHandler ? errorHandler(error as Error) : undefined;
+    }
+  };
+}
+
+// デコレータの組み合わせ
+function compose<T extends any[], R>(
+  ...decorators: Array<(fn: (...args: T) => R) => (...args: T) => R>
+): (fn: (...args: T) => R) => (...args: T) => R {
+  return (fn: (...args: T) => R) => {
+    return decorators.reduceRight((acc, decorator) => decorator(acc), fn);
+  };
+}
+
+// 使用例
+function divide(x: number, y: number): number {
+  if (y === 0) throw new Error('ゼロで割ることはできません');
+  return x / y;
+}
+
+const enhancedDivide = compose(
+  (fn) => withLogging(fn, 'divide'),
+  (fn) => withTiming(fn, 'divide'),
+  (fn) => withErrorHandling(fn, () => 0)
+)(divide);
+
+console.log(enhancedDivide(10, 2)); // 正常ケース
+console.log(enhancedDivide(10, 0)); // エラーケース
+```
+
+---
+
+9. [実用的なジェネリックライブラリ](#実用的なジェネリックライブラリ)
+10. [高度なジェネリクスパターン](#高度なジェネリクスパターン)
 
 ---
 

@@ -1,13 +1,390 @@
 # Step05 トラブルシューティング
 
-> 💡 **このファイルについて**: ジェネリクスでよくあるエラーと解決方法をまとめたガイドです。
+> 💡 **このファイルについて**: 高階関数・ジェネリクスでよくあるエラーと解決方法をまとめたガイドです。
 
 ## 📋 目次
-1. [ジェネリクス基本エラー](#ジェネリクス基本エラー)
-2. [型制約関連エラー](#型制約関連エラー)
-3. [型推論関連エラー](#型推論関連エラー)
-4. [高度なジェネリクスエラー](#高度なジェネリクスエラー)
-5. [パフォーマンス関連問題](#パフォーマンス関連問題)
+1. [高階関数関連エラー](#高階関数関連エラー)
+2. [コールバック関数エラー](#コールバック関数エラー)
+3. [クロージャ関連問題](#クロージャ関連問題)
+4. [ジェネリクス基本エラー](#ジェネリクス基本エラー)
+5. [型制約関連エラー](#型制約関連エラー)
+6. [型推論関連エラー](#型推論関連エラー)
+7. [高度なジェネリクスエラー](#高度なジェネリクスエラー)
+8. [パフォーマンス関連問題](#パフォーマンス関連問題)
+## 高階関数関連エラー
+
+### "This expression is not callable"
+**原因**: 関数として呼び出そうとしているものが実際には関数ではない
+
+**エラー例**:
+```typescript
+function createMultiplier(factor: number) {
+  return (x: number) => x * factor;
+}
+
+const multiplier = createMultiplier; // 関数を呼び出していない
+const result = multiplier(5); // Error: This expression is not callable
+```
+
+**解決方法**:
+```typescript
+// 解決方法1: 関数を正しく呼び出す
+const multiplier = createMultiplier(2); // 関数を呼び出して戻り値を取得
+const result = multiplier(5); // OK: 10
+
+// 解決方法2: 型注釈で明確にする
+const multiplier: (x: number) => number = createMultiplier(2);
+const result = multiplier(5); // OK
+```
+
+### "Cannot invoke an expression whose type lacks a call signature"
+**原因**: 呼び出し可能でない型に対して関数呼び出しを試みている
+
+**エラー例**:
+```typescript
+function processCallback(callback: any) {
+  return callback(5); // Error: Cannot invoke an expression whose type lacks a call signature
+}
+```
+
+**解決方法**:
+```typescript
+// 解決方法1: 適切な関数型を指定
+function processCallback(callback: (value: number) => number) {
+  return callback(5); // OK
+}
+
+// 解決方法2: 型ガードを使用
+function processCallback(callback: any) {
+  if (typeof callback === 'function') {
+    return callback(5); // OK
+  }
+  throw new Error('Callback must be a function');
+}
+
+// 解決方法3: ジェネリクスを使用
+function processCallback<T>(
+  callback: (value: number) => T
+): T {
+  return callback(5); // OK
+}
+```
+
+### "Argument of type 'X' is not assignable to parameter of type 'Y'"
+**原因**: 高階関数に渡すコールバック関数の型が期待される型と一致しない
+
+**エラー例**:
+```typescript
+function map<T, U>(array: T[], callback: (item: T) => U): U[] {
+  return array.map(callback);
+}
+
+const numbers = [1, 2, 3];
+const result = map(numbers, (item: string) => item.length); 
+// Error: Argument of type '(item: string) => number' is not assignable to parameter of type '(item: number) => unknown'
+```
+
+**解決方法**:
+```typescript
+// 解決方法1: コールバック関数の型を修正
+const result = map(numbers, (item: number) => item * 2); // OK
+
+// 解決方法2: 型推論を活用
+const result = map(numbers, (item) => item * 2); // OK: itemはnumber型として推論
+
+// 解決方法3: 明示的な型指定
+const result = map<number, number>(numbers, (item) => item * 2); // OK
+```
+
+---
+
+## コールバック関数エラー
+
+### "Property 'X' does not exist on type 'Y'"
+**原因**: コールバック関数内で存在しないプロパティにアクセスしようとしている
+
+**エラー例**:
+```typescript
+interface User {
+  id: number;
+  name: string;
+}
+
+function processUsers(users: User[], callback: (user: any) => void) {
+  users.forEach(callback);
+}
+
+processUsers(users, (user) => {
+  console.log(user.email); // Error: Property 'email' does not exist on type 'any'
+});
+```
+
+**解決方法**:
+```typescript
+// 解決方法1: 適切な型を指定
+function processUsers(users: User[], callback: (user: User) => void) {
+  users.forEach(callback);
+}
+
+processUsers(users, (user) => {
+  console.log(user.name); // OK
+  // console.log(user.email); // Error: Property 'email' does not exist on type 'User'
+});
+
+// 解決方法2: 型ガードを使用
+processUsers(users, (user) => {
+  if ('email' in user) {
+    console.log(user.email); // OK
+  }
+});
+
+// 解決方法3: インターフェースを拡張
+interface UserWithEmail extends User {
+  email?: string;
+}
+
+function processUsersWithEmail(
+  users: UserWithEmail[], 
+  callback: (user: UserWithEmail) => void
+) {
+  users.forEach(callback);
+}
+```
+
+### "Type 'void' is not assignable to type 'T'"
+**原因**: 戻り値を期待している高階関数に、戻り値のないコールバックを渡している
+
+**エラー例**:
+```typescript
+function transform<T, U>(array: T[], callback: (item: T) => U): U[] {
+  return array.map(callback);
+}
+
+const numbers = [1, 2, 3];
+const result = transform(numbers, (item) => {
+  console.log(item); // 戻り値なし（void）
+}); // Error: Type 'void' is not assignable to type 'unknown'
+```
+
+**解決方法**:
+```typescript
+// 解決方法1: 戻り値を明示的に返す
+const result = transform(numbers, (item) => {
+  console.log(item);
+  return item * 2; // 戻り値を追加
+});
+
+// 解決方法2: 副作用のみの処理には forEach を使用
+numbers.forEach((item) => {
+  console.log(item); // OK: forEachは戻り値を期待しない
+});
+
+// 解決方法3: 戻り値の型を明示
+const result = transform(numbers, (item): number => {
+  console.log(item);
+  return item * 2;
+});
+```
+
+---
+
+## クロージャ関連問題
+
+### メモリリークの問題
+**原因**: クロージャが不要な参照を保持し続けている
+
+**問題のあるコード**:
+```typescript
+function createEventHandler() {
+  const largeData = new Array(1000000).fill('data'); // 大きなデータ
+  
+  return function(event: Event) {
+    // largeDataを使用していないが、クロージャで参照が保持される
+    console.log('Event handled');
+  };
+}
+
+// 多数のイベントハンドラーを作成すると、largeDataがメモリに残り続ける
+const handlers = Array.from({ length: 100 }, () => createEventHandler());
+```
+
+**解決方法**:
+```typescript
+// 解決方法1: 必要な部分のみを抽出
+function createEventHandler() {
+  const largeData = new Array(1000000).fill('data');
+  const necessaryData = largeData.slice(0, 10); // 必要な部分のみ
+  
+  return function(event: Event) {
+    console.log('Event handled with', necessaryData.length);
+  };
+}
+
+// 解決方法2: WeakMapを使用
+const handlerData = new WeakMap();
+
+function createEventHandler() {
+  const handler = function(event: Event) {
+    const data = handlerData.get(handler);
+    console.log('Event handled');
+  };
+  
+  handlerData.set(handler, { /* 必要なデータ */ });
+  return handler;
+}
+
+// 解決方法3: 明示的なクリーンアップ
+function createEventHandler() {
+  let largeData: any[] | null = new Array(1000000).fill('data');
+  
+  const handler = function(event: Event) {
+    console.log('Event handled');
+  };
+  
+  // クリーンアップ関数を提供
+  handler.cleanup = () => {
+    largeData = null;
+  };
+  
+  return handler;
+}
+```
+
+### "Cannot read property 'X' of undefined"
+**原因**: クロージャ内で外部変数が予期しないタイミングで変更されている
+
+**エラー例**:
+```typescript
+function createCounters() {
+  const counters = [];
+  
+  for (var i = 0; i < 3; i++) {
+    counters.push(() => {
+      console.log(i); // すべて3を出力（期待値: 0, 1, 2）
+    });
+  }
+  
+  return counters;
+}
+
+const counters = createCounters();
+counters.forEach(counter => counter()); // 3, 3, 3
+```
+
+**解決方法**:
+```typescript
+// 解決方法1: letを使用
+function createCounters() {
+  const counters = [];
+  
+  for (let i = 0; i < 3; i++) { // varをletに変更
+    counters.push(() => {
+      console.log(i); // 0, 1, 2を正しく出力
+    });
+  }
+  
+  return counters;
+}
+
+// 解決方法2: IIFE（即座に実行される関数式）を使用
+function createCounters() {
+  const counters = [];
+  
+  for (var i = 0; i < 3; i++) {
+    counters.push(((index) => {
+      return () => {
+        console.log(index);
+      };
+    })(i));
+  }
+  
+  return counters;
+}
+
+// 解決方法3: bindを使用
+function createCounters() {
+  const counters = [];
+  
+  for (var i = 0; i < 3; i++) {
+    counters.push(function(index) {
+      console.log(index);
+    }.bind(null, i));
+  }
+  
+  return counters;
+}
+```
+
+### 型推論の問題
+**原因**: クロージャ内での型推論が期待通りに動作しない
+
+**エラー例**:
+```typescript
+function createProcessor<T>(initialValue: T) {
+  let value = initialValue;
+  
+  return {
+    process: (fn) => { // Error: Parameter 'fn' implicitly has an 'any' type
+      value = fn(value);
+      return value;
+    },
+    getValue: () => value
+  };
+}
+```
+
+**解決方法**:
+```typescript
+// 解決方法1: 明示的な型注釈
+function createProcessor<T>(initialValue: T) {
+  let value = initialValue;
+  
+  return {
+    process: (fn: (val: T) => T) => {
+      value = fn(value);
+      return value;
+    },
+    getValue: () => value
+  };
+}
+
+// 解決方法2: インターフェースを定義
+interface Processor<T> {
+  process: (fn: (val: T) => T) => T;
+  getValue: () => T;
+}
+
+function createProcessor<T>(initialValue: T): Processor<T> {
+  let value = initialValue;
+  
+  return {
+    process: (fn) => {
+      value = fn(value);
+      return value;
+    },
+    getValue: () => value
+  };
+}
+
+// 解決方法3: 型アサーションを使用（推奨されない）
+function createProcessor<T>(initialValue: T) {
+  let value = initialValue;
+  
+  return {
+    process: (fn: any) => {
+      value = fn(value);
+      return value;
+    },
+    getValue: () => value
+  } as {
+    process: (fn: (val: T) => T) => T;
+    getValue: () => T;
+  };
+}
+```
+
+---
+
 
 ---
 

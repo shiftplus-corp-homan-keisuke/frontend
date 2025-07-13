@@ -56,176 +56,212 @@
 
 #### 🎯 高階関数とは何か？
 
-**💡 高階関数の定義**
+**💡 まず最初に理解すべきこと**
 
-高階関数（Higher-Order Function）とは、以下のいずれか（または両方）の特徴を持つ関数です：
+高階関数という名前は難しそうですが、実は普段使っている配列の`map`や`filter`も高階関数です。つまりすでに高階関数を使っています！
 
-###### 事前知識 :
+**🍎 身近な例で理解しよう**
 
-javascriptの関数は変数に関数式を代入することが出来ます
-
-```js
-// logという変数に関数を代入
-const log = function(message){
-    console.log(message);
-}
-// アロー関数の例
-const log = (message) => {
-    console.log(message);
-}
-```
-
-このようにして変数に代入された関数は通常の関数と同じように`()` をつけて呼び出すことが出来ます。
-
-```js
-log('hello');
-```
-
-通常関数の引数には変数に代入することが可能なオブジェクト(string, number, Array, Objectなど)を指定することが可能なので、引数に関数を指定することが出来ます。
-
-#### 1. パターン 1：関数を引数として受け取る高階関数
-
-**🏭 工場の例で理解しよう**
-
-![パターン1: 関数を引数として受け取る](./images/higher-order-function-pattern1.svg)
-
-```
-🏭 executeOperation工場の仕組み
-
-材料: 5 (数値)
-道具: double関数 (x => x * 2)
-
-工場での作業:
-1. 材料「5」を受け取る
-2. 道具「double関数」を受け取る
-3. 道具を使って材料を加工: double(5)
-4. 完成品「10」を出荷
-
-🔄 同じ工場で違う道具を使うと...
-材料: 5, 道具: square関数 → 完成品: 25
-材料: 5, 道具: addTen関数 → 完成品: 15
-```
-
-**🔍 最もシンプルな例**
+まず、問題から始めましょう：
 
 ```typescript
-// 高階関数の定義
-function executeOperation(
-  value: number,
-  operation: (x: number) => number // ← 関数を引数として受け取る
+// 毎回同じような処理を書いている...
+function processNumber1(x: number): number {
+  console.log(`数字${x}を処理中...`);
+  return x * 2;
+}
+
+function processNumber2(x: number): number {
+  console.log(`数字${x}を処理中...`);
+  return x + 10;
+}
+
+function processNumber3(x: number): number {
+  console.log(`数字${x}を処理中...`);
+  return x * x;
+}
+
+// 処理の種類が増えるたびに同じようなコードを書く...😅
+```
+
+**🔧 高階関数の登場**
+
+高階関数とは、簡単に言うと「**関数を受け取る関数**」または「**関数を返す関数**」のことです。
+
+```typescript
+// 高階関数：関数を受け取って数字を処理する
+function processNumber(x: number, operation: (num: number) => number): number {
+  console.log(`数字${x}を処理中...`);
+  return operation(x);
+}
+
+// 使い方
+console.log(processNumber(5, (x) => x * 2)); // 10
+console.log(processNumber(5, (x) => x + 10)); // 15
+console.log(processNumber(5, (x) => x * x)); // 25
+```
+
+**💡 何が便利なの？**
+
+1 つの高階関数で、無限に違う処理を実現できます！
+
+```typescript
+// 色々な処理を作る
+const double = (x: number) => x * 2;
+const addTen = (x: number) => x + 10;
+const square = (x: number) => x * x;
+
+// 同じ枠組みで色々な処理
+console.log(processNumber(5, double)); // 10
+console.log(processNumber(5, addTen)); // 15
+console.log(processNumber(5, square)); // 25
+
+// 配列にも使える
+const numbers = [1, 2, 3, 4, 5];
+console.log(numbers.map(double)); // [2, 4, 6, 8, 10]
+console.log(numbers.map(addTen)); // [11, 12, 13, 14, 15]
+console.log(numbers.map(square)); // [1, 4, 9, 16, 25]
+```
+
+#### 1. パターン 1：関数を引数として受け取る高階関数（詳細解説）
+
+**🎯 上の例をもう少し詳しく**
+
+さっき使った`processNumber`を詳しく見てみましょう：
+
+```typescript
+// この関数は「関数を引数として受け取る」高階関数
+function processNumber(
+  number: number,
+  operation: (x: number) => number // ← ここで関数を受け取る
 ): number {
-  return operation(value);
+  console.log(`数字${number}を処理中...`);
+  return operation(number); // ← 受け取った関数を実行
 }
 
-// 使用する関数たち
-const double = (x: number): number => x * 2;
-const square = (x: number): number => x * x;
-const addTen = (x: number): number => x + 10;
+// 色々な処理方法を定義
+const addFive = (x: number) => x + 5;
+const square = (x: number) => x * x;
+const negate = (x: number) => -x;
 
-// 高階関数の使用
-console.log(executeOperation(5, double)); // 10
-console.log(executeOperation(5, square)); // 25
-console.log(executeOperation(5, addTen)); // 15
+// 同じ高階関数で色々な処理を実行
+console.log(processNumber(10, addFive)); // 15
+console.log(processNumber(10, square)); // 100
+console.log(processNumber(10, negate)); // -10
 ```
 
-**💡 なぜこれが便利なのか？**
+**🍕 レストランの例で理解しよう**
 
-同じ「何かに処理を適用する」という枠組みを、異なる処理内容で再利用できます：
+レストランで異なる調理方法を指定する例を見てみましょう：
 
 ```typescript
-// 文字列版の高階関数
-function processStringWithLog(text: string, processor: (s: string) => string): string {
-  console.log(text);
-  return processor(text);
+// レストランの高階関数
+function cookFood(
+  ingredient: string,
+  cookingMethod: (food: string) => string
+): string {
+  console.log(`${ingredient}を調理します`);
+  return cookingMethod(ingredient);
 }
 
-// 様々な文字列処理
-const toUpperCase = (s: string): string => s.toUpperCase();
-const addExclamation = (s: string): string => s + "!";
-const reverse = (s: string): string => s.split("").reverse().join("");
+// 色々な調理方法
+const grill = (food: string) => `${food}をグリルで焼きました`;
+const steam = (food: string) => `${food}を蒸しました`;
+const fry = (food: string) => `${food}を揚げました`;
 
-console.log(processString("hello", toUpperCase)); // "HELLO"
-console.log(processString("hello", addExclamation)); // "hello!"
-console.log(processString("hello", reverse)); // "olleh"
+// 使い方
+console.log(cookFood("チキン", grill)); // "チキンをグリルで焼きました"
+console.log(cookFood("野菜", steam)); // "野菜を蒸しました"
+console.log(cookFood("エビ", fry)); // "エビを揚げました"
+```
+
+**🔢 配列でも使える**
+
+```typescript
+// 配列を処理する高階関数
+function processArray(
+  numbers: number[],
+  processor: (x: number) => number
+): number[] {
+  const result: number[] = [];
+  for (const num of numbers) {
+    result.push(processor(num));
+  }
+  return result;
+}
+
+// 使い方
+const numbers = [1, 2, 3, 4, 5];
+console.log(processArray(numbers, (x) => x * 2)); // [2, 4, 6, 8, 10]
+console.log(processArray(numbers, (x) => x + 5)); // [6, 7, 8, 9, 10]
+console.log(processArray(numbers, (x) => x * x)); // [1, 4, 9, 16, 25]
 ```
 
 #### 2. パターン 2：関数を戻り値として返す高階関数
 
-**🏭 専用道具工場の例で理解しよう**
+**🏭 関数を作る工場**
 
-![パターン2: 関数を戻り値として返す](./images/higher-order-function-pattern2.svg)
-
-```
-🏭 createMultiplier工場の仕組み
-
-注文書: 「2倍にする道具が欲しい」
-
-工場での作業:
-1. 注文書を受け取る: factor = 2
-2. 設計図を作成: (x) => x * 2
-3. 専用道具を製造して出荷
-
-👨‍🔧 お客さんの使い方:
-const double = createMultiplier(2)  ← 「2倍道具」を注文
-double(5) → 10  ← その道具で5を加工
-double(3) → 6   ← 同じ道具で3を加工
-
-🔄 別の注文もできる:
-const triple = createMultiplier(3)  ← 「3倍道具」を注文
-triple(4) → 12  ← その道具で4を加工
-```
-
-**🔍 関数ファクトリーの例**
+今度は「関数を返す」高階関数を見てみましょう：
 
 ```typescript
-// 高階関数：設定に基づいて関数を生成する
+// 高階関数：倍数を作る工場
 function createMultiplier(factor: number): (x: number) => number {
-  return (x: number): number => x * factor; // ← 関数を返す
+  return (x: number) => x * factor; // ← 関数を返す
 }
 
-// 特定の倍数を計算する関数を生成
+// 色々な倍数の関数を作る
 const double = createMultiplier(2);
 const triple = createMultiplier(3);
 const tenTimes = createMultiplier(10);
 
-// 生成された関数を使用
+// 作った関数を使う
 console.log(double(5)); // 10
 console.log(triple(4)); // 12
 console.log(tenTimes(3)); // 30
+
+// 配列にも使える
+const numbers = [1, 2, 3, 4, 5];
+console.log(numbers.map(double)); // [2, 4, 6, 8, 10]
+console.log(numbers.map(triple)); // [3, 6, 9, 12, 15]
 ```
 
-**💡 実用的な例：バリデーション関数の生成**
+**💡 何が便利なの？**
+
+似たような関数をいちいち作らなくて良くなります！
 
 ```typescript
-// バリデーション関数を生成する高階関数
-function createValidator(
-  condition: (value: number) => boolean,
-  errorMessage: string
-): (value: number) => { isValid: boolean; error?: string } {
-  return (value: number) => {
-    const isValid = condition(value);
-    return isValid
-      ? { isValid: true }
-      : { isValid: false, error: errorMessage };
-  };
+// 従来の方法（面倒）
+function double(x: number): number {
+  return x * 2;
+}
+function triple(x: number): number {
+  return x * 3;
+}
+function quadruple(x: number): number {
+  return x * 4;
 }
 
-// 様々なバリデーターを生成
-const isPositive = createValidator(
-  (x: number) => x > 0,
-  "値は正の数である必要があります"
-);
+// 高階関数を使った方法（簡単）
+const double = createMultiplier(2);
+const triple = createMultiplier(3);
+const quadruple = createMultiplier(4);
+```
 
-const isEven = createValidator(
-  (x: number) => x % 2 === 0,
-  "値は偶数である必要があります"
-);
+**🔍 文字列の例**
 
-// 使用例
-console.log(isPositive(5)); // { isValid: true }
-console.log(isPositive(-1)); // { isValid: false, error: "値は正の数である必要があります" }
-console.log(isEven(4)); // { isValid: true }
-console.log(isEven(3)); // { isValid: false, error: "値は偶数である必要があります" }
+```typescript
+// 挨拶を作る工場
+function createGreeting(greeting: string): (name: string) => string {
+  return (name: string) => `${greeting}、${name}さん！`;
+}
+
+// 色々な挨拶の道具を作る
+const sayHello = createGreeting("こんにちは");
+const sayGoodMorning = createGreeting("おはよう");
+
+// 使い方
+console.log(sayHello("田中")); // "こんにちは、田中さん！"
+console.log(sayGoodMorning("佐藤")); // "おはよう、佐藤さん！"
 ```
 
 #### 🎯 高階関数の重要なポイント
@@ -241,776 +277,569 @@ console.log(isEven(3)); // { isValid: false, error: "値は偶数である必要
 
 > 📚 **関連資料**: [実践コード例 - 配列メソッドの活用](./Step05_補足_実践コード例.md#配列メソッドの活用)
 
-#### 🎯 なぜ map、filter が高階関数なのか？
+#### 🎯 実は知ってる！普段使う高階関数
 
-![map と filter の仕組み](./images/map-filter-explanation.svg)
+**💡 重要な発見**
 
-**💡 重要な理解ポイント**
-
-`map`と`filter`は、**関数を引数として受け取る**ため高階関数です。これらは配列の各要素に対して、私たちが指定した処理を適用してくれます。
-
-#### 1. map - データ変換の高階関数
-
-**📊 map の仕組み**
-
-```
-map の動作原理：
-
-元の配列: [1, 2, 3]
-     ↓
-map(変換関数) ← ここで関数を引数として受け取る
-     ↓
-新しい配列: [変換後1, 変換後2, 変換後3]
-```
-
-**🔍 基本的な使用例**
+あなたがよく使う`map`と`filter`は、実は高階関数です！
 
 ```typescript
-// 数値を2倍にする変換
 const numbers = [1, 2, 3, 4, 5];
 
-// map は変換関数を引数として受け取る高階関数
-const doubled = numbers.map((x: number) => x * 2);
+// mapは関数を受け取る高階関数
+const doubled = numbers.map((x) => x * 2);
 console.log(doubled); // [2, 4, 6, 8, 10]
 
-// 異なる変換関数を使用
-const squared = numbers.map((x: number) => x * x);
-console.log(squared); // [1, 4, 9, 16, 25]
-
-const withMessage = numbers.map((x: number) => `数値: ${x}`);
-console.log(withMessage); // ["数値: 1", "数値: 2", "数値: 3", "数値: 4", "数値: 5"]
+// filterも関数を受け取る高階関数
+const evens = numbers.filter((x) => x % 2 === 0);
+console.log(evens); // [2, 4]
 ```
 
-**💡 なぜこれが高階関数なのか？**
+#### 1. map - 全部を変換する
+
+**🎯 map の仕組み**
+
+map は配列の**全部の要素**を、**同じ方法**で変換します。
 
 ```typescript
-// mapの内部的な動作（簡略版）
-function myMapNumbers(
-  array: number[],
-  transformFunction: (item: number) => number // ← 関数を引数として受け取る
-): number[] {
+// 基本的な使い方
+const numbers = [1, 2, 3, 4, 5];
+
+// 全部を2倍に
+const doubled = numbers.map((num) => num * 2);
+console.log(doubled); // [2, 4, 6, 8, 10]
+
+// 全部に10を足す
+const addTen = numbers.map((num) => num + 10);
+console.log(addTen); // [11, 12, 13, 14, 15]
+
+// 全部を文字列に
+const strings = numbers.map((num) => `数字: ${num}`);
+console.log(strings); // ["数字: 1", "数字: 2", "数字: 3", "数字: 4", "数字: 5"]
+```
+
+**💡 なぜ高階関数なの？**
+
+map の中身を自分で作ると、こんな感じになります：
+
+```typescript
+// mapの中身（簡単版）
+function myMap(array: number[], transform: (x: number) => number): number[] {
   const result: number[] = [];
   for (const item of array) {
-    result.push(transformFunction(item)); // ← 受け取った関数を使用
+    result.push(transform(item)); // ← 関数を使う
   }
   return result;
 }
 
-// 使用例
+// 使い方
 const numbers = [1, 2, 3];
-const doubled = myMapNumbers(numbers, (x: number) => x * 2);
+const doubled = myMap(numbers, (x) => x * 2);
 console.log(doubled); // [2, 4, 6]
 ```
 
-**🎯 実用的な例：オブジェクトの変換**
+**🔍 実用的な例**
 
 ```typescript
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-}
-
-interface ProductDisplay {
-  id: number;
-  displayName: string;
-  formattedPrice: string;
-}
-
-const products: Product[] = [
-  { id: 1, name: "ノートPC", price: 80000 },
-  { id: 2, name: "マウス", price: 2000 },
-  { id: 3, name: "キーボード", price: 5000 },
+// 商品データ
+const products = [
+  { name: "りんご", price: 100 },
+  { name: "バナナ", price: 80 },
+  { name: "みかん", price: 120 },
 ];
 
-// map で Product を ProductDisplay に変換
-const productDisplays: ProductDisplay[] = products.map((product: Product) => ({
-  id: product.id,
-  displayName: `商品: ${product.name}`,
-  formattedPrice: `¥${product.price.toLocaleString()}`,
-}));
+// 値段だけを取り出す
+const prices = products.map((product) => product.price);
+console.log(prices); // [100, 80, 120]
 
-console.log(productDisplays);
-// [
-//   { id: 1, displayName: "商品: ノートPC", formattedPrice: "¥80,000" },
-//   { id: 2, displayName: "商品: マウス", formattedPrice: "¥2,000" },
-//   { id: 3, displayName: "商品: キーボード", formattedPrice: "¥5,000" }
-// ]
+// 表示用のテキストを作る
+const displayTexts = products.map(
+  (product) => `${product.name}: ${product.price}円`
+);
+console.log(displayTexts); // ["りんご: 100円", "バナナ: 80円", "みかん: 120円"]
 ```
 
-#### 2. filter - データフィルタリングの高階関数
+#### 2. filter - 条件に合うものだけを残す
 
-**📊 filter の仕組み**
+**🎯 filter の仕組み**
 
-```
-filter の動作原理：
-
-元の配列: [1, 2, 3, 4, 5]
-     ↓
-filter(条件関数) ← ここで関数を引数として受け取る
-     ↓
-条件を満たす要素のみ: [2, 4] (偶数の場合)
-```
-
-**🔍 基本的な使用例**
+filter は配列から**条件に合うもの**だけを取り出します。
 
 ```typescript
+// 基本的な使い方
 const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-// filter は条件判定関数を引数として受け取る高階関数
-const evenNumbers = numbers.filter((x: number) => x % 2 === 0);
-console.log(evenNumbers); // [2, 4, 6, 8, 10]
+// 偶数だけを取り出す
+const evens = numbers.filter((num) => num % 2 === 0);
+console.log(evens); // [2, 4, 6, 8, 10]
 
-// 異なる条件関数を使用
-const greaterThanFive = numbers.filter((x: number) => x > 5);
-console.log(greaterThanFive); // [6, 7, 8, 9, 10]
+// 5より大きい数だけを取り出す
+const large = numbers.filter((num) => num > 5);
+console.log(large); // [6, 7, 8, 9, 10]
 
-const singleDigit = numbers.filter((x: number) => x < 10);
+// 1桁の数だけを取り出す
+const singleDigit = numbers.filter((num) => num < 10);
 console.log(singleDigit); // [1, 2, 3, 4, 5, 6, 7, 8, 9]
 ```
 
-**💡 なぜこれが高階関数なのか？**
+**💡 なぜ高階関数なの？**
+
+filter の中身を自分で作ると、こんな感じになります：
 
 ```typescript
-// filterの内部的な動作（簡略版）
-function myFilterNumbers(
+// filterの中身（簡単版）
+function myFilter(
   array: number[],
-  conditionFunction: (item: number) => boolean // ← 関数を引数として受け取る
+  condition: (x: number) => boolean
 ): number[] {
   const result: number[] = [];
   for (const item of array) {
-    if (conditionFunction(item)) {
-      // ← 受け取った関数を使用
+    if (condition(item)) { // ← 関数を使う
       result.push(item);
     }
   }
   return result;
 }
 
-// 使用例
+// 使い方
 const numbers = [1, 2, 3, 4, 5];
-const evenNumbers = myFilterNumbers(numbers, (x: number) => x % 2 === 0);
-console.log(evenNumbers); // [2, 4]
+const evens = myFilter(numbers, (x) => x % 2 === 0);
+console.log(evens); // [2, 4]
 ```
 
-**🎯 実用的な例：ユーザーデータのフィルタリング**
+**🔍 実用的な例**
 
 ```typescript
-interface User {
-  id: number;
-  name: string;
-  age: number;
-  isActive: boolean;
-}
-
-const users: User[] = [
-  { id: 1, name: "Alice", age: 25, isActive: true },
-  { id: 2, name: "Bob", age: 17, isActive: false },
-  { id: 3, name: "Charlie", age: 30, isActive: true },
-  { id: 4, name: "Diana", age: 16, isActive: true },
+// ユーザーデータ
+const users = [
+  { name: "太郎", age: 25, active: true },
+  { name: "花子", age: 17, active: false },
+  { name: "次郎", age: 30, active: true },
+  { name: "美咲", age: 16, active: true },
 ];
 
-// アクティブな成人ユーザーのみを抽出
-const activeAdults = users.filter((user: User) => {
-  return user.isActive && user.age >= 18;
-});
+// 大人のユーザーだけを取り出す
+const adults = users.filter((user) => user.age >= 18);
+console.log(adults); // 太郎と次郎
 
-console.log(activeAdults);
-// [
-//   { id: 1, name: "Alice", age: 25, isActive: true },
-//   { id: 3, name: "Charlie", age: 30, isActive: true }
-// ]
+// アクティブなユーザーだけを取り出す
+const activeUsers = users.filter((user) => user.active);
+console.log(activeUsers); // 太郎、次郎、美咲
 
-// 条件関数を別途定義することも可能
-const isActiveAdult = (user: User): boolean => {
-  return user.isActive && user.age >= 18;
-};
-
-const activeAdults2 = users.filter(isActiveAdult);
-console.log(activeAdults2); // 同じ結果
+// アクティブな大人だけを取り出す
+const activeAdults = users.filter((user) => user.active && user.age >= 18);
+console.log(activeAdults); // 太郎と次郎
 ```
 
-#### 3. map と filter の組み合わせ
+#### 3. map と filter を組み合わせる
 
-**🎯 実践的な例：データ処理のパイプライン**
+**🎯 2 つの高階関数を連続で使う**
+
+実際の開発では、filter と map を組み合わせることがよくあります。
 
 ```typescript
-interface Sale {
-  id: number;
-  productName: string;
-  amount: number;
-  category: string;
-}
-
-const sales: Sale[] = [
-  { id: 1, productName: "ノートPC", amount: 80000, category: "電子機器" },
-  { id: 2, productName: "マウス", amount: 2000, category: "電子機器" },
-  { id: 3, productName: "本", amount: 1500, category: "書籍" },
-  { id: 4, productName: "ペン", amount: 300, category: "文房具" },
+// 商品データ
+const products = [
+  { name: "りんご", price: 100, inStock: true },
+  { name: "バナナ", price: 80, inStock: false },
+  { name: "みかん", price: 120, inStock: true },
+  { name: "ぶどう", price: 200, inStock: true },
+  { name: "キウイ", price: 150, inStock: false },
 ];
 
-// 1. 1000円以上の売上のみを抽出（filter）
-// 2. 表示用フォーマットに変換（map）
-const processedSales = sales
-  .filter((sale: Sale) => sale.amount >= 1000) // 高階関数1
-  .map((sale: Sale) => ({
-    // 高階関数2
-    id: sale.id,
-    displayName: `${sale.category}: ${sale.productName}`,
-    formattedAmount: `¥${sale.amount.toLocaleString()}`,
-  }));
+// 1. 在庫があるもの（filter）
+// 2. 表示用のテキストに変換（map）
+const availableProducts = products
+  .filter((product) => product.inStock) // 在庫があるもの
+  .map((product) => `${product.name}: ${product.price}円`); // 表示用テキスト
 
-console.log(processedSales);
+console.log(availableProducts);
+// ["りんご: 100円", "みかん: 120円", "ぶどう: 200円"]
+```
+
+**💡 処理の流れ**
+
+```typescript
+// 元のデータ: 5つの商品
+//     ↓
+// filter(在庫があるもの): 3つの商品
+//     ↓
+// map(表示用テキスト): 3つの文字列
+```
+
+**🔍 もう少し複雑な例**
+
+```typescript
+// 学生の成績データ
+const students = [
+  { name: "太郎", score: 85, subject: "数学" },
+  { name: "花子", score: 92, subject: "英語" },
+  { name: "次郎", score: 78, subject: "数学" },
+  { name: "美咲", score: 95, subject: "英語" },
+  { name: "健太", score: 65, subject: "数学" },
+];
+
+// 1. 80点以上の学生だけ（filter）
+// 2. 表彰用のメッセージに変換（map）
+const excellentStudents = students
+  .filter((student) => student.score >= 80)
+  .map(
+    (student) =>
+      `${student.name}さん（${student.subject}・${student.score}点）おめでとう！`
+  );
+
+console.log(excellentStudents);
 // [
-//   { id: 1, displayName: "電子機器: ノートPC", formattedAmount: "¥80,000" },
-//   { id: 2, displayName: "電子機器: マウス", formattedAmount: "¥2,000" },
-//   { id: 3, displayName: "書籍: 本", formattedAmount: "¥1,500" }
+//   "太郎さん（数学・85点）おめでとう！",
+//   "花子さん（英語・92点）おめでとう！",
+//   "美咲さん（英語・95点）おめでとう！"
 // ]
-```
-
-**📊 処理の流れ**
-
-```
-元データ: [4つの売上データ]
-    ↓
-filter(amount >= 1000) ← 高階関数（条件関数を受け取る）
-    ↓
-[3つの売上データ] (300円のペンが除外)
-    ↓
-map(変換関数) ← 高階関数（変換関数を受け取る）
-    ↓
-[3つの表示用データ]
 ```
 
 ---
 
-### Section 3: コールバック関数 - 高階関数の実践的活用
+### Section 3: コールバック関数 - 「後で呼び出してもらう」関数
 
 > 📚 **関連資料**: [実践コード例 - コールバック関数の実践](./Step05_補足_実践コード例.md#コールバック関数の実践)
 
 #### 🎯 コールバック関数とは？
 
-**💡 コールバック関数の定義**
+**💡 簡単に言うと**
 
-コールバック関数とは、**他の関数に引数として渡される関数**のことです。「後で呼び出してもらう（call back）」ための関数という意味です。
+コールバック関数は「**後で呼び出してもらう関数**」のことです。
 
+**🏪 レストランの例**
+
+```typescript
+// レストランで注文する
+function orderFood(food: string, whenReady: (food: string) => void): void {
+  console.log(`${food}を調理中...`);
+
+  // 料理ができたら、whenReady関数を呼び出す
+  setTimeout(() => {
+    whenReady(food);
+  }, 1000);
+}
+
+// 使い方
+orderFood("ハンバーガー", (food: string) => {
+  console.log(`${food}ができました！いただきます！`);
+});
+
+// 出力:
+// ハンバーガーを調理中...
+// （1秒後）
+// ハンバーガーができました！いただきます！
 ```
-📊 コールバック関数の仕組み
 
-メイン関数: 何かの処理を実行
-     ↓
-処理完了時: コールバック関数を呼び出し
-     ↓
-コールバック関数: 指定された後処理を実行
-```
+Angularのプロジェクトで確認してみましょ🐰
+https://codesandbox.io/p/devbox/3p7jjh
 
 #### 1. 基本的なコールバック関数
 
 **🔍 シンプルな例**
 
 ```typescript
-// 時間のかかる処理をシミュレートする関数
-function processData(
-  data: number[],
-  onComplete: (result: number) => void // ← コールバック関数
-): void {
-  console.log("データ処理を開始...");
+// 何かの処理をして、終わったら知らせる関数
+function doSomething(task: string, onFinished: (result: string) => void): void {
+  console.log(`${task}を開始します`);
 
-  // 処理をシミュレート
-  let sum = 0;
-  for (const num of data) {
-    sum += num;
-  }
+  // 何かの処理（ここでは簡単な文字列作成）
+  const result = `${task}が完了しました`;
 
-  console.log("データ処理が完了しました");
-
-  // 処理完了後にコールバック関数を呼び出し
-  onComplete(sum);
+  // 処理が終わったのでコールバック関数を呼び出す
+  onFinished(result);
 }
 
-// 使用例
-const numbers = [1, 2, 3, 4, 5];
-
-processData(numbers, (result: number) => {
-  console.log(`計算結果: ${result}`);
-  console.log("結果をデータベースに保存しました");
+// 使い方
+doSomething("データの保存", (result: string) => {
+  console.log(result);
+  console.log("次の処理に進みます");
 });
 
 // 出力:
-// データ処理を開始...
-// データ処理が完了しました
-// 計算結果: 15
-// 結果をデータベースに保存しました
+// データの保存を開始します
+// データの保存が完了しました
+// 次の処理に進みます
 ```
 
-**💡 なぜコールバック関数が便利なのか？**
+**💡 なぜ便利なの？**
 
-同じ処理の枠組みで、完了後の動作を自由にカスタマイズできます：
+同じ処理で、終わった後の動作を自由に変えられます：
 
 ```typescript
-// 同じprocessData関数を異なるコールバックで使用
-processData(numbers, (result: number) => {
-  console.log(`合計は ${result} です`);
+// 同じ処理で異なる後処理
+doSomething("ファイルの読み込み", (result: string) => {
+  console.log("成功:", result);
 });
 
-processData(numbers, (result: number) => {
-  if (result > 10) {
-    console.log("大きな値です！");
-  } else {
-    console.log("小さな値です");
-  }
-});
-
-processData(numbers, (result: number) => {
-  const average = result / numbers.length;
-  console.log(`平均値: ${average}`);
+doSomething("ファイルの読み込み", (result: string) => {
+  console.log("処理完了！");
+  console.log("メールで通知します");
 });
 ```
 
-#### 2. エラーハンドリング付きコールバック
+#### 2. 成功とエラーの両方を扱う
 
-**🎯 実用的なパターン**
+**🔍 実用的なパターン**
 
 ```typescript
-// 成功とエラーの両方を処理するコールバック
-function fetchUserData(
-  userId: number,
-  onSuccess: (user: { id: number; name: string; email: string }) => void,
+// 成功とエラーの両方を処理する関数
+function saveData(
+  data: string,
+  onSuccess: (message: string) => void,
   onError: (error: string) => void
 ): void {
-  console.log(`ユーザー ${userId} のデータを取得中...`);
+  console.log("データを保存中...");
 
-  // データ取得をシミュレート
-  if (userId > 0) {
-    // 成功の場合
-    const user = {
-      id: userId,
-      name: `User${userId}`,
-      email: `user${userId}@example.com`,
-    };
-    onSuccess(user);
+  // 成功か失敗かをランダムに決める（実際にはサーバーとの通信など）
+  const isSuccess = Math.random() > 0.5;
+
+  if (isSuccess) {
+    onSuccess("データの保存に成功しました");
   } else {
-    // エラーの場合
-    onError("無効なユーザーIDです");
+    onError("データの保存に失敗しました");
   }
 }
 
-// 使用例
-fetchUserData(
-  1,
-  (user) => {
-    console.log("ユーザー取得成功:");
-    console.log(`名前: ${user.name}`);
-    console.log(`メール: ${user.email}`);
+// 使い方
+saveData(
+  "ユーザー情報",
+  (message: string) => {
+    console.log("✅", message);
+    console.log("次の処理を続行します");
   },
-  (error) => {
-    console.error("エラーが発生しました:", error);
-  }
-);
-
-fetchUserData(
-  -1,
-  (user) => {
-    console.log("成功:", user);
-  },
-  (error) => {
-    console.error("失敗:", error); // これが実行される
+  (error: string) => {
+    console.log("❌", error);
+    console.log("エラーログを記録します");
   }
 );
 ```
 
-#### 3. 配列処理でのコールバック活用
+#### 3. 配列処理でのコールバック
 
-**🔍 カスタム配列処理関数**
-
-```typescript
-// 配列の各要素に対して処理を実行し、条件を満たす最初の要素を返す
-
-// 文字列配列用の関数
-function findFirstString(
-  items: string[],
-  condition: (item: string) => boolean // ← コールバック関数
-): string | undefined {
-  for (const item of items) {
-    if (condition(item)) {
-      return item;
-    }
-  }
-  return undefined;
-}
-
-// 数値配列用の関数
-function findFirstNumber(
-  items: number[],
-  condition: (item: number) => boolean // ← コールバック関数
-): number | undefined {
-  for (const item of items) {
-    if (condition(item)) {
-      return item;
-    }
-  }
-  return undefined;
-}
-
-// 使用例
-const fruits = ["りんご", "バナナ", "みかん", "ぶどう"];
-
-// 「ん」で終わる果物を探す
-const fruitEndingWithN = findFirstString(fruits, (fruit: string) => {
-  return fruit.endsWith("ん");
-});
-console.log(fruitEndingWithN); // "みかん"
-
-// 3文字の果物を探す
-const threeCharFruit = findFirstString(fruits, (fruit: string) => {
-  return fruit.length === 3;
-});
-console.log(threeCharFruit); // "りんご"
-
-// 数値配列での例
-const numbers = [1, 3, 5, 8, 9, 12];
-
-// 最初の偶数を探す
-const firstEven = findFirstNumber(numbers, (num: number) => num % 2 === 0);
-console.log(firstEven); // 8
-
-// 10以上の最初の数を探す
-const firstLarge = findFirstNumber(numbers, (num: number) => num >= 10);
-console.log(firstLarge); // 12
-```
-
-#### 4. イベント処理でのコールバック
-
-**🎯 シンプルなイベントシステム**
+**🔍 自分で作る配列処理**
 
 ```typescript
-// シンプルなイベントエミッター
-class SimpleEventEmitter {
-  private listeners: Array<(data: any) => void> = [];
-
-  // イベントリスナーを登録（コールバック関数を受け取る）
-  on(callback: (data: any) => void): void {
-    this.listeners.push(callback);
-  }
-
-  // イベントを発火（すべてのコールバック関数を実行）
-  emit(data: any): void {
-    this.listeners.forEach((callback) => callback(data));
+// 配列の各要素に対して何かをする関数
+function processEach(items: string[], processor: (item: string) => void): void {
+  for (const item of items) {
+    processor(item);
   }
 }
 
-// 使用例
-interface UserEvent {
-  userId: number;
-  action: string;
-  timestamp: Date;
-}
+// 使い方
+const fruits = ["りんご", "バナナ", "みかん"];
 
-const eventEmitter = new SimpleEventEmitter();
-
-// 複数のイベントリスナーを登録
-eventEmitter.on((event: UserEvent) => {
-  console.log(`ログ: ユーザー${event.userId}が${event.action}を実行`);
-});
-
-eventEmitter.on((event: UserEvent) => {
-  console.log(`通知: ${event.action}が完了しました`);
-});
-
-eventEmitter.on((event: UserEvent) => {
-  console.log(`時刻: ${event.timestamp.toLocaleString()}`);
-});
-
-// イベントを発火
-eventEmitter.emit({
-  userId: 123,
-  action: "ログイン",
-  timestamp: new Date(),
+processEach(fruits, (fruit: string) => {
+  console.log(`${fruit}が好きです`);
 });
 
 // 出力:
-// ログ: ユーザー123がログインを実行
-// 通知: ログインが完了しました
-// 時刻: 2024/1/1 10:00:00
+// りんごが好きです
+// バナナが好きです
+// みかんが好きです
 ```
 
-#### 🎯 コールバック関数の重要なポイント
+**💡 forEach と同じ仕組み**
 
-1. **柔軟性**: 処理完了後の動作を自由にカスタマイズできる
-2. **再利用性**: 同じ処理の枠組みを異なる後処理で使い回せる
-3. **非同期処理**: 時間のかかる処理の完了を待って次の処理を実行できる
-4. **イベント駆動**: ユーザーの操作やシステムイベントに応じた処理を実装できる
+実は、JavaScript の`forEach`も同じ仕組みです：
+
+```typescript
+// 自分で作った関数
+processEach(fruits, (fruit: string) => {
+  console.log(`${fruit}が好きです`);
+});
+
+// 標準のforEach（上と同じ）
+fruits.forEach((fruit: string) => {
+  console.log(`${fruit}が好きです`);
+});
+```
 
 ---
 
-### Section 4: カリー化 - 高階関数の応用例
+### Section 4: カリー化 - 関数を段階的に作る技法
 
 > 📚 **関連資料**: [専門用語集 - カリー化](./Step05_補足_専門用語集.md#カリー化currying) | [実践コード例 - カリー化の実践](./Step05_補足_実践コード例.md#カリー化の実践)
 
 #### 🎯 カリー化とは？
 
-**💡 カリー化の定義**
+**💡 簡単に言うと**
 
-カリー化（Currying）とは、**複数の引数を取る関数を、一つの引数を取る関数の連鎖に変換する技法**です。
+カリー化は「複数の引数を一度に渡す関数」を「引数を一つずつ渡す関数の連続」に変えることです。
 
-**🤔 なぜカリー化が必要なのか？**
+**🍰 ケーキ屋さんの例**
 
-日常生活で例えると、「コーヒーを作る」という作業を考えてみましょう：
+```typescript
+// 普通の方法：一度に全部注文
+function makeOrder(size: string, flavor: string, decoration: string): string {
+  return `${size}の${flavor}ケーキに${decoration}をつけます`;
+}
 
-```
-通常の方法: コーヒーを作る(豆の種類, 水の量, 砂糖の量) → コーヒー
+const order1 = makeOrder("大", "チョコ", "ろうそく");
+console.log(order1); // "大のチョコケーキにろうそくをつけます"
 
-カリー化した方法:
-1. 豆の種類を決める → 「その豆用のコーヒーメーカー」ができる
-2. 水の量を決める → 「その豆・その水量用のコーヒーメーカー」ができる
-3. 砂糖の量を決める → 最終的にコーヒーができる
-```
+// カリー化：段階的に注文
+function makeOrderCurried(size: string) {
+  return (flavor: string) => {
+    return (decoration: string) => {
+      return `${size}の${flavor}ケーキに${decoration}をつけます`;
+    };
+  };
+}
 
-このように、**段階的に設定を決めていく**ことで、途中で「特定の設定が決まった専用の道具」を作ることができます。
-
-**📊 カリー化の仕組み**
-
-```
-通常の関数: add(x, y, z) → 結果
-     ↓ カリー化
-カリー化された関数: add(x) → 関数 → add(x)(y) → 関数 → add(x)(y)(z) → 結果
-
-具体例:
-add(1, 2, 3) = 6  ← 一度に全部指定
-
-add(1)(2)(3) = 6  ← 段階的に指定
-  ↑     ↑    ↑
-  │     │    └─ 最終結果: 6
-  │     └─ 1と2が決まった関数
-  └─ 1が決まった関数
+const order2 = makeOrderCurried("大")("チョコ")("ろうそく");
+console.log(order2); // 同じ結果
 ```
 
-**💡 カリー化の 3 つの重要なポイント**
+#### 1. 基本的なカリー化
+
+**� 一番簡単な例**
+
+```typescript
+// 普通の足し算関数
+function add(a: number, b: number): number {
+  return a + b;
+}
+
+console.log(add(3, 5)); // 8
+
+// カリー化した足し算関数
+function addCurried(a: number): (b: number) => number {
+  return (b: number) => a + b;
+}
+
+console.log(addCurried(3)(5)); // 8
+
+// または、段階的に使う
+const addThree = addCurried(3); // 3を足す専用関数
+console.log(addThree(5)); // 8
+console.log(addThree(10)); // 13
+```
+
+**� 何が便利なの？**
+
+同じ設定の関数を何度も使えます：
+
+```typescript
+// 色々な数を足す関数を作る
+const addOne = addCurried(1);
+const addTen = addCurried(10);
+const addHundred = addCurried(100);
+
+console.log(addOne(5)); // 6
+console.log(addTen(5)); // 15
+console.log(addHundred(5)); // 105
+```
+
+#### 2. 実用的なカリー化
+
+**🔍 文字列処理**
+
+```typescript
+// 挨拶を作る関数
+function greet(greeting: string): (name: string) => string {
+  return (name: string) => `${greeting}、${name}さん！`;
+}
+
+// 色々な挨拶を作る
+const sayHello = greet("こんにちは");
+const sayGoodMorning = greet("おはようございます");
+const sayGoodEvening = greet("こんばんは");
+
+// 使い方
+console.log(sayHello("田中")); // "こんにちは、田中さん！"
+console.log(sayGoodMorning("佐藤")); // "おはようございます、佐藤さん！"
+console.log(sayGoodEvening("山田")); // "こんばんは、山田さん！"
+```
+
+**🔍 配列処理**
+
+```typescript
+// 配列の要素を変換する関数
+function transformArray(
+  transform: (x: number) => number
+): (arr: number[]) => number[] {
+  return (arr: number[]) => arr.map(transform);
+}
+
+// 色々な変換を作る
+const doubleArray = transformArray((x) => x * 2);
+const squareArray = transformArray((x) => x * x);
+const addTenArray = transformArray((x) => x + 10);
+
+// 使い方
+const numbers = [1, 2, 3, 4, 5];
+console.log(doubleArray(numbers)); // [2, 4, 6, 8, 10]
+console.log(squareArray(numbers)); // [1, 4, 9, 16, 25]
+console.log(addTenArray(numbers)); // [11, 12, 13, 14, 15]
+```
+
+#### 3. 3 つの引数のカリー化
+
+**🔍 計算機の例**
+
+```typescript
+// 3つの数を使って計算する関数
+function calculate(operation: string): (a: number) => (b: number) => number {
+  return (a: number) => (b: number) => {
+    if (operation === "add") {
+      return a + b;
+    } else if (operation === "multiply") {
+      return a * b;
+    } else {
+      return a - b;
+    }
+  };
+}
+
+// 計算の種類を決める
+const add = calculate("add");
+const multiply = calculate("multiply");
+const subtract = calculate("subtract");
+
+// 使い方
+console.log(add(5)(3)); // 8
+console.log(multiply(5)(3)); // 15
+console.log(subtract(5)(3)); // 2
+
+// または段階的に
+const addFive = add(5);
+console.log(addFive(3)); // 8
+console.log(addFive(7)); // 12
+```
+
+**� 実用的な例**
+
+```typescript
+// APIのURL作成
+function createUrl(
+  baseUrl: string
+): (endpoint: string) => (params: string) => string {
+  return (endpoint: string) => (params: string) => {
+    return `${baseUrl}/${endpoint}?${params}`;
+  };
+}
+
+// APIのベースを決める
+const createApiUrl = createUrl("https://api.example.com");
+
+// エンドポイントを決める
+const createUserUrl = createApiUrl("users");
+const createProductUrl = createApiUrl("products");
+
+// 使い方
+console.log(createUserUrl("id=123")); // "https://api.example.com/users?id=123"
+console.log(createProductUrl("name=商品")); // "https://api.example.com/products?name=商品"
+```
+
+#### 🎯 カリー化のポイント
 
 1. **段階的な設定**: 引数を一つずつ決めていける
-2. **部分適用**: 途中まで設定した「専用関数」を作れる
-3. **再利用性**: 同じ設定の関数を何度も使える
-
-#### 1. 基本的なカリー化の例
-
-**🔍 最もシンプルな例から始めよう**
-
-まず、2 つの数を足す関数から始めます：
-
-```typescript
-// 通常の関数：2つの引数を一度に受け取る
-function add(x: number, y: number): number {
-  return x + y;
-}
-
-// 使用例
-const result1 = add(3, 5); // 8
-```
-
-これをカリー化すると：
-
-```typescript
-// カリー化された関数：一つずつ引数を受け取る
-function curriedAdd(x: number): (y: number) => number {
-  return (y: number) => x + y;
-}
-
-// 使用例
-const addThree = curriedAdd(3); // 3を足す専用関数ができる
-const result2 = addThree(5); // 8
-
-// または一度に書くこともできる
-const result3 = curriedAdd(3)(5); // 8
-```
-
-**🤔 何が起こっているのか？**
-
-```
-curriedAdd(3) を実行すると...
-↓
-「3を足す専用の関数」が作られる
-↓
-その関数に5を渡すと、3 + 5 = 8 が計算される
-```
-
-**📊 3 つの引数の例**
-
-```typescript
-// 通常の関数：3つの引数を一度に受け取る
-function add3Numbers(x: number, y: number, z: number): number {
-  return x + y + z;
-}
-
-// 使用例
-const result1 = add3Numbers(1, 2, 3); // 6
-
-// カリー化された関数：一つずつ引数を受け取る
-function curriedAdd3(x: number): (y: number) => (z: number) => number {
-  return (y: number) => (z: number) => x + y + z;
-}
-
-// 段階的な使用例
-const step1 = curriedAdd3(1); // 1が決まった関数
-const step2 = step1(2); // 1と2が決まった関数
-const result2 = step2(3); // 最終結果: 6
-
-// 一度に書く場合
-const result3 = curriedAdd3(1)(2)(3); // 6
-```
-
-**📊 実行過程の詳細図解**
-
-```
-curriedAdd3(1)(2)(3) の実行過程：
-
-1. curriedAdd3(1) が呼び出される
-   ├─ x = 1 を記憶
-   └─ 「1 + y + z を計算する関数」を返す
-
-2. 返された関数に (2) を適用
-   ├─ x = 1, y = 2 を記憶
-   └─ 「1 + 2 + z を計算する関数」を返す
-
-3. 返された関数に (3) を適用
-   ├─ x = 1, y = 2, z = 3 で計算実行
-   └─ 1 + 2 + 3 = 6 を返す
-```
-
-**💡 カリー化の便利さ**
-
-```typescript
-// 「1を足す関数」を作って再利用
-const addOne = curriedAdd(1);
-console.log(addOne(5)); // 6
-console.log(addOne(10)); // 11
-console.log(addOne(20)); // 21
-
-// 「10を足す関数」を作って再利用
-const addTen = curriedAdd(10);
-console.log(addTen(5)); // 15
-console.log(addTen(3)); // 13
-```
-
-#### 2. カリー化の実用的な活用
-
-**🎯 部分適用による関数の再利用**
-
-```typescript
-// 乗算のカリー化
-const multiply = (x: number) => (y: number) => x * y;
-
-// 特定の倍数を計算する関数を生成
-const double = multiply(2);
-const triple = multiply(3);
-const tenTimes = multiply(10);
-
-// 使用例
-console.log(double(5)); // 10
-console.log(triple(4)); // 12
-console.log(tenTimes(3)); // 30
-
-// 配列に適用
-const numbers = [1, 2, 3, 4, 5];
-const doubled = numbers.map(double);
-console.log(doubled); // [2, 4, 6, 8, 10]
-```
-
-**🔍 文字列処理のカリー化**
-
-```typescript
-// 文字列フォーマットのカリー化
-const formatMessage = (prefix: string) => (message: string) =>
-  `${prefix}: ${message}`;
-
-// 特定のプレフィックス用の関数を生成
-const logInfo = formatMessage("INFO");
-const logError = formatMessage("ERROR");
-const logWarning = formatMessage("WARNING");
-
-// 使用例
-console.log(logInfo("アプリケーションが開始されました")); // "INFO: アプリケーションが開始されました"
-console.log(logError("データベース接続に失敗しました")); // "ERROR: データベース接続に失敗しました"
-console.log(logWarning("メモリ使用量が高くなっています")); // "WARNING: メモリ使用量が高くなっています"
-```
-
-#### 3. より実用的なカリー化の例
-
-**🎯 バリデーション関数のカリー化**
-
-```typescript
-// バリデーション関数のカリー化
-const createValidator =
-  (condition: (value: number) => boolean) =>
-  (errorMessage: string) =>
-  (value: number) => {
-    const isValid = condition(value);
-    return isValid
-      ? { isValid: true, value }
-      : { isValid: false, error: errorMessage };
-  };
-
-// 条件関数を定義
-const isPositive = (x: number) => x > 0;
-const isEven = (x: number) => x % 2 === 0;
-const isInRange = (min: number, max: number) => (x: number) =>
-  x >= min && x <= max;
-
-// バリデーターを生成
-const positiveValidator =
-  createValidator(isPositive)("値は正の数である必要があります");
-const evenValidator = createValidator(isEven)("値は偶数である必要があります");
-const rangeValidator = createValidator(isInRange(1, 100))(
-  "値は1から100の間である必要があります"
-);
-
-// 使用例
-console.log(positiveValidator(5)); // { isValid: true, value: 5 }
-console.log(positiveValidator(-1)); // { isValid: false, error: "値は正の数である必要があります" }
-console.log(evenValidator(4)); // { isValid: true, value: 4 }
-console.log(evenValidator(3)); // { isValid: false, error: "値は偶数である必要があります" }
-```
-
-**🔍 API 呼び出しのカリー化**
-
-```typescript
-// HTTP リクエストのカリー化
-type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
-
-const createApiCall =
-  (baseUrl: string) =>
-  (method: HttpMethod) =>
-  (endpoint: string) =>
-  (data?: any) => {
-    const url = `${baseUrl}${endpoint}`;
-    console.log(
-      `${method} ${url}`,
-      data ? `with data: ${JSON.stringify(data)}` : ""
-    );
-    // 実際のHTTPリクエストはここで実行
-    return { method, url, data };
-  };
-
-// API呼び出し関数を生成
-const apiCall = createApiCall("https://api.example.com");
-const getRequest = apiCall("GET");
-const postRequest = apiCall("POST");
-
-// 特定のエンドポイント用の関数を生成
-const getUsers = getRequest("/users");
-const getUserById = getRequest("/users/");
-const createUser = postRequest("/users");
-
-// 使用例
-getUsers(); // GET https://api.example.com/users
-createUser({ name: "Alice", email: "alice@example.com" }); // POST https://api.example.com/users with data
-```
-
-#### 🎯 カリー化の重要なポイント
-
-1. **部分適用**: 一部の引数を固定した新しい関数を作成できる
-2. **再利用性**: 共通の設定を持つ関数を効率的に生成できる
-3. **関数合成**: 小さな関数を組み合わせて複雑な処理を構築できる
-4. **型安全性**: TypeScript の型システムで安全に設計できる
+2. **再利用**: 設定を途中まで決めた関数を何度も使える
+3. **関数の組み合わせ**: 小さな関数を組み合わせて大きな処理を作れる
+4. **コードの整理**: 似た処理をまとめて管理できる
 
 ---
 
@@ -1018,130 +847,173 @@ createUser({ name: "Alice", email: "alice@example.com" }); // POST https://api.e
 
 > 📚 **サポート資料**: [実践コード例 - 高階関数の練習](./Step05_補足_実践コード例.md#高階関数の練習) | [トラブルシューティング](./Step05_補足_トラブルシューティング.md#高階関数関連エラー)
 
-#### 練習問題 1: 基本的な高階関数の実装
+#### 練習問題 1: 基本的な高階関数
 
-以下の要件を満たす高階関数を実装してください：
+**🎯 問題**
+以下の高階関数を完成させてください：
 
 ```typescript
-// 1. 配列の各要素に対して条件をチェックし、条件を満たす要素のインデックスを返す関数
-function findIndices(
-  array: number[],
-  predicate: (item: number, index: number) => boolean
-): number[] {
-  // 実装してください
-  // ヒント: forEachやmapを使用して、条件を満たすインデックスを収集
-}
-
-// 2. 関数を指定回数実行し、結果を配列で返す高階関数
-function repeatFunction(
-  fn: (count: number) => string,
-  times: number
+// 1. 配列の各要素に処理をして、結果を文字列にする高階関数
+function processToString(
+  numbers: number[],
+  processor: (x: number) => number
 ): string[] {
-  // 実装してください
-  // ヒント: Array.from()やforループを使用
+  // ここを完成させてください
 }
 
-// テストケース
-const numbers = [1, 2, 3, 4, 5, 6];
-const evenIndices = findIndices(numbers, (num) => num % 2 === 0);
-console.log(evenIndices); // 期待値: [1, 3, 5] (偶数のインデックス)
+// 2. 条件に合う要素の個数を数える高階関数
+function countElements(
+  items: string[],
+  condition: (item: string) => boolean
+): number {
+  // ここを完成させてください
+}
 
-const greet = (count: number) => `挨拶 ${count}回目`;
-const greetings = repeatFunction(greet, 3);
-console.log(greetings); // 期待値: ["挨拶 1回目", "挨拶 2回目", "挨拶 3回目"]
+// テスト
+const numbers = [1, 2, 3, 4, 5];
+const double = (x: number) => x * 2;
+
+console.log(processToString(numbers, double));
+// 期待値: ["2", "4", "6", "8", "10"]
+
+const fruits = ["りんご", "バナナ", "みかん", "ぶどう"];
+const hasN = (fruit: string) => fruit.includes("ん");
+
+console.log(countElements(fruits, hasN));
+// 期待値: 2 (りんご、みかん)
 ```
 
-**解答例:**
+**💡 解答例**
 
 ```typescript
-function findIndices(
-  array: number[],
-  predicate: (item: number, index: number) => boolean
-): number[] {
-  const result: number[] = [];
-  array.forEach((item, index) => {
-    if (predicate(item, index)) {
-      result.push(index);
-    }
-  });
-  return result;
+function processToString(
+  numbers: number[],
+  processor: (x: number) => number
+): string[] {
+  return numbers.map(processor).map((num) => num.toString());
 }
 
-function repeatFunction(
-  fn: (count: number) => string,
-  times: number
-): string[] {
-  return Array.from({ length: times }, (_, index) => fn(index + 1));
+function countElements(
+  items: string[],
+  condition: (item: string) => boolean
+): number {
+  return items.filter(condition).length;
 }
 ```
 
-#### 練習問題 2: 配列メソッドとカリー化の組み合わせ
+#### 練習問題 2: カリー化を使った関数
 
-以下の要件を満たす関数を実装してください：
+**🎯 問題**
+カリー化を使った関数を完成させてください：
 
 ```typescript
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  category: string;
-  inStock: boolean;
+// 1. 文字列の前後に文字を追加するカリー化関数
+function addAround(
+  before: string
+): (after: string) => (text: string) => string {
+  // ここを完成させてください
 }
 
-const products: Product[] = [
-  {
-    id: 1,
-    name: "ノートPC",
-    price: 80000,
-    category: "電子機器",
-    inStock: true,
-  },
-  { id: 2, name: "マウス", price: 2000, category: "電子機器", inStock: false },
-  { id: 3, name: "本", price: 1500, category: "書籍", inStock: true },
-  { id: 4, name: "ペン", price: 300, category: "文房具", inStock: true },
+// 2. 数値を変換してから条件チェックするカリー化関数
+function transformAndCheck(
+  transformer: (x: number) => number
+): (condition: (x: number) => boolean) => (value: number) => boolean {
+  // ここを完成させてください
+}
+
+// テスト
+const addBrackets = addAround("【")("】");
+console.log(addBrackets("重要"));
+// 期待値: "【重要】"
+
+const doubleAndCheck = transformAndCheck((x) => x * 2);
+const checkEven = doubleAndCheck((x) => x % 2 === 0);
+console.log(checkEven(3));
+// 期待値: true (3 → 6 → 6は偶数)
+```
+
+**💡 解答例**
+
+```typescript
+function addAround(
+  before: string
+): (after: string) => (text: string) => string {
+  return (after: string) => (text: string) => `${before}${text}${after}`;
+}
+
+function transformAndCheck(
+  transformer: (x: number) => number
+): (condition: (x: number) => boolean) => (value: number) => boolean {
+  return (condition: (x: number) => boolean) => (value: number) => {
+    const transformed = transformer(value);
+    return condition(transformed);
+  };
+}
+```
+
+#### 練習問題 3: 実用的な高階関数
+
+**🎯 問題**
+実用的な高階関数を作ってください：
+
+```typescript
+// 学生データ
+const students = [
+  { name: "太郎", math: 80, english: 70 },
+  { name: "花子", math: 90, english: 85 },
+  { name: "次郎", math: 75, english: 80 },
+  { name: "美咲", math: 95, english: 90 },
 ];
 
-// 1. カテゴリでフィルタリングする関数を生成するカリー化関数
-const createCategoryFilter = (category: string) => (products: Product[]) => {
-  // 実装してください
-};
-
-// 2. 価格範囲でフィルタリングし、表示用フォーマットに変換する関数
-function getProductsInPriceRange(
-  products: Product[],
-  minPrice: number,
-  maxPrice: number
-): Array<{ name: string; formattedPrice: string }> {
-  // 実装してください
-  // ヒント: filter と map を組み合わせる
+// 1. 指定した科目の平均点以上の学生だけを取り出す関数
+function getStudentsAboveAverage(
+  students: Array<{ name: string; math: number; english: number }>,
+  subject: "math" | "english"
+): Array<{ name: string; math: number; english: number }> {
+  // ここを完成させてください
 }
 
-// テストケース
-const electronicFilter = createCategoryFilter("電子機器");
-const electronics = electronicFilter(products);
-console.log(electronics); // 電子機器のみ
+// 2. 学生を指定した条件で並び替える高階関数
+function sortStudents(
+  students: Array<{ name: string; math: number; english: number }>,
+  compareFn: (
+    a: { name: string; math: number; english: number },
+    b: { name: string; math: number; english: number }
+  ) => number
+): Array<{ name: string; math: number; english: number }> {
+  // ここを完成させてください
+}
 
-const affordableProducts = getProductsInPriceRange(products, 1000, 5000);
-console.log(affordableProducts); // 1000円〜5000円の商品を表示用フォーマットで
+// テスト
+console.log(getStudentsAboveAverage(students, "math"));
+// 期待値: 数学の平均以上の学生
+
+const sortByMath = (a: any, b: any) => b.math - a.math; // 数学の点数で降順
+console.log(sortStudents(students, sortByMath));
+// 期待値: 数学の点数が高い順に並んだ学生
 ```
 
-**解答例:**
+**💡 解答例**
 
 ```typescript
-const createCategoryFilter = (category: string) => (products: Product[]) =>
-  products.filter((product) => product.category === category);
+function getStudentsAboveAverage(
+  students: Array<{ name: string; math: number; english: number }>,
+  subject: "math" | "english"
+): Array<{ name: string; math: number; english: number }> {
+  const total = students.reduce((sum, student) => sum + student[subject], 0);
+  const average = total / students.length;
 
-function getProductsInPriceRange(
-  products: Product[],
-  minPrice: number,
-  maxPrice: number
-): Array<{ name: string; formattedPrice: string }> {
-  return products
-    .filter((product) => product.price >= minPrice && product.price <= maxPrice)
-    .map((product) => ({
-      name: product.name,
-      formattedPrice: `¥${product.price.toLocaleString()}`,
-    }));
+  return students.filter((student) => student[subject] >= average);
+}
+
+function sortStudents(
+  students: Array<{ name: string; math: number; english: number }>,
+  compareFn: (
+    a: { name: string; math: number; english: number },
+    b: { name: string; math: number; english: number }
+  ) => number
+): Array<{ name: string; math: number; english: number }> {
+  return [...students].sort(compareFn);
 }
 ```
 
@@ -1151,32 +1023,32 @@ function getProductsInPriceRange(
 
 ### 🤔 よくある質問
 
-**Q: 高階関数はいつ使うべきですか？**
-A: 同じ処理の枠組みを異なる内容で繰り返し使いたい場合や、処理をカスタマイズ可能にしたい場合に使用します。配列操作、イベント処理、コールバック関数などが代表的な例です。
+**Q: 高階関数って結局何なの？**
+A: 「関数を引数に取る関数」または「関数を返す関数」のことです。普段使っている`map`や`filter`も高階関数です！
 
-**Q: カリー化はいつ使うべきですか？**
-A: 関数の部分適用が有効な場面で使用します。例えば、設定値を固定した関数を作成したい場合や、関数型プログラミングのパイプライン処理で使用する場合などです。
+**Q: いつ使うの？**
+A: 似たような処理を繰り返し書くときや、処理をカスタマイズしたいときに使います。例：配列の全要素を変換、条件に合うものだけ抽出など。
 
-**Q: 高階関数は難しくないですか？**
-A: 最初は複雑に感じるかもしれませんが、「関数を引数に取る」「関数を返す」という 2 つの基本パターンを理解すれば、実は日常的に使っている map、filter なども高階関数だと分かります。
+**Q: カリー化って必要？**
+A: 必須ではありませんが、同じ設定の関数を何度も使う場合にとても便利です。例：「10 を足す関数」「"こんにちは"で挨拶する関数」など。
 
-**Q: TypeScript での型安全性はどう保てばよいですか？**
-A: 関数の引数と戻り値に明確な型注釈を付けることで、コンパイル時にエラーを検出できます。Step01-04 で学習した基本型、インターフェース、ユニオン型を活用することで、安全で理解しやすい高階関数を作成できます。
+**Q: 難しくない？**
+A: 最初は慣れが必要ですが、基本パターンを覚えれば大丈夫です。まずは`map`と`filter`から始めて、徐々に自分で高階関数を作ってみましょう。
 
 ### 🔧 実践的なヒント
 
-**高階関数設計のベストプラクティス**:
+**高階関数を使うときのコツ**:
 
-1. **型安全性を重視**: 明確な型注釈を使って型安全な高階関数を設計する
-2. **単一責任の原則**: 一つの高階関数は一つの責任のみを持つ
-3. **純粋関数を心がける**: 副作用を避け、同じ入力に対して同じ出力を返す
-4. **適切な命名**: 関数の目的と動作が明確に分かる名前を付ける
+1. **小さく始める**: まずは簡単な例から始めて、徐々に複雑にする
+2. **再利用を意識**: 同じような処理を何度も書いているなら、高階関数にできないか考える
+3. **型を明確に**: TypeScript の型注釈を使って、どんな関数を受け取るか明確にする
+4. **読みやすさを重視**: 複雑すぎる高階関数は避け、理解しやすいコードを書く
 
 **学習を深めるための次のステップ**:
 
-- ジェネリクスと組み合わせた高階関数の設計
-- 非同期処理でのコールバック関数の活用
-- 関数型プログラミングのパターンの学習
+- JavaScript の他の高階関数（reduce、some、every など）を学ぶ
+- 実際のプロジェクトで高階関数を使ってみる
+- 関数型プログラミングの基礎を学ぶ
 
 ---
 

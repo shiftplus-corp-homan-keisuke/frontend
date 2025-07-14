@@ -101,28 +101,6 @@ console.log(processNumber(5, (x) => x + 10)); // 15
 console.log(processNumber(5, (x) => x * x)); // 25
 ```
 
-**💡 何が便利なの？**
-
-1 つの高階関数で、無限に違う処理を実現できます！
-
-```typescript
-// 色々な処理を作る
-const double = (x: number) => x * 2;
-const addTen = (x: number) => x + 10;
-const square = (x: number) => x * x;
-
-// 同じ枠組みで色々な処理
-console.log(processNumber(5, double)); // 10
-console.log(processNumber(5, addTen)); // 15
-console.log(processNumber(5, square)); // 25
-
-// 配列にも使える
-const numbers = [1, 2, 3, 4, 5];
-console.log(numbers.map(double)); // [2, 4, 6, 8, 10]
-console.log(numbers.map(addTen)); // [11, 12, 13, 14, 15]
-console.log(numbers.map(square)); // [1, 4, 9, 16, 25]
-```
-
 #### 1. パターン 1：関数を引数として受け取る高階関数（詳細解説）
 
 **🎯 上の例をもう少し詳しく**
@@ -281,7 +259,7 @@ console.log(sayGoodMorning("佐藤")); // "おはよう、佐藤さん！"
 
 **💡 重要な発見**
 
-あなたがよく使う`map`と`filter`は、実は高階関数です！
+普段よく使う`map`と`filter`は、実は高階関数です！
 
 ```typescript
 const numbers = [1, 2, 3, 4, 5];
@@ -318,7 +296,7 @@ const strings = numbers.map((num) => `数字: ${num}`);
 console.log(strings); // ["数字: 1", "数字: 2", "数字: 3", "数字: 4", "数字: 5"]
 ```
 
-**💡 なぜ高階関数なの？**
+**💡 高階関数を理解するためにmap関数を作ってみよ🐰**
 
 map の中身を自分で作ると、こんな感じになります：
 
@@ -382,7 +360,7 @@ const singleDigit = numbers.filter((num) => num < 10);
 console.log(singleDigit); // [1, 2, 3, 4, 5, 6, 7, 8, 9]
 ```
 
-**💡 なぜ高階関数なの？**
+**💡 階関数を理解するためにfilter関数を作ってみよ🐰**
 
 filter の中身を自分で作ると、こんな感じになります：
 
@@ -390,11 +368,11 @@ filter の中身を自分で作ると、こんな感じになります：
 // filterの中身（簡単版）
 function myFilter(
   array: number[],
-  condition: (x: number) => boolean
+  pridicate: (x: number) => boolean
 ): number[] {
   const result: number[] = [];
   for (const item of array) {
-    if (condition(item)) { // ← 関数を使う
+    if (pridicate(item)) { // ← 関数を使う
       result.push(item);
     }
   }
@@ -431,6 +409,37 @@ const activeAdults = users.filter((user) => user.active && user.age >= 18);
 console.log(activeAdults); // 太郎と次郎
 ```
 
+**🔥練習問題**
+
+配列の中から条件にあったものを除外する`reject関数`を作りましょう
+
+```ts
+// 配列と条件(pridicate)を受け取って条件にあったものを除外して返す
+// ヒント: filterの逆の処理になるよね!
+function reject(){}
+```
+
+配列の中から、条件に合う**最初の要素**を見つけて返す`find関数`を作りましょう
+
+```ts
+// 配列と条件(pridicate)を受け取って条件にあった最初の要素を返す。要素がなかったらundefinedを返す
+function find(){}
+```
+
+配列の中の要素がすべて条件にあう場合trueを返す`every関数`を作りましょう
+
+```ts
+// 配列と条件(pridicate)を受け取ってすべての要素が条件にあった場合true,一つでも条件に合わない場合falseを返す
+function every(){}
+```
+
+配列の中の要素を使って任意の処理を実行できる`forEach関数`をつくりましょう
+
+```ts
+// 配列とそれぞれの要素を使って実行したい処理(callback)を受け取ってすべての要素に対してcallbackを実行する
+function forEach(){}
+```
+
 #### 3. map と filter を組み合わせる
 
 **🎯 2 つの高階関数を連続で使う**
@@ -455,16 +464,6 @@ const availableProducts = products
 
 console.log(availableProducts);
 // ["りんご: 100円", "みかん: 120円", "ぶどう: 200円"]
-```
-
-**💡 処理の流れ**
-
-```typescript
-// 元のデータ: 5つの商品
-//     ↓
-// filter(在庫があるもの): 3つの商品
-//     ↓
-// map(表示用テキスト): 3つの文字列
 ```
 
 **🔍 もう少し複雑な例**
@@ -864,7 +863,7 @@ function processToString(
 // 2. 条件に合う要素の個数を数える高階関数
 function countElements(
   items: string[],
-  condition: (item: string) => boolean
+  pridicate: (item: string) => boolean
 ): number {
   // ここを完成させてください
 }
@@ -895,9 +894,9 @@ function processToString(
 
 function countElements(
   items: string[],
-  condition: (item: string) => boolean
+  pridicate: (item: string) => boolean
 ): number {
-  return items.filter(condition).length;
+  return items.filter(pridicate).length;
 }
 ```
 
@@ -917,7 +916,7 @@ function addAround(
 // 2. 数値を変換してから条件チェックするカリー化関数
 function transformAndCheck(
   transformer: (x: number) => number
-): (condition: (x: number) => boolean) => (value: number) => boolean {
+): (pridicate: (x: number) => boolean) => (value: number) => boolean {
   // ここを完成させてください
 }
 
@@ -943,10 +942,10 @@ function addAround(
 
 function transformAndCheck(
   transformer: (x: number) => number
-): (condition: (x: number) => boolean) => (value: number) => boolean {
-  return (condition: (x: number) => boolean) => (value: number) => {
+): (pridicate: (x: number) => boolean) => (value: number) => boolean {
+  return (pridicate: (x: number) => boolean) => (value: number) => {
     const transformed = transformer(value);
-    return condition(transformed);
+    return pridicate(transformed);
   };
 }
 ```

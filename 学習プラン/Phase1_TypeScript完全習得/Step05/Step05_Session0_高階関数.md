@@ -828,6 +828,8 @@ const createApiUrl = createUrl("https://api.example.com");
 const createUserUrl = createApiUrl("users");
 const createProductUrl = createApiUrl("products");
 
+const createUserUrl = createUrl("https://api.example.com")("users")("id=123");
+
 // 使い方
 console.log(createUserUrl("id=123")); // "https://api.example.com/users?id=123"
 console.log(createProductUrl("name=商品")); // "https://api.example.com/products?name=商品"

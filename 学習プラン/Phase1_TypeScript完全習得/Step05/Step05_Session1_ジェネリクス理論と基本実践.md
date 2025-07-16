@@ -70,16 +70,84 @@
 > 💡 **詳細解説**: ジェネリクスの詳細と実践的な活用パターンは [Step05_補足_専門用語集.md#ジェネリクスgenerics](./Step05_補足_専門用語集.md#ジェネリクスgenerics) を見てね 🐰
 
 ```typescript
-function identity<T>(arg: T): T {
-  return arg;
+// any を使った良くない例
+function getFirstElement(arr: any[]): any {
+  return arr[0];
 }
 
-// 使用例
-const stringResult = identity<string>("hello"); // 明示的な型指定
-const numberResult = identity<number>(42); // 明示的な型指定
-const autoInferred = identity("world"); // 型推論でstring
-const boolInferred = identity(true); // 型推論でboolean
+const numbers = [10, 20, 30];
+const firstNumber = getFirstElement(numbers);
+// firstNumber は any 型になってしまう！
+// この後、number型として使いたいのに、TypeScriptの恩恵を受けられない。
+// 例えば、エディタで firstNumber. と入力しても、数値用のメソッド(toFixedなど)の補完が効かない。
+
+const strings = ["apple", "banana", "cherry"];
+const firstString = getFirstElement(strings);
+// firstString も any 型。
 ```
+
+any を使うと、せっかく配列が持っていた「これは数値の配列だ」「これは文字列の配列だ」という**型情報が失われてしま🐰**
+また、`getFiirstElementメソッド`の引数の型を`(arr: number[])` のように具体的な型を指定すると指定した型でしか使えなくなります･。
+
+**ジェネリクスを使った実践的な解決策**
+
+ここでジェネリクスの出番です。
+「**どんな型の配列でも受け取れるが、その配列の要素の型は失わない**」関数を作ることができます。
+
+```ts
+/**
+ * 配列を受け取り、その最初の要素を返す。
+ * 配列が空、または存在しない場合は undefined を返す。
+ * @param arr - 任意の型の配列
+ * @returns 配列の最初の要素、または undefined
+ */
+function getFirstElement<T>(arr: T[]): T | undefined {
+  return arr[0];
+}
+
+// --- 使ってみよう！ ---
+
+// (1) 数値の配列を渡した場合
+const numbers = [10, 20, 30];
+const firstNumber = getFirstElement<number>(numbers); // <number>がなkTypeScriptが T を `number` と推論
+
+// firstNumber の型は `number | undefined` になる。
+// 型がしっかりついている！
+if (firstNumber !== undefined) {
+  // このブロック内では、firstNumber は number型であることが確定する。
+  console.log(firstNumber.toFixed(2)); // "10.00" (number型のメソッドが使える！)
+}
+
+
+// (2) 文字列の配列を渡した場合
+const strings = ["apple", "banana", "cherry"];
+const firstString = getFirstElement(strings); // TypeScriptが T を `string` と推論
+
+// firstString の型は `string | undefined` になる。
+if (firstString !== undefined) {
+  // このブロック内では、firstString は string型であることが確定する。
+  console.log(firstString.toUpperCase()); // "APPLE" (string型のメソッドが使える！)
+}
+
+// (3) オブジェクトの配列でもOK
+const users = [
+  { id: 1, name: "Alice" },
+  { id: 2, name: "Bob" },
+];
+const firstUser = getFirstElement(users); // T を `{ id: number, name: string }` と推論
+
+// firstUser の型は `{ id: number, name: string } | undefined` になる。
+if (firstUser !== undefined) {
+  console.log(firstUser.name); // "Alice" (プロパティに安全にアクセスできる！)
+}
+
+// (4) 空の配列を渡した場合
+const emptyArray: string[] = [];
+const nothing = getFirstElement(emptyArray);
+// nothing の型は `string | undefined` になり、実際の値は undefined となる。
+```
+
+
 
 **📝 設計の詳細解説**
 

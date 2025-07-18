@@ -87,7 +87,7 @@ const firstString = getFirstElement(strings);
 ```
 
 any を使うと、せっかく配列が持っていた「これは数値の配列だ」「これは文字列の配列だ」という**型情報が失われてしま🐰**
-また、`getFiirstElementメソッド`の引数の型を`(arr: number[])` のように具体的な型を指定すると指定した型でしか使えなくなります･。
+また、`getFiirstElementメソッド`の引数の型を`(arr: number[])` のように具体的な型を指定すると指定した型でしか使えなくなります。
 
 **ジェネリクスを使った実践的な解決策**
 
@@ -109,7 +109,7 @@ function getFirstElement<T>(arr: T[]): T | undefined {
 
 // (1) 数値の配列を渡した場合
 const numbers = [10, 20, 30];
-const firstNumber = getFirstElement<number>(numbers); // <number>がなkTypeScriptが T を `number` と推論
+const firstNumber = getFirstElement<number>(numbers); // <number>が無くてもTypeScriptが T を `number` と推論
 
 // firstNumber の型は `number | undefined` になる。
 // 型がしっかりついている！
@@ -220,12 +220,12 @@ const reversedStrings = reverse(strings); // string[]
 
 ```typescript
 // 1. 配列の最後の要素を取得する関数
-function getLast<T>(array: T[]): T | undefined {
+function getLast(array){
   // ここに実装
 }
 
 // 2. 2つの値を交換したタプルを返す関数
-function swap<T, U>(first: T, second: U): [U, T] {
+function swap(first, second) {
   // ここに実装
 }
 

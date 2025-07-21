@@ -147,7 +147,99 @@ const nothing = getFirstElement(emptyArray);
 // nothing の型は `string | undefined` になり、実際の値は undefined となる。
 ```
 
+**🍎 Session0で作った高階関数をジェネリクスを使って汎用性を持たせてみよ🐰**
 
+https://codesandbox.io/p/devbox/sharp-carlos-3gzvk7
+
+```ts
+const arr = [21, 13, 47, 12, 45, 6, 7, 19, 23, 44];
+
+function filter(arr: number[], predicate: (n: number) => boolean) {
+  const array = [];
+  for (let i = 0; i < arr.length; i++) {
+    if (predicate(arr[i])) {
+      array.push(arr[i]);
+    }
+  }
+  return array;
+}
+
+const children = filter(arr, (n) => n < 19);
+const odd = filter(arr, (n) => n % 2 !== 0);
+
+console.log(odd);
+
+function map(arr: number[], stringify: (n: number) => string): string[] {
+  const array = [];
+  for (const item of arr) {
+    array.push(stringify(item));
+  }
+  return array;
+}
+
+const stringified = map(arr, (n) => `${n}`);
+
+console.log(stringified);
+
+// 配列と条件(pridicate)を受け取って条件にあったものを除外して返す
+// ヒント: filterの逆の処理になるよね!
+function reject(arr: number[], pridicate: (n: number) => boolean): number[] {
+  const array: number[] = [];
+  for (const item of arr) {
+    if (!pridicate(item)) {
+      array.push(item);
+    }
+  }
+  return array;
+}
+
+// 配列と条件(pridicate)を受け取って条件にあった最初の要素を返す。要素がなかったらundefinedを返す
+function find(
+  arr: number[],
+  pridicate: (n: number) => boolean
+): number | undefined {
+  for (const item of arr) {
+    if (pridicate(item)) {
+      return item;
+    }
+  }
+  return undefined;
+}
+
+// 配列と条件(pridicate)を受け取ってすべての要素が条件にあった場合true,一つでも条件に合わない場合falseを返す
+function every(arr: number[], pridicate: (n: number) => boolean): boolean {
+  for (const item of arr) {
+    if (!pridicate(item)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// 配列とそれぞれの要素を使って実行したい処理(callback)を受け取ってすべての要素に対してcallbackを実行する
+function forEach(
+  arr: number[],
+  callback: (n: number, index: number, arr: number[]) => void
+): void {
+  for (let i = 0; i < arr.length; i++) {
+    callback(arr[i], i, arr);
+  }
+}
+
+console.log(
+  forEach(arr, (n, index, arr) =>
+    console.log(`${index}番目の人は${n}歳です。全体で${arr.length}人います。`)
+  )
+);
+
+function add(a: number, b?: number): number | ((n: number) => number) {
+  if (b) {
+    return a + b;
+  }
+  return (n: number) => a + n;
+}
+
+```
 
 **📝 設計の詳細解説**
 

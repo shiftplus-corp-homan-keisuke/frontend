@@ -232,13 +232,6 @@ console.log(
   )
 );
 
-function add(a: number, b?: number): number | ((n: number) => number) {
-  if (b) {
-    return a + b;
-  }
-  return (n: number) => a + n;
-}
-
 ```
 
 **📝 設計の詳細解説**
@@ -271,14 +264,87 @@ function goodIdentity<T>(arg: T): T {
 
 #### 2. 複数の型パラメータ
 
+ジェネリクスでは、複数の型パラメータを定義することで、異なる型を同時に扱う関数やクラスを作成できます。
+
+**基本構文**
 ```typescript
-function pair<T, U>(first: T, second: U): [T, U] {
-  return [first, second];
+function functionName<T, U, V>(param1: T, param2: U): V {
+  // 実装
+}
+```
+
+**より実用的な例：APIレスポンス処理**
+```typescript
+// APIレスポンスの共通構造を定義するジェネリックインターフェース
+// Tは実際のデータの型を表す
+interface ApiResponse<T> {
+  data: T;        // レスポンスデータ（型はTで決まる）
+  status: number; // HTTPステータスコード
+  message: string; // レスポンスメッセージ
 }
 
-const stringNumberPair = pair("hello", 42); // [string, number]
-const booleanArrayPair = pair(true, [1, 2, 3]); // [boolean, number[]]
+// APIレスポンスを作成するジェネリック関数
+// T: データの型、戻り値の型もTに基づいて決まる
+function createApiResponse<T>(data: T, status: number, message: string): ApiResponse<T> {
+  return { data, status, message };
+}
+
+// 使用例1: ユーザー情報のレスポンス
+const userResponse = createApiResponse(
+  { id: 1, name: "Alice", email: "alice@example.com" }, // T = { id: number; name: string; email: string; }
+  200,
+  "Success"
+);
+// 型: ApiResponse<{ id: number; name: string; email: string; }>
+// userResponse.data.name でアクセス可能（型安全）
+
+// 使用例2: エラーレスポンス
+const errorResponse = createApiResponse(
+  null, // T = null
+  404,
+  "User not found"
+);
+// 型: ApiResponse<null>
+// errorResponse.data は null として扱われる
 ```
+
+**データ変換の実用例**
+```typescript
+// 2つの異なる型のデータを組み合わせて新しい型を作成する関数
+// T: 最初のデータの型
+// U: 2番目のデータの型
+// 戻り値: TとUを組み合わせた新しいオブジェクト
+function combineData<T, U>(data1: T, data2: U): T & U {
+  return { ...data1, ...data2 }; // スプレッド演算子で2つのオブジェクトを結合
+}
+
+// 使用例のためのインターフェース定義
+interface UserInfo {
+  name: string;
+  age: number;
+}
+
+interface UserSettings {
+  theme: string;
+  language: string;
+}
+
+// 使用例: データの結合
+const userInfo: UserInfo = { name: "Alice", age: 25 };
+const userSettings: UserSettings = { theme: "dark", language: "ja" };
+
+const completeUser = combineData(userInfo, userSettings);
+// 型: UserInfo & UserSettings
+// 結果: { name: "Alice", age: 25, theme: "dark", language: "ja" }
+// completeUser.name や completeUser.theme でアクセス可能
+
+```
+
+**重要なポイント**
+- 型パラメータは慣例的に `T`, `U`, `V` の順で命名される
+- より意味のある名前（`TKey`, `TValue`など）を使用することも可能
+- 型推論により、呼び出し時に自動的に型が決定される
+- 複数の型パラメータを使用することで、柔軟で型安全な関数を作成できる
 
 #### 3. ジェネリック配列操作での型安全性確保
 
@@ -306,27 +372,112 @@ const firstString = getFirst(strings); // string | undefined
 const reversedStrings = reverse(strings); // string[]
 ```
 
-### 練習問題 1.1: 基本ジェネリック関数 🔰
+### 練習問題 1.1: 基本ジェネリック関数  🔰
 
-以下の要件を満たすジェネリック関数を実装してください：
+> 💡 **学習目標**: ジェネリクスの必要性を理解し、段階的にジェネリクス構文を習得する
+
+#### 🚀 ステップ1: まずは普通の関数から始めよう
+
+以下の関数を実装してください。最初はジェネリクスを使わずに、具体的な型で実装します：
 
 ```typescript
-// 1. 配列の最後の要素を取得する関数
-function getLast(array){
+// 1. 数値配列の最後の要素を取得する関数
+function getLastNumber(array: number[]): number | undefined {
   // ここに実装
 }
 
-// 2. 2つの値を交換したタプルを返す関数
-function swap(first, second) {
+// 2. 文字列配列の最後の要素を取得する関数
+function getLastString(array: string[]): string | undefined {
   // ここに実装
 }
 
-// テストケース
+// テスト
 const numbers = [1, 2, 3, 4, 5];
-console.log(getLast(numbers)); // 5
+const strings = ["apple", "banana", "cherry"];
 
-const swapped = swap("hello", 42);
-console.log(swapped); // [42, "hello"]
+console.log(getLastNumber(numbers)); // 5
+console.log(getLastString(strings)); // "cherry"
+```
+
+#### 🤔 問題発見: コードの重複
+
+上記の実装を完了したら、以下の問題に気づくはずです：
+- `getLastNumber` と `getLastString` は実装がほぼ同じ
+- 新しい型（boolean[]、User[]など）に対応するたびに新しい関数が必要
+- コードの重複が発生している
+
+#### 🚀 ステップ2: ジェネリクスで解決しよう
+
+今度は、上記の重複を解決するために、ジェネリクスを使って1つの関数で実装してください：
+
+```typescript
+// 3. ジェネリクスを使った汎用的な関数
+// ヒント: <T> を使って型パラメータを定義する
+function getLast(/* ここに型定義を追加 */) {
+  // ここに実装（getLastNumberと同じロジック）
+}
+
+// テスト - 同じ関数で異なる型に対応
+console.log(getLast(numbers)); // 5 (number | undefined)
+console.log(getLast(strings)); // "cherry" (string | undefined)
+
+// ボーナス: オブジェクト配列でもテスト
+interface User {
+  id: number;
+  name: string;
+}
+
+const users: User[] = [
+  { id: 1, name: "Alice" },
+  { id: 2, name: "Bob" }
+];
+
+console.log(getLast(users)); // { id: 2, name: "Bob" } (User | undefined)
+```
+
+#### 🚀 ステップ3: より多くのジェネリック関数を実装
+
+ジェネリクスの概念を理解したら、以下の関数を実装してください：
+
+```typescript
+// 4. 配列の最初の要素を取得
+function getFirst(/* 型定義を追加 */) {
+  // 実装
+}
+
+// 5. 値をそのまま返すアイデンティティ関数
+function identity(/* 型定義を追加 */) {
+  // 実装
+}
+
+// 6. 2つの値を交換したタプルを返す
+function swap(/* 型定義を追加 */) {
+  // 実装
+}
+
+// 7. 配列を複製する
+function clone(/* 型定義を追加 */) {
+  // 実装
+}
+```
+
+#### 🚀 ステップ4: 複数の型パラメータに挑戦
+
+```typescript
+// 8. 2つの異なる型の配列を結合
+function concat(/* 型定義を追加 */) {
+  // 実装
+}
+
+// 9. キーと値のペアオブジェクトを作成
+function createPair(/* 型定義を追加 */) {
+  // 実装
+}
+
+// 10. 配列の要素を変換（map関数の簡易版）
+function transform(/* 型定義を追加 */) {
+  // 実装
+}
 ```
 
 ### Section 2: ジェネリック制約の基礎
@@ -339,14 +490,11 @@ console.log(swapped); // [42, "hello"]
 
 ジェネリック制約（Generic Constraints）は、ジェネリクスの柔軟性を保ちながら、特定のプロパティやメソッドの存在を保証する仕組みです。`extends`キーワードを使用することで、型安全性を確保しつつ、より具体的な操作を可能にします。
 
-**🎯 どういう場面で使うのか**
-
-- **APIクライアント設計**: エンドポイント定義での型安全性確保
-- **データ変換処理**: オブジェクトのプロパティアクセスでの安全性保証
-- **ライブラリ開発**: 特定のインターフェースを満たす型のみを受け入れ
-- **フォーム処理**: 特定のプロパティを持つオブジェクトの検証
-
 #### 1. extends制約による安全なプロパティアクセス
+
+**🎯 基本概念**
+
+extends制約は、ジェネリクス型パラメータに対して「この型は特定の条件を満たす必要がある」という制約を課すメカニズムです。これにより、型安全性を保ちながら、特定のプロパティやメソッドへのアクセスが可能になります。
 
 ```typescript
 interface Lengthwise {
@@ -365,19 +513,232 @@ loggingIdentity({ length: 10, value: 3 }); // OK: object has length
 // loggingIdentity(3); // Error: number doesn't have length
 ```
 
+**🔍 より詳細な実践例**
+
+##### 1-1. 複数プロパティを持つ制約
+
+```typescript
+interface Identifiable {
+  id: string | number;
+  name: string;
+}
+
+interface Timestamped {
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// 複数のインターフェースを組み合わせた制約
+function processEntity<T extends Identifiable & Timestamped>(entity: T): T {
+  console.log(`Processing ${entity.name} (ID: ${entity.id})`);
+  console.log(`Created: ${entity.createdAt.toISOString()}`);
+  
+  // 元の型を保持しながら、必要なプロパティにアクセス可能
+  return {
+    ...entity,
+    updatedAt: new Date() // updatedAtを更新
+  };
+}
+
+// 使用例
+const user = {
+  id: 1,
+  name: "田中太郎",
+  email: "tanaka@example.com", // 追加のプロパティも保持される
+  createdAt: new Date("2024-01-01"),
+  updatedAt: new Date("2024-01-01")
+};
+
+const updatedUser = processEntity(user);
+// updatedUserは元のuserの型（emailプロパティ含む）を保持
+console.log(updatedUser.email); // OK: emailプロパティにアクセス可能
+```
+
+##### 1-2. メソッドを持つ制約
+
+```typescript
+interface Serializable {
+  serialize(): string;
+  deserialize(data: string): void;
+}
+
+interface Validatable {
+  validate(): boolean;
+  getErrors(): string[];
+}
+
+// メソッドを持つオブジェクトに対する制約
+function saveToStorage<T extends Serializable & Validatable>(item: T): boolean {
+  // バリデーション実行
+  if (!item.validate()) {
+    console.error("Validation failed:", item.getErrors());
+    return false;
+  }
+  
+  // シリアライズしてストレージに保存
+  const serializedData = item.serialize();
+  localStorage.setItem(`item_${Date.now()}`, serializedData);
+  
+  return true;
+}
+
+// 実装例
+class UserProfile implements Serializable, Validatable {
+  constructor(
+    public name: string,
+    public email: string,
+    public age: number
+  ) {}
+  
+  serialize(): string {
+    return JSON.stringify({
+      name: this.name,
+      email: this.email,
+      age: this.age
+    });
+  }
+  
+  deserialize(data: string): void {
+    const parsed = JSON.parse(data);
+    this.name = parsed.name;
+    this.email = parsed.email;
+    this.age = parsed.age;
+  }
+  
+  validate(): boolean {
+    return this.name.length > 0 &&
+           this.email.includes("@") &&
+           this.age >= 0;
+  }
+  
+  getErrors(): string[] {
+    const errors: string[] = [];
+    if (this.name.length === 0) errors.push("名前は必須です");
+    if (!this.email.includes("@")) errors.push("有効なメールアドレスを入力してください");
+    if (this.age < 0) errors.push("年齢は0以上である必要があります");
+    return errors;
+  }
+}
+
+// 使用例
+const profile = new UserProfile("山田花子", "yamada@example.com", 25);
+const saved = saveToStorage(profile); // OK: 全ての制約を満たしている
+```
+
+##### 1-3. 配列操作での実践的な活用
+
+```typescript
+interface Comparable<T> {
+  compareTo(other: T): number;
+}
+
+// Comparableを実装した要素の配列をソートする関数
+function sortArray<T extends Comparable<T>>(items: T[]): T[] {
+  return [...items].sort((a, b) => a.compareTo(b));
+}
+
+// 実装例：商品クラス
+class Product implements Comparable<Product> {
+  constructor(
+    public name: string,
+    public price: number,
+    public rating: number
+  ) {}
+  
+  compareTo(other: Product): number {
+    // 評価順でソート（高い評価が先）
+    if (this.rating !== other.rating) {
+      return other.rating - this.rating;
+    }
+    // 評価が同じ場合は価格順（安い順）
+    return this.price - other.price;
+  }
+  
+  toString(): string {
+    return `${this.name} (¥${this.price}, ★${this.rating})`;
+  }
+}
+
+// 使用例
+const products = [
+  new Product("ノートPC", 80000, 4.2),
+  new Product("マウス", 2000, 4.5),
+  new Product("キーボード", 5000, 4.2),
+  new Product("モニター", 30000, 4.8)
+];
+
+const sortedProducts = sortArray(products);
+sortedProducts.forEach(product => console.log(product.toString()));
+// 出力:
+// モニター (¥30000, ★4.8)
+// マウス (¥2000, ★4.5)
+// キーボード (¥5000, ★4.2)
+// ノートPC (¥80000, ★4.2)
+```
+
+##### 1-4. 条件付き型との組み合わせ
+
+```typescript
+interface ApiResponse {
+  success: boolean;
+  message: string;
+}
+
+interface SuccessResponse extends ApiResponse {
+  success: true;
+  data: any;
+}
+
+interface ErrorResponse extends ApiResponse {
+  success: false;
+  error: string;
+}
+
+// 成功レスポンスのみを受け入れる関数
+function processSuccessResponse<T extends SuccessResponse>(response: T): T['data'] {
+  console.log("処理成功:", response.message);
+  return response.data;
+}
+
+// 使用例
+const successResponse = {
+  success: true as const, // const assertionで型を固定
+  message: "データ取得成功",
+  data: { users: ["田中", "佐藤", "鈴木"] },
+  timestamp: new Date()
+};
+
+const data = processSuccessResponse(successResponse);
+console.log(data.users); // OK: dataの型が推論される
+
+// エラーレスポンスは受け入れられない
+const errorResponse = {
+  success: false as const,
+  message: "エラーが発生しました",
+  error: "ネットワークエラー"
+};
+
+// processSuccessResponse(errorResponse); // Error: 制約を満たさない
+```
+
 **📝 設計の詳細解説**
 
-- `extends`制約により、特定のプロパティの存在を保証
-- 型安全性を確保しながら、具体的な操作を可能にする
-- 柔軟性と安全性のバランスを実現
+- **型安全性の確保**: `extends`制約により、特定のプロパティやメソッドの存在を保証
+- **柔軟性の維持**: 制約を満たす限り、任意の型を受け入れ可能
+- **IntelliSenseの向上**: IDEが制約されたプロパティを認識し、自動補完が効く
+- **実行時エラーの防止**: コンパイル時に型チェックが行われ、実行時エラーを防ぐ
+- **コードの再利用性**: 同じ制約を満たす異なる型に対して同じ関数を使用可能
 
 #### 2. keyof制約
 
 > 💡 **詳細解説**: keyof演算子の詳細と実践的な活用パターンは [Step05_補足_専門用語集.md#keyof演算子keyof-operator](./Step05_補足_専門用語集.md#keyof演算子keyof-operator) を見てね 🐰
 
+**keyof制約**は、オブジェクトのプロパティキーのみを受け入れるジェネリック制約です。これにより、存在しないプロパティへのアクセスを**コンパイル時**に防ぐことができます。
+
 ```typescript
+// K extends keyof T: KはTのプロパティキーのいずれかでなければならない
 function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
-  return obj[key];
+  return obj[key]; // T[K]は該当プロパティの正確な型を返す
 }
 
 interface Person {
@@ -388,33 +749,148 @@ interface Person {
 
 const person: Person = { name: "Alice", age: 30, email: "alice@example.com" };
 
-const name = getProperty(person, "name"); // string型
-const age = getProperty(person, "age"); // number型
-// const invalid = getProperty(person, "invalid"); // Error
+// ✅ 正常なケース - 型安全性が保証される
+const name = getProperty(person, "name"); // string型として推論
+const age = getProperty(person, "age");   // number型として推論
+const email = getProperty(person, "email"); // string型として推論
+
+// ❌ エラーケース - 存在しないプロパティ
+// const invalid = getProperty(person, "invalid");
+// Error: Argument of type '"invalid"' is not assignable to parameter of type 'keyof Person'
 ```
 
-### 練習問題 1.2: ジェネリック制約 🔰
-
-以下の要件を満たすジェネリック関数を実装してください：
+**🔍 keyof制約の仕組み**
 
 ```typescript
-// 1. lengthプロパティを持つ型のみを受け入れ、長さを返す関数
-function getLength<T extends { length: number }>(item: T): number {
-  // ここに実装
+// keyof Personは "name" | "age" | "email" のユニオン型になる
+type PersonKeys = keyof Person; // "name" | "age" | "email"
+
+// 段階的に理解してみよう
+function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
+  // 1. T = Person の場合
+  // 2. keyof T = "name" | "age" | "email"
+  // 3. K extends keyof T = K は "name" | "age" | "email" のいずれか
+  // 4. T[K] = Person["name"] | Person["age"] | Person["email"]
+  //         = string | number | string
+  return obj[key];
+}
+```
+
+**🎯 実務での活用例**
+
+```typescript
+// 1. 動的プロパティアクセス（フォーム処理など）
+function updateField<T, K extends keyof T>(
+  obj: T,
+  field: K,
+  value: T[K]
+): T {
+  return { ...obj, [field]: value };
 }
 
-// 2. オブジェクトから複数のプロパティを取得する関数
+// 2. オブジェクトの特定プロパティを抽出
 function pick<T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
-  // ここに実装
+  const result = {} as Pick<T, K>;
+  keys.forEach(key => {
+    result[key] = obj[key];
+  });
+  return result;
 }
 
-// テストケース
+// 使用例
+const userProfile = { id: 1, name: "Alice", email: "alice@example.com", age: 30 };
+const publicInfo = pick(userProfile, ["name", "email"]); // { name: string, email: string }
+```
+
+**⚡ keyof制約の利点**
+
+- **型安全性**: 存在しないプロパティへのアクセスを防止
+- **IntelliSense**: IDEで利用可能なプロパティが自動補完される
+- **リファクタリング安全性**: プロパティ名変更時に関連箇所も自動更新
+- **実行時エラー防止**: `undefined`の意図しない取得を防ぐ
+
+### 練習問題 1.2: ジェネリック制約の総合復習 🔰
+
+**Section 2で学んだ内容を包括的に復習しましょう！**
+
+以下の要件を満たすジェネリック関数を**ゼロから**実装してください。**型定義から関数の実装まで、すべて自分で考えて書いてください。**
+
+```typescript
+// 🎯 問題1: extends制約の実装
+// 要件: lengthプロパティを持つ型のみを受け入れ、長さを返す関数を作成
+// ヒント: string, Array, { length: number } などが対象
+function getLength() {
+  // 実装してください
+}
+
+// 🎯 問題2: インターフェース制約の実装
+// 要件: idプロパティ（string または number）を持つオブジェクトのみを受け入れ、IDを返す関数
+// まず必要なインターフェースを定義し、それを使った制約を実装してください
+interface Id {
+  // 定義してください
+}
+function getId() {
+  // 実装してください
+}
+
+// 🎯 問題3: keyof制約の実装
+// 要件: オブジェクトから指定されたプロパティの値を安全に取得する関数
+// 存在しないプロパティを指定した場合はコンパイルエラーになるようにしてください
+function getProperty() {
+  // 実装してください
+}
+
+// 🎯 問題4: 複数プロパティの抽出
+// 要件: オブジェクトから複数のプロパティを取得して新しいオブジェクトを返す関数
+// TypeScriptの組み込み型 Pick<T, K> を戻り値の型として使用してください
+function pick() {
+  // 実装してください
+}
+
+// 🎯 問題5: 複合制約の実装
+// 要件: nameプロパティを持つオブジェクトから、指定されたプロパティを更新する関数
+// extends制約とkeyof制約を組み合わせて実装してください
+interface ??? {
+  // 定義してください
+}
+function updateProperty(???) {
+  // 実装してください
+}
+```
+
+**📝 テストケース - 実装後に以下がすべて正常に動作することを確認してください**
+
+```typescript
+// 問題1のテスト
 console.log(getLength("hello")); // 5
 console.log(getLength([1, 2, 3])); // 3
+console.log(getLength({ length: 10 })); // 10
+// getLength(123); // ❌ コンパイルエラーになるはず
 
-const user = { name: "Alice", age: 30, email: "alice@example.com" };
-const picked = pick(user, ["name", "age"]);
-console.log(picked); // { name: "Alice", age: 30 }
+// 問題2のテスト
+const user1 = { id: "user123", name: "Alice" };
+const product = { id: 1, title: "Book", price: 1000 };
+console.log(getId(user1)); // "user123"
+console.log(getId(product)); // 1
+// getId({ title: "Book" }); // ❌ コンパイルエラーになるはず
+
+// 問題3のテスト
+const person = { name: "Bob", age: 25, city: "Tokyo" };
+console.log(getProperty(person, "name")); // "Bob"
+console.log(getProperty(person, "age")); // 25
+// getProperty(person, "invalid"); // ❌ コンパイルエラーになるはず
+
+// 問題4のテスト
+const user2 = { name: "Charlie", age: 30, email: "charlie@example.com", role: "admin" };
+const picked = pick(user2, ["name", "email"]);
+console.log(picked); // { name: "Charlie", email: "charlie@example.com" }
+// pick(user2, ["name", "invalid"]); // ❌ コンパイルエラーになるはず
+
+// 問題5のテスト
+const employee = { name: "David", department: "Engineering", salary: 80000 };
+const updated = updateProperty(employee, "salary", 85000);
+console.log(updated); // { name: "David", department: "Engineering", salary: 85000 }
+// updateProperty({ age: 30 }, "age", 31); // ❌ コンパイルエラーになるはず
 ```
 
 ---
@@ -463,7 +939,7 @@ function updateProperty<T, K extends keyof T>(
   // ヒント: スプレッド演算子を使用して新しいオブジェクトを返す
 }
 
-// ネストしたプロパティの値を取得する関数（簡単版）
+// ネストしたプロパティの値を取得する関数
 function getNestedProperty<T, K extends keyof T>(
   obj: T,
   key: K

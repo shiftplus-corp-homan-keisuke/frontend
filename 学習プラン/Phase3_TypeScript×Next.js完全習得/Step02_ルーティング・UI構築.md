@@ -20,7 +20,7 @@
 
 #### 🎯 動的ルーティングの応用
 
-```typescript
+```tsx
 // 1. Catch-all Routes（キャッチオールルート）
 // app/docs/[...slug]/page.tsx
 interface DocsPageProps {

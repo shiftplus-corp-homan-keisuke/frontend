@@ -1,8 +1,8 @@
-# Session1: ジェネリクス理論と基本実践（90分）
+# Session1: ジェネリクス理論と基本実践（90 分）
 
-> 💡 **対象**: Step01-04完了者（基本型・インターフェース・ユニオン型・型ガード習得済み）
+> 💡 **対象**: Step01-04 完了者（基本型・インターフェース・ユニオン型・型ガード習得済み）
 > 🎯 **形式**: 講師サポート付き学習
-> ⏰ **時間**: 90分（休憩含む）
+> ⏰ **時間**: 90 分（休憩含む）
 
 ## 📚 関連補足資料
 
@@ -27,21 +27,21 @@
 
 **前提知識**:
 
-- Step01-04の内容（基本型、インターフェース、ユニオン型、型ガード）
+- Step01-04 の内容（基本型、インターフェース、ユニオン型、型ガード）
 - 関数・クラスの基本的な実装経験
-- TypeScriptの型システムの基礎理解
+- TypeScript の型システムの基礎理解
 
 ---
 
 ## ⏰ 詳細タイムテーブル
 
-| 時間         | 内容                     | 講師の役割           | 学習者の活動   | 成果物     |
-| ------------ | ------------------------ | -------------------- | -------------- | ---------- |
-| **0-10分**   | 全体概要・目標設定       | 説明・質疑応答       | 聞く・質問     | 理解確認   |
-| **10-30分**  | ジェネリクス基本概念     | 要点解説・補足       | 個人学習・確認 | 知識整理   |
-| **30-60分**  | ジェネリック制約の基礎   | 実演・個別サポート   | ハンズオン     | 基本コード |
-| **60-80分**  | 練習問題1-2              | 巡回サポート・ヒント | 個人作業       | 練習成果   |
-| **80-90分**  | 振り返り・次回予告       | まとめ・予告         | 質問・確認     | 学習計画   |
+| 時間         | 内容                   | 講師の役割           | 学習者の活動   | 成果物     |
+| ------------ | ---------------------- | -------------------- | -------------- | ---------- |
+| **0-10 分**  | 全体概要・目標設定     | 説明・質疑応答       | 聞く・質問     | 理解確認   |
+| **10-30 分** | ジェネリクス基本概念   | 要点解説・補足       | 個人学習・確認 | 知識整理   |
+| **30-60 分** | ジェネリック制約の基礎 | 実演・個別サポート   | ハンズオン     | 基本コード |
+| **60-80 分** | 練習問題 1-2           | 巡回サポート・ヒント | 個人作業       | 練習成果   |
+| **80-90 分** | 振り返り・次回予告     | まとめ・予告         | 質問・確認     | 学習計画   |
 
 ---
 
@@ -55,19 +55,18 @@
 
 **💡 なぜジェネリクスが重要なのか**
 
-ジェネリクスは、型安全性を保ちながらコードの再利用性を大幅に向上させるTypeScriptの核心機能です。同じロジックを異なる型で使い回すことで、コード重複を解決し、保守性を向上させます。特にライブラリ設計、APIクライアント開発、データ構造の実装において、ジェネリクスは堅牢で柔軟なコードベースの構築を可能にします。
+ジェネリクスは、型安全性を保ちながらコードの再利用性を大幅に向上させる TypeScript の核心機能です。同じロジックを異なる型で使い回すことで、コード重複を解決し、保守性を向上させます。特にライブラリ設計、API クライアント開発、データ構造の実装において、ジェネリクスは堅牢で柔軟なコードベースの構築を可能にします。
 
 **🎯 どういう場面で使うのか**
 
 - **ライブラリ設計**: 再利用可能なユーティリティ関数・クラスの作成
-- **APIクライアント**: 型安全なレスポンス処理とエンドポイント管理
+- **API クライアント**: 型安全なレスポンス処理とエンドポイント管理
 - **データ構造**: 配列、リスト、ツリーなどの汎用的なデータ構造
-- **状態管理**: Redux、Zustandなどでの型安全な状態管理
 - **フォーム処理**: 型安全なバリデーションとデータ変換
 
 #### 1. 基本的なジェネリクス
 
-> 💡 **詳細解説**: ジェネリクスの詳細と実践的な活用パターンは [Step05_補足_専門用語集.md#ジェネリクスgenerics](./Step05_補足_専門用語集.md#ジェネリクスgenerics) を見てね 🐰
+> 💡 **詳細解説**: ジェネリクスの詳細と実践的な活用パターンは [Step05*補足*専門用語集.md#ジェネリクス generics](./Step05_補足_専門用語集.md#ジェネリクスgenerics) を見てね 🐰
 
 ```typescript
 // any を使った良くない例
@@ -86,8 +85,8 @@ const firstString = getFirstElement(strings);
 // firstString も any 型。
 ```
 
-any を使うと、せっかく配列が持っていた「これは数値の配列だ」「これは文字列の配列だ」という**型情報が失われてしま🐰**
-また、`getFiirstElementメソッド`の引数の型を`(arr: number[])` のように具体的な型を指定すると指定した型でしか使えなくなります。
+any を使うと、せっかく配列が持っていた「これは数値の配列だ」「これは文字列の配列だ」という**型情報が失われてしま 🐰**
+また、`getFiirstElementメソッド`の引数の型を `(arr: number[])` のように具体的な型を指定すると指定した型でしか使えなくなります。
 
 **ジェネリクスを使った実践的な解決策**
 
@@ -118,7 +117,6 @@ if (firstNumber !== undefined) {
   console.log(firstNumber.toFixed(2)); // "10.00" (number型のメソッドが使える！)
 }
 
-
 // (2) 文字列の配列を渡した場合
 const strings = ["apple", "banana", "cherry"];
 const firstString = getFirstElement(strings); // TypeScriptが T を `string` と推論
@@ -147,7 +145,7 @@ const nothing = getFirstElement(emptyArray);
 // nothing の型は `string | undefined` になり、実際の値は undefined となる。
 ```
 
-**🍎 Session0で作った高階関数をジェネリクスを使って汎用性を持たせてみよ🐰**
+**🍎 Session0 で作った高階関数をジェネリクスを使って汎用性を持たせてみよ 🐰**
 
 https://codesandbox.io/p/devbox/sharp-carlos-3gzvk7
 
@@ -231,7 +229,6 @@ console.log(
     console.log(`${index}番目の人は${n}歳です。全体で${arr.length}人います。`)
   )
 );
-
 ```
 
 **📝 設計の詳細解説**
@@ -267,25 +264,31 @@ function goodIdentity<T>(arg: T): T {
 ジェネリクスでは、複数の型パラメータを定義することで、異なる型を同時に扱う関数やクラスを作成できます。
 
 **基本構文**
+
 ```typescript
 function functionName<T, U, V>(param1: T, param2: U): V {
   // 実装
 }
 ```
 
-**より実用的な例：APIレスポンス処理**
+**より実用的な例：API レスポンス処理**
+
 ```typescript
 // APIレスポンスの共通構造を定義するジェネリックインターフェース
 // Tは実際のデータの型を表す
 interface ApiResponse<T> {
-  data: T;        // レスポンスデータ（型はTで決まる）
+  data: T; // レスポンスデータ（型はTで決まる）
   status: number; // HTTPステータスコード
   message: string; // レスポンスメッセージ
 }
 
 // APIレスポンスを作成するジェネリック関数
 // T: データの型、戻り値の型もTに基づいて決まる
-function createApiResponse<T>(data: T, status: number, message: string): ApiResponse<T> {
+function createApiResponse<T>(
+  data: T,
+  status: number,
+  message: string
+): ApiResponse<T> {
   return { data, status, message };
 }
 
@@ -309,6 +312,7 @@ const errorResponse = createApiResponse(
 ```
 
 **データ変換の実用例**
+
 ```typescript
 // 2つの異なる型のデータを組み合わせて新しい型を作成する関数
 // T: 最初のデータの型
@@ -337,10 +341,10 @@ const completeUser = combineData(userInfo, userSettings);
 // 型: UserInfo & UserSettings
 // 結果: { name: "Alice", age: 25, theme: "dark", language: "ja" }
 // completeUser.name や completeUser.theme でアクセス可能
-
 ```
 
 **重要なポイント**
+
 - 型パラメータは慣例的に `T`, `U`, `V` の順で命名される
 - より意味のある名前（`TKey`, `TValue`など）を使用することも可能
 - 型推論により、呼び出し時に自動的に型が決定される
@@ -372,11 +376,11 @@ const firstString = getFirst(strings); // string | undefined
 const reversedStrings = reverse(strings); // string[]
 ```
 
-### 練習問題 1.1: 基本ジェネリック関数  🔰
+### 練習問題 1.1: 基本ジェネリック関数 🔰
 
 > 💡 **学習目標**: ジェネリクスの必要性を理解し、段階的にジェネリクス構文を習得する
 
-#### 🚀 ステップ1: まずは普通の関数から始めよう
+#### 🚀 ステップ 1: まずは普通の関数から始めよう
 
 以下の関数を実装してください。最初はジェネリクスを使わずに、具体的な型で実装します：
 
@@ -402,13 +406,14 @@ console.log(getLastString(strings)); // "cherry"
 #### 🤔 問題発見: コードの重複
 
 上記の実装を完了したら、以下の問題に気づくはずです：
+
 - `getLastNumber` と `getLastString` は実装がほぼ同じ
 - 新しい型（boolean[]、User[]など）に対応するたびに新しい関数が必要
 - コードの重複が発生している
 
-#### 🚀 ステップ2: ジェネリクスで解決しよう
+#### 🚀 ステップ 2: ジェネリクスで解決しよう
 
-今度は、上記の重複を解決するために、ジェネリクスを使って1つの関数で実装してください：
+今度は、上記の重複を解決するために、ジェネリクスを使って 1 つの関数で実装してください：
 
 ```typescript
 // 3. ジェネリクスを使った汎用的な関数
@@ -429,13 +434,13 @@ interface User {
 
 const users: User[] = [
   { id: 1, name: "Alice" },
-  { id: 2, name: "Bob" }
+  { id: 2, name: "Bob" },
 ];
 
 console.log(getLast(users)); // { id: 2, name: "Bob" } (User | undefined)
 ```
 
-#### 🚀 ステップ3: より多くのジェネリック関数を実装
+#### 🚀 ステップ 3: より多くのジェネリック関数を実装
 
 ジェネリクスの概念を理解したら、以下の関数を実装してください：
 
@@ -461,7 +466,7 @@ function clone(/* 型定義を追加 */) {
 }
 ```
 
-#### 🚀 ステップ4: 複数の型パラメータに挑戦
+#### 🚀 ステップ 4: 複数の型パラメータに挑戦
 
 ```typescript
 // 8. 2つの異なる型の配列を結合
@@ -490,11 +495,11 @@ function transform(/* 型定義を追加 */) {
 
 ジェネリック制約（Generic Constraints）は、ジェネリクスの柔軟性を保ちながら、特定のプロパティやメソッドの存在を保証する仕組みです。`extends`キーワードを使用することで、型安全性を確保しつつ、より具体的な操作を可能にします。
 
-#### 1. extends制約による安全なプロパティアクセス
+#### 1. extends 制約による安全なプロパティアクセス
 
 **🎯 基本概念**
 
-extends制約は、ジェネリクス型パラメータに対して「この型は特定の条件を満たす必要がある」という制約を課すメカニズムです。これにより、型安全性を保ちながら、特定のプロパティやメソッドへのアクセスが可能になります。
+extends 制約は、ジェネリクス型パラメータに対して「この型は特定の条件を満たす必要がある」という制約を課すメカニズムです。これにより、型安全性を保ちながら、特定のプロパティやメソッドへのアクセスが可能になります。
 
 ```typescript
 interface Lengthwise {
@@ -532,11 +537,11 @@ interface Timestamped {
 function processEntity<T extends Identifiable & Timestamped>(entity: T): T {
   console.log(`Processing ${entity.name} (ID: ${entity.id})`);
   console.log(`Created: ${entity.createdAt.toISOString()}`);
-  
+
   // 元の型を保持しながら、必要なプロパティにアクセス可能
   return {
     ...entity,
-    updatedAt: new Date() // updatedAtを更新
+    updatedAt: new Date(), // updatedAtを更新
   };
 }
 
@@ -546,7 +551,7 @@ const user = {
   name: "田中太郎",
   email: "tanaka@example.com", // 追加のプロパティも保持される
   createdAt: new Date("2024-01-01"),
-  updatedAt: new Date("2024-01-01")
+  updatedAt: new Date("2024-01-01"),
 };
 
 const updatedUser = processEntity(user);
@@ -574,47 +579,42 @@ function saveToStorage<T extends Serializable & Validatable>(item: T): boolean {
     console.error("Validation failed:", item.getErrors());
     return false;
   }
-  
+
   // シリアライズしてストレージに保存
   const serializedData = item.serialize();
   localStorage.setItem(`item_${Date.now()}`, serializedData);
-  
+
   return true;
 }
 
 // 実装例
 class UserProfile implements Serializable, Validatable {
-  constructor(
-    public name: string,
-    public email: string,
-    public age: number
-  ) {}
-  
+  constructor(public name: string, public email: string, public age: number) {}
+
   serialize(): string {
     return JSON.stringify({
       name: this.name,
       email: this.email,
-      age: this.age
+      age: this.age,
     });
   }
-  
+
   deserialize(data: string): void {
     const parsed = JSON.parse(data);
     this.name = parsed.name;
     this.email = parsed.email;
     this.age = parsed.age;
   }
-  
+
   validate(): boolean {
-    return this.name.length > 0 &&
-           this.email.includes("@") &&
-           this.age >= 0;
+    return this.name.length > 0 && this.email.includes("@") && this.age >= 0;
   }
-  
+
   getErrors(): string[] {
     const errors: string[] = [];
     if (this.name.length === 0) errors.push("名前は必須です");
-    if (!this.email.includes("@")) errors.push("有効なメールアドレスを入力してください");
+    if (!this.email.includes("@"))
+      errors.push("有効なメールアドレスを入力してください");
     if (this.age < 0) errors.push("年齢は0以上である必要があります");
     return errors;
   }
@@ -644,7 +644,7 @@ class Product implements Comparable<Product> {
     public price: number,
     public rating: number
   ) {}
-  
+
   compareTo(other: Product): number {
     // 評価順でソート（高い評価が先）
     if (this.rating !== other.rating) {
@@ -653,7 +653,7 @@ class Product implements Comparable<Product> {
     // 評価が同じ場合は価格順（安い順）
     return this.price - other.price;
   }
-  
+
   toString(): string {
     return `${this.name} (¥${this.price}, ★${this.rating})`;
   }
@@ -664,11 +664,11 @@ const products = [
   new Product("ノートPC", 80000, 4.2),
   new Product("マウス", 2000, 4.5),
   new Product("キーボード", 5000, 4.2),
-  new Product("モニター", 30000, 4.8)
+  new Product("モニター", 30000, 4.8),
 ];
 
 const sortedProducts = sortArray(products);
-sortedProducts.forEach(product => console.log(product.toString()));
+sortedProducts.forEach((product) => console.log(product.toString()));
 // 出力:
 // モニター (¥30000, ★4.8)
 // マウス (¥2000, ★4.5)
@@ -695,7 +695,9 @@ interface ErrorResponse extends ApiResponse {
 }
 
 // 成功レスポンスのみを受け入れる関数
-function processSuccessResponse<T extends SuccessResponse>(response: T): T['data'] {
+function processSuccessResponse<T extends SuccessResponse>(
+  response: T
+): T["data"] {
   console.log("処理成功:", response.message);
   return response.data;
 }
@@ -705,7 +707,7 @@ const successResponse = {
   success: true as const, // const assertionで型を固定
   message: "データ取得成功",
   data: { users: ["田中", "佐藤", "鈴木"] },
-  timestamp: new Date()
+  timestamp: new Date(),
 };
 
 const data = processSuccessResponse(successResponse);
@@ -715,7 +717,7 @@ console.log(data.users); // OK: dataの型が推論される
 const errorResponse = {
   success: false as const,
   message: "エラーが発生しました",
-  error: "ネットワークエラー"
+  error: "ネットワークエラー",
 };
 
 // processSuccessResponse(errorResponse); // Error: 制約を満たさない
@@ -725,15 +727,15 @@ const errorResponse = {
 
 - **型安全性の確保**: `extends`制約により、特定のプロパティやメソッドの存在を保証
 - **柔軟性の維持**: 制約を満たす限り、任意の型を受け入れ可能
-- **IntelliSenseの向上**: IDEが制約されたプロパティを認識し、自動補完が効く
+- **IntelliSense の向上**: IDE が制約されたプロパティを認識し、自動補完が効く
 - **実行時エラーの防止**: コンパイル時に型チェックが行われ、実行時エラーを防ぐ
 - **コードの再利用性**: 同じ制約を満たす異なる型に対して同じ関数を使用可能
 
-#### 2. keyof制約
+#### 2. keyof 制約
 
-> 💡 **詳細解説**: keyof演算子の詳細と実践的な活用パターンは [Step05_補足_専門用語集.md#keyof演算子keyof-operator](./Step05_補足_専門用語集.md#keyof演算子keyof-operator) を見てね 🐰
+> 💡 **詳細解説**: keyof 演算子の詳細と実践的な活用パターンは [Step05*補足*専門用語集.md#keyof 演算子 keyof-operator](./Step05_補足_専門用語集.md#keyof演算子keyof-operator) を見てね 🐰
 
-**keyof制約**は、オブジェクトのプロパティキーのみを受け入れるジェネリック制約です。これにより、存在しないプロパティへのアクセスを**コンパイル時**に防ぐことができます。
+**keyof 制約**は、オブジェクトのプロパティキーのみを受け入れるジェネリック制約です。これにより、存在しないプロパティへのアクセスを**コンパイル時**に防ぐことができます。
 
 ```typescript
 // K extends keyof T: KはTのプロパティキーのいずれかでなければならない
@@ -751,7 +753,7 @@ const person: Person = { name: "Alice", age: 30, email: "alice@example.com" };
 
 // ✅ 正常なケース - 型安全性が保証される
 const name = getProperty(person, "name"); // string型として推論
-const age = getProperty(person, "age");   // number型として推論
+const age = getProperty(person, "age"); // number型として推論
 const email = getProperty(person, "email"); // string型として推論
 
 // ❌ エラーケース - 存在しないプロパティ
@@ -759,7 +761,7 @@ const email = getProperty(person, "email"); // string型として推論
 // Error: Argument of type '"invalid"' is not assignable to parameter of type 'keyof Person'
 ```
 
-**🔍 keyof制約の仕組み**
+**🔍 keyof 制約の仕組み**
 
 ```typescript
 // keyof Personは "name" | "age" | "email" のユニオン型になる
@@ -780,38 +782,39 @@ function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
 
 ```typescript
 // 1. 動的プロパティアクセス（フォーム処理など）
-function updateField<T, K extends keyof T>(
-  obj: T,
-  field: K,
-  value: T[K]
-): T {
+function updateField<T, K extends keyof T>(obj: T, field: K, value: T[K]): T {
   return { ...obj, [field]: value };
 }
 
 // 2. オブジェクトの特定プロパティを抽出
 function pick<T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
   const result = {} as Pick<T, K>;
-  keys.forEach(key => {
+  keys.forEach((key) => {
     result[key] = obj[key];
   });
   return result;
 }
 
 // 使用例
-const userProfile = { id: 1, name: "Alice", email: "alice@example.com", age: 30 };
+const userProfile = {
+  id: 1,
+  name: "Alice",
+  email: "alice@example.com",
+  age: 30,
+};
 const publicInfo = pick(userProfile, ["name", "email"]); // { name: string, email: string }
 ```
 
-**⚡ keyof制約の利点**
+**⚡ keyof 制約の利点**
 
 - **型安全性**: 存在しないプロパティへのアクセスを防止
-- **IntelliSense**: IDEで利用可能なプロパティが自動補完される
+- **IntelliSense**: IDE で利用可能なプロパティが自動補完される
 - **リファクタリング安全性**: プロパティ名変更時に関連箇所も自動更新
 - **実行時エラー防止**: `undefined`の意図しない取得を防ぐ
 
 ### 練習問題 1.2: ジェネリック制約の総合復習 🔰
 
-**Section 2で学んだ内容を包括的に復習しましょう！**
+**Section 2 で学んだ内容を包括的に復習しましょう！**
 
 以下の要件を満たすジェネリック関数を**ゼロから**実装してください。**型定義から関数の実装まで、すべて自分で考えて書いてください。**
 
@@ -881,7 +884,12 @@ console.log(getProperty(person, "age")); // 25
 // getProperty(person, "invalid"); // ❌ コンパイルエラーになるはず
 
 // 問題4のテスト
-const user2 = { name: "Charlie", age: 30, email: "charlie@example.com", role: "admin" };
+const user2 = {
+  name: "Charlie",
+  age: 30,
+  email: "charlie@example.com",
+  role: "admin",
+};
 const picked = pick(user2, ["name", "email"]);
 console.log(picked); // { name: "Charlie", email: "charlie@example.com" }
 // pick(user2, ["name", "invalid"]); // ❌ コンパイルエラーになるはず
@@ -899,7 +907,7 @@ console.log(updated); // { name: "David", department: "Engineering", salary: 850
 
 > 📚 **サポート資料**: [実践コード例 - ジェネリクスの練習](./Step05_補足_実践コード例.md#ジェネリクスの練習) | [トラブルシューティング](./Step05_補足_トラブルシューティング.md#ジェネリクス関連エラー)
 
-### 練習問題 1: 配列ユーティリティ関数（10分）
+### 練習問題 1: 配列ユーティリティ関数（10 分）
 
 以下のジェネリック配列ユーティリティ関数を実装してください：
 
@@ -924,17 +932,13 @@ const duplicates = [1, 2, 2, 3, 3, 3, 4];
 console.log(unique(duplicates)); // [1, 2, 3, 4]
 ```
 
-### 練習問題 2: 型安全なプロパティアクセス（10分）
+### 練習問題 2: 型安全なプロパティアクセス（10 分）
 
 以下の要件を満たす関数を実装してください：
 
 ```typescript
 // オブジェクトのプロパティを安全に更新する関数
-function updateProperty<T, K extends keyof T>(
-  obj: T,
-  key: K,
-  value: T[K]
-): T {
+function updateProperty<T, K extends keyof T>(obj: T, key: K, value: T[K]): T {
   // 実装してください
   // ヒント: スプレッド演算子を使用して新しいオブジェクトを返す
 }
@@ -962,17 +966,17 @@ console.log(name); // "Alice"
 
 ### 🤔 よくある質問
 
-**Q: ジェネリクスと any型の違いは何ですか？**
-A: ジェネリクスは型安全性を保ちながら柔軟性を提供しますが、any型は型チェックを完全に無効にします。ジェネリクスを使用することで、コンパイル時に型エラーを検出でき、より安全なコードが書けます。
+**Q: ジェネリクスと any 型の違いは何ですか？**
+A: ジェネリクスは型安全性を保ちながら柔軟性を提供しますが、any 型は型チェックを完全に無効にします。ジェネリクスを使用することで、コンパイル時に型エラーを検出でき、より安全なコードが書けます。
 
 **Q: いつジェネリック制約を使うべきですか？**
-A: 特定のプロパティやメソッドにアクセスする必要がある場合に使用します。制約なしでは、型パラメータTに対して何も仮定できないため、プロパティアクセスでエラーになります。
+A: 特定のプロパティやメソッドにアクセスする必要がある場合に使用します。制約なしでは、型パラメータ T に対して何も仮定できないため、プロパティアクセスでエラーになります。
 
 **Q: 型推論はいつ働きますか？**
 A: 関数の引数から型が明確に推論できる場合に働きます。明示的な型指定と型推論のバランスを考えて使い分けましょう。
 
 ---
 
-**📌 重要**: Session1はジェネリクスの基礎固めです。焦らず確実に基本概念を理解しましょう。
+**📌 重要**: Session1 はジェネリクスの基礎固めです。焦らず確実に基本概念を理解しましょう。
 
 **🌟 次回（Session2）は、より実践的なジェネリッククラスの設計と実用的な活用に挑戦します！**

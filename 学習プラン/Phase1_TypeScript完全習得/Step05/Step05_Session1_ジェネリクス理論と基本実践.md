@@ -843,14 +843,7 @@ function getProperty() {
   // 実装してください
 }
 
-// 🎯 問題4: 複数プロパティの抽出
-// 要件: オブジェクトから複数のプロパティを取得して新しいオブジェクトを返す関数
-// TypeScriptの組み込み型 Pick<T, K> を戻り値の型として使用してください
-function pick() {
-  // 実装してください
-}
-
-// 🎯 問題5: 複合制約の実装
+// 🎯 問題4: 複合制約の実装
 // 要件: nameプロパティを持つオブジェクトから、指定されたプロパティを更新する関数
 // extends制約とkeyof制約を組み合わせて実装してください
 interface ??? {
@@ -943,7 +936,7 @@ function updateProperty<T, K extends keyof T>(obj: T, key: K, value: T[K]): T {
   // ヒント: スプレッド演算子を使用して新しいオブジェクトを返す
 }
 
-// ネストしたプロパティの値を取得する関数
+// プロパティの値を取得する関数
 function getNestedProperty<T, K extends keyof T>(
   obj: T,
   key: K

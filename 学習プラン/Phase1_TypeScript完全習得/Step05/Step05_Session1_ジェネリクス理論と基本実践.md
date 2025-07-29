@@ -877,17 +877,6 @@ console.log(getProperty(person, "age")); // 25
 // getProperty(person, "invalid"); // ❌ コンパイルエラーになるはず
 
 // 問題4のテスト
-const user2 = {
-  name: "Charlie",
-  age: 30,
-  email: "charlie@example.com",
-  role: "admin",
-};
-const picked = pick(user2, ["name", "email"]);
-console.log(picked); // { name: "Charlie", email: "charlie@example.com" }
-// pick(user2, ["name", "invalid"]); // ❌ コンパイルエラーになるはず
-
-// 問題5のテスト
 const employee = { name: "David", department: "Engineering", salary: 80000 };
 const updated = updateProperty(employee, "salary", 85000);
 console.log(updated); // { name: "David", department: "Engineering", salary: 85000 }
@@ -905,21 +894,11 @@ console.log(updated); // { name: "David", department: "Engineering", salary: 850
 以下のジェネリック配列ユーティリティ関数を実装してください：
 
 ```typescript
-// 配列をn個ずつのチャンクに分割する関数
-function chunk<T>(array: T[], size: number): T[][] {
-  // 実装してください
-  // ヒント: forループとsliceを使用
-}
-
 // 配列から重複を除去する関数
 function unique<T>(array: T[]): T[] {
   // 実装してください
   // ヒント: Setを使用
 }
-
-// テストケース
-const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-console.log(chunk(numbers, 3)); // [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
 
 const duplicates = [1, 2, 2, 3, 3, 3, 4];
 console.log(unique(duplicates)); // [1, 2, 3, 4]
@@ -937,7 +916,7 @@ function updateProperty<T, K extends keyof T>(obj: T, key: K, value: T[K]): T {
 }
 
 // プロパティの値を取得する関数
-function getNestedProperty<T, K extends keyof T>(
+function getProperty<T, K extends keyof T>(
   obj: T,
   key: K
 ): T[K] | undefined {
@@ -949,7 +928,7 @@ const user = { name: "Alice", age: 30, email: "alice@example.com" };
 const updated = updateProperty(user, "age", 31);
 console.log(updated); // { name: "Alice", age: 31, email: "alice@example.com" }
 
-const name = getNestedProperty(user, "name");
+const name = getProperty(user, "name");
 console.log(name); // "Alice"
 ```
 

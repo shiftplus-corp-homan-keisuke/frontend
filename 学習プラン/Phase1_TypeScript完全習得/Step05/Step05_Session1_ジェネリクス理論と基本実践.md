@@ -786,15 +786,6 @@ function updateField<T, K extends keyof T>(obj: T, field: K, value: T[K]): T {
   return { ...obj, [field]: value };
 }
 
-// 2. オブジェクトの特定プロパティを抽出
-function pick<T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
-  const result = {} as Pick<T, K>;
-  keys.forEach((key) => {
-    result[key] = obj[key];
-  });
-  return result;
-}
-
 // 使用例
 const userProfile = {
   id: 1,
@@ -802,7 +793,7 @@ const userProfile = {
   email: "alice@example.com",
   age: 30,
 };
-const publicInfo = pick(userProfile, ["name", "email"]); // { name: string, email: string }
+const publicInfo = updateField(userProfile, 'age', 31); // { id: 1, name: 'Alice', email: 'alice@example.com', age: 31 }
 ```
 
 **⚡ keyof 制約の利点**

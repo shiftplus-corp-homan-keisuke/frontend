@@ -229,15 +229,15 @@ console.log(combined); // "hello: 42"
         *   型： `T[]` （ジェネリック型 `T` の配列）
 
 3.  **メソッド**
-    *   `push(item: T): void`
+    *   `push(item)`
         *   スタックの一番上に新しい要素 `item` を追加します。
-    *   `pop(): T | undefined`
+    *   `pop()`
         *   スタックの一番上の要素を取り除き、その要素を返します。スタックが空の場合は `undefined` を返します。
-    *   `peek(): T | undefined`
+    *   `peek()`
         *   スタックの一番上の要素を、取り除かずに**参照だけ**します（覗き見）。スタックが空の場合は `undefined` を返します。
-    *   `isEmpty(): boolean`
+    *   `isEmpty()`
         *   スタックが空の場合に `true`、そうでない場合に `false` を返します。
-    *   `size(): number`
+    *   `size()`
         *   スタック内の要素の数を返します。
 
 **使用例：**

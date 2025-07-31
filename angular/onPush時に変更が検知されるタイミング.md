@@ -25,7 +25,7 @@ export class UserProfileComponent {
 
 ---
 
-### 2. `OnPush`コンポーネントで変更が検知される「4 つの条件」
+### 2. `OnPush`コンポーネントで変更が検知される「5 つの条件」
 
 `OnPush`を設定したコンポーネントは、以下のいずれかの条件が満たされたときに**のみ**、変更検知が実行され、ビューが更新されます。
 
@@ -149,7 +149,42 @@ export class ClockComponent {
 
 このコンポーネントは、`interval`が 1 秒ごとに新しい値を放出するたびに、`async`パイプのおかげで正しく時刻を更新します。自分で `subscribe`して値を更新するよりも、はるかにクリーンで安全です。
 
-#### ④ 手動で変更検知を要求した時
+#### ④ Signal の値が変更された時
+
+Angular 16 以降で導入された signal を使用した場合、signal の値が変更されると`OnPush`コンポーネントでも自動的に変更検知が実行されます。
+
+**例：**
+
+```typescript
+import {
+  Component,
+  ChangeDetectionStrategy,
+  signal,
+  computed,
+} from "@angular/core";
+
+@Component({
+  selector: "app-signal-counter",
+  template: `
+    <p>Count: {{ count() }}</p>
+    <p>Double: {{ doubleCount() }}</p>
+    <button (click)="increment()">Increment</button>
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class SignalCounterComponent {
+  count = signal(0);
+  doubleCount = computed(() => this.count() * 2);
+
+  increment() {
+    this.count.update((value) => value + 1);
+  }
+}
+```
+
+`count`signal が更新されると、`OnPush`戦略でも自動的に変更検知が実行され、画面が更新されます。`computed`で作成した`doubleCount`も依存する signal の変更に合わせて自動更新されます。
+
+#### ⑤ 手動で変更検知を要求した時
 
 上記の条件に当てはまらないが、どうしても変更をビューに反映させたい場合があります。例えば、`setTimeout`や `WebSocket`のイベントなど、Angular が直接関知しない非同期処理の結果を反映させたい時です。
 
@@ -204,6 +239,7 @@ export class ManualCheckComponent {
 
 - **基本はイミュータブルなデータ操作**: `@Input`は常に新しい参照を渡す。
 - **`async`パイプを積極的に活用する**: `Observable`との組み合わせでコードがシンプルかつ安全になる。
+- **Signal を活用する**: Angular 16 以降では、signal を使うことで手動変更検知が不要になる。
 - **イベントは自動で検知される**ので心配不要。
 - どうしてもの時は**`cdr.markForCheck()`**で手動トリガーする。
 

@@ -177,27 +177,6 @@ const mapped = stringNumberPair.map(
   (num) => num.toString()
 ); // Pair<number, string>
 
-const combined = stringNumberPair.combine((str, num) => `${str}: ${num}`);
-console.log(combined); // "hello: 42"
-// 📖 Pairクラスの実用的な使用例
-// 1. 基本的な使用方法
-const stringNumberPair = new Pair("hello", 42); // Pair<string, number>
-
-// 2. 🌟 型パラメータを交換
-const swapped = stringNumberPair.swap(); // Pair<number, string>
-// 元：("hello", 42) → 結果：(42, "hello")
-
-// 3. 🌟 両方の値を同時に変換
-const mapped = stringNumberPair.map(
-  (str) => str.length, // string → number
-  (num) => num.toString() // number → string
-); // Pair<number, string>
-// 元：("hello", 42) → 結果：(5, "42")
-
-// 4. 🌟 両方の値を組み合わせて新しい値を作成
-const combined = stringNumberPair.combine((str, num) => `${str}: ${num}`);
-console.log(combined); // "hello: 42"
-
 // 💡 実用的なケース
 // - 座標系：Pair<number, number> で (x, y) 座標
 // - キーバリュー：Pair<string, T> でキーと値のペア

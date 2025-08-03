@@ -1,88 +1,371 @@
-# Step07 専門用語集
+# Step07 補足資料: 専門用語集
 
-> 💡 **このファイルについて**: Step07で出てくるクリーンアーキテクチャ関連の重要な専門用語と概念の詳細解説集です。
-
-## 📋 目次
-1. [クリーンアーキテクチャ基本用語](#クリーンアーキテクチャ基本用語)
-2. [レイヤー分離用語](#レイヤー分離用語)
-3. [依存性管理用語](#依存性管理用語)
-4. [設計原則用語](#設計原則用語)
+> 📖 **目的**: Zod・バリデーション・型安全性の重要な概念と用語を詳しく解説
+> 🎯 **対象**: Step07 学習者（Session1-3 全般）
+> 📚 **活用方法**: 学習中の疑問解決・理解の深化・復習時の参照
 
 ---
 
-## クリーンアーキテクチャ基本用語
+## 📚 Zod 基本概念
 
-### クリーンアーキテクチャ（Clean Architecture）
-**定義**: ロバート・C・マーチンが提唱した、依存関係を内側に向けることで保守性と拡張性を高めるアーキテクチャパターン
+### Zod（ゾッド）
 
-**基本構造**:
-```typescript
-// 依存関係の方向: 外側 → 内側
-// Infrastructure → Interface Adapters → Application Business Rules → Enterprise Business Rules
-```
-
+**定義**: TypeScript ファーストなスキーマバリデーションライブラリ  
 **特徴**:
-- **依存性逆転**: 外側のレイヤーが内側のレイヤーに依存
-- **フレームワーク独立**: 特定のフレームワークに依存しない
-- **テスタブル**: ビジネスロジックを独立してテスト可能
-- **UI独立**: UIを変更してもビジネスロジックに影響しない
 
-### エンティティ（Entity）
-**定義**: ビジネスルールをカプセル化したオブジェクト
+- 実行時型安全性の提供
+- TypeScript の型推論との完全統合
+- ゼロ依存関係の軽量ライブラリ
 
-**実装例**:
+**使用例**:
+
 ```typescript
-// ドメインエンティティ
-export class BlogPost {
-  private constructor(
-    private readonly _id: BlogPostId,
-    private _title: string,
-    private _content: string,
-    private _authorId: AuthorId,
-    private _publishedAt: Date | null = null
-  ) {}
+import { z } from "zod";
 
-  static create(title: string, content: string, authorId: AuthorId): BlogPost {
-    const id = BlogPostId.generate();
-    return new BlogPost(id, title, content, authorId);
-  }
+const UserSchema = z.object({
+  name: z.string(),
+  age: z.number(),
+});
 
-  publish(): void {
-    if (this._publishedAt !== null) {
-      throw new Error('記事は既に公開されています');
-    }
-    this._publishedAt = new Date();
-  }
+type User = z.infer<typeof UserSchema>; // { name: string; age: number; }
+```
 
-  get id(): BlogPostId { return this._id; }
-  get title(): string { return this._title; }
-  get isPublished(): boolean { return this._publishedAt !== null; }
+### スキーマ（Schema）
+
+**定義**: データの構造・型・バリデーションルールを定義するオブジェクト  
+**役割**:
+
+- データ検証の基準定義
+- 型情報の提供
+- エラー情報の生成
+
+**階層**:
+
+```typescript
+// プリミティブスキーマ
+z.string();
+z.number();
+z.boolean();
+
+// 複合スキーマ
+z.object({
+  /* ... */
+});
+z.array(z.string());
+z.union([z.string(), z.number()]);
+```
+
+### バリデーション（Validation）
+
+**定義**: データが期待する形式・ルールに適合しているかを検証する処理  
+**種類**:
+
+- **構造バリデーション**: データ型・プロパティの存在確認
+- **制約バリデーション**: 文字数・数値範囲・正規表現等のルール検証
+- **ビジネスルールバリデーション**: 業務固有の複雑な条件検証
+
+### 実行時型安全性（Runtime Type Safety）
+
+**定義**: プログラム実行中にデータの型を検証し、型安全性を保証する仕組み  
+**重要性**:
+
+- TypeScript の型はコンパイル時にのみ有効
+- 外部データ（API、ユーザー入力）は実行時検証が必要
+- 予期しない型エラーによるアプリケーションクラッシュを防止
+
+**比較**:
+
+```typescript
+// コンパイル時のみ（TypeScript標準）
+interface User {
+  name: string;
+  age: number;
+}
+
+// 実行時も検証（Zod）
+const UserSchema = z.object({
+  name: z.string(),
+  age: z.number(),
+});
+
+const userData = JSON.parse(apiResponse); // unknown型
+const user = UserSchema.parse(userData); // 実行時検証 + 型安全
+```
+
+---
+
+## 🔍 Zod の基本操作
+
+### parse()と safeParse()
+
+**parse()**:
+
+- エラー時に例外をスロー
+- 成功時に検証済みデータを返す
+- try-catch 文でのエラーハンドリングが必要
+
+**safeParse()**:
+
+- エラー時も例外をスローしない
+- 成功・失敗の情報を含む Result オブジェクトを返す
+- より安全で推奨される方法
+
+```typescript
+// parse() - 例外スロー
+try {
+  const user = UserSchema.parse(data);
+  console.log(user.name); // 型安全
+} catch (error) {
+  console.error("バリデーションエラー:", error);
+}
+
+// safeParse() - 結果オブジェクト
+const result = UserSchema.safeParse(data);
+if (result.success) {
+  console.log(result.data.name); // 型安全
+} else {
+  console.error("エラー:", result.error.issues);
 }
 ```
 
-### ユースケース（Use Case）
-**定義**: アプリケーション固有のビジネスルールを実装するレイヤー
+### z.infer<>（型推論）
 
-**実装例**:
+**定義**: Zod スキーマから対応する TypeScript 型を自動生成する機能  
+**利点**:
+
+- 型定義の重複排除
+- スキーマと型の同期保証
+- 開発効率の向上
+
 ```typescript
-// アプリケーションサービス（ユースケース）
-export class PublishBlogPostUseCase {
-  constructor(
-    private readonly blogPostRepository: BlogPostRepository,
-    private readonly eventPublisher: EventPublisher
-  ) {}
+const ProductSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string().min(1).max(100),
+  price: z.number().positive(),
+  inStock: z.boolean(),
+  tags: z.array(z.string()),
+  metadata: z.record(z.unknown()).optional(),
+});
 
-  async execute(command: PublishBlogPostCommand): Promise<void> {
-    const blogPost = await this.blogPostRepository.findById(command.blogPostId);
-    if (!blogPost) {
-      throw new Error('記事が見つかりません');
+// 自動的に型が生成される
+type Product = z.infer<typeof ProductSchema>;
+/*
+type Product = {
+  id: string;
+  name: string;
+  price: number;
+  inStock: boolean;
+  tags: string[];
+  metadata?: Record<string, unknown> | undefined;
+}
+*/
+```
+
+---
+
+## 🛠️ 高度なバリデーション
+
+### refine()
+
+**定義**: カスタムバリデーションロジックを追加するメソッド  
+**用途**: 単一値に対する複雑な条件検証
+
+```typescript
+const PasswordSchema = z
+  .string()
+  .min(8, "8文字以上で入力してください")
+  .refine((password) => /[A-Z]/.test(password), {
+    message: "大文字を含めてください",
+  })
+  .refine((password) => /[0-9]/.test(password), {
+    message: "数字を含めてください",
+  });
+```
+
+### superRefine()
+
+**定義**: より柔軟で強力なカスタムバリデーション機能  
+**特徴**:
+
+- 複数の検証を一つの関数内で実行
+- 詳細なエラー情報の設定
+- 条件分岐を含む複雑なロジックの実装
+
+```typescript
+const UserRegistrationSchema = z
+  .object({
+    email: z.string().email(),
+    password: z.string(),
+    confirmPassword: z.string(),
+  })
+  .superRefine((data, ctx) => {
+    // パスワード確認の検証
+    if (data.password !== data.confirmPassword) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["confirmPassword"],
+        message: "パスワードが一致しません",
+      });
     }
 
-    blogPost.publish();
-    await this.blogPostRepository.save(blogPost);
-    
-    await this.eventPublisher.publish(
-      new BlogPostPublishedEvent(blogPost.id, blogPost.title)
+    // メールドメインの検証
+    if (data.email.endsWith("@example.com")) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["email"],
+        message: "このドメインは使用できません",
+      });
+    }
+  });
+```
+
+### transform()
+
+**定義**: バリデーション成功後にデータを変換する機能  
+**用途**:
+
+- データの正規化
+- 型変換
+- 計算値の追加
+
+```typescript
+const DateSchema = z
+  .string()
+  .datetime()
+  .transform((str) => new Date(str));
+
+const UserInputSchema = z.object({
+  name: z.string().transform((name) => name.trim().toLowerCase()),
+  age: z.string().transform((str) => parseInt(str, 10)),
+  tags: z.string().transform((str) => str.split(",").map((tag) => tag.trim())),
+});
+```
+
+---
+
+## 🔗 スキーマ合成
+
+### extend()
+
+**定義**: 既存スキーマに新しいプロパティを追加  
+**特徴**: 元のスキーマを変更せず、新しいスキーマを生成
+
+```typescript
+const BaseUserSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+});
+
+const AdminUserSchema = BaseUserSchema.extend({
+  role: z.literal("admin"),
+  permissions: z.array(z.string()),
+});
+```
+
+### merge()
+
+**定義**: 複数のスキーマを統合  
+**用途**: 共通スキーマの組み合わせ
+
+```typescript
+const TimestampSchema = z.object({
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+const AuditSchema = z.object({
+  createdBy: z.string(),
+  modifiedBy: z.string(),
+});
+
+const BlogPostSchema = z
+  .object({
+    title: z.string(),
+    content: z.string(),
+  })
+  .merge(TimestampSchema)
+  .merge(AuditSchema);
+```
+
+### pick()と omit()
+
+**pick()**: 指定したプロパティのみを選択  
+**omit()**: 指定したプロパティを除外
+
+```typescript
+const FullUserSchema = z.object({
+  id: z.string(),
+  email: z.string(),
+  password: z.string(),
+  name: z.string(),
+  createdAt: z.date(),
+});
+
+// IDと名前のみ
+const UserSummarySchema = FullUserSchema.pick({
+  id: true,
+  name: true,
+});
+
+// パスワードを除外
+const SafeUserSchema = FullUserSchema.omit({
+  password: true,
+});
+
+// 作成用（IDと作成日時を除外）
+const CreateUserSchema = FullUserSchema.omit({
+  id: true,
+  createdAt: true,
+});
+```
+
+---
+
+## 🌐 Angular 統合
+
+### カスタムバリデータ
+
+**定義**: Zod スキーマを Angular Reactive Forms で使用するための変換関数
+
+```typescript
+import { AbstractControl, ValidationErrors, ValidatorFn } from "@angular/forms";
+import { z } from "zod";
+
+export function zodValidator(schema: z.ZodSchema<any>): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    if (!control.value) return null;
+
+    const result = schema.safeParse(control.value);
+    if (result.success) return null;
+
+    const errors: ValidationErrors = {};
+    result.error.errors.forEach((err) => {
+      const key = err.path.length > 0 ? err.path.join(".") : "zodError";
+      errors[key] = { message: err.message };
+    });
+    return errors;
+  };
+}
+```
+
+### 型安全な HTTP 通信
+
+**定義**: API 通信で Zod スキーマによる応答検証を行う仕組み
+
+```typescript
+class ApiService {
+  private apiCall<T>(url: string, schema: z.ZodSchema<T>): Observable<T> {
+    return this.http.get(url).pipe(
+      map((response) => {
+        const result = schema.safeParse(response);
+        if (result.success) {
+          return result.data;
+        } else {
+          throw new Error(
+            `API response validation failed: ${result.error.message}`
+          );
+        }
+      })
     );
   }
 }
@@ -90,397 +373,158 @@ export class PublishBlogPostUseCase {
 
 ---
 
-## レイヤー分離用語
+## 🚨 エラーハンドリング
 
-### ドメイン層（Domain Layer）
-**定義**: ビジネスロジックの中核を担うレイヤー
+### ZodError
 
-**構成要素**:
+**定義**: Zod のバリデーション失敗時に生成されるエラーオブジェクト  
+**構造**:
+
+- `issues`: 個別のエラー情報の配列
+- `message`: エラーの概要メッセージ
+
 ```typescript
-// エンティティ
-export class User {
-  constructor(
-    private readonly id: UserId,
-    private email: Email,
-    private name: UserName
-  ) {}
-}
-
-// 値オブジェクト
-export class Email {
-  constructor(private readonly value: string) {
-    if (!this.isValid(value)) {
-      throw new Error('無効なメールアドレスです');
-    }
-  }
-
-  private isValid(email: string): boolean {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  }
-
-  toString(): string {
-    return this.value;
-  }
-}
-
-// ドメインサービス
-export class UserDomainService {
-  constructor(private userRepository: UserRepository) {}
-
-  async isDuplicateEmail(email: Email): Promise<boolean> {
-    const existingUser = await this.userRepository.findByEmail(email);
-    return existingUser !== null;
-  }
+interface ZodIssue {
+  code: ZodIssueCode;
+  path: (string | number)[];
+  message: string;
+  expected?: string;
+  received?: string;
 }
 ```
 
-### アプリケーション層（Application Layer）
-**定義**: ユースケースを実装し、ドメイン層を調整するレイヤー
+### エラーメッセージのカスタマイズ
 
-**実装例**:
 ```typescript
-// アプリケーションサービス
-export class CreateUserUseCase {
-  constructor(
-    private readonly userRepository: UserRepository,
-    private readonly userDomainService: UserDomainService,
-    private readonly eventPublisher: EventPublisher
-  ) {}
+const CustomMessageSchema = z.object({
+  email: z
+    .string()
+    .min(1, "メールアドレスは必須です")
+    .email("正しいメールアドレス形式で入力してください"),
+  age: z
+    .number()
+    .min(0, "年齢は0以上で入力してください")
+    .max(150, "年齢は150以下で入力してください"),
+});
 
-  async execute(command: CreateUserCommand): Promise<CreateUserResult> {
-    const email = new Email(command.email);
-    const name = new UserName(command.name);
+// 日本語エラーメッセージのフォーマット関数
+function formatZodError(error: z.ZodError): Record<string, string[]> {
+  const fieldErrors: Record<string, string[]> = {};
 
-    // ドメインサービスを使用してビジネスルールをチェック
-    if (await this.userDomainService.isDuplicateEmail(email)) {
-      throw new Error('このメールアドレスは既に使用されています');
+  error.errors.forEach((err) => {
+    const field = err.path.join(".");
+    if (!fieldErrors[field]) {
+      fieldErrors[field] = [];
     }
+    fieldErrors[field].push(err.message);
+  });
 
-    const user = User.create(email, name);
-    await this.userRepository.save(user);
-
-    await this.eventPublisher.publish(new UserCreatedEvent(user.id));
-
-    return new CreateUserResult(user.id);
-  }
-}
-```
-
-### インフラストラクチャ層（Infrastructure Layer）
-**定義**: 外部システムとの連携を担うレイヤー
-
-**実装例**:
-```typescript
-// リポジトリの実装
-export class TypeORMUserRepository implements UserRepository {
-  constructor(private readonly connection: Connection) {}
-
-  async save(user: User): Promise<void> {
-    const userEntity = this.toEntity(user);
-    await this.connection.getRepository(UserEntity).save(userEntity);
-  }
-
-  async findById(id: UserId): Promise<User | null> {
-    const entity = await this.connection
-      .getRepository(UserEntity)
-      .findOne(id.value);
-    
-    return entity ? this.toDomain(entity) : null;
-  }
-
-  private toEntity(user: User): UserEntity {
-    return {
-      id: user.id.value,
-      email: user.email.toString(),
-      name: user.name.toString()
-    };
-  }
-
-  private toDomain(entity: UserEntity): User {
-    return new User(
-      new UserId(entity.id),
-      new Email(entity.email),
-      new UserName(entity.name)
-    );
-  }
+  return fieldErrors;
 }
 ```
 
 ---
 
-## 依存性管理用語
+## 🏗️ 設計パターン
 
-### 依存性逆転の原則（Dependency Inversion Principle）
-**定義**: 高レベルモジュールは低レベルモジュールに依存してはならず、両方とも抽象に依存すべき
+### スキーマファーストアプローチ
 
-**実装例**:
+**定義**: スキーマ定義を起点とした開発手法  
+**手順**:
+
+1. データ構造を Zod スキーマで定義
+2. z.infer で型を自動生成
+3. バリデーション・API・UI で一貫してスキーマを使用
+
+### CRUD スキーマパターン
+
 ```typescript
-// 抽象（インターフェース）
-export interface BlogPostRepository {
-  save(blogPost: BlogPost): Promise<void>;
-  findById(id: BlogPostId): Promise<BlogPost | null>;
-  findByAuthor(authorId: AuthorId): Promise<BlogPost[]>;
-}
+// ベーススキーマ
+const BlogPostSchema = z.object({
+  id: z.string().uuid(),
+  title: z.string().min(1).max(200),
+  content: z.string().min(1),
+  publishedAt: z.date().optional(),
+  authorId: z.string().uuid(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
 
-// 高レベルモジュール（ユースケース）
-export class GetBlogPostsByAuthorUseCase {
-  constructor(
-    private readonly blogPostRepository: BlogPostRepository // 抽象に依存
-  ) {}
+// 用途別スキーマの生成
+export const BlogPostSchemas = {
+  // 作成用（ID、タイムスタンプを除外）
+  create: BlogPostSchema.omit({
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+  }),
 
-  async execute(query: GetBlogPostsByAuthorQuery): Promise<BlogPost[]> {
-    return await this.blogPostRepository.findByAuthor(query.authorId);
-  }
-}
+  // 更新用（ID、タイムスタンプを除外、全て任意）
+  update: BlogPostSchema.omit({
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+  }).partial(),
 
-// 低レベルモジュール（実装）
-export class InMemoryBlogPostRepository implements BlogPostRepository {
-  private blogPosts: Map<string, BlogPost> = new Map();
+  // 一覧表示用（詳細データを除外）
+  list: BlogPostSchema.pick({
+    id: true,
+    title: true,
+    publishedAt: true,
+    authorId: true,
+  }),
 
-  async save(blogPost: BlogPost): Promise<void> {
-    this.blogPosts.set(blogPost.id.value, blogPost);
-  }
+  // 詳細表示用（完全版）
+  detail: BlogPostSchema,
 
-  async findById(id: BlogPostId): Promise<BlogPost | null> {
-    return this.blogPosts.get(id.value) || null;
-  }
+  // 検索用
+  search: z.object({
+    query: z.string().optional(),
+    authorId: z.string().uuid().optional(),
+    published: z.boolean().optional(),
+    limit: z.number().min(1).max(100).default(20),
+    offset: z.number().min(0).default(0),
+  }),
+};
 
-  async findByAuthor(authorId: AuthorId): Promise<BlogPost[]> {
-    return Array.from(this.blogPosts.values())
-      .filter(post => post.authorId.equals(authorId));
-  }
-}
-```
-
-### 依存性注入（Dependency Injection）
-**定義**: オブジェクトの依存関係を外部から注入する設計パターン
-
-**実装例**:
-```typescript
-// DIコンテナ
-export class DIContainer {
-  private services = new Map<string, any>();
-
-  register<T>(key: string, factory: () => T): void {
-    this.services.set(key, factory);
-  }
-
-  resolve<T>(key: string): T {
-    const factory = this.services.get(key);
-    if (!factory) {
-      throw new Error(`Service not found: ${key}`);
-    }
-    return factory();
-  }
-}
-
-// 設定
-const container = new DIContainer();
-
-container.register('BlogPostRepository', () => new InMemoryBlogPostRepository());
-container.register('EventPublisher', () => new InMemoryEventPublisher());
-
-container.register('PublishBlogPostUseCase', () => 
-  new PublishBlogPostUseCase(
-    container.resolve('BlogPostRepository'),
-    container.resolve('EventPublisher')
-  )
-);
+// 型の自動生成
+export type BlogPost = z.infer<typeof BlogPostSchema>;
+export type CreateBlogPost = z.infer<typeof BlogPostSchemas.create>;
+export type UpdateBlogPost = z.infer<typeof BlogPostSchemas.update>;
+export type BlogPostListItem = z.infer<typeof BlogPostSchemas.list>;
+export type BlogPostSearchParams = z.infer<typeof BlogPostSchemas.search>;
 ```
 
 ---
 
-## 設計原則用語
+## 📊 パフォーマンス考慮事項
 
-### 単一責任の原則（Single Responsibility Principle）
-**定義**: クラスは変更する理由を1つだけ持つべき
+### バリデーション最適化
 
-**実装例**:
+**重要ポイント**:
+
+- 早期バリデーション失敗による処理速度向上
+- 複雑なスキーマでは段階的バリデーション
+- キャッシュ活用によるスキーマ再利用
+
 ```typescript
-// 悪い例：複数の責任を持つクラス
-class BadUserService {
-  createUser(userData: any): void {
-    // ユーザー作成
-    // メール送信
-    // ログ出力
-    // データベース保存
-  }
-}
+// パフォーマンスを考慮したスキーマ設計
+const OptimizedUserSchema = z.object({
+  // 必須フィールドを先頭に配置（早期失敗）
+  id: z.string().uuid(),
+  email: z.string().email(),
 
-// 良い例：責任を分離
-class UserFactory {
-  create(email: string, name: string): User {
-    return User.create(new Email(email), new UserName(name));
-  }
-}
-
-class UserRepository {
-  async save(user: User): Promise<void> {
-    // データベース保存のみ
-  }
-}
-
-class EmailService {
-  async sendWelcomeEmail(user: User): Promise<void> {
-    // メール送信のみ
-  }
-}
-
-class CreateUserUseCase {
-  constructor(
-    private userFactory: UserFactory,
-    private userRepository: UserRepository,
-    private emailService: EmailService
-  ) {}
-
-  async execute(command: CreateUserCommand): Promise<void> {
-    const user = this.userFactory.create(command.email, command.name);
-    await this.userRepository.save(user);
-    await this.emailService.sendWelcomeEmail(user);
-  }
-}
-```
-
-### 開放閉鎖の原則（Open/Closed Principle）
-**定義**: ソフトウェアエンティティは拡張に対して開いており、修正に対して閉じているべき
-
-**実装例**:
-```typescript
-// 抽象基底クラス
-abstract class NotificationSender {
-  abstract send(message: string, recipient: string): Promise<void>;
-}
-
-// 具体実装
-class EmailNotificationSender extends NotificationSender {
-  async send(message: string, recipient: string): Promise<void> {
-    // メール送信実装
-  }
-}
-
-class SMSNotificationSender extends NotificationSender {
-  async send(message: string, recipient: string): Promise<void> {
-    // SMS送信実装
-  }
-}
-
-// 新しい通知方法を追加する場合、既存コードを変更せずに拡張
-class SlackNotificationSender extends NotificationSender {
-  async send(message: string, recipient: string): Promise<void> {
-    // Slack送信実装
-  }
-}
-
-// 使用側
-class NotificationService {
-  constructor(private senders: NotificationSender[]) {}
-
-  async sendToAll(message: string, recipient: string): Promise<void> {
-    for (const sender of this.senders) {
-      await sender.send(message, recipient);
-    }
-  }
-}
-```
-
-### 値オブジェクト（Value Object）
-**定義**: 同一性ではなく値によって識別されるオブジェクト
-
-**実装例**:
-```typescript
-export class Money {
-  constructor(
-    private readonly amount: number,
-    private readonly currency: string
-  ) {
-    if (amount < 0) {
-      throw new Error('金額は0以上である必要があります');
-    }
-  }
-
-  add(other: Money): Money {
-    if (this.currency !== other.currency) {
-      throw new Error('異なる通貨同士は計算できません');
-    }
-    return new Money(this.amount + other.amount, this.currency);
-  }
-
-  equals(other: Money): boolean {
-    return this.amount === other.amount && this.currency === other.currency;
-  }
-
-  toString(): string {
-    return `${this.amount} ${this.currency}`;
-  }
-}
-
-// 使用例
-const price1 = new Money(100, 'JPY');
-const price2 = new Money(200, 'JPY');
-const total = price1.add(price2); // 300 JPY
+  // 重い処理は後に配置
+  profileImage: z
+    .instanceof(File)
+    .refine(async (file) => {
+      // 重い画像バリデーション処理
+      return await validateImageFile(file);
+    })
+    .optional(),
+});
 ```
 
 ---
 
-## 📚 実用的なパターン
-
-### リポジトリパターン
-```typescript
-export interface Repository<T, ID> {
-  save(entity: T): Promise<void>;
-  findById(id: ID): Promise<T | null>;
-  delete(id: ID): Promise<void>;
-}
-
-export class BlogPostRepository implements Repository<BlogPost, BlogPostId> {
-  async save(blogPost: BlogPost): Promise<void> {
-    // 実装
-  }
-
-  async findById(id: BlogPostId): Promise<BlogPost | null> {
-    // 実装
-  }
-
-  async delete(id: BlogPostId): Promise<void> {
-    // 実装
-  }
-}
-```
-
-### ファクトリーパターン
-```typescript
-export class BlogPostFactory {
-  static create(title: string, content: string, authorId: AuthorId): BlogPost {
-    // バリデーション
-    if (!title.trim()) {
-      throw new Error('タイトルは必須です');
-    }
-
-    // エンティティ作成
-    return BlogPost.create(title, content, authorId);
-  }
-
-  static reconstruct(
-    id: BlogPostId,
-    title: string,
-    content: string,
-    authorId: AuthorId,
-    publishedAt: Date | null
-  ): BlogPost {
-    // データベースから復元する際に使用
-    return BlogPost.reconstruct(id, title, content, authorId, publishedAt);
-  }
-}
-```
-
----
-
-## 📚 参考リンク
-
-- [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
-- [Domain-Driven Design](https://domainlanguage.com/ddd/)
-- [SOLID Principles](https://en.wikipedia.org/wiki/SOLID)
-
----
-
-**📌 重要**: クリーンアーキテクチャでは、これらの概念を組み合わせて、保守性が高く拡張可能なアプリケーションを構築することが重要です。
+この用語集は、Step07 の Zod 学習における重要な概念を体系的に整理しています。学習中に不明な概念が出てきた際は、この用語集を参照して理解を深めてください。

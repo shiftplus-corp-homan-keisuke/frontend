@@ -74,7 +74,7 @@ abstract class BaseStore {
 #### After（Step05）: ジェネリクス＋継承の設計
 ```typescript
 // 型安全性が大幅に向上
-abstract class GenericStore<T extends BaseEntity> {
+abstract class BaseStore<T extends BaseEntity> {
   protected items: T[] = []; // T型で型安全
   
   abstract add(item: T): boolean;
@@ -118,7 +118,7 @@ interface Channel extends BaseEntity {
 
 ```typescript
 // T extends BaseEntity で型制約を適用
-abstract class GenericStore<T extends BaseEntity> {
+abstract class BaseStore<T extends BaseEntity> {
   protected items: T[] = [];
 
   // 共通メソッド（型安全）
@@ -156,7 +156,7 @@ abstract class GenericStore<T extends BaseEntity> {
 
 ```typescript
 // ユーザーストア（ジェネリック制約付き）
-class UserStore extends GenericStore<User> {
+class UserStore extends BaseStore<User> {
   public add(user: User): boolean {
     // 型安全：userは確実にUser型
     if (this.findById(user.id)) {
@@ -190,7 +190,7 @@ class UserStore extends GenericStore<User> {
 }
 
 // チャンネルストア（ジェネリック制約付き）
-class ChannelStore extends GenericStore<Channel> {
+class ChannelStore extends BaseStore<Channel> {
   public add(channel: Channel): boolean {
     if (this.findById(channel.id)) {
       return false; // 既に存在
@@ -350,7 +350,7 @@ function demonstrateGenericBenefits(): void {
   channelStore.add(new ChannelEntity(1, "テストチャンネル", "text"));
 
   // ポリモーフィズム（型安全）
-  const stores: GenericStore<BaseEntity>[] = [userStore, channelStore];
+  const stores: BaseStore<BaseEntity>[] = [userStore, channelStore];
   const storeNames = ["ユーザーストア", "チャンネルストア"];
 
   // 同じコードで異なる型のストアを操作
@@ -415,7 +415,7 @@ A: 型パラメータTが必ずBaseEntityのプロパティ（id、name）を持
 A: コンパイル時に型チェックが行われ、間違った型のデータを追加しようとするとエラーになるためです。
 
 **Q: 新しいエンティティ型を追加するには？**
-A: BaseEntityを継承したインターフェースと、GenericStoreを継承したストアクラスを作成するだけです。
+A: BaseEntityを継承したインターフェースと、BaseStoreを継承したストアクラスを作成するだけです。
 
 ### 🔍 実装上のポイント
 
@@ -476,7 +476,7 @@ interface Channel extends BaseEntity {
 
 ```typescript
 // TODO: ジェネリック制約付き抽象クラスを作成してください
-abstract class GenericStore<T extends BaseEntity> {
+abstract class BaseStore<T extends BaseEntity> {
   // TODO: 型安全なプロパティを定義
   protected items: T[] = [];
 
@@ -514,7 +514,7 @@ abstract class GenericStore<T extends BaseEntity> {
 
 ```typescript
 // TODO: ユーザーストアを実装してください
-class UserStore extends GenericStore<User> {
+class UserStore extends BaseStore<User> {
   // TODO: 抽象メソッドを実装
   public add(user: User): boolean {
     // 型安全なユーザー追加処理
@@ -544,7 +544,7 @@ class UserStore extends GenericStore<User> {
 }
 
 // TODO: チャンネルストアを実装してください
-class ChannelStore extends GenericStore<Channel> {
+class ChannelStore extends BaseStore<Channel> {
   // TODO: 抽象メソッドを実装
   public add(channel: Channel): boolean {
     return false;
@@ -570,7 +570,7 @@ class ChannelStore extends GenericStore<Channel> {
 **ファイル**: `main.ts`
 
 ```typescript
-import { UserEntity, UserStore, ChannelEntity, ChannelStore, GenericStore, BaseEntity } from "./store";
+import { UserEntity, UserStore, ChannelEntity, ChannelStore, BaseStore, BaseEntity } from "./store";
 
 // TODO: 基本機能のテスト
 function testBasicFunctionality(): void {
@@ -592,7 +592,7 @@ function demonstrateGenericBenefits(): void {
   console.log("=== ジェネリクスの利点実演 ===");
   
   // TODO: ポリモーフィズムの実演
-  // const stores: GenericStore<BaseEntity>[] = [userStore, channelStore];
+  // const stores: BaseStore<BaseEntity>[] = [userStore, channelStore];
   
   // TODO: 同じコードで異なる型のストアを操作
 }
@@ -637,7 +637,7 @@ interface Product extends BaseEntity {
   price: number;
 }
 
-class ProductStore extends GenericStore<Product> {
+class ProductStore extends BaseStore<Product> {
   // 共通メソッドは自動的に利用可能
   // add, findById, remove, getAll, count, clear, findByName
 }
@@ -664,14 +664,14 @@ class ProductStore extends GenericStore<Product> {
 - [ ] 型制約が適切に設定されている
 
 ### ジェネリッククラスの確認
-- [ ] `GenericStore<T extends BaseEntity>` が定義されている
+- [ ] `BaseStore<T extends BaseEntity>` が定義されている
 - [ ] 型安全な `items: T[]` プロパティを使用している
 - [ ] 共通メソッドが型安全に実装されている
 - [ ] ジェネリック制約を活用したメソッドがある
 
 ### 具体クラスの確認
-- [ ] `UserStore` が `GenericStore<User>` を継承している
-- [ ] `ChannelStore` が `GenericStore<Channel>` を継承している
+- [ ] `UserStore` が `BaseStore<User>` を継承している
+- [ ] `ChannelStore` が `BaseStore<Channel>` を継承している
 - [ ] 全ての抽象メソッドが実装されている
 - [ ] 型固有のメソッドが追加されている
 
@@ -697,7 +697,7 @@ interface BaseEntity {
 
 **ジェネリック制約**：
 ```typescript
-abstract class GenericStore<T extends BaseEntity> {
+abstract class BaseStore<T extends BaseEntity> {
   protected items: T[] = [];
   
   public findByName(name: string): T | undefined {
@@ -708,7 +708,7 @@ abstract class GenericStore<T extends BaseEntity> {
 
 **型安全な実装**：
 ```typescript
-class UserStore extends GenericStore<User> {
+class UserStore extends BaseStore<User> {
   public add(user: User): boolean {
     if (this.findById(user.id)) {
       return false;
@@ -759,26 +759,7 @@ class UserStore extends GenericStore<User> {
 1. **Step03からの改良点**（2分）
    - ジェネリクス導入による変化
    - 型安全
-  protected items: T[] = [];
-  
-  public findByName(name: string): T | undefined {
-    return this.items.find(item => item.name === name);
-  }
-}
-```
 
-**型安全な実装**：
-```typescript
-class UserStore extends GenericStore<User> {
-  public add(user: User): boolean {
-    if (this.findById(user.id)) {
-      return false;
-    }
-    this.items.push(user);
-    return true;
-  }
-}
-```
 
 ---
 

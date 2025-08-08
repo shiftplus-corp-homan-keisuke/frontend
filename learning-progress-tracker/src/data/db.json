@@ -1,0 +1,396 @@
+{
+  "users": [
+    {
+      "id": "user-1",
+      "name": "学習者",
+      "email": "learner@example.com",
+      "avatar": null,
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    }
+  ],
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "TypeScript完全習得",
+      "description": "TypeScript基礎から上級まで包括的に学習し、型システムを完全にマスターする",
+      "duration": 12,
+      "order": 1,
+      "prerequisites": [],
+      "learningObjectives": [
+        "型システムの完全理解",
+        "ジェネリクスの実践的活用",
+        "高度な型操作の習得",
+        "Compiler APIの理解"
+      ],
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "phase-2",
+      "name": "TypeScript×React完全習得",
+      "description": "ReactとTypeScriptの統合開発をマスターし、実践的なアプリケーション開発を学習",
+      "duration": 10,
+      "order": 2,
+      "prerequisites": ["phase-1"],
+      "learningObjectives": [
+        "React + TypeScriptの型安全な開発",
+        "状態管理の最適化",
+        "パフォーマンス最適化",
+        "テスト駆動開発"
+      ],
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "phase-3",
+      "name": "TypeScript×Next.js完全習得",
+      "description": "Next.jsとTypeScriptを使用したフルスタック開発の習得",
+      "duration": 8,
+      "order": 3,
+      "prerequisites": ["phase-2"],
+      "learningObjectives": [
+        "Next.js App Routerの活用",
+        "SSR/SSGの実装",
+        "API開発とデータベース連携",
+        "デプロイメントとパフォーマンス最適化"
+      ],
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "task-1-1",
+      "phaseId": "phase-1",
+      "title": "型エラーの理解と解決",
+      "description": "TypeScriptの型エラーを理解し、適切に解決する方法を学習",
+      "type": "theory",
+      "status": "not_started",
+      "priority": "high",
+      "estimatedHours": 4,
+      "actualHours": null,
+      "dueDate": "2025-01-07T00:00:00.000Z",
+      "dependencies": [],
+      "requirements": ["TypeScript基礎知識"],
+      "artifacts": [],
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "task-1-2",
+      "phaseId": "phase-1",
+      "title": "基本型とユニオン型の実践",
+      "description": "プリミティブ型、オブジェクト型、ユニオン型を使った実践的なコーディング",
+      "type": "practice",
+      "status": "not_started",
+      "priority": "high",
+      "estimatedHours": 6,
+      "actualHours": null,
+      "dueDate": "2025-01-10T00:00:00.000Z",
+      "dependencies": ["task-1-1"],
+      "requirements": ["型エラーの理解"],
+      "artifacts": [],
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "task-1-3",
+      "phaseId": "phase-1",
+      "title": "ジェネリクスの基礎と応用",
+      "description": "ジェネリクスを使った再利用可能な型定義の作成",
+      "type": "theory",
+      "status": "not_started",
+      "priority": "medium",
+      "estimatedHours": 8,
+      "actualHours": null,
+      "dueDate": "2025-01-15T00:00:00.000Z",
+      "dependencies": ["task-1-2"],
+      "requirements": ["基本型の理解"],
+      "artifacts": [],
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "task-1-4",
+      "phaseId": "phase-1",
+      "title": "型ガードとアサーション",
+      "description": "型の絞り込みと型アサーションの適切な使用方法",
+      "type": "practice",
+      "status": "not_started",
+      "priority": "medium",
+      "estimatedHours": 5,
+      "actualHours": null,
+      "dueDate": "2025-01-20T00:00:00.000Z",
+      "dependencies": ["task-1-3"],
+      "requirements": ["ジェネリクスの理解"],
+      "artifacts": [],
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "task-1-5",
+      "phaseId": "phase-1",
+      "title": "TypeScript実践プロジェクト",
+      "description": "学習した内容を統合したミニプロジェクトの作成",
+      "type": "project",
+      "status": "not_started",
+      "priority": "high",
+      "estimatedHours": 12,
+      "actualHours": null,
+      "dueDate": "2025-01-30T00:00:00.000Z",
+      "dependencies": ["task-1-4"],
+      "requirements": ["TypeScript基礎の完全理解"],
+      "artifacts": [],
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "task-2-1",
+      "phaseId": "phase-2",
+      "title": "React + TypeScript環境構築",
+      "description": "TypeScriptを使用したReactプロジェクトのセットアップ",
+      "type": "practice",
+      "status": "not_started",
+      "priority": "high",
+      "estimatedHours": 3,
+      "actualHours": null,
+      "dueDate": "2025-02-03T00:00:00.000Z",
+      "dependencies": [],
+      "requirements": ["TypeScript完全習得"],
+      "artifacts": [],
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "task-2-2",
+      "phaseId": "phase-2",
+      "title": "コンポーネントの型定義",
+      "description": "Propsとstateの型安全な定義方法",
+      "type": "theory",
+      "status": "not_started",
+      "priority": "high",
+      "estimatedHours": 6,
+      "actualHours": null,
+      "dueDate": "2025-02-07T00:00:00.000Z",
+      "dependencies": ["task-2-1"],
+      "requirements": ["React基礎知識"],
+      "artifacts": [],
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "task-2-3",
+      "phaseId": "phase-2",
+      "title": "状態管理とTypeScript",
+      "description": "Zustand、Context APIでの型安全な状態管理",
+      "type": "practice",
+      "status": "not_started",
+      "priority": "medium",
+      "estimatedHours": 8,
+      "actualHours": null,
+      "dueDate": "2025-02-14T00:00:00.000Z",
+      "dependencies": ["task-2-2"],
+      "requirements": ["コンポーネント型定義の理解"],
+      "artifacts": [],
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    }
+  ],
+  "studySessions": [
+    {
+      "id": "session-1",
+      "userId": "user-1",
+      "taskId": "task-1-1",
+      "phaseId": "phase-1",
+      "startTime": "2025-01-02T09:00:00.000Z",
+      "endTime": "2025-01-02T10:30:00.000Z",
+      "duration": 90,
+      "notes": "型エラーの基本概念を学習。まだ理解が浅い部分があるので復習が必要。",
+      "productivity": 4,
+      "createdAt": "2025-01-02T10:30:00.000Z"
+    },
+    {
+      "id": "session-2",
+      "userId": "user-1",
+      "taskId": "task-1-1",
+      "phaseId": "phase-1",
+      "startTime": "2025-01-03T14:00:00.000Z",
+      "endTime": "2025-01-03T16:00:00.000Z",
+      "duration": 120,
+      "notes": "実際のコードで型エラーを修正する練習。理解が深まった。",
+      "productivity": 5,
+      "createdAt": "2025-01-03T16:00:00.000Z"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "artifact-1",
+      "userId": "user-1",
+      "taskId": "task-1-1",
+      "phaseId": "phase-1",
+      "title": "型エラー解決サンプルコード",
+      "description": "よくある型エラーとその解決方法をまとめたサンプルコード集",
+      "type": "code",
+      "fileUrl": null,
+      "externalUrl": "https://github.com/example/typescript-error-samples",
+      "tags": ["typescript", "error-handling", "beginner"],
+      "isPublic": true,
+      "metadata": {
+        "language": "typescript",
+        "framework": null,
+        "difficulty": "beginner"
+      },
+      "createdAt": "2025-01-03T16:30:00.000Z",
+      "updatedAt": "2025-01-03T16:30:00.000Z"
+    }
+  ],
+  "progress": [
+    {
+      "id": "progress-1",
+      "userId": "user-1",
+      "phaseId": "phase-1",
+      "taskId": null,
+      "completedTasks": 0,
+      "totalTasks": 5,
+      "completionRate": 0,
+      "totalStudyTime": 210,
+      "lastActivityAt": "2025-01-03T16:00:00.000Z",
+      "streak": 2,
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-03T16:00:00.000Z"
+    },
+    {
+      "id": "progress-2",
+      "userId": "user-1",
+      "phaseId": "phase-2",
+      "taskId": null,
+      "completedTasks": 0,
+      "totalTasks": 3,
+      "completionRate": 0,
+      "totalStudyTime": 0,
+      "lastActivityAt": "2025-01-01T00:00:00.000Z",
+      "streak": 0,
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "progress-3",
+      "userId": "user-1",
+      "phaseId": "phase-3",
+      "taskId": null,
+      "completedTasks": 0,
+      "totalTasks": 0,
+      "completionRate": 0,
+      "totalStudyTime": 0,
+      "lastActivityAt": "2025-01-01T00:00:00.000Z",
+      "streak": 0,
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    }
+  ],
+  "resources": [
+    {
+      "id": "resource-1",
+      "phaseId": "phase-1",
+      "title": "TypeScript公式ドキュメント",
+      "description": "TypeScriptの公式ドキュメント。基礎から上級まで網羅的に学習できる",
+      "type": "documentation",
+      "url": "https://www.typescriptlang.org/docs/",
+      "tags": ["official", "comprehensive", "reference"],
+      "difficulty": "beginner",
+      "estimatedReadTime": 0,
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "resource-2",
+      "phaseId": "phase-1",
+      "title": "TypeScript Deep Dive",
+      "description": "TypeScriptの詳細な解説書。実践的な内容が豊富",
+      "type": "book",
+      "url": "https://basarat.gitbook.io/typescript/",
+      "tags": ["deep-dive", "practical", "advanced"],
+      "difficulty": "intermediate",
+      "estimatedReadTime": 480,
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "resource-3",
+      "phaseId": "phase-2",
+      "title": "React TypeScript Cheatsheet",
+      "description": "React + TypeScriptの実践的なパターン集",
+      "type": "reference",
+      "url": "https://react-typescript-cheatsheet.netlify.app/",
+      "tags": ["react", "cheatsheet", "patterns"],
+      "difficulty": "intermediate",
+      "estimatedReadTime": 120,
+      "createdAt": "2025-01-01T00:00:00.000Z",
+      "updatedAt": "2025-01-01T00:00:00.000Z"
+    }
+  ],
+  "activities": [
+    {
+      "id": "activity-1",
+      "userId": "user-1",
+      "type": "task_started",
+      "description": "タスク「型エラーの理解と解決」を開始しました",
+      "metadata": {
+        "taskId": "task-1-1",
+        "taskTitle": "型エラーの理解と解決"
+      },
+      "createdAt": "2025-01-02T09:00:00.000Z"
+    },
+    {
+      "id": "activity-2",
+      "userId": "user-1",
+      "type": "study_session_completed",
+      "description": "学習セッションを完了しました（90分）",
+      "metadata": {
+        "sessionId": "session-1",
+        "duration": 90,
+        "productivity": 4
+      },
+      "createdAt": "2025-01-02T10:30:00.000Z"
+    },
+    {
+      "id": "activity-3",
+      "userId": "user-1",
+      "type": "artifact_created",
+      "description": "成果物「型エラー解決サンプルコード」を作成しました",
+      "metadata": {
+        "artifactId": "artifact-1",
+        "artifactTitle": "型エラー解決サンプルコード"
+      },
+      "createdAt": "2025-01-03T16:30:00.000Z"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "notification-1",
+      "userId": "user-1",
+      "type": "deadline_reminder",
+      "title": "タスクの期限が近づいています",
+      "message": "「型エラーの理解と解決」の期限まであと3日です",
+      "isRead": false,
+      "metadata": {
+        "taskId": "task-1-1",
+        "dueDate": "2025-01-07T00:00:00.000Z"
+      },
+      "createdAt": "2025-01-04T09:00:00.000Z"
+    },
+    {
+      "id": "notification-2",
+      "userId": "user-1",
+      "type": "streak_milestone",
+      "title": "学習継続記録を更新！",
+      "message": "2日連続で学習を継続しています。この調子で頑張りましょう！",
+      "isRead": false,
+      "metadata": {
+        "streak": 2
+      },
+      "createdAt": "2025-01-03T16:00:00.000Z"
+    }
+  ]
+}

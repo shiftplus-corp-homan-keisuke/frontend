@@ -70,25 +70,49 @@ const item2: ColorSize = "blue-large"; // OK
 
 ##### 1. 型推論との連携
 
-ジェネリックな関数内でテンプレートリテラル型を使うと、渡された引数から型を推論し、より具体的な型を導き出すことができます。
+テンプレートリテラル型とジェネリクスを組み合わせることで得られる大きな利点は、**「特定のパターンを持つ文字列リテラルしか受け付けないように制約をかけ、プログラムの安全性と開発者体験を向上させる」**点にあります。
 
 ```typescript
-// 型推論を使った動的なメッセージ生成
-function createMessage<T extends string>(prefix: T): `message-${T}` {
-  return `message-${prefix}`;
+// 利用可能なAPIリソースの型を定義
+type ApiResource = "users" | "posts" | "products";
+
+// APIクライアントを作成する関数
+function createApiClient() {
+  const fetchData = async <T>(endpoint: string): Promise<T> => {
+    // 実際のアプリケーションでは、ここでfetch APIなどを使ってデータを取得します
+    console.log(`Fetching data from: ${endpoint}`);
+    // 以下はダミーのレスポンスです
+    return {} as T;
+  };
+
+  return {
+    // GETリクエスト用のメソッド
+    // Tはリソース名を受け取るジェネリック型
+    get<T extends ApiResource>(resource: T) {
+      // テンプレートリテラル型でエンドポイントの型を動的に生成
+      const endpoint: `/api/${T}` = `/api/${resource}`;
+      return fetchData<any[]>(endpoint);
+    },
+    
+    // 特定のIDを持つリソースを取得するメソッド
+    getById<T extends ApiResource>(resource: T, id: number) {
+      // こちらも同様に、より複雑なエンドポイントの型を生成
+      const endpoint: `/api/${T}/${number}` = `/api/${resource}/${id}`;
+      return fetchData<any>(endpoint);
+    }
+  };
 }
 
-// TypeScriptが引数から型を推論し、戻り値の型を決定する
-const errorMsg = createMessage("error"); // 型: "message-error"
-const warningMsg = createMessage("warning"); // 型: "message-warning"
-const infoMsg = createMessage("info"); // 型: "message-info"
+const apiClient = createApiClient();
 
-// 型推論により、戻り値の型が具体的に決まる
-function handleMessage(msg: "message-error" | "message-warning") {
-  console.log(`Handling: ${msg}`);
-}
+// --- 正しい使い方 ---
+// 引数 'users' からエンドポイントの型が `/api/users` と推論される
+apiClient.get("users");      // OK: "Fetching data from: /api/users" と出力される
 
-handleMessage(errorMsg); // OK: errorMsgの型は "message-error"
-handleMessage(warningMsg); // OK: warningMsgの型は "message-warning"
-// handleMessage(infoMsg);    // エラー: "message-info" は受け付けられない
+// 引数 'posts', 123 からエンドポイントの型が `/api/posts/123` と推論される
+apiClient.getById("posts", 123); // OK: "Fetching data from: /api/posts/123" と出力される
+
+// --- 間違った使い方（エディタがエラーを検知） ---
+// apiClient.get("comments");      // 型エラー: Argument of type '"comments"' is not assignable to parameter of type 'ApiResource'.
+// apiClient.getById("products");  // 型エラー: Expected 2 arguments, but got 1.
 ```

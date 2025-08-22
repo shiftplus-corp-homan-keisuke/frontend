@@ -1,301 +1,398 @@
-# Step08 専門用語集
+```markdown
+# Step08 補足資料：専門用語集
 
-> 💡 **このファイルについて**: Step08で出てくるライブラリ統合と型定義関連の重要な専門用語と概念の詳細解説集です。
-
-## 📋 目次
-1. [型定義関連用語](#型定義関連用語)
-2. [ライブラリ統合用語](#ライブラリ統合用語)
-3. [モジュール解決用語](#モジュール解決用語)
-4. [宣言ファイル用語](#宣言ファイル用語)
+> 💡 **目的**: SOLID 原則学習で使用する専門用語の詳細解説
+> 🎯 **対象**: Session0-5 学習者
+> ⏰ **利用方法**: 学習中の参照・復習時の辞書として活用
 
 ---
 
-## 型定義関連用語
+## 📚 SOLID 原則 基本用語
 
-### 型定義ファイル（Type Definition File）
-**定義**: TypeScriptの型情報を提供する`.d.ts`ファイル
+### SOLID 原則全体
 
-**実装例**:
-```typescript
-// types/api.d.ts
-declare namespace API {
-  interface User {
-    id: number;
-    name: string;
-    email: string;
-  }
-  
-  interface Response<T> {
-    data: T;
-    status: number;
-    message: string;
-  }
-}
+#### **SOLID 原則 (SOLID Principles)**
 
-// 使用例
-const user: API.User = {
-  id: 1,
-  name: "Alice",
-  email: "alice@example.com"
-};
-```
+オブジェクト指向設計の 5 つの基本原則の頭文字を取った略称。ロバート・C・マーティンによって提唱された。
 
-### アンビエント宣言（Ambient Declaration）
-**定義**: 実装を持たない型のみの宣言
+- **S**: Single Responsibility Principle（単一責任の原則）
+- **O**: Open/Closed Principle（オープン・クローズドの原則）
+- **L**: Liskov Substitution Principle（リスコフの置換原則）
+- **I**: Interface Segregation Principle（インターフェース分離の原則）
+- **D**: Dependency Inversion Principle（依存性逆転の原則）
 
-**実装例**:
-```typescript
-// グローバル変数の宣言
-declare const VERSION: string;
-declare const API_URL: string;
+#### **設計原則 (Design Principles)**
 
-// 外部ライブラリの宣言
-declare module 'my-library' {
-  export function doSomething(value: string): number;
-  export interface Config {
-    timeout: number;
-    retries: number;
-  }
-}
-```
+ソフトウェア設計において、保守性・拡張性・再利用性を高めるためのガイドライン。SOLID 原則はその代表例。
+
+#### **オブジェクト指向設計 (Object-Oriented Design)**
+
+オブジェクトを中心とした設計手法。カプセル化・継承・ポリモーフィズムの概念を活用。
 
 ---
 
-## ライブラリ統合用語
+## 🔍 SRP（単一責任の原則）関連用語
 
-### DefinitelyTyped
-**定義**: TypeScript型定義の公式リポジトリ
+### SRP 詳細
 
-**使用例**:
-```bash
-# @types パッケージのインストール
-npm install -D @types/lodash
-npm install -D @types/express
-npm install -D @types/node
-```
+#### **単一責任の原則 (Single Responsibility Principle)**
 
-### 型互換性（Type Compatibility）
-**定義**: 異なる型間での代入可能性
+「クラスは変更する理由を 1 つだけ持つべきである」という原則。各クラスが 1 つの責任のみを持つことで、変更の影響範囲を限定する。
 
-**実装例**:
-```typescript
-// 構造的型付け
-interface Point2D {
-  x: number;
-  y: number;
-}
+#### **責任 (Responsibility)**
 
-interface Point3D {
-  x: number;
-  y: number;
-  z: number;
-}
+クラスが持つ機能や役割。ビジネス要求や機能要件に対応する。責任が明確であることが重要。
 
-let point2D: Point2D = { x: 1, y: 2 };
-let point3D: Point3D = { x: 1, y: 2, z: 3 };
+#### **変更の理由 (Reason to Change)**
 
-// Point3DはPoint2Dと互換性がある
-point2D = point3D; // OK
-// point3D = point2D; // Error: zプロパティがない
-```
+クラスを修正する必要が生じる理由。SRP では、この理由が 1 つであることを求める。
+
+#### **関心の分離 (Separation of Concerns)**
+
+異なる関心事（責任）を別々のモジュールやクラスに分割する設計手法。
+
+#### **高結合 (High Coupling)**
+
+クラス間の依存関係が強い状態。変更の影響が広範囲に及ぶため、保守性が低下する。
+
+#### **低結合 (Low Coupling)**
+
+クラス間の依存関係が弱い状態。独立性が高く、変更の影響を局所化できる。
+
+#### **凝集度 (Cohesion)**
+
+クラス内の要素がどれだけ関連しているかの度合い。高凝集が望ましい。
 
 ---
 
-## モジュール解決用語
+## 🔓 OCP（オープン・クローズドの原則）関連用語
 
-### モジュール解決戦略（Module Resolution Strategy）
-**定義**: TypeScriptがモジュールを見つける方法
+### OCP 詳細
 
-**設定例**:
-```json
-// tsconfig.json
-{
-  "compilerOptions": {
-    "moduleResolution": "node",
-    "baseUrl": "./src",
-    "paths": {
-      "@/*": ["*"],
-      "@/components/*": ["components/*"],
-      "@/utils/*": ["utils/*"]
-    }
-  }
-}
-```
+#### **オープン・クローズドの原則 (Open/Closed Principle)**
 
-### トリプルスラッシュディレクティブ
-**定義**: ファイルの依存関係を指定する特別なコメント
+「ソフトウェアエンティティは拡張に対して開放的で、変更に対して閉鎖的であるべき」という原則。
 
-**実装例**:
-```typescript
-/// <reference types="node" />
-/// <reference path="./custom-types.d.ts" />
+#### **拡張に開放的 (Open for Extension)**
 
-// Node.jsの型定義を使用可能
-const fs = require('fs');
-```
+新しい機能や振る舞いを追加できる状態。継承やコンポジションによって実現。
 
----
+#### **変更に閉鎖的 (Closed for Modification)**
 
-## 宣言ファイル用語
+既存のコードを変更せずに済む状態。新機能追加時に既存コードの修正が不要。
 
-### declare module
-**定義**: モジュールの型定義を宣言
+#### **ポリモーフィズム (Polymorphism)**
 
-**実装例**:
-```typescript
-// types/custom-modules.d.ts
-declare module '*.css' {
-  const content: { [className: string]: string };
-  export default content;
-}
+同一のインターフェースを通じて異なる実装を呼び出せる仕組み。OCP の実現に重要。
 
-declare module '*.json' {
-  const value: any;
-  export default value;
-}
+#### **抽象化 (Abstraction)**
 
-declare module 'my-custom-library' {
-  export interface Options {
-    timeout: number;
-    retries: number;
-  }
-  
-  export function initialize(options: Options): void;
-  export function process(data: string): Promise<string>;
-}
-```
+具体的な実装の詳細を隠蔽し、重要な特性のみを表現する手法。
 
-### declare global
-**定義**: グローバルスコープに型を追加
+#### **Strategy パターン**
 
-**実装例**:
-```typescript
-// types/global.d.ts
-declare global {
-  interface Window {
-    myCustomProperty: string;
-    myCustomFunction: (value: string) => void;
-  }
-  
-  namespace NodeJS {
-    interface ProcessEnv {
-      NODE_ENV: 'development' | 'production' | 'test';
-      API_URL: string;
-      DATABASE_URL: string;
-    }
-  }
-}
+アルゴリズムのファミリーを定義し、それらを交換可能にするデザインパターン。OCP の実現によく使用される。
 
-export {}; // モジュールとして扱うために必要
-```
+#### **Template Method パターン**
+
+アルゴリズムの骨格を定義し、サブクラスで具体的なステップを実装するパターン。
 
 ---
 
-## 📚 実用的なパターン
+## 🔄 LSP（リスコフの置換原則）関連用語
 
-### ライブラリラッパーの作成
-```typescript
-// wrappers/axios-wrapper.ts
-import axios, { AxiosResponse, AxiosRequestConfig } from 'axios';
+### LSP 詳細
 
-interface ApiResponse<T> {
-  data: T;
-  status: number;
-  message: string;
-}
+#### **リスコフの置換原則 (Liskov Substitution Principle)**
 
-class ApiClient {
-  private baseURL: string;
-  
-  constructor(baseURL: string) {
-    this.baseURL = baseURL;
-  }
-  
-  async get<T>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
-    const response: AxiosResponse<ApiResponse<T>> = await axios.get(
-      `${this.baseURL}${url}`,
-      config
-    );
-    return response.data;
-  }
-  
-  async post<T, D>(
-    url: string, 
-    data: D, 
-    config?: AxiosRequestConfig
-  ): Promise<ApiResponse<T>> {
-    const response: AxiosResponse<ApiResponse<T>> = await axios.post(
-      `${this.baseURL}${url}`,
-      data,
-      config
-    );
-    return response.data;
-  }
-}
+「基底クラスのオブジェクトを派生クラスのオブジェクトで置換できなければならない」という原則。
 
-export { ApiClient };
-export type { ApiResponse };
-```
+#### **置換可能性 (Substitutability)**
 
-### 型安全なイベントエミッター
-```typescript
-// utils/typed-event-emitter.ts
-interface EventMap {
-  'user:login': { userId: string; timestamp: Date };
-  'user:logout': { userId: string };
-  'data:update': { id: string; data: any };
-}
+基底クラスの参照を派生クラスのインスタンスで置き換えても、プログラムの正常性が保たれること。
 
-class TypedEventEmitter<T extends Record<string, any>> {
-  private listeners: { [K in keyof T]?: Array<(data: T[K]) => void> } = {};
-  
-  on<K extends keyof T>(event: K, listener: (data: T[K]) => void): void {
-    if (!this.listeners[event]) {
-      this.listeners[event] = [];
-    }
-    this.listeners[event]!.push(listener);
-  }
-  
-  emit<K extends keyof T>(event: K, data: T[K]): void {
-    const eventListeners = this.listeners[event];
-    if (eventListeners) {
-      eventListeners.forEach(listener => listener(data));
-    }
-  }
-  
-  off<K extends keyof T>(event: K, listener: (data: T[K]) => void): void {
-    const eventListeners = this.listeners[event];
-    if (eventListeners) {
-      const index = eventListeners.indexOf(listener);
-      if (index > -1) {
-        eventListeners.splice(index, 1);
-      }
-    }
-  }
-}
+#### **前提条件 (Precondition)**
 
-// 使用例
-const emitter = new TypedEventEmitter<EventMap>();
+メソッド実行前に満たすべき条件。派生クラスでは前提条件を強化してはいけない。
 
-emitter.on('user:login', (data) => {
-  // dataは{ userId: string; timestamp: Date }型
-  console.log(`User ${data.userId} logged in at ${data.timestamp}`);
-});
+#### **事後条件 (Postcondition)**
 
-emitter.emit('user:login', {
-  userId: 'user123',
-  timestamp: new Date()
-});
-```
+メソッド実行後に保証される条件。派生クラスでは事後条件を弱化してはいけない。
+
+#### **不変条件 (Invariant)**
+
+オブジェクトの生存期間中常に真でなければならない条件。
+
+#### **契約による設計 (Design by Contract)**
+
+前提条件・事後条件・不変条件を明確に定義する設計手法。
+
+#### **共変性 (Covariance)**
+
+派生クラスでより具体的な型を返すことができる性質。戻り値の型に関して。
+
+#### **反変性 (Contravariance)**
+
+派生クラスでより抽象的な型を受け入れることができる性質。パラメータの型に関して。
 
 ---
 
-## 📚 参考リンク
+## 🔗 ISP（インターフェース分離の原則）関連用語
 
-- [TypeScript Declaration Files](https://www.typescriptlang.org/docs/handbook/declaration-files/introduction.html)
-- [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped)
-- [Module Resolution](https://www.typescriptlang.org/docs/handbook/module-resolution.html)
+### ISP 詳細
+
+#### **インターフェース分離の原則 (Interface Segregation Principle)**
+
+「クライアントは、使用しないメソッドに依存することを強いられるべきではない」という原則。
+
+#### **肥大化したインターフェース (Fat Interface)**
+
+多くのメソッドを含む巨大なインターフェース。ISP 違反の典型例。
+
+#### **インターフェースの汚染 (Interface Pollution)**
+
+不要なメソッドがインターフェースに含まれることで生じる問題。
+
+#### **役割ベースのインターフェース (Role-based Interface)**
+
+特定の役割や責任に基づいて設計されたインターフェース。ISP に準拠。
+
+#### **クライアント特化インターフェース (Client-specific Interface)**
+
+特定のクライアントの要求に特化したインターフェース。
+
+#### **アダプターパターン (Adapter Pattern)**
+
+互換性のないインターフェース間を仲介するデザインパターン。ISP の実現に使用。
 
 ---
 
-**📌 重要**: ライブラリ統合では、型安全性を保ちながら外部ライブラリを効果的に活用することが重要です。適切な型定義により、開発効率と品質を向上させることができます。
+## ⚡ DIP（依存性逆転の原則）関連用語
+
+### DIP 詳細
+
+#### **依存性逆転の原則 (Dependency Inversion Principle)**
+
+「上位モジュールは下位モジュールに依存してはならない。どちらも抽象に依存すべきである」という原則。
+
+#### **依存性注入 (Dependency Injection, DI)**
+
+オブジェクトの依存関係を外部から注入する設計手法。DIP を実現する主要な方法。
+
+#### **制御の逆転 (Inversion of Control, IoC)**
+
+制御の流れを逆転させる設計原則。フレームワークが主導権を握る。
+
+#### **DI コンテナ (DI Container)**
+
+依存関係の解決と注入を自動化するツール。サービスロケーターとも呼ばれる。
+
+#### **サービスライフタイム (Service Lifetime)**
+
+依存性注入されるサービスの生存期間の管理方法。
+
+- **Singleton**: アプリケーション全体で 1 つのインスタンス
+- **Scoped**: 特定のスコープ内で 1 つのインスタンス
+- **Transient**: 要求の度に新しいインスタンス
+
+#### **コンストラクタ注入 (Constructor Injection)**
+
+コンストラクタのパラメータを通じて依存関係を注入する方法。最も推奨される。
+
+#### **セッター注入 (Setter Injection)**
+
+セッターメソッドを通じて依存関係を注入する方法。
+
+#### **インターフェース注入 (Interface Injection)**
+
+専用のインターフェースを通じて依存関係を注入する方法。
+
+---
+
+## 🏗️ アーキテクチャ・設計パターン関連用語
+
+### 設計パターン
+
+#### **デザインパターン (Design Patterns)**
+
+よくある設計問題に対する再利用可能な解決策。GoF パターンが有名。
+
+#### **創造パターン (Creational Patterns)**
+
+オブジェクトの生成に関するパターン。Factory、Builder、Singleton など。
+
+#### **構造パターン (Structural Patterns)**
+
+オブジェクトの構造に関するパターン。Adapter、Decorator、Composite など。
+
+#### **振る舞いパターン (Behavioral Patterns)**
+
+オブジェクト間の相互作用に関するパターン。Strategy、Observer、Command など。
+
+### アーキテクチャパターン
+
+#### **Clean Architecture**
+
+ロバート・C・マーティンが提唱した、依存関係を内側に向けるアーキテクチャ。
+
+#### **レイヤードアーキテクチャ (Layered Architecture)**
+
+機能を層に分割したアーキテクチャ。Presentation、Business、Data レイヤーなど。
+
+#### **ヘキサゴナルアーキテクチャ (Hexagonal Architecture)**
+
+ポートアンドアダプターとも呼ばれる。外部システムとの結合を低くする。
+
+#### **ドメイン駆動設計 (Domain-Driven Design, DDD)**
+
+ドメイン知識を中心とした設計手法。複雑なビジネスロジックの表現に適する。
+
+---
+
+## 🧪 テスト・品質関連用語
+
+### テスタビリティ
+
+#### **テスタビリティ (Testability)**
+
+システムやコードがテストしやすい度合い。SOLID 原則により向上する。
+
+#### **単体テスト (Unit Test)**
+
+最小単位（通常は関数やメソッド）のテスト。
+
+#### **統合テスト (Integration Test)**
+
+複数のコンポーネントが連携して動作することを確認するテスト。
+
+#### **モック (Mock)**
+
+テスト対象の依存関係を模擬するオブジェクト。
+
+#### **スタブ (Stub)**
+
+テストで使用する単純な代替実装。
+
+#### **テストダブル (Test Double)**
+
+テストで使用する代替オブジェクトの総称。Mock、Stub、Fake、Spy を含む。
+
+### コード品質
+
+#### **保守性 (Maintainability)**
+
+コードが変更・修正しやすい度合い。SOLID 原則の主要な目標。
+
+#### **拡張性 (Extensibility)**
+
+新機能を追加しやすい度合い。OCP によって向上する。
+
+#### **再利用性 (Reusability)**
+
+コンポーネントが他の場面で再利用できる度合い。
+
+#### **可読性 (Readability)**
+
+コードが理解しやすい度合い。適切な名前付けと構造化が重要。
+
+---
+
+## 🔧 TypeScript 固有用語
+
+### 型システム
+
+#### **インターフェース (Interface)**
+
+オブジェクトの形状を定義する TypeScript の機能。契約を表現するのに使用。
+
+#### **ジェネリクス (Generics)**
+
+型を引数として受け取る仕組み。型安全性を保ちながら汎用的な実装を可能にする。
+
+#### **条件型 (Conditional Types)**
+
+条件に基づいて型を決定する TypeScript の高度な機能。
+
+#### **マップ型 (Mapped Types)**
+
+既存の型から新しい型を生成する TypeScript の機能。
+
+#### **ユーティリティ型 (Utility Types)**
+
+TypeScript が提供する便利な型変換ツール。Partial、Required、Pick、Omit など。
+
+### 型安全性
+
+#### **型安全性 (Type Safety)**
+
+実行時エラーをコンパイル時に検出できる性質。
+
+#### **型ガード (Type Guards)**
+
+実行時に型を判別する仕組み。
+
+#### **型アサーション (Type Assertion)**
+
+開発者が型を明示的に指定する仕組み。
+
+---
+
+## 📖 実践用語集
+
+### リファクタリング
+
+#### **リファクタリング (Refactoring)**
+
+外部動作を変えずに内部構造を改善すること。SOLID 原則適用の主要手段。
+
+#### **段階的リファクタリング (Incremental Refactoring)**
+
+少しずつ段階的にコードを改善していく手法。
+
+#### **レガシーコード (Legacy Code)**
+
+テストがない、または変更が困難な既存コード。
+
+#### **技術的負債 (Technical Debt)**
+
+短期的な解決策により生じる長期的な保守コスト。
+
+### 品質指標
+
+#### **循環的複雑度 (Cyclomatic Complexity)**
+
+プログラムの複雑さを測る指標。分岐の数に基づく。
+
+#### **結合度 (Coupling)**
+
+モジュール間の依存関係の強さ。低結合が望ましい。
+
+#### **凝集度 (Cohesion)**
+
+モジュール内の要素の関連性の強さ。高凝集が望ましい。
+
+---
+
+## 💡 学習効果を高めるための活用方法
+
+### 辞書的利用
+
+- 学習中に分からない用語が出たら即座に参照
+- 各 Session の内容理解度チェックに活用
+
+### 復習での活用
+
+- Session 完了後の知識定着確認に使用
+- 定期的な全体復習時の記憶喚起に活用
+
+### 実践での活用
+
+- 実際のプロジェクトで設計する際の参照資料として
+- チームメンバーとの設計議論での共通言語として
+
+---
+
+**📌 重要**: この用語集は生きた資料です。学習の進捗に合わせて必要に応じて参照し、理解を深めてください。
+
+**🌟 次のステップ**: 各用語の理解が深まったら、実践的なコード例で確認していきましょう！
+```

@@ -221,6 +221,314 @@ class UserRepository {
 
 このクラスを変更する理由は、「データの保存方法が変わったとき」**だけ**です。
 
+## Angular での具体例
+
+Angular アプリケーションでも、同様に SRP を適用することができます。ここでは、ユーザー管理機能を Angular で実装する例を見てみましょう。
+
+### 違反している例（Angular）：
+
+```typescript
+import { Component } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+
+@Component({
+  selector: "app-user",
+  template: `
+    <div>
+      <h2>ユーザー管理</h2>
+      <form [formGroup]="userForm" (ngSubmit)="saveUser()">
+        <input formControlName="name" placeholder="名前" />
+        <input formControlName="email" placeholder="メール" />
+        <button type="submit">保存</button>
+      </form>
+      <div *ngIf="message">{{ message }}</div>
+    </div>
+  `,
+})
+export class UserComponent {
+  userForm: FormGroup;
+  message = "";
+
+  constructor(private http: HttpClient, private fb: FormBuilder) {
+    this.userForm = this.fb.group({
+      name: ["", Validators.required],
+      email: ["", [Validators.required, Validators.email]],
+    });
+  }
+
+  // 責任1: ユーザー情報のバリデーション
+  validateUser(): boolean {
+    if (this.userForm.get("name")?.value?.length < 2) {
+      this.message = "名前は2文字以上入力してください";
+      return false;
+    }
+    if (!this.userForm.get("email")?.valid) {
+      this.message = "有効なメールアドレスを入力してください";
+      return false;
+    }
+    return true;
+  }
+
+  // 責任2: HTTP通信でのデータ保存
+  saveUser() {
+    if (!this.validateUser()) {
+      return;
+    }
+
+    const userData = this.userForm.value;
+    this.http.post("/api/users", userData).subscribe({
+      next: () => {
+        this.message = "ユーザーが保存されました";
+        this.userForm.reset();
+      },
+      error: (error) => {
+        this.message = "エラーが発生しました: " + error.message;
+      },
+    });
+  }
+
+  // 責任3: UI状態の管理
+  resetForm() {
+    this.userForm.reset();
+    this.message = "";
+  }
+}
+```
+
+このコンポーネントは、以下の 3 つの責任を持っています：
+
+1. ユーザー情報のバリデーション
+2. HTTP 通信でのデータ保存
+3. UI 状態の管理
+
+### 準拠している例（Angular）：
+
+責任を分離してより良い設計にしてみましょう。
+
+```typescript
+// models/user.model.ts - ユーザーデータの定義
+export interface User {
+  name: string;
+  email: string;
+}
+
+// services/user-validation.service.ts - バリデーション専用サービス
+import { Injectable } from "@angular/core";
+import { AbstractControl, ValidationErrors, ValidatorFn } from "@angular/forms";
+
+export interface ValidationResult {
+  isValid: boolean;
+  message?: string;
+}
+
+@Injectable({
+  providedIn: "root",
+})
+export class UserValidationService {
+  // Angular用のカスタムバリデーター関数を提供
+  nameValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value;
+      if (!value || value.length < 2) {
+        return { nameLength: { message: "名前は2文字以上入力してください" } };
+      }
+      return null;
+    };
+  }
+
+  emailValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value;
+      if (!value) {
+        return { required: { message: "メールアドレスは必須です" } };
+      }
+      if (!value.includes("@") || !value.includes(".")) {
+        return {
+          emailFormat: { message: "有効なメールアドレスを入力してください" },
+        };
+      }
+      return null;
+    };
+  }
+
+  // ビジネスレベルのバリデーション（APIサブミット前）
+  validateForSubmit(user: User): ValidationResult {
+    // より複雑なビジネスルールがある場合はここで実装
+    if (user.email.endsWith("@example.com")) {
+      return {
+        isValid: false,
+        message: "テスト用のメールアドレスは使用できません",
+      };
+    }
+    return { isValid: true };
+  }
+}
+
+// services/user-api.service.ts - API通信専用サービス
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Observable } from "rxjs";
+
+@Injectable({
+  providedIn: "root",
+})
+export class UserApiService {
+  constructor(private http: HttpClient) {}
+
+  saveUser(user: User): Observable<any> {
+    return this.http.post("/api/users", user);
+  }
+
+  getUsers(): Observable<User[]> {
+    return this.http.get<User[]>("/api/users");
+  }
+}
+
+// components/user.component.ts - UI表示・操作専用コンポーネント
+import { Component } from "@angular/core";
+import { FormBuilder, FormGroup } from "@angular/forms";
+import { UserValidationService } from "../services/user-validation.service";
+import { UserApiService } from "../services/user-api.service";
+import { User } from "../models/user.model";
+
+@Component({
+  selector: "app-user",
+  template: `
+    <div>
+      <h2>ユーザー管理</h2>
+      <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+        <div>
+          <input formControlName="name" placeholder="名前" />
+          <div
+            *ngIf="userForm.get('name')?.errors?.['nameLength']"
+            class="error"
+          >
+            {{ userForm.get('name')?.errors?.['nameLength']?.message }}
+          </div>
+        </div>
+
+        <div>
+          <input formControlName="email" placeholder="メール" />
+          <div
+            *ngIf="userForm.get('email')?.errors?.['required']"
+            class="error"
+          >
+            {{ userForm.get('email')?.errors?.['required']?.message }}
+          </div>
+          <div
+            *ngIf="userForm.get('email')?.errors?.['emailFormat']"
+            class="error"
+          >
+            {{ userForm.get('email')?.errors?.['emailFormat']?.message }}
+          </div>
+        </div>
+
+        <button type="submit" [disabled]="userForm.invalid">保存</button>
+        <button type="button" (click)="resetForm()">リセット</button>
+      </form>
+      <div *ngIf="message" [class]="messageClass">{{ message }}</div>
+    </div>
+  `,
+})
+export class UserComponent {
+  userForm: FormGroup;
+  message = "";
+  messageClass = "";
+
+  constructor(
+    private fb: FormBuilder,
+    private userValidation: UserValidationService,
+    private userApi: UserApiService
+  ) {
+    // バリデーションロジックを完全にサービスに委任
+    this.userForm = this.fb.group({
+      name: ["", [this.userValidation.nameValidator()]],
+      email: ["", [this.userValidation.emailValidator()]],
+    });
+  }
+
+  onSubmit() {
+    if (this.userForm.invalid) {
+      this.showMessage("入力内容を確認してください", "error");
+      return;
+    }
+
+    const userData: User = this.userForm.value;
+
+    // ビジネスレベルのバリデーションチェック
+    const validationResult = this.userValidation.validateForSubmit(userData);
+
+    if (!validationResult.isValid) {
+      this.showMessage(validationResult.message!, "error");
+      return;
+    }
+
+    // API通信を専用サービスに委任
+    this.userApi.saveUser(userData).subscribe({
+      next: () => {
+        this.showMessage("ユーザーが保存されました", "success");
+        this.resetForm();
+      },
+      error: (error) => {
+        this.showMessage("エラーが発生しました: " + error.message, "error");
+      },
+    });
+  }
+
+  resetForm() {
+    this.userForm.reset();
+    this.message = "";
+  }
+
+  private showMessage(message: string, type: "success" | "error") {
+    this.message = message;
+    this.messageClass = type;
+  }
+}
+```
+
+### 分離後のメリット：
+
+1. **`UserValidationService`**: すべてのバリデーションロジックを一元管理
+
+   - **Angular Validators 統合**: カスタム ValidatorFn を提供して Reactive Forms と完全統合
+   - **リアルタイムバリデーション**: フォーム入力中に即座にエラー表示
+   - **ビジネスルール**: より複雑な業務ルール（例：特定ドメインの禁止）を一箇所で管理
+   - **再利用可能**: 他のコンポーネントでも同じバリデーションルールを使用可能
+   - **テスト容易**: バリデーションロジックを独立してテスト可能
+
+2. **`UserApiService`**: API 通信のみに集中
+
+   - API エンドポイント変更時の影響範囲が限定される
+   - 他の機能（ユーザー一覧表示など）でも再利用可能
+
+3. **`UserComponent`**: UI 表示・操作のみに集中
+   - **単純な UI 制御**: フォームの状態管理とイベントハンドリングのみ
+   - **バリデーション表示**: サービスから提供されたエラーメッセージの表示のみ
+   - **疎結合**: バリデーションロジック変更がコンポーネントに影響しない
+
+### バリデーション設計のポイント：
+
+**✅ 単一責任の原則に完全準拠:**
+
+- **UserValidationService**: すべてのバリデーション責任を一箇所に集約
+- **UserComponent**: UI 表示・操作のみに責任を限定
+
+**✅ Angular ベストプラクティス:**
+
+- **Reactive Forms 統合**: カスタム ValidatorFn で Angular の仕組みと完全統合
+- **リアルタイムフィードバック**: ユーザー入力時に即座にバリデーション結果を表示
+- **型安全性**: ValidationErrors インターフェースで型安全なエラーハンドリング
+
+**✅ 保守性・拡張性:**
+
+- バリデーションルール追加時は`UserValidationService`のみ変更
+- 他のフォームコンポーネントでも同じバリデーターを再利用可能
+- テストはサービス単位で独立して実行可能
+
+この設計により、各部分が独立して変更・テスト・再利用できるようになり、保守性の高い Angular アプリケーションを構築することができます。
+
 ## まとめ
 
 「変更するための理由」とは、**そのコードが責任を持つ「関心事」や「役割」**と考えると分かりやすいです。

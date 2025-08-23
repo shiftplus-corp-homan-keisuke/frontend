@@ -152,306 +152,240 @@ console.log(`会員価格: ${calculator.calculate(price, memberStrategy)}`); // 
 
 ## Angular での具体例
 
-Angular アプリケーションでも、オープン・クローズドの原則は非常に重要です。特に、バリデーター機能やデータ処理パイプラインなどで威力を発揮します。
+Angular アプリケーションでも、オープン・クローズドの原則は非常に重要です。シンプルなメッセージ表示機能を例に見てみましょう。
 
 ### 違反している例（Angular）：
 
-フォームバリデーション機能を例に見てみましょう。最初はメールバリデーションのみ対応していました。
+ユーザーにメッセージを表示するサービスを作ります。最初は成功メッセージだけを表示する機能でした。
 
 ```typescript
-// validators/form-validator.service.ts - 初期バージョン
+// services/message.service.ts - 初期バージョン
 import { Injectable } from "@angular/core";
-import { AbstractControl, ValidationErrors } from "@angular/forms";
 
-export enum ValidationType {
-  EMAIL = "email",
+export enum MessageType {
+  SUCCESS = "success",
 }
 
 @Injectable({
   providedIn: "root",
 })
-export class FormValidatorService {
-  validate(
-    control: AbstractControl,
-    type: ValidationType
-  ): ValidationErrors | null {
-    if (type === ValidationType.EMAIL) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (control.value && !emailRegex.test(control.value)) {
-        return { email: { message: "有効なメールアドレスを入力してください" } };
-      }
+export class MessageService {
+  showMessage(message: string, type: MessageType): void {
+    if (type === MessageType.SUCCESS) {
+      // 成功メッセージの表示処理
+      console.log(`✅ SUCCESS: ${message}`);
+      alert(`成功: ${message}`);
     }
-    return null;
   }
 }
 ```
 
-しかし、新しい要求が次々と来ました：
+しかし、新しい要求が来ました：
 
-- 「電話番号バリデーションを追加してほしい」
-- 「パスワード強度チェックを追加してほしい」
-- 「カスタム文字列長チェックを追加してほしい」
+- 「エラーメッセージも表示したい」
+- 「警告メッセージも追加してほしい」
+- 「情報メッセージも欲しい」
 
-従来のアプローチでは、毎回`FormValidatorService`を**修正**する必要があります：
+従来のアプローチでは、毎回`MessageService`を**修正**する必要があります：
 
 ```typescript
-// validators/form-validator.service.ts - 修正版（OCP違反）
+// services/message.service.ts - 修正版（OCP違反）
 import { Injectable } from "@angular/core";
-import { AbstractControl, ValidationErrors } from "@angular/forms";
 
 // 新しい種類を追加するたびに修正が必要
-export enum ValidationType {
-  EMAIL = "email",
-  PHONE = "phone", // ← 追加
-  PASSWORD = "password", // ← 追加
-  CUSTOM_LENGTH = "length", // ← 追加
+export enum MessageType {
+  SUCCESS = "success",
+  ERROR = "error", // ← 追加
+  WARNING = "warning", // ← 追加
+  INFO = "info", // ← 追加
 }
 
 @Injectable({
   providedIn: "root",
 })
-export class FormValidatorService {
-  validate(
-    control: AbstractControl,
-    type: ValidationType,
-    options?: any
-  ): ValidationErrors | null {
-    // 新しいバリデーションを追加するたびに、このメソッドを修正する必要がある
-    if (type === ValidationType.EMAIL) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (control.value && !emailRegex.test(control.value)) {
-        return { email: { message: "有効なメールアドレスを入力してください" } };
-      }
+export class MessageService {
+  showMessage(message: string, type: MessageType): void {
+    // 新しいメッセージタイプを追加するたびに、このメソッドを修正する必要がある
+    if (type === MessageType.SUCCESS) {
+      console.log(`✅ SUCCESS: ${message}`);
+      alert(`成功: ${message}`);
     }
 
     // 👇 新しい機能のために既存のメソッドを修正（OCP違反）
-    if (type === ValidationType.PHONE) {
-      const phoneRegex = /^\d{3}-\d{4}-\d{4}$/;
-      if (control.value && !phoneRegex.test(control.value)) {
-        return {
-          phone: { message: "電話番号は000-0000-0000の形式で入力してください" },
-        };
-      }
+    if (type === MessageType.ERROR) {
+      console.log(`❌ ERROR: ${message}`);
+      alert(`エラー: ${message}`);
     }
 
-    if (type === ValidationType.PASSWORD) {
-      if (control.value && control.value.length < 8) {
-        return {
-          password: { message: "パスワードは8文字以上で入力してください" },
-        };
-      }
+    if (type === MessageType.WARNING) {
+      console.log(`⚠️ WARNING: ${message}`);
+      alert(`警告: ${message}`);
     }
 
-    if (type === ValidationType.CUSTOM_LENGTH) {
-      const minLength = options?.minLength || 0;
-      const maxLength = options?.maxLength || Infinity;
-      if (
-        control.value &&
-        (control.value.length < minLength || control.value.length > maxLength)
-      ) {
-        return {
-          customLength: {
-            message: `文字数は${minLength}文字以上${maxLength}文字以下で入力してください`,
-          },
-        };
-      }
+    if (type === MessageType.INFO) {
+      console.log(`ℹ️ INFO: ${message}`);
+      alert(`情報: ${message}`);
     }
-
-    return null;
   }
 }
 ```
 
 この設計の問題点：
 
-- 新しいバリデーションが必要になるたびに`FormValidatorService`を修正する必要がある
-- `validate`メソッドがどんどん長くなり、複雑になる
-- 一つのバリデーション修正が他のバリデーションに影響を与えるリスク
+- 新しいメッセージタイプが必要になるたびに`MessageService`を修正する必要がある
+- `showMessage`メソッドがどんどん長くなり、複雑になる
+- 一つのメッセージ処理の修正が他のメッセージ処理に影響を与えるリスク
 
 ### 準拠している例（Angular）：
 
-オープン・クローズドの原則に従って、バリデーション戦略を抽象化します。
+オープン・クローズドの原則に従って、メッセージ表示戦略を抽象化します。
 
-**ステップ 1: バリデーション戦略のインターフェースを定義**
+**ステップ 1: メッセージ戦略のインターフェースを定義**
 
 ```typescript
-// interfaces/validator.interface.ts
-import { AbstractControl, ValidationErrors } from "@angular/forms";
-
-export interface IValidator {
-  validate(control: AbstractControl, options?: any): ValidationErrors | null;
-  getErrorMessage(errors: ValidationErrors): string;
+// interfaces/message-strategy.interface.ts
+export interface IMessageStrategy {
+  display(message: string): void;
+  getIcon(): string;
 }
 ```
 
-**ステップ 2: 具体的なバリデーション戦略を個別のクラスとして実装**
+**ステップ 2: 具体的なメッセージ戦略を個別のクラスとして実装**
 
 ```typescript
-// validators/email-validator.ts
+// strategies/success-message.strategy.ts
 import { Injectable } from "@angular/core";
-import { AbstractControl, ValidationErrors } from "@angular/forms";
-import { IValidator } from "../interfaces/validator.interface";
+import { IMessageStrategy } from "../interfaces/message-strategy.interface";
 
 @Injectable({
   providedIn: "root",
 })
-export class EmailValidator implements IValidator {
-  validate(control: AbstractControl): ValidationErrors | null {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!control.value) {
-      return null; // 空の場合は他のバリデーター（required）に任せる
-    }
-
-    if (!emailRegex.test(control.value)) {
-      return { email: { message: "有効なメールアドレスを入力してください" } };
-    }
-
-    return null;
+export class SuccessMessageStrategy implements IMessageStrategy {
+  display(message: string): void {
+    console.log(`✅ SUCCESS: ${message}`);
+    // より洗練された表示（例: トースト通知）
+    this.showToast(`成功: ${message}`, "success");
   }
 
-  getErrorMessage(errors: ValidationErrors): string {
-    return errors["email"]?.message || "メールアドレスが無効です";
+  getIcon(): string {
+    return "✅";
+  }
+
+  private showToast(message: string, type: string): void {
+    // 実際のトースト表示ロジック
+    const toast = document.createElement("div");
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    // 3秒後に削除
+    setTimeout(() => {
+      document.body.removeChild(toast);
+    }, 3000);
   }
 }
 
-// validators/phone-validator.ts
+// strategies/error-message.strategy.ts
 @Injectable({
   providedIn: "root",
 })
-export class PhoneValidator implements IValidator {
-  validate(
-    control: AbstractControl,
-    options?: { format?: string }
-  ): ValidationErrors | null {
-    const format = options?.format || "xxx-xxxx-xxxx";
-    const phoneRegex =
-      format === "xxx-xxxx-xxxx" ? /^\d{3}-\d{4}-\d{4}$/ : /^\d{11}$/;
-
-    if (!control.value) {
-      return null;
-    }
-
-    if (!phoneRegex.test(control.value)) {
-      return {
-        phone: {
-          message: `電話番号は${format}の形式で入力してください`,
-          actualFormat: format,
-        },
-      };
-    }
-
-    return null;
+export class ErrorMessageStrategy implements IMessageStrategy {
+  display(message: string): void {
+    console.log(`❌ ERROR: ${message}`);
+    this.showToast(`エラー: ${message}`, "error");
   }
 
-  getErrorMessage(errors: ValidationErrors): string {
-    return errors["phone"]?.message || "電話番号が無効です";
+  getIcon(): string {
+    return "❌";
+  }
+
+  private showToast(message: string, type: string): void {
+    const toast = document.createElement("div");
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+      document.body.removeChild(toast);
+    }, 5000); // エラーは少し長く表示
   }
 }
 
-// validators/password-strength-validator.ts
+// strategies/warning-message.strategy.ts
 @Injectable({
   providedIn: "root",
 })
-export class PasswordStrengthValidator implements IValidator {
-  validate(
-    control: AbstractControl,
-    options?: { minLength?: number; requireSpecial?: boolean }
-  ): ValidationErrors | null {
-    const minLength = options?.minLength || 8;
-    const requireSpecial = options?.requireSpecial || false;
-
-    if (!control.value) {
-      return null;
-    }
-
-    const errors: any = {};
-
-    if (control.value.length < minLength) {
-      errors.minLength = {
-        message: `パスワードは${minLength}文字以上で入力してください`,
-        requiredLength: minLength,
-      };
-    }
-
-    if (requireSpecial && !/[!@#$%^&*(),.?":{}|<>]/.test(control.value)) {
-      errors.specialChar = {
-        message: "パスワードには特殊文字を含めてください",
-      };
-    }
-
-    if (Object.keys(errors).length > 0) {
-      return { password: errors };
-    }
-
-    return null;
+export class WarningMessageStrategy implements IMessageStrategy {
+  display(message: string): void {
+    console.log(`⚠️ WARNING: ${message}`);
+    this.showToast(`警告: ${message}`, "warning");
   }
 
-  getErrorMessage(errors: ValidationErrors): string {
-    const passwordErrors = errors["password"];
-    if (passwordErrors.minLength) return passwordErrors.minLength.message;
-    if (passwordErrors.specialChar) return passwordErrors.specialChar.message;
-    return "パスワードが要件を満たしていません";
+  getIcon(): string {
+    return "⚠️";
+  }
+
+  private showToast(message: string, type: string): void {
+    const toast = document.createElement("div");
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+      document.body.removeChild(toast);
+    }, 4000);
   }
 }
 ```
 
-**ステップ 3: バリデーター管理サービスを作成**
+**ステップ 3: メッセージサービスを更新**
 
 ```typescript
-// services/validator-manager.service.ts
+// services/message.service.ts - OCP準拠版
 import { Injectable } from "@angular/core";
-import { AbstractControl, ValidationErrors } from "@angular/forms";
-import { IValidator } from "../interfaces/validator.interface";
+import { IMessageStrategy } from "../interfaces/message-strategy.interface";
+import { SuccessMessageStrategy } from "../strategies/success-message.strategy";
+import { ErrorMessageStrategy } from "../strategies/error-message.strategy";
+import { WarningMessageStrategy } from "../strategies/warning-message.strategy";
 
 @Injectable({
   providedIn: "root",
 })
-export class ValidatorManagerService {
-  // バリデーターの実行 - 新しいバリデーターが追加されても修正不要
-  executeValidator(
-    validator: IValidator,
-    control: AbstractControl,
-    options?: any
-  ): ValidationErrors | null {
-    return validator.validate(control, options);
+export class MessageService {
+  private strategies = new Map<string, IMessageStrategy>();
+
+  constructor(
+    private successStrategy: SuccessMessageStrategy,
+    private errorStrategy: ErrorMessageStrategy,
+    private warningStrategy: WarningMessageStrategy
+  ) {
+    // 戦略を登録
+    this.strategies.set("success", this.successStrategy);
+    this.strategies.set("error", this.errorStrategy);
+    this.strategies.set("warning", this.warningStrategy);
   }
 
-  // 複数のバリデーターを組み合わせる
-  combineValidators(validators: { validator: IValidator; options?: any }[]) {
-    return (control: AbstractControl): ValidationErrors | null => {
-      let combinedErrors: ValidationErrors = {};
-
-      for (const { validator, options } of validators) {
-        const errors = validator.validate(control, options);
-        if (errors) {
-          combinedErrors = { ...combinedErrors, ...errors };
-        }
-      }
-
-      return Object.keys(combinedErrors).length > 0 ? combinedErrors : null;
-    };
-  }
-
-  // エラーメッセージの取得
-  getErrorMessages(
-    errors: ValidationErrors,
-    validators: IValidator[]
-  ): string[] {
-    const messages: string[] = [];
-
-    for (const validator of validators) {
-      try {
-        const message = validator.getErrorMessage(errors);
-        if (message) {
-          messages.push(message);
-        }
-      } catch (e) {
-        // このバリデーターに関連するエラーがない場合は無視
-      }
+  showMessage(message: string, type: string): void {
+    const strategy = this.strategies.get(type);
+    if (strategy) {
+      strategy.display(message);
+    } else {
+      console.warn(`未知のメッセージタイプ: ${type}`);
     }
+  }
 
-    return messages;
+  // 新しい戦略を追加する（拡張）
+  addStrategy(type: string, strategy: IMessageStrategy): void {
+    this.strategies.set(type, strategy);
+  }
+
+  getAvailableTypes(): string[] {
+    return Array.from(this.strategies.keys());
+  }
+
+  getIcon(type: string): string {
+    const strategy = this.strategies.get(type);
+    return strategy ? strategy.getIcon() : "?";
   }
 }
 ```
@@ -459,272 +393,185 @@ export class ValidatorManagerService {
 **ステップ 4: Angular コンポーネントでの使用**
 
 ```typescript
-// components/user-form.component.ts
-import { Component, OnInit } from "@angular/core";
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { ValidatorManagerService } from "../services/validator-manager.service";
-import { EmailValidator } from "../validators/email-validator";
-import { PhoneValidator } from "../validators/phone-validator";
-import { PasswordStrengthValidator } from "../validators/password-strength-validator";
+// components/demo.component.ts
+import { Component } from "@angular/core";
+import { MessageService } from "../services/message.service";
 
 @Component({
-  selector: "app-user-form",
+  selector: "app-demo",
   template: `
-    <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
-      <mat-form-field appearance="outline">
-        <mat-label>メールアドレス</mat-label>
-        <input matInput formControlName="email" type="email" />
-        <mat-error
-          *ngIf="
-            userForm.get('email')?.errors && userForm.get('email')?.touched
-          "
-        >
-          {{ getErrorMessage("email") }}
-        </mat-error>
-      </mat-form-field>
+    <div class="demo-container">
+      <h2>メッセージデモ</h2>
 
-      <mat-form-field appearance="outline">
-        <mat-label>電話番号</mat-label>
-        <input matInput formControlName="phone" placeholder="000-0000-0000" />
-        <mat-error
-          *ngIf="
-            userForm.get('phone')?.errors && userForm.get('phone')?.touched
-          "
-        >
-          {{ getErrorMessage("phone") }}
-        </mat-error>
-      </mat-form-field>
+      <div class="button-group">
+        <button class="btn btn-success" (click)="showSuccess()">
+          成功メッセージ {{ messageService.getIcon("success") }}
+        </button>
 
-      <mat-form-field appearance="outline">
-        <mat-label>パスワード</mat-label>
-        <input matInput formControlName="password" type="password" />
-        <mat-error
-          *ngIf="
-            userForm.get('password')?.errors &&
-            userForm.get('password')?.touched
-          "
-        >
-          {{ getErrorMessage("password") }}
-        </mat-error>
-      </mat-form-field>
+        <button class="btn btn-danger" (click)="showError()">
+          エラーメッセージ {{ messageService.getIcon("error") }}
+        </button>
 
-      <button
-        mat-raised-button
-        color="primary"
-        type="submit"
-        [disabled]="userForm.invalid"
-      >
-        登録
-      </button>
-    </form>
+        <button class="btn btn-warning" (click)="showWarning()">
+          警告メッセージ {{ messageService.getIcon("warning") }}
+        </button>
+      </div>
+
+      <div class="info">
+        <p>利用可能なメッセージタイプ: {{ getAvailableTypes() }}</p>
+      </div>
+    </div>
   `,
-  styleUrls: ["./user-form.component.scss"],
+  styles: [
+    `
+      .demo-container {
+        padding: 20px;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .button-group {
+        display: flex;
+        gap: 10px;
+        margin: 20px 0;
+      }
+
+      .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .btn-success {
+        background-color: #28a745;
+        color: white;
+      }
+      .btn-danger {
+        background-color: #dc3545;
+        color: white;
+      }
+      .btn-warning {
+        background-color: #ffc107;
+        color: black;
+      }
+
+      .info {
+        margin-top: 30px;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+      }
+    `,
+  ],
 })
-export class UserFormComponent implements OnInit {
-  userForm!: FormGroup;
+export class DemoComponent {
+  constructor(public messageService: MessageService) {}
 
-  private validatorMap = new Map<string, IValidator[]>();
-
-  constructor(
-    private fb: FormBuilder,
-    private validatorManager: ValidatorManagerService,
-    private emailValidator: EmailValidator,
-    private phoneValidator: PhoneValidator,
-    private passwordValidator: PasswordStrengthValidator
-  ) {}
-
-  ngOnInit() {
-    this.initForm();
-    this.setupValidatorMap();
+  showSuccess(): void {
+    this.messageService.showMessage("操作が正常に完了しました！", "success");
   }
 
-  private initForm() {
-    this.userForm = this.fb.group({
-      email: [
-        "",
-        [
-          Validators.required,
-          this.validatorManager.combineValidators([
-            { validator: this.emailValidator },
-          ]),
-        ],
-      ],
-      phone: [
-        "",
-        [
-          Validators.required,
-          this.validatorManager.combineValidators([
-            {
-              validator: this.phoneValidator,
-              options: { format: "xxx-xxxx-xxxx" },
-            },
-          ]),
-        ],
-      ],
-      password: [
-        "",
-        [
-          Validators.required,
-          this.validatorManager.combineValidators([
-            {
-              validator: this.passwordValidator,
-              options: { minLength: 10, requireSpecial: true },
-            },
-          ]),
-        ],
-      ],
-    });
+  showError(): void {
+    this.messageService.showMessage("エラーが発生しました。", "error");
   }
 
-  private setupValidatorMap() {
-    this.validatorMap.set("email", [this.emailValidator]);
-    this.validatorMap.set("phone", [this.phoneValidator]);
-    this.validatorMap.set("password", [this.passwordValidator]);
+  showWarning(): void {
+    this.messageService.showMessage("注意が必要です。", "warning");
   }
 
-  getErrorMessage(fieldName: string): string {
-    const control = this.userForm.get(fieldName);
-    if (!control?.errors) return "";
-
-    const validators = this.validatorMap.get(fieldName) || [];
-    const messages = this.validatorManager.getErrorMessages(
-      control.errors,
-      validators
-    );
-    return messages[0] || "入力に誤りがあります";
-  }
-
-  onSubmit() {
-    if (this.userForm.valid) {
-      console.log("フォームデータ:", this.userForm.value);
-      // API送信処理など
-    } else {
-      console.log("フォームにエラーがあります");
-      this.markAllAsTouched();
-    }
-  }
-
-  private markAllAsTouched() {
-    Object.keys(this.userForm.controls).forEach((key) => {
-      this.userForm.get(key)?.markAsTouched();
-    });
+  getAvailableTypes(): string {
+    return this.messageService.getAvailableTypes().join(", ");
   }
 }
 ```
 
 ### 新機能の追加（拡張）
 
-新しく「日本の郵便番号バリデーション」が必要になった場合、既存のコードを一切修正せずに新しいバリデーターを追加できます：
+新しく「情報メッセージ」が必要になった場合、既存のコードを一切修正せずに新しい戦略を追加できます：
 
 ```typescript
-// validators/postal-code-validator.ts - 新しいバリデーターを追加（拡張）
+// strategies/info-message.strategy.ts - 新しい戦略を追加（拡張）
+import { Injectable } from "@angular/core";
+import { IMessageStrategy } from "../interfaces/message-strategy.interface";
+
 @Injectable({
   providedIn: "root",
 })
-export class PostalCodeValidator implements IValidator {
-  validate(
-    control: AbstractControl,
-    options?: { country?: "JP" | "US" }
-  ): ValidationErrors | null {
-    const country = options?.country || "JP";
-
-    if (!control.value) {
-      return null;
-    }
-
-    let regex: RegExp;
-    let message: string;
-
-    switch (country) {
-      case "JP":
-        regex = /^\d{3}-\d{4}$/;
-        message = "郵便番号は000-0000の形式で入力してください";
-        break;
-      case "US":
-        regex = /^\d{5}(-\d{4})?$/;
-        message = "郵便番号は00000または00000-0000の形式で入力してください";
-        break;
-      default:
-        return { postalCode: { message: "サポートされていない国です" } };
-    }
-
-    if (!regex.test(control.value)) {
-      return { postalCode: { message, country } };
-    }
-
-    return null;
+export class InfoMessageStrategy implements IMessageStrategy {
+  display(message: string): void {
+    console.log(`ℹ️ INFO: ${message}`);
+    this.showToast(`情報: ${message}`, "info");
   }
 
-  getErrorMessage(errors: ValidationErrors): string {
-    return errors["postalCode"]?.message || "郵便番号が無効です";
+  getIcon(): string {
+    return "ℹ️";
+  }
+
+  private showToast(message: string, type: string): void {
+    const toast = document.createElement("div");
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+      document.body.removeChild(toast);
+    }, 3500);
   }
 }
 
-// components/user-form.component.ts での使用（既存コードをほとんど修正せずに拡張）
-export class UserFormComponent implements OnInit {
+// コンポーネントで新しい戦略を使用
+export class DemoComponent implements OnInit {
   constructor(
-    // ... 既存のinjection
-    private postalCodeValidator: PostalCodeValidator // ← 新しいバリデーターを追加
+    public messageService: MessageService,
+    private infoStrategy: InfoMessageStrategy // ← 新しい戦略を注入
   ) {}
 
-  private initForm() {
-    this.userForm = this.fb.group({
-      // ... 既存のフィールド
-      postalCode: [
-        "",
-        [
-          // ← 新しいフィールドを追加
-          Validators.required,
-          this.validatorManager.combineValidators([
-            { validator: this.postalCodeValidator, options: { country: "JP" } },
-          ]),
-        ],
-      ],
-    });
+  ngOnInit(): void {
+    // 新しい戦略を追加（既存コードを修正せずに拡張）
+    this.messageService.addStrategy("info", this.infoStrategy);
   }
 
-  private setupValidatorMap() {
-    // ... 既存のマップ設定
-    this.validatorMap.set("postalCode", [this.postalCodeValidator]); // ← 新しいマッピングを追加
+  // 新しいメソッドを追加
+  showInfo(): void {
+    this.messageService.showMessage("参考情報です。", "info");
   }
 }
 ```
 
 ### 分離後のメリット（Angular）：
 
-1. **拡張性**: 新しいバリデーターを追加しても既存コードを修正する必要がない
+1. **拡張性**: 新しいメッセージタイプを追加しても既存コードを修正する必要がない
 
-2. **再利用性**: 各バリデーターを他のコンポーネントでも独立して使用できる
+2. **再利用性**: 各メッセージ戦略を他のコンポーネントでも独立して使用できる
 
-3. **テスタビリティ**: 各バリデーターを個別にテストできる
+3. **テスタビリティ**: 各戦略を個別にテストできる
 
 ```typescript
-// email-validator.spec.ts - 単体テスト例
-describe("EmailValidator", () => {
-  let validator: EmailValidator;
+// success-message.strategy.spec.ts - 単体テスト例
+describe("SuccessMessageStrategy", () => {
+  let strategy: SuccessMessageStrategy;
 
   beforeEach(() => {
-    validator = new EmailValidator();
+    strategy = new SuccessMessageStrategy();
   });
 
-  it("有効なメールアドレスの場合はnullを返す", () => {
-    const control = { value: "test@example.com" } as AbstractControl;
-    expect(validator.validate(control)).toBeNull();
+  it("正しいアイコンを返すこと", () => {
+    expect(strategy.getIcon()).toBe("✅");
   });
 
-  it("無効なメールアドレスの場合はエラーを返す", () => {
-    const control = { value: "invalid-email" } as AbstractControl;
-    const result = validator.validate(control);
-    expect(result).toEqual({
-      email: { message: "有効なメールアドレスを入力してください" },
-    });
+  it("メッセージを正しく表示すること", () => {
+    spyOn(console, "log");
+    strategy.display("テストメッセージ");
+    expect(console.log).toHaveBeenCalledWith("✅ SUCCESS: テストメッセージ");
   });
 });
 ```
 
-4. **保守性**: 一つのバリデーションロジックの修正が他に影響しない
+4. **保守性**: 一つのメッセージ処理の修正が他に影響しない
 
-5. **設定の柔軟性**: 各バリデーターにオプションを渡して動作をカスタマイズできる
+5. **設定の柔軟性**: 実行時に新しい戦略を追加したり、既存の戦略を置き換えたりできる
 
 この設計により、Angular アプリケーションでもオープン・クローズドの原則が守られ、新機能の追加が安全かつ効率的に行えるようになります。
 

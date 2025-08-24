@@ -42,15 +42,3 @@ const pizzaData = [
     soldOut: false,
   },
 ];
-
-function App() {
-  return <div>ピザ</div>;
-}
-
-// React v18
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);

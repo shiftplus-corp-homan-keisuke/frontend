@@ -4,8 +4,6 @@
 > 🎯 **形式**: 講師サポート付き学習
 > ⏰ **時間**: 45 分（実習中心）
 
-
-
 ## 📅 セッション概要
 
 **学習目標**:
@@ -15,92 +13,105 @@
 - [ ] オブジェクト・配列スキーマの作成
 - [ ] エラーハンドリングと型推論（z.infer）の活用
 
-**前提知識**:
-
-- Step01-06 の内容（基本型、インターフェース、ユニオン型、型ガード、ジェネリクス、ユーティリティ型）
-- TypeScript の型システムの実践的理解
-- 基本的な Web アプリケーション開発の知識
-
----
-
-## ⏰ 詳細タイムテーブル
-
-| 時間         | 内容                       | 講師の役割           | 学習者の活動   | 成果物     |
-| ------------ | -------------------------- | -------------------- | -------------- | ---------- |
-| **0-5 分**   | 概要・目標設定             | 簡潔な説明           | 聞く・質問     | 理解確認   |
-| **5-20 分**  | 基本スキーマ実習           | 実演・個別サポート   | ハンズオン     | 基本スキーマ |
-| **20-35 分** | オブジェクト・配列実習     | 個別サポート         | コーディング実習 | 複合スキーマ |
-| **35-40 分** | 練習問題                   | 巡回サポート         | 個人作業       | 練習成果   |
-| **40-45 分** | 振り返り・次回予告         | まとめ・予告         | 質問・確認     | 学習計画   |
-
-
-
----
-
-## 📚 学習内容
-
-### Section 1: Zod の基本概念
+## Zod の基本概念
 
 > 📚 **関連資料**: [専門用語集 - Zod 基本概念](./Step07_補足_専門用語集.md#Zod基本概念) | [実践コード例 - スキーマ基礎](./Step07_補足_実践コード例.md#スキーマ基礎)
 
-#### 🔍 「スキーマ」って何？
+Zod とは、TypeScript 向けのスキーマ宣言・検証ライブラリです。これにより、データの「型」や「形式」を定義し、その定義に基づいてデータが正しいかを検証（バリデーション）できます。
 
-**💡 身近な例で理解しよう**
+主な特徴は以下の通りです。
 
-コンビニでバイトの面接を受ける時を想像してください：
+- **型安全性:** Zod で定義したスキーマから TypeScript の型を自動で推論できるため、静的解析の恩恵を受けつつ、実行時のデータの型も保証できます。
+- **宣言的な API:** 「この値は 5 文字以上の文字列である」といったルールを直感的かつ簡潔に記述できます。
+- **豊富なバリデーションルール:** 文字列、数値などの基本的な型に加え、メールアドレス形式、URL 形式、最小・最大値など、豊富な検証ルールが組み込まれています。
 
-📝 **面接シート**
-- 名前：田中太郎 ✅（文字で書けている）
-- 年齢：25 ✅（数字で書けている）  
-- 電話番号：090-1234-5678 ✅（正しい形式）
+API からのレスポンスデータや、フォームからのユーザー入力など、信頼できないデータが期待通りの形式になっているかを検証する際に非常に役立ちます。
 
-📝 **もしこんな書き方だったら？**
-- 名前：123 ❌（数字で名前？）
-- 年齢：二十五歳 ❌（計算できない）
-- 電話番号：でんわばんごう ❌（電話できない）
+### 🔍 「スキーマ」って何？
 
-この「正しい書き方のルール」が**スキーマ**です。
+Zod のスキーマとは、データがどのような「形」や「制約」を持つべきかを定義したものです。TypeScript 向けのスキーマ宣言・検証ライブラリである Zod の中核的な概念であり、これを使うことでデータのバリデーション（検証）を安全かつ効率的に行うことができます。
 
-**💡 プログラムでも同じ問題が起きる**
+## スキーマの主な役割
 
-```typescript
-// ユーザー情報を受け取る関数
-function calculateAge(user) {
-  return user.age + 1; // 来年の年齢を計算
-}
+- **データの検証 (Validation):** スキーマは、あるデータが期待通りの構造になっているか、例えば「この値は文字列で、メールアドレスの形式でなければならない」といったルールを検証します もしデータがスキーマの定義と一致しない場合、エラーを発生させて不正なデータが使われるのを防ぎます。
+- **型安全性 (Type Safety):** Zod は TypeScript と非常に相性が良く、定義したスキーマから TypeScript の型を自動的に推論できます。これにより、開発中に型の不整合を検知しやすくなり、コードの品質と安全性が向上します。
+- **宣言的な記述:** 「もしこの値が数値なら...」「もし文字列の長さが...」といった手続き的なコードを書く代わりに、「このデータはこういう形であるべき」という宣言的な方法でルールを記述できるため、コードが簡潔で読みやすくなります。
 
-// 正常なデータ
-const goodUser = { name: "太郎", age: 25 };
-console.log(calculateAge(goodUser)); // 26 ✅
+### 具体的なスキーマの例
 
-// おかしなデータが来たら？
-const badUser = { name: "太郎", age: "二十五歳" };
-console.log(calculateAge(badUser)); // "二十五歳1" ❌
-```
+Zod では、`z`オブジェクトを使って様々なスキーマを定義します。
 
-**✅ Zodで「データのルール」をチェック**
+**1. 基本的な型:**
+文字列、数値、真偽値といった基本的なデータ型を定義します。
 
 ```typescript
 import { z } from "zod";
 
-// ルール（スキーマ）を定義
+// 文字列のスキーマ
+const MyStringSchema = z.string();
+
+// 数値のスキーマ
+const MyNumberSchema = z.number();
+```
+
+**2. オブジェクト:**
+複数のプロパティを持つオブジェクトの構造を定義できます。
+
+```typescript
+import { z } from "zod";
+
 const UserSchema = z.object({
-  name: z.string(), // 名前は文字列
-  age: z.number(),  // 年齢は数値
+  name: z.string(),
+  age: z.number().positive(), // 0より大きい数値
+  email: z.string().email(), // メールアドレス形式の文字列
+});
+```
+
+**3. 配列:**
+特定のスキーマに準拠した要素を持つ配列を定義します。
+
+```typescript
+import { z } from "zod";
+
+const StringArraySchema = z.array(z.string());
+```
+
+### スキーマの使い方
+
+定義したスキーマは、主に`.parse()`または`.safeParse()`メソッドを使ってデータを検証します。
+
+- `.parse()`: 検証が成功した場合はそのデータを返し、失敗した場合はエラーをスローします。
+- `.safeParse()`: エラーをスローせず、検証結果をオブジェクト（`{ success: true, data: ... }` または `{ success: false, error: ... }`）として返します。
+
+```typescript
+import { z } from "zod";
+
+const UserSchema = z.object({
+  name: z.string(),
+  age: z.number(),
 });
 
-// データをチェック
-const result = UserSchema.safeParse(badUser);
-if (result.success) {
-  console.log("安全に使える:", result.data);
-} else {
-  console.log("データがおかしい:", result.error.errors);
+// 検証したいデータ
+const userData = {
+  name: "John Doe",
+  age: 30,
+};
+
+try {
+  // スキーマを使ってデータをパース（検証）する
+  const validatedUser = UserSchema.parse(userData);
+  console.log("検証成功:", validatedUser);
+} catch (error) {
+  // 検証に失敗した場合
+  console.error("検証失敗:", error);
 }
 ```
 
-#### 1. 環境セットアップ
+このように、Zod のスキーマは、外部 API からのレスポンス、フォームからのユーザー入力など、信頼できないデータソースを扱う際に、アプリケーションの堅牢性を高めるための強力なツールです。
 
-**🎓 学習のポイント**: まずは最小限のセットアップで Zod の基本動作を理解しましょう
+## 環境セットアップ
+
+**🎓 学習のポイント**: まずは最小限のセットアップで Zod の基本動作を理解しましょ 🐰
 
 ```bash
 # Zodのインストール
@@ -119,7 +130,7 @@ import { z } from "zod";
 // 🎯 スキーマ = データの設計図を作成
 const UserSchema = z.object({
   name: z.string(), // 「名前は文字列でなければならない」というルール
-  age: z.number(),  // 「年齢は数値でなければならない」というルール
+  age: z.number(), // 「年齢は数値でなければならない」というルール
 });
 
 // 💡 スキーマから型を自動生成（これがZodの便利なところ！）
@@ -145,471 +156,476 @@ if (!result2.success) {
 }
 ```
 
-**🎓 理解度チェック**
+## 基本的なスキーマ定義
 
-- スキーマとは「データの設計図」だということは理解できましたか？
-- `z.object()` でオブジェクトの設計図を作れることは分かりますか？
-- `safeParse()` でデータが設計図通りかチェックできることは理解できましたか？
+Zod では、z オブジェクトを使って様々なプリミティブ型のスキーマを定義できます。以下が主要なプリミティブスキーマです：
 
-**🎓 理解度チェック**
+### 1. 文字列 (string)
 
-- `z.infer<typeof UserSchema>` が何をしているか説明できますか？
-- なぜ `safeParse()` を使うのか理解していますか？
-- TypeScript の型チェックと Zod のバリデーションの違いは何でしょうか？
-
-#### 2. 基本的なスキーマ定義
-
-**🎓 学習のポイント**: 各データ型のスキーマ定義方法と、バリデーションの段階的理解
+最も基本的な文字列スキーマは `z.string()` で定義します。
 
 ```typescript
-import { z } from "zod";
-
-// === STEP 1: プリミティブ型のスキーマ ===
-console.log("=== プリミティブ型スキーマの動作確認 ===");
-
 const stringSchema = z.string();
+
+// 検証
+stringSchema.parse("こんにちは"); // -> "こんにちは"
+stringSchema.parse(""); // -> ""
+
+// 数値などを渡すとエラーになる
+// stringSchema.parse(123); // ZodError
+```
+
+さらに、メソッドチェーンで様々な制約を追加できます。
+
+- `min(文字数)`: 最小文字数
+- `max(文字数)`: 最大文字数
+- `length(文字数)`: 指定した文字数と一致
+- `email()`: メールアドレス形式
+- `url()`: URL 形式
+- `uuid()`: UUID 形式
+- `startsWith(文字列)`: 指定した文字列で始まる
+- `endsWith(文字列)`: 指定した文字列で終わる
+
+**コード例:**
+
+```typescript
+// 5文字以上10文字以下の文字列
+const usernameSchema = z.string().min(5).max(10);
+usernameSchema.parse("user123"); // OK
+
+// メールアドレス形式の文字列
+const emailSchema = z.string().email("有効なメールアドレスを入力してください"); // エラーメッセージのカスタマイズも可能
+emailSchema.parse("test@example.com"); // OK
+```
+
+### 2. 数値 (number)
+
+基本的な数値スキーマは `z.number()` で定義します。
+
+```typescript
 const numberSchema = z.number();
+
+// 検証
+numberSchema.parse(123); // -> 123
+numberSchema.parse(-3.14); // -> -3.14
+
+// 文字列などを渡すとエラーになる
+// numberSchema.parse("123"); // ZodError
+```
+
+数値にも便利な制約があります。
+
+- `gt(数値)`: より大きい (greater than)
+- `gte(数値)`: 以上 (greater than or equal)
+- `lt(数値)`: より小さい (less than)
+- `lte(数値)`: 以下 (less than or equal)
+- `int()`: 整数
+- `positive()`: 正の数 (`> 0`)
+- `negative()`: 負の数 (`< 0`)
+- `nonpositive()`: 0 以下 (`<= 0`)
+- `nonnegative()`: 0 以上 (`>= 0`)
+
+**コード例:**
+
+```typescript
+// 0以上の整数
+const ageSchema = z.number().int().nonnegative();
+ageSchema.parse(25); // OK
+ageSchema.parse(0); // OK
+
+// 1から5までの数値
+const ratingSchema = z.number().gte(1).lte(5);
+ratingSchema.parse(3); // OK
+```
+
+### 3. 真偽値 (boolean)
+
+真偽値 (true/false) を表すスキーマは `z.boolean()` で定義します。
+
+```typescript
 const booleanSchema = z.boolean();
+
+// 検証
+booleanSchema.parse(true); // -> true
+booleanSchema.parse(false); // -> false
+
+// それ以外の値はエラー
+// booleanSchema.parse(1); // ZodError
+```
+
+### 4. 日付 (Date)
+
+JavaScript の`Date`オブジェクトを検証するには `z.date()` を使います。
+
+```typescript
 const dateSchema = z.date();
 
-// 🔍 実際に各スキーマを試してみよう
-console.log("文字列スキーマ:", stringSchema.safeParse("こんにちは"));
-console.log("数値スキーマ:", numberSchema.safeParse(123));
-console.log("真偽値スキーマ:", booleanSchema.safeParse(true));
-console.log("日付スキーマ:", dateSchema.safeParse(new Date()));
+// 検証
+dateSchema.parse(new Date()); // OK
 
-// ❌ 不正なデータも試してみよう
-console.log("不正な文字列:", stringSchema.safeParse(123));
-console.log("不正な数値:", numberSchema.safeParse("123"));
-
-// === STEP 2: バリデーションルールの追加 ===
-console.log("=== バリデーションルール付きスキーマ ===");
-
-// 🎯 重要：メッセージをカスタマイズしよう
-const emailSchema = z.string().email("有効なメールアドレスを入力してください");
-const positiveNumberSchema = z.number().positive("正の数を入力してください");
-const lengthConstrainedString = z
-  .string()
-  .min(3, "3文字以上で入力してください")
-  .max(20, "20文字以内で入力してください");
-
-// 📝 実際に動作を確認
-console.log("メールバリデーション:");
-console.log("✅ 正常:", emailSchema.safeParse("user@example.com"));
-console.log("❌ 不正:", emailSchema.safeParse("invalid-email"));
-
-console.log("数値バリデーション:");
-console.log("✅ 正常:", positiveNumberSchema.safeParse(10));
-console.log("❌ 不正:", positiveNumberSchema.safeParse(-5));
-
-console.log("文字列長バリデーション:");
-console.log("✅ 正常:", lengthConstrainedString.safeParse("Hello"));
-console.log("❌ 短すぎ:", lengthConstrainedString.safeParse("Hi"));
-console.log(
-  "❌ 長すぎ:",
-  lengthConstrainedString.safeParse("This is way too long string")
-);
-
-// === STEP 3: オプショナルとnullable ===
-console.log("=== オプショナル・nullable の理解 ===");
-
-const optionalString = z.string().optional(); // string | undefined
-const nullableString = z.string().nullable(); // string | null
-const optionalNullableString = z.string().optional().nullable(); // string | null | undefined
-
-// 🔍 それぞれの動作を確認
-console.log("オプショナル:", optionalString.safeParse(undefined));
-console.log("nullable:", nullableString.safeParse(null));
-console.log("オプショナル+nullable:", optionalNullableString.safeParse(null));
+// 文字列の日付はエラーになる
+// dateSchema.parse("2023-10-27"); // ZodError
 ```
 
-**🎓 段階的理解のための演習**
+**ヒント:** 文字列形式の日付を`Date`オブジェクトに変換したい場合は、`z.coerce.date()`が便利です。
+
+### 5. リテラル (literal)
+
+特定の値そのものをスキーマとして定義したい場合は `z.literal()` を使います。検証対象がその値と厳密に一致する場合のみ成功します。
 
 ```typescript
-// 演習1: 以下のスキーマがどんなデータを受け入れるか予想してみよう
-const mysterySchema1 = z.string().min(5).max(10).optional();
-const mysterySchema2 = z.number().int().positive().nullable();
+const statusSchema = z.literal("success");
 
-// 演習2: 以下のデータがバリデーションを通るかどうか予想してみよう
-const testData = [
-  "Hello", // mysterySchema1 で試す
-  "Hi", // mysterySchema1 で試す
-  undefined, // mysterySchema1 で試す
-  5.5, // mysterySchema2 で試す
-  -3, // mysterySchema2 で試す
-  null, // mysterySchema2 で試す
-];
+// 検証
+statusSchema.parse("success"); // OK
 
-// 実際に確認してみよう
-console.log("=== 演習の答え合わせ ===");
-testData.forEach((data, index) => {
-  if (index < 3) {
-    console.log(
-      `Data ${index}: ${data} ->`,
-      mysterySchema1.safeParse(data).success
-    );
-  } else {
-    console.log(
-      `Data ${index}: ${data} ->`,
-      mysterySchema2.safeParse(data).success
-    );
-  }
-});
+// "success"以外の値はエラー
+// statusSchema.parse("error"); // ZodError
+
+const oneSchema = z.literal(1);
+oneSchema.parse(1); // OK
 ```
 
-**🎓 理解度チェック**
+### 6. Enum
 
-- `.min()`, `.max()`, `.positive()` などのメソッドチェーンの仕組みは理解できましたか？
-- `optional()` と `nullable()` の違いを具体例で説明できますか？
-- カスタムエラーメッセージの重要性は理解できましたか？
-
-### Section 2: オブジェクトスキーマの定義
-
-#### 🔍 基本的なオブジェクトスキーマ
-
-**🎓 学習のポイント**: オブジェクトスキーマの構築方法と、複雑なデータ構造の段階的理解
+複数のリテラルの中からいずれかの値を許可したい場合は `z.enum()` を使います。これは TypeScript の Enum の代わりのように使えます。
 
 ```typescript
-// === STEP 1: 基本的なオブジェクトスキーマの作成 ===
-console.log("=== 基本オブジェクトスキーマ ===");
+const statusEnumSchema = z.enum(["success", "error", "pending"]);
 
+// 検証
+statusEnumSchema.parse("success"); // OK
+statusEnumSchema.parse("pending"); // OK
+
+// 配列に含まれない値はエラー
+// statusEnumSchema.parse("unknown"); // ZodError
+```
+
+### その他のプリミティブ
+
+- `z.null()`: `null`のみを許可
+- `z.undefined()`: `undefined`のみを許可
+- `z.nan()`: `NaN`のみを許可
+- `z.any()`: あらゆる型を許可（型安全性が失われるため使用は慎重に）
+- `z.unknown()`: あらゆる型を許可（`any`より安全で、利用前に型チェックが必要）
+
+これらが Zod の最も基本的なスキーマです。これらのプリミティブを組み合わせて、オブジェクトや配列といった、より複雑なデータ構造を定義していくことになります。
+
+## 基本的なオブジェクトスキーマ
+
+`z.object()` を使い、その引数にキーと値のペアを持つオブジェクトを渡します。キーはプロパティ名（文字列）、値はそのプロパティが満たすべき Zod スキーマです。
+
+```typescript
+import { z } from "zod";
+
+// ユーザー情報を検証するスキーマ
 const UserSchema = z.object({
-  id: z.string().uuid(), // UUID形式の文字列
-  name: z.string().min(1), // 空でない文字列
-  email: z.string().email(), // メール形式の文字列
-  age: z.number().int().positive(), // 正の整数
-  isActive: z.boolean(), // 真偽値
-});
+  // `id`プロパティは、UUID形式の文字列であるべき
+  id: z.string().uuid(),
 
-// 🎯 重要：型の自動生成を確認
+  // `username`プロパティは、3文字以上の文字列であるべき
+  username: z.string().min(3, "ユーザー名は3文字以上で入力してください"),
+
+  // `email`プロパティは、メールアドレス形式の文字列であるべき
+  email: z.string().email(),
+
+  // `isAdmin`プロパティは、真偽値であるべき
+  isAdmin: z.boolean(),
+});
+```
+
+このスキーマを使ってデータを検証（パース）します。
+
+```typescript
+const validUserData = {
+  id: "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+  username: "JohnDoe",
+  email: "john.doe@example.com",
+  isAdmin: false,
+};
+
+const invalidUserData = {
+  id: "not-a-uuid",
+  username: "jo", // 3文字未満
+  email: "john.doe", // メール形式ではない
+  // isAdminプロパティが欠けている
+};
+
+try {
+  // 検証成功
+  const parsedUser = UserSchema.parse(validUserData);
+  console.log("検証成功:", parsedUser);
+
+  // 検証失敗 (エラーがスローされる)
+  UserSchema.parse(invalidUserData);
+} catch (e) {
+  // ZodErrorオブジェクトが出力される
+  console.error("検証失敗:", e.errors);
+}
+```
+
+### 2. スキーマからの型推論 (z.infer)
+
+Zod の非常に強力な機能の一つが、定義したスキーマから自動的に TypeScript の型を生成できることです。これにより、スキーマ定義と型定義を二重に管理する必要がなくなります。
+
+`z.infer<typeof SchemaName>` を使います。
+
+```typescript
+// UserSchemaからTypeScriptの型を推論
 type User = z.infer<typeof UserSchema>;
+
 /*
-生成される型:
+`User`型は以下のようになります:
 type User = {
-  id: string;
-  name: string;
-  email: string;
-  age: number;
-  isActive: boolean;
+    id: string;
+    username: string;
+    email: string;
+    isAdmin: boolean;
 }
 */
 
-// 📝 実際にバリデーションを試してみよう
-const validUser = {
-  id: "123e4567-e89b-12d3-a456-426614174000",
-  name: "田中太郎",
-  email: "tanaka@example.com",
-  age: 28,
-  isActive: true,
-};
-
-const invalidUser = {
-  id: "invalid-uuid", // UUID形式でない
-  name: "", // 空文字
-  email: "invalid-email", // メール形式でない
-  age: -5, // 負の数
-  isActive: "true", // 文字列（真偽値でない）
-};
-
-console.log("✅ 正常なユーザー:", UserSchema.safeParse(validUser));
-console.log("❌ 不正なユーザー:", UserSchema.safeParse(invalidUser));
-
-// === STEP 2: 配列と列挙型の基本 ===
-console.log("=== 配列と列挙型スキーマ ===");
-
-// 配列スキーマ
-const TagsSchema = z.array(z.string()); // 文字列の配列
-console.log("タグ配列:", TagsSchema.safeParse(["TypeScript", "Zod"]));
-
-// 列挙型スキーマ
-const StatusSchema = z.enum(["draft", "published", "archived"]);
-console.log("ステータス:", StatusSchema.safeParse("published"));
-
-// 組み合わせ例
-const SimplePostSchema = z.object({
-  title: z.string().min(1),
-  status: StatusSchema,
-  tags: TagsSchema,
-});
-
-const postData = {
-  title: "Zodの使い方",
-  status: "draft",
-  tags: ["TypeScript", "バリデーション"],
-};
-
-console.log("投稿データ:", SimplePostSchema.safeParse(postData));
+// 推論された型を使って、安全にコードを書ける
+function displayUser(user: User) {
+  console.log(user.username); // 型補完が効き、安全にアクセスできる
+}
 ```
 
-**🎓 段階的理解のための演習**
+### 3. プロパティの修飾子
+
+オブジェクトの各プロパティに対して、任意（optional）にしたり、デフォルト値を設定したりできます。
+
+- `.optional()`: プロパティが存在しなくてもよい（`undefined`になることを許容する）
+- `.nullable()`: プロパティの値が `null` であることを許容する
+- `.default(value)`: プロパティが `undefined` の場合に、指定したデフォルト値で補完する
 
 ```typescript
-// 演習1: 以下のデータ構造に適したスキーマを作成してみよう
-const sampleData = {
-  company: {
-    name: "株式会社例",
-    employees: [
-      { name: "田中", department: "開発" },
-      { name: "佐藤", department: "営業" },
-    ],
-  },
-  founded: new Date("2020-01-01"),
-  isPublic: false,
-};
+const UserProfileSchema = z.object({
+  userId: z.string(),
 
-// 演習2: このスキーマを自分で作成してみよう
-const CompanySchema = z.object({
-  // ここに実装してみよう
+  // bioは省略可能 (string | undefined)
+  bio: z.string().optional(),
+
+  // websiteはnullを許容 (string | null)
+  website: z.string().url().nullable(),
+
+  // roleが指定されなかった場合、デフォルトで"user"になる
+  role: z.enum(["user", "admin"]).default("user"),
 });
 
-// 演習3: 作成したスキーマの型を確認してみよう
-type Company = z.infer<typeof CompanySchema>;
+// 検証例
+const profileData = {
+  userId: "12345",
+  website: null,
+  // bioとroleは省略
+};
+
+const parsedProfile = UserProfileSchema.parse(profileData);
+console.log(parsedProfile);
+/*
+出力:
+{
+  userId: '12345',
+  website: null,
+  role: 'user' // デフォルト値が適用されている
+}
+*/
 ```
 
-**🎓 理解度チェック**
+### 4. 未知のキーの扱い方
 
-- オブジェクトのネストが深くなった場合の対処法は理解できましたか？
-- `z.array()` と配列要素のバリデーションの関係は理解できましたか？
-- `z.enum()` と `z.union()` + `z.literal()` の違いは分かりますか？
-- 複雑なデータ構造を段階的に構築する方法は身についていますか？
+デフォルトでは、`z.object()`はスキーマに定義されていないプロパティを検証時に**除去**します。この挙動は変更可能です。
 
-### Section 3: エラーハンドリングと型推論
+- `.strip()`: (デフォルト) 未知のキーを削除する。
+- `.passthrough()`: 未知のキーをそのまま保持する。
+- `.strict()`: 未知のキーが存在した場合、エラーをスローする。
 
-#### 🔍 バリデーション実行の詳細
+```typescript
+const strictSchema = z
+  .object({
+    name: z.string(),
+  })
+  .strict(); // 未知のキーを許さない
+
+const passthroughSchema = z
+  .object({
+    name: z.string(),
+  })
+  .passthrough(); // 未知のキーを許可する
+
+const data = {
+  name: "Taro",
+  age: 30, // 未知のキー
+};
+
+console.log(UserSchema.parse(data)); // { name: 'Taro', isAdmin: ... } のように、ageは除去される
+console.log(passthroughSchema.parse(data)); // { name: 'Taro', age: 30 }
+// strictSchema.parse(data); // ZodError: Unrecognized key(s) in object: 'age'
+```
+
+これらの基本的な概念を組み合わせることで、アプリケーションで扱う様々なオブジェクトのデータ構造を安全かつ宣言的に定義することができます。
+
+## エラーハンドリング
+
+Zod でバリデーションに失敗した際のエラーハンドリングには、主に 2 つの方法があります。
+
+1.  **`parse()`** を使い、 `try...catch` ブロックでエラーを捕捉する方法
+2.  **`safeParse()`** を使い、エラーを投げずに結果オブジェクトとして受け取る方法
+
+どちらを使うかは、アプリケーションの要件やコーディングスタイルによって決まります。
+
+---
+
+### 1. `parse()` と `try...catch`
+
+`parse()`メソッドは、バリデーションが成功した場合は検証済みのデータを返しますが、**失敗した場合は `ZodError` というエラーをスローします**。このエラーを `try...catch` で捕捉するのが最も基本的なエラーハンドリングです。
+
+**特徴:**
+
+- エラーが発生した時点で処理を中断させたい場合に適しています。
+- Express のミドルウェアなどで、バリデーションエラーがあれば即座にエラーレスポンスを返したい場合などによく使われます。
+
+**コード例:**
 
 ```typescript
 import { z } from "zod";
 
 const UserSchema = z.object({
-  name: z.string(),
-  age: z.number(),
+  username: z.string().min(3, "ユーザー名は3文字以上必要です"),
+  email: z.string().email("無効なメールアドレス形式です"),
 });
 
-// parse() - エラー時に例外をスロー
+const invalidData = {
+  username: "ab", // 3文字未満
+  email: "invalid-email",
+};
+
 try {
-  const user = UserSchema.parse({ name: "太郎", age: 25 });
-  console.log("パース成功:", user);
-} catch (error) {
-  console.error("パースエラー:", error);
-}
-
-// safeParse() - エラー情報を含むResultオブジェクトを返す（推奨）
-const result = UserSchema.safeParse({ name: "太郎", age: "25歳" });
-
-if (result.success) {
-  // 成功時の処理
-  console.log("有効なデータ:", result.data);
-  // result.data の型は { name: string; age: number; }
-} else {
-  // エラー時の処理
-  console.log("バリデーションエラー:");
-  result.error.errors.forEach((err) => {
-    console.log(`- ${err.path.join(".")}: ${err.message}`);
-  });
-}
-```
-
-#### 🔍 カスタムエラーメッセージ
-
-```typescript
-// 基本的なカスタムメッセージ
-const UserSchema = z.object({
-  name: z.string().min(1, "名前は必須です"),
-  email: z.string().email("正しいメールアドレス形式で入力してください"),
-  age: z
-    .number({
-      required_error: "年齢は必須です",
-      invalid_type_error: "年齢は数値で入力してください",
-    })
-    .int("年齢は整数で入力してください")
-    .min(0, "年齢は0以上で入力してください")
-    .max(120, "年齢は120以下で入力してください"),
-});
-
-// 日本語対応のエラーハンドリング関数
-function formatZodError(error: z.ZodError): Record<string, string[]> {
-  const fieldErrors: Record<string, string[]> = {};
-
-  error.errors.forEach((err) => {
-    const fieldName = err.path.join(".");
-    if (!fieldErrors[fieldName]) {
-      fieldErrors[fieldName] = [];
-    }
-    fieldErrors[fieldName].push(err.message);
-  });
-
-  return fieldErrors;
+  // バリデーションを実行
+  const user = UserSchema.parse(invalidData);
+  console.log("バリデーション成功:", user);
+} catch (e) {
+  // e は ZodError のインスタンス
+  if (e instanceof z.ZodError) {
+    console.error("バリデーション失敗！");
+    // 全てのエラー情報を表示
+    console.log(e.errors);
+    /*
+    出力例:
+    [
+      {
+        code: 'too_small',
+        minimum: 3,
+        type: 'string',
+        inclusive: true,
+        exact: false,
+        message: 'ユーザー名は3文字以上必要です',
+        path: [ 'username' ]
+      },
+      {
+        validation: 'email',
+        code: 'invalid_string',
+        message: '無効なメールアドレス形式です',
+        path: [ 'email' ]
+      }
+    ]
+    */
+  }
 }
 ```
 
-#### 🔍 型推論（z.infer）の活用
+#### `ZodError` オブジェクト
+
+`catch`ブロックで受け取る `ZodError` インスタンスには、エラーの詳細情報が含まれています。
+
+- `e.errors` または `e.issues`: 各エラーの詳細（エラーコード、メッセージ、どのプロパティで発生したかを示す `path` など）が配列で格納されています。
+- `e.format()`: エラーをネストしたオブジェクト形式に整形してくれる便利なメソッドです。UI のフォームエラー表示などで非常に役立ちます。
+
+**`e.format()` の使用例:**
 
 ```typescript
-// 基本的な型推論
-const UserSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  age: z.number(),
-  isActive: z.boolean(),
-});
+// ... try-catchブロック内
+if (e instanceof z.ZodError) {
+  const formattedErrors = e.format();
+  console.log(formattedErrors);
+  /*
+  出力例:
+  {
+    _errors: [],
+    username: { _errors: [ 'ユーザー名は3文字以上必要です' ] },
+    email: { _errors: [ '無効なメールアドレス形式です' ] }
+  }
+  */
 
-// スキーマから型を自動生成
-type User = z.infer<typeof UserSchema>;
-/*
-type User = {
-  id: string;
-  name: string;
-  age: number;
-  isActive: boolean;
+  // フォームの各フィールドに対応するエラーメッセージを取得できる
+  if (formattedErrors.username) {
+    console.log("ユーザー名のエラー:", formattedErrors.username._errors[0]);
+  }
 }
-*/
+```
 
-// 実用的な使用例
-const SimpleUserSchema = z.object({
-  id: z.string(),
-  name: z.string(),
+---
+
+### 2. `safeParse()`
+
+`safeParse()` メソッドは、`parse()` とは異なり **エラーをスローしません**。代わりに、バリデーションの結果を格納したオブジェクトを返します。
+
+**特徴:**
+
+- `try...catch`構文を使わずに、条件分岐でスマートに処理を書きたい場合に最適です。
+- エラーが発生してもプログラムを中断させず、エラー情報を値として扱いたい場合に便利です。
+
+**返り値の型:**
+
+- **成功時:** `{ success: true, data: (検証済みデータ) }`
+- **失敗時:** `{ success: false, error: (ZodErrorインスタンス) }`
+
+**コード例:**
+
+```typescript
+import { z } from "zod";
+
+const UserSchema = z.object({
+  username: z.string().min(3),
   email: z.string().email(),
 });
 
-type SimpleUser = z.infer<typeof SimpleUserSchema>;
+const invalidData = {
+  username: "ab",
+  email: "invalid-email",
+};
 
-// 基本的な使用例
-function processUser(data: unknown): SimpleUser {
-  // バリデーション
-  const validatedData = SimpleUserSchema.parse(data);
-  return validatedData;
+const result = UserSchema.safeParse(invalidData);
+
+if (result.success) {
+  // バリデーション成功
+  console.log("成功しました:", result.data);
+} else {
+  // バリデーション失敗
+  console.error("失敗しました");
+  // result.error は ZodError インスタンスなので、.format() などが使える
+  const formattedErrors = result.error.format();
+  console.log(formattedErrors);
 }
 ```
 
+---
 
+### 非同期のバリデーション
+
+`.refine()` などで非同期の検証処理（例: データベースへの問い合わせ）を追加した場合、`parse()` や `safeParse()` の代わりに非同期版のメソッドを使います。
+
+- **`parseAsync()`**: `Promise`を返します。失敗すると `Promise` が `reject` されます。`await` と `try...catch` を使ってハンドリングします。
+- **`safeParseAsync()`**: `Promise`を返します。`resolve` される値が `safeParse` と同じ結果オブジェクト (`{ success, data/error }`) になります。
 
 ---
 
-## 🎯 練習問題（5分）
+### まとめ
 
-**🎓 学習目標**: 学んだ内容の確実な定着
+| メソッド          | 挙動                                       | 主なユースケース                                                      |
+| :---------------- | :----------------------------------------- | :-------------------------------------------------------------------- |
+| **`parse()`**     | 失敗時に **エラーをスロー** する           | エラー時に即座に処理を中断・分岐させたい場合 (例: API のミドルウェア) |
+| **`safeParse()`** | 成功/失敗を示す **結果オブジェクトを返す** | エラーを値として扱い、`if`文などで柔軟に後続処理を制御したい場合      |
 
-以下の要件に基づいて、シンプルなスキーマを作成してください：
-
-```typescript
-// 問題: 商品情報のスキーマ
-// 要件:
-// - name: 文字列、1文字以上
-// - price: 数値、0以上
-// - category: "electronics" | "books" | "clothing" のいずれか
-// - tags: 文字列の配列（任意）
-// - inStock: 真偽値
-
-const ProductSchema = z.object({
-  // ここに実装してみよう
-  name: z.string().min(1, "商品名は必須です"),
-  price: z.number().min(0, "価格は0以上である必要があります"),
-  category: z.enum(["electronics", "books", "clothing"]),
-  tags: z.array(z.string()).optional(),
-  inStock: z.boolean()
-});
-
-// 型の生成
-type Product = z.infer<typeof ProductSchema>;
-
-// テストデータ
-const testProduct = {
-  name: "TypeScript入門書",
-  price: 2500,
-  category: "books",
-  tags: ["プログラミング", "TypeScript"],
-  inStock: true
-};
-
-console.log("商品データ:", ProductSchema.safeParse(testProduct));
-
-// 🎓 確認ポイント：
-// - スキーマが正しく動作するか
-// - 型推論が期待通りに働くか
-// - エラーメッセージが適切か
-```
+どちらの方法も最終的に同じ `ZodError` オブジェクトにアクセスできるため、取得できるエラー情報の質は同じです。プロジェクトのコーディング規約や、その場の状況に応じて最適なものを選択してください。一般的には、予期せぬエラーでプログラムを停止させない **`safeParse()` の方がより安全で扱いやすい** と考えられています。
 
 ---
-
-## 👨‍🏫 学習ポイント
-
-### 🔄 復習のための確認項目
-
-**基本概念の理解**
-
-- [ ] Zod の役割と TypeScript との関係は理解できましたか？
-- [ ] `z.infer<typeof Schema>` による型推論の仕組みは分かりますか？
-- [ ] `safeParse()` と `parse()` の使い分けは理解できましたか？
-
-**スキーマ設計**
-
-- [ ] プリミティブ型から複雑なオブジェクトまで段階的に構築できますか？
-- [ ] 適切なバリデーションルールの選択ができますか？
-- [ ] ユーザーフレンドリーなエラーメッセージが書けますか？
-
-**実践的スキル**
-
-- [ ] 実際のフォームや API 仕様をスキーマに落とし込めますか？
-- [ ] カスタムバリデーションのビジネスロジックが実装できますか？
-- [ ] エラーハンドリングが適切に行えますか？
-
----
-
-## 👨‍🏫 学習ポイント
-
-### 🤔 よくある質問
-
-**Q: TypeScript の型と Zod スキーマの使い分けは？**
-A: TypeScript の型はコンパイル時の静的型チェック、Zod スキーマは実行時の動的バリデーションです。外部からのデータ（API、フォーム入力）には Zod を使い、内部処理には TypeScript の型を使います。
-
-**Q: エラーハンドリングは parse()と safeParse()のどちらを使うべき？**
-A: 一般的には safeParse()を推奨します。例外をスローしないため、より予測可能なエラーハンドリングが可能です。
-
-**Q: カスタムバリデーションが複雑になった場合は？**
-A: superRefine()を使うか、バリデーション関数を分割することを検討しましょう。複雑な業務ルールは専用の関数に切り出すと保守しやすくなります。
-
----
-
-**📌 重要**: Session1 は Zod の基礎理論です。しっかりと理解してから次の Session2 に進みましょう。
-
-**🌟 次回（Session2）は、より高度なバリデーション技法と API との統合を学習します！**
-
----
-
-## 📋 Session1 完了チェックリスト（45分版）
-
-学習を完了する前に、以下の項目をすべてチェックしてください：
-
-### 💡 基本概念理解
-
-- [ ] Zod の役割と実行時型安全性の重要性を説明できる
-- [ ] TypeScript の静的型チェックと Zod の動的バリデーションの違いを理解している
-- [ ] `z.infer<typeof Schema>` による型推論の仕組みを理解している
-
-### 💻 実装スキル
-
-- [ ] 基本的なプリミティブ型スキーマを作成できる
-- [ ] オブジェクトスキーマとネストした構造を定義できる
-- [ ] 配列と列挙型のスキーマを実装できる
-- [ ] カスタムエラーメッセージを設定できる
-
-### 🔧 実践能力
-
-- [ ] `safeParse()` を使ったエラーハンドリングができる
-- [ ] 基本的なバリデーションルールを組み合わせることができる
-- [ ] 実際のデータ構造をスキーマに落とし込める
-
-### 🧪 動作確認
-
-- [ ] 提供されたコード例を実際に動かして結果を確認した
-- [ ] 練習問題を解答し、動作確認を行った
-- [ ] エラーケースとノーマルケースの両方をテストした
-
-### 📚 知識の定着
-
-- [ ] Zod の基本的な利点を説明できる
-- [ ] 次のステップ（Session2）で学ぶ内容を理解している
-
-**🎉 すべてチェックできましたか？** それでは Session2 でお会いしましょう！
-
-**⚠️ チェックできない項目がある場合**: 該当する学習内容を再度確認し、不明点は講師に質問しましょう。

@@ -320,7 +320,7 @@ function Pizza() {
   console.log('Pizzaコンポーネントがレンダリングされました');
   
   const pizzaName = "マルゲリータ";
-  const price = 10;
+  const price = 1500;
   
   return (
     <div className="pizza">

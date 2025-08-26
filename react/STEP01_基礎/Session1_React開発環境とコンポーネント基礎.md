@@ -330,7 +330,7 @@ const pizzaData = [
   {
     name: "スピナーチピザ",
     ingredients: "トマト、モッツァレラ、ほうれん草、リコッタチーズ",
-    price: 12,
+    price: 1800,
     photoName: "pizzas/spinaci.jpg",
     soldOut: false,
   },

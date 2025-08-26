@@ -40,28 +40,28 @@ const pizzaData = [
   {
     name: "フォカッチャ",
     ingredients: "イタリアンオリーブオイルとローズマリーのパン",
-    price: 6,
+    price: 900,
     photoName: "pizzas/focaccia.jpg",
     soldOut: false,
   },
   {
     name: "マルゲリータピザ",
     ingredients: "トマトとモッツァレラチーズ",
-    price: 10,
+    price: 1500,
     photoName: "pizzas/margherita.jpg",
     soldOut: false,
   },
   {
     name: "スピナーチピザ",
     ingredients: "トマト、モッツァレラ、ほうれん草、リコッタチーズ",
-    price: 12,
+    price: 1800,
     photoName: "pizzas/spinaci.jpg",
     soldOut: false,
   },
   {
     name: "サラミーノピザ",
     ingredients: "トマト、モッツァレラ、ペパロニ",
-    price: 15,
+    price: 2250,
     photoName: "pizzas/salamino.jpg",
     soldOut: true,
   }
@@ -115,9 +115,9 @@ function Pizza({ pizzaObject }) {
 function Menu() {
   return (
     <ul className="pizzas">
-      <Pizza name="フォカッチャ" price={6} />
-      <Pizza name="マルゲリータ" price={10} />
-      <Pizza name="スピナーチ" price={12} />
+      <Pizza name="フォカッチャ" price={900} />
+      <Pizza name="マルゲリータピザ" price={1500} />
+      <Pizza name="スピナーチピザ" price={1800} />
       {/* データが増えるたびに手動で追加... */}
     </ul>
   );

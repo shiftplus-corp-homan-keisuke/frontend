@@ -413,7 +413,7 @@ export type Invoice = z.infer<typeof InvoiceSchema>;
 
 ### 基本的な API クライアント
 
-```typescript
+```ts
 import { z } from "zod";
 
 // 共通のAPIレスポンス形状

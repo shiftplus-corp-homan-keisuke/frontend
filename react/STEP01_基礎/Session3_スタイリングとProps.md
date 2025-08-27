@@ -219,11 +219,7 @@ function Footer() {
 
 **Props**（プロパティの略）は、Reactにおけるコンポーネント間のデータ受け渡しの仕組みです。親コンポーネントから子コンポーネントへデータを渡すための「通信チャンネル」として機能します。
 
-```
-親コンポーネント（Menu）
-    ↓ Props
-子コンポーネント（Pizza）
-```
+![image-20250827005447391](assets/image-20250827005447391.png)
 
 ### 基本的なProps の使用方法
 
@@ -236,18 +232,18 @@ function Menu() {
       <h2>Our Menu</h2>
       
       {/* Props を渡す */}
-      <Pizza 
-        name="Pizza Spinaci"
-        ingredients="Tomato, mozarella, spinach, and ricotta cheese"
+      <Pizza
+        name="スピナーチピザ"
+        ingredients="トマト、モッツァレラ、ほうれん草、リコッタチーズ"
         photoName="pizzas/spinaci.jpg"
-        price={10}
+        price={1800}
       />
       
-      <Pizza 
-        name="Pizza Funghi"
-        ingredients="Tomato, mushrooms"
+      <Pizza
+        name="フンギピザ"
+        ingredients="トマト、モッツァレラ、マッシュルーム、玉ねぎ"
         photoName="pizzas/funghi.jpg"
-        price={12}
+        price={1800}
       />
     </main>
   );
@@ -283,10 +279,10 @@ Reactは渡されたpropsを1つのオブジェクトにまとめます：
 ```javascript
 // console.log(props) の出力例
 {
-  name: "Pizza Spinaci",
-  ingredients: "Tomato, mozarella, spinach, and ricotta cheese",
+  name: "スピナーチピザ",
+  ingredients: "トマト、モッツァレラ、ほうれん草、リコッタチーズ",
   photoName: "pizzas/spinaci.jpg",
-  price: 10
+  price: 1800
 }
 ```
 
@@ -300,7 +296,7 @@ function Menu() {
       <Pizza name="Margherita" />
       
       {/* 数値（JavaScript モード） */}
-      <Pizza price={15} />
+      <Pizza price={2250} />
       
       {/* 真偽値 */}
       <Pizza soldOut={true} />
@@ -321,8 +317,8 @@ function Menu() {
 
 ```jsx
 // どちらも同じ結果
-<Pizza name="Margherita" price={10} />
-<Pizza price={10} name="Margherita" />
+<Pizza name="Margherita" price={1500} />
+<Pizza price={1500} name="Margherita" />
 ```
 
 ### 実践的なPizza コンポーネントの実装
@@ -335,7 +331,7 @@ function Pizza(props) {
       <div>
         <h3>{props.name}</h3>
         <p>{props.ingredients}</p>
-        <span>¥{props.price + 3}</span> {/* 価格に3を加算 */}
+        <span>¥{props.price + 450}</span> {/* 価格に450を加算 */}
       </div>
     </li>
   );
@@ -352,31 +348,31 @@ function Menu() {
       <p>Authentic Italian cuisine. 6 creative dishes to choose from.</p>
       
       <ul className="pizzas">
-        <Pizza 
-          name="Pizza Spinaci"
-          ingredients="Tomato, mozarella, spinach, and ricotta cheese"
-          price={10}
+        <Pizza
+          name="スピナーチピザ"
+          ingredients="トマト、モッツァレラ、ほうれん草、リコッタチーズ"
+          price={1800}
           photoName="pizzas/spinaci.jpg"
         />
         
-        <Pizza 
-          name="Pizza Funghi"
-          ingredients="Tomato, mushrooms"
-          price={12}
+        <Pizza
+          name="フンギピザ"
+          ingredients="トマト、モッツァレラ、マッシュルーム、玉ねぎ"
+          price={1800}
           photoName="pizzas/funghi.jpg"
         />
         
-        <Pizza 
-          name="Pizza Salamino"
-          ingredients="Tomato, mozarella, and pepperoni"
-          price={15}
+        <Pizza
+          name="サラミーノピザ"
+          ingredients="トマト、モッツァレラ、ペパロニ"
+          price={2250}
           photoName="pizzas/salamino.jpg"
         />
         
-        <Pizza 
-          name="Pizza Prosciutto"
-          ingredients="Tomato, mozarella, ham, aragula, and burrata cheese"
-          price={18}
+        <Pizza
+          name="プロシュート・ディ・パルマピザ"
+          ingredients="トマト、モッツァレラ、ハム、ルッコラ、ブッラータチーズ"
+          price={2700}
           photoName="pizzas/prosciutto.jpg"
         />
       </ul>
@@ -417,7 +413,7 @@ function Menu() {
     <div>
       <Pizza 
         name="Margherita"
-        price={12}
+        price={1800}
         soldOut={false}  // この設定で子コンポーネントの見た目・動作が決まる
       />
     </div>
@@ -485,7 +481,7 @@ function Pizza(props) {  // props = 外部データ
 ```jsx
 function Pizza(props) {
   // ❌ 絶対にやってはいけない
-  props.price = props.price + 100;  // エラー！
+  props.price = props.price + 15000;  // エラー！
   props.name = "新しい名前";        // エラー！
   
   return <div>{props.name}</div>;
@@ -500,11 +496,11 @@ Props はオブジェクトなので、変更すると親コンポーネント�
 
 ```javascript
 // JavaScriptオブジェクトの参照の例
-const originalPizza = { name: "Margherita", price: 10 };
+const originalPizza = { name: "Margherita", price: 1500 };
 const pizzaCopy = originalPizza;
 
-pizzaCopy.price = 15;
-console.log(originalPizza.price); // 15（元のオブジェクトも変更される！）
+pizzaCopy.price = 2250;
+console.log(originalPizza.price); // 2250（元のオブジェクトも変更される！）
 ```
 
 ##### 2. **純粋関数の維持**
@@ -761,7 +757,7 @@ function renderOpenMenu() {
   return (
     <div className="menu">
       <h2>Our Menu</h2>
-      <Pizza name="Margherita" price={12} />
+      <Pizza name="Margherita" price={1800} />
     </div>
   );
 }
@@ -906,9 +902,9 @@ function Pizza() {
 ```jsx
 function Menu() {
   const pizzas = [
-    { id: 1, name: "Margherita", price: 12, soldOut: false },
-    { id: 2, name: "Funghi", price: 14, soldOut: true },
-    { id: 3, name: "Prosciutto", price: 16, soldOut: false }
+    { id: 1, name: "マルゲリータピザ", price: 1800, soldOut: false },
+    { id: 2, name: "フンギピザ", price: 2100, soldOut: true },
+    { id: 3, name: "プロシュート・ディ・パルマピザ", price: 2400, soldOut: false }
   ];
   
   const isOpen = new Date().getHours() >= 12 && new Date().getHours() <= 22;

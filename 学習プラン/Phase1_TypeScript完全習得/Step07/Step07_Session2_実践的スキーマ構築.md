@@ -41,7 +41,7 @@ UserListSchema.parse([
 
 ```typescript
 // discriminatedUnion の例
-const EventSchema = z.discriminatedUnion("type", [
+const EventSchema = z.discriminatedUnion([
   z.object({ type: z.literal("click"), x: z.number(), y: z.number() }),
   z.object({ type: z.literal("keypress"), key: z.string() }),
 ]);

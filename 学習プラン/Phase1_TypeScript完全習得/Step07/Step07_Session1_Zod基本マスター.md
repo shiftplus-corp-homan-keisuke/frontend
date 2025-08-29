@@ -63,7 +63,7 @@ import { z } from "zod";
 const UserSchema = z.object({
   name: z.string(),
   age: z.number().positive(), // 0より大きい数値
-  email: z.string().email(), // メールアドレス形式の文字列
+  email: z.email(), // メールアドレス形式の文字列
 });
 ```
 
@@ -321,13 +321,13 @@ import { z } from "zod";
 // ユーザー情報を検証するスキーマ
 const UserSchema = z.object({
   // `id`プロパティは、UUID形式の文字列であるべき
-  id: z.string().uuid(),
+  id: z.uuid(),
 
   // `username`プロパティは、3文字以上の文字列であるべき
   username: z.string().min(3, "ユーザー名は3文字以上で入力してください"),
 
   // `email`プロパティは、メールアドレス形式の文字列であるべき
-  email: z.string().email(),
+  email: z.email(),
 
   // `isAdmin`プロパティは、真偽値であるべき
   isAdmin: z.boolean(),

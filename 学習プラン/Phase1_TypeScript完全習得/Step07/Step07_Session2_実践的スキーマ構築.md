@@ -40,6 +40,11 @@ UserListSchema.parse([
 - **`z.discriminatedUnion()`**: オブジェクトの特定のプロパティ（discriminator）の値によって、どのスキーマで検証するかを判断します。これにより、TypeScript の型推論が非常に賢くなります。
 
 ```typescript
+const EventSchema = z.union([
+  z.object({ type: z.literal("click"), x: z.number(), y: z.number() }),
+  z.object({ type: z.literal("keypress"), key: z.string() }),
+]);
+
 // discriminatedUnion の例
 const EventSchema = z.discriminatedUnion([
   z.object({ type: z.literal("click"), x: z.number(), y: z.number() }),

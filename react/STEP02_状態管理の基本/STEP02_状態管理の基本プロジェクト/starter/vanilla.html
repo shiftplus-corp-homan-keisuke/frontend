@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="../src/style.css" />
+    <title>Vanilla JSステップ</title>
+  </head>
+  <body>
+    <div class="steps">
+      <div class="numbers">
+        <div class="step-1">1</div>
+        <div class="step-2">2</div>
+        <div class="step-3">3</div>
+      </div>
+
+      <p class="message"></p>
+
+      <div class="buttons">
+        <button class="previous">前へ</button>
+        <button class="next">次へ</button>
+      </div>
+    </div>
+
+    <script>
+      const messages = [
+        'Reactを学ぶ ⚛️',
+        '仕事に応募する 💼',
+        '新しい収入を投資する 🤑',
+      ];
+
+      // DOM要素の選択
+      const step1 = document.querySelector('.step-1');
+      const step2 = document.querySelector('.step-2');
+      const step3 = document.querySelector('.step-3');
+      const message = document.querySelector('.message');
+      const btnPrevious = document.querySelector('.previous');
+      const btnNext = document.querySelector('.next');
+
+      // "状態"
+      let step = 1;
+
+      // DOMの手動更新：テキストコンテンツの変更とクラスの追加/削除（命令的アプローチ）
+      const updateUIValues = function () {
+        message.textContent = `ステップ ${step}: ${messages[step - 1]}`;
+
+        if (step >= 1) step1.classList.add('active');
+        else step1.classList.remove('active');
+
+        if (step >= 2) step2.classList.add('active');
+        else step2.classList.remove('active');
+
+        if (step >= 3) step3.classList.add('active');
+        else step3.classList.remove('active');
+      };
+
+      // 初期設定
+      updateUIValues();
+
+      // イベントリスナーの手動アタッチ
+      btnPrevious.addEventListener('click', function () {
+        if (step > 1) step -= 1;
+        updateUIValues();
+      });
+
+      btnNext.addEventListener('click', function () {
+        if (step < 3) step += 1;
+        updateUIValues();
+      });
+    </script>
+  </body>
+</html>

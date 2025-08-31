@@ -1,3 +1,4 @@
 {
-  "livePreview.defaultPreviewPath": "/react/STEP01_基礎/STEP01_実践プロジェクト/src/demo.html"
+  "livePreview.defaultPreviewPath": "/react/STEP01_基礎/STEP01_実践プロジェクト/src/demo.html",
+  "kiroAgent.configureMCP": "Disabled"
 }

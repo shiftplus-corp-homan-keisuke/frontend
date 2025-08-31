@@ -22,6 +22,56 @@
 
 例えば、3つのカウンターコンポーネントすべてが、「Score」という状態の一部から始まります。それは最初にゼロに設定されます。次に、ボタンのいずれかをクリックすると、それは各クリックでスコアを1つ増やしますが、**そのコンポーネント内でのみ**です。他のすべてのコンポーネントの状態は同じままです。
 
+### コンポーネントの独立性の具体的な動作
+
+同じCounterコンポーネントを3つ表示した場合の動作を詳しく説明します：
+
+**画面の構成：**
+```
+┌─────────────────────────────────────┐
+│ Player 1                            │
+│ Score: 0                            │
+│ [+1] [Reset]                        │
+└─────────────────────────────────────┘
+
+┌─────────────────────────────────────┐
+│ Player 2                            │
+│ Score: 0                            │
+│ [+1] [Reset]                        │
+└─────────────────────────────────────┘
+
+┌─────────────────────────────────────┐
+│ Player 3                            │
+│ Score: 0                            │
+│ [+1] [Reset]                        │
+└─────────────────────────────────────┘
+```
+
+**独立した動作の例：**
+
+1. **初期状態**：すべて「Score: 0」から開始
+2. **Player 1の+1ボタンを3回クリック**：
+   - Player 1：「Score: 3」に変更
+   - Player 2：「Score: 0」のまま（変化なし）
+   - Player 3：「Score: 0」のまま（変化なし）
+3. **Player 2の+1ボタンを1回クリック**：
+   - Player 1：「Score: 3」のまま（変化なし）
+   - Player 2：「Score: 1」に変更
+   - Player 3：「Score: 0」のまま（変化なし）
+
+**React Developer Toolsでの確認：**
+```
+▼ App
+  ▼ Counter (Player 1)
+    hooks: [3]  ← score=3
+  ▼ Counter (Player 2)  
+    hooks: [1]  ← score=1
+  ▼ Counter (Player 3)
+    hooks: [0]  ← score=0
+```
+
+このように、同じコンポーネントでも、それぞれが独自の状態を持ち、他のインスタンスに影響を与えることなく動作します。
+
 ```javascript
 function Counter({ name }) {
   const [score, setScore] = useState(0);
@@ -56,6 +106,26 @@ function App() {
 私たちが学んだすべてを分析すると、全体的なアプリケーションビュー、つまり、**ユーザーインターフェース全体を状態の関数と考えることができる**という結論に達することができます。
 
 言い換えれば、**UI全体はすべてのコンポーネントのすべての現在の状態の表現**です。
+
+#### 状態管理の全体像
+
+React アプリケーションにおける状態管理の流れを図で表すと以下のようになります：
+
+```
+[ユーザー操作] → [イベント発生] → [ハンドラー実行] → [状態更新]
+                                                        ↓
+[画面更新] ← [DOM更新] ← [仮想DOM比較] ← [再レンダリング]
+```
+
+各段階の詳細：
+1. **ユーザー操作**：ボタンクリック、入力など
+2. **イベント発生**：ブラウザがイベントを検知
+3. **ハンドラー実行**：onClick などで定義した関数が実行
+4. **状態更新**：setState 関数が呼ばれる
+5. **再レンダリング**：コンポーネント関数が再実行される
+6. **仮想DOM比較**：前回との差分を計算
+7. **DOM更新**：実際に変更が必要な部分のみ更新
+8. **画面更新**：ユーザーに新しいUIが表示される
 
 #### 数学的な表現
 
@@ -298,6 +368,56 @@ function ProductList() {
 ## Vanilla JavaScriptとの実装比較
 
 このパートを締めくくるために、Reactコードと、同じアプリの同等のVanilla JavaScript実装をもう一度比較したいと思います。
+
+### 同じ機能の実装方法比較：ステップ更新処理
+
+同じ「ステップを1つ進める」機能を、Vanilla JavaScriptとReactで実装した場合の違いを詳しく比較します：
+
+**Vanilla JavaScript（命令的アプローチ）：**
+```javascript
+// 1. 状態を手動で更新
+let step = 1;
+step = step + 1; // step = 2
+
+// 2. DOM要素を個別に手動更新（忘れやすい！）
+document.querySelector('.message').textContent = `Step ${step}: ${messages[step - 1]}`;
+
+// 3. ステップ番号の見た目を個別に更新
+document.querySelector('.step-1').classList.remove('active');
+document.querySelector('.step-2').classList.add('active');
+
+// 4. ボタンの状態も個別に更新
+if (step === 3) {
+  document.querySelector('.btn-next').disabled = true;
+}
+```
+
+**React（宣言的アプローチ）：**
+```javascript
+// 1. 状態のみ更新（UIは自動で同期される）
+setStep(step + 1);
+
+// 2. JSXで「あるべき状態」を宣言（自動で適用される）
+return (
+  <div>
+    <p>Step {step}: {messages[step - 1]}</p>
+    <div className={step >= 2 ? "active" : ""}>2</div>
+    <button disabled={step === 3}>Next</button>
+  </div>
+);
+```
+
+**作業量の比較：**
+- **Vanilla JavaScript**：4つの個別作業が必要
+- **React**：1つの状態更新のみ
+
+**エラーの可能性：**
+- **Vanilla JavaScript**：DOM更新を忘れる、要素選択ミスなど
+- **React**：状態とUIが自動同期されるため、エラーが少ない
+
+**保守性：**
+- **Vanilla JavaScript**：変更時に複数箇所の修正が必要
+- **React**：JSXの宣言を変更するだけ
 
 ### 同じ機能の異なる実装方法
 

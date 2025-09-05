@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Step08_Session1_単一責任の原則.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/*
+Docco style used in http://jashkenas.github.com/docco/ converted by Simon Madine (@thingsinjars)
+*/
+
+.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 0.5em;
+  color: #000;
+  background: #f8f8ff;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: #408080;
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-subst {
+  color: #954121;
+}
+
+.hljs-number {
+  color: #40a070;
+}
+
+.hljs-string,
+.hljs-doctag {
+  color: #219161;
+}
+
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-section,
+.hljs-type {
+  color: #19469d;
+}
+
+.hljs-params {
+  color: #00f;
+}
+
+.hljs-title {
+  color: #458;
+  font-weight: bold;
+}
+
+.hljs-tag,
+.hljs-name,
+.hljs-attribute {
+  color: #000080;
+  font-weight: normal;
+}
+
+.hljs-variable,
+.hljs-template-variable {
+  color: #008080;
+}
+
+.hljs-regexp,
+.hljs-link {
+  color: #b68;
+}
+
+.hljs-symbol,
+.hljs-bullet {
+  color: #990073;
+}
+
+.hljs-built_in,
+.hljs-builtin-name {
+  color: #0086b3;
+}
+
+.hljs-meta {
+  color: #999;
+  font-weight: bold;
+}
+
+.hljs-deletion {
+  background: #fdd;
+}
+
+.hljs-addition {
+  background: #dfd;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: bold;
+}
+
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+<link rel="stylesheet" href="file:///home/homan/work/frontend/%3Anot%28pre%29%3Anot%28.hljs%29%20%3E%20code%20%7B%20color%3A%20%23967632%20%21important%3B%20%20font-size%3A%20inherit%3B%7D" type="text/css">
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="session1-%E5%8D%98%E4%B8%80%E8%B2%AC%E4%BB%BB%E3%81%AE%E5%8E%9F%E5%89%87srp%E3%82%92-typescript-%E3%81%A7%E7%90%86%E8%A7%A3%E3%81%99%E3%82%8B">Session1: 単一責任の原則（SRP）を TypeScript で理解する</h1>
+<p>ソフトウェア開発における重要な設計原則の一つに、**単一責任の原則（Single Responsibility Principle、SRP）**があります。これは、オブジェクト指向設計原則「SOLID」の最初の原則であり、「<strong>一つのクラスやモジュールは、一つの責任だけを持つべきである</strong>」という考え方です。</p>
+<p>より具体的に言えば、「<strong>変更するための理由が、一つのクラスに対して一つ以上あってはならない</strong>」ということです。つまり、あるクラスを変更する理由が複数ある場合、そのクラスは複数の責任を持っている可能性があり、単一責任の原則に違反していることになります。</p>
+<p>この原則に従うことで、コードはより理解しやすく、保守やテストが容易になります。</p>
+<h2 id="%E3%81%AA%E3%81%9C%E5%8D%98%E4%B8%80%E8%B2%AC%E4%BB%BB%E3%81%AE%E5%8E%9F%E5%89%87%E3%81%8C%E9%87%8D%E8%A6%81%E3%81%AA%E3%81%AE%E3%81%8B">なぜ単一責任の原則が重要なのか？</h2>
+<p>もし、あるクラスが複数の責任を持っていると、次のような問題が発生する可能性があります。</p>
+<ul>
+<li><strong>コードの複雑化:</strong> 一つのクラスに多くの機能が詰め込まれていると、コードが複雑になり、理解するのが難しくなります。</li>
+<li><strong>変更の影響範囲の拡大:</strong> ある機能の変更が、関係のないはずの別の機能に影響を与えてしまう「意図しない副作用」が発生しやすくなります。</li>
+<li><strong>テストの困難化:</strong> クラスが多くのことに関与していると、テストの準備が複雑になり、テストケースの作成が難しくなります。</li>
+<li><strong>再利用性の低下:</strong> 特定の機能だけを再利用したい場合に、不要な機能まで付いてきてしまい、再利用が困難になります。</li>
+</ul>
+<h2 id="typescript-%E3%81%A7%E3%81%AE%E5%85%B7%E4%BD%93%E4%BE%8B">TypeScript での具体例</h2>
+<p>それでは、TypeScript のコード例を見ていきましょう。ここでは、ユーザー情報の管理と、ユーザー情報をデータベースに保存するという 2 つの責任を持つクラスを例に挙げます。</p>
+<h3 id="%E9%81%95%E5%8F%8D%E3%81%97%E3%81%A6%E3%81%84%E3%82%8B%E4%BE%8B">違反している例：</h3>
+<pre class="hljs"><code><div><span class="hljs-keyword">class</span> User {
+  <span class="hljs-keyword">public</span> name: <span class="hljs-built_in">string</span>;
+  <span class="hljs-keyword">public</span> email: <span class="hljs-built_in">string</span>;
+
+  <span class="hljs-keyword">constructor</span>(<span class="hljs-params">name: <span class="hljs-built_in">string</span>, email: <span class="hljs-built_in">string</span></span>) {
+    <span class="hljs-keyword">this</span>.name = name;
+    <span class="hljs-keyword">this</span>.email = email;
+  }
+
+  <span class="hljs-comment">// 責任1: ユーザー情報の管理</span>
+  getUserInfo() {
+    <span class="hljs-keyword">return</span> {
+      name: <span class="hljs-keyword">this</span>.name,
+      email: <span class="hljs-keyword">this</span>.email,
+    };
+  }
+
+  <span class="hljs-comment">// 責任2: データベースへの保存</span>
+  saveToDatabase() {
+    <span class="hljs-comment">// データベースにユーザー情報を保存するロジック</span>
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Saving <span class="hljs-subst">${<span class="hljs-keyword">this</span>.name}</span> to the database...`</span>);
+  }
+}
+</div></code></pre>
+<p>この<code>User</code>クラスは、ユーザー情報を保持するという責任と、データベースに保存するという 2 つの異なる責任を持っています。これにより、例えばデータベースの仕様が変更された場合（責任 2 の変更）に、ユーザー情報の管理ロジック（責任 1）とは関係ないにもかかわらず、<code>User</code>クラスを修正する必要が出てきます。これは、単一責任の原則に違反しています。</p>
+<h3 id="%E6%BA%96%E6%8B%A0%E3%81%97%E3%81%A6%E3%81%84%E3%82%8B%E4%BE%8B">準拠している例：</h3>
+<p>この問題を解決するために、それぞれの責任を別のクラスに分割します。</p>
+<pre class="hljs"><code><div><span class="hljs-comment">// 責任1: ユーザー情報の管理に特化したクラス</span>
+<span class="hljs-keyword">class</span> User {
+  <span class="hljs-keyword">public</span> name: <span class="hljs-built_in">string</span>;
+  <span class="hljs-keyword">public</span> email: <span class="hljs-built_in">string</span>;
+
+  <span class="hljs-keyword">constructor</span>(<span class="hljs-params">name: <span class="hljs-built_in">string</span>, email: <span class="hljs-built_in">string</span></span>) {
+    <span class="hljs-keyword">this</span>.name = name;
+    <span class="hljs-keyword">this</span>.email = email;
+  }
+
+  getUserInfo() {
+    <span class="hljs-keyword">return</span> {
+      name: <span class="hljs-keyword">this</span>.name,
+      email: <span class="hljs-keyword">this</span>.email,
+    };
+  }
+}
+
+<span class="hljs-comment">// 責任2: ユーザー情報をデータベースに保存することに特化したクラス</span>
+<span class="hljs-keyword">class</span> UserRepository {
+  save(user: User) {
+    <span class="hljs-comment">// データベースにユーザー情報を保存するロジック</span>
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Saving <span class="hljs-subst">${user.name}</span> to the database...`</span>);
+  }
+}
+
+<span class="hljs-comment">// 使用例</span>
+<span class="hljs-keyword">const</span> user = <span class="hljs-keyword">new</span> User(<span class="hljs-string">"John Doe"</span>, <span class="hljs-string">"john.doe@example.com"</span>);
+<span class="hljs-keyword">const</span> userRepository = <span class="hljs-keyword">new</span> UserRepository();
+
+<span class="hljs-built_in">console</span>.log(user.getUserInfo());
+userRepository.save(user);
+</div></code></pre>
+<p>このようにクラスを分割することで、<code>User</code>クラスは純粋にユーザー情報を管理する責任だけを持ち、<code>UserRepository</code>クラスはデータベースとのやり取りに専念します。これにより、データベースの仕様が変更されても、修正が必要なのは<code>UserRepository</code>クラスだけであり、<code>User</code>クラスには影響がありません。</p>
+<h2 id="%E5%A4%89%E6%9B%B4%E3%81%99%E3%82%8B%E3%81%9F%E3%82%81%E3%81%AE%E7%90%86%E7%94%B1%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6%E3%81%AE%E8%A3%9C%E8%B6%B3%E8%AA%AC%E6%98%8E">「変更するための理由」についての補足説明</h2>
+<p>「変更するための理由」という言葉は少し抽象的で分かりにくいかもしれません。</p>
+<p>これを、もっと具体的な言葉に置き換えてみましょう。</p>
+<p>「変更するための理由」とは、**「そのコードを、将来修正しなければならなくなる&quot;きっかけ&quot;や&quot;動機&quot;」**のことです。</p>
+<p>言い換えると、**「どういう種類の仕様変更が来たら、このクラスを書き換える必要が出てくるか？」**と考えてみると分かりやすくなります。</p>
+<h3 id="%E5%85%B7%E4%BD%93%E7%9A%84%E3%81%AA%E3%82%B7%E3%83%8A%E3%83%AA%E3%82%AA%E3%81%A7%E8%80%83%E3%81%88%E3%81%A6%E3%81%BF%E3%82%8B">具体的なシナリオで考えてみる</h3>
+<p>先ほどの、単一責任の原則（SRP）に違反している<code>User</code>クラスをもう一度見てみましょう。</p>
+<pre class="hljs"><code><div><span class="hljs-comment">// SRP違反の例</span>
+<span class="hljs-keyword">class</span> User {
+  <span class="hljs-keyword">public</span> name: <span class="hljs-built_in">string</span>;
+  <span class="hljs-keyword">public</span> email: <span class="hljs-built_in">string</span>;
+
+  <span class="hljs-keyword">constructor</span>(<span class="hljs-params">name: <span class="hljs-built_in">string</span>, email: <span class="hljs-built_in">string</span></span>) {
+    <span class="hljs-keyword">this</span>.name = name;
+    <span class="hljs-keyword">this</span>.email = email;
+  }
+
+  <span class="hljs-comment">// ユーザー情報に関する処理</span>
+  getUserInfo() {
+    <span class="hljs-comment">/* ... */</span>
+  }
+
+  <span class="hljs-comment">// データベースへの保存処理</span>
+  saveToDatabase() {
+    <span class="hljs-comment">// データベースにユーザー情報を保存するロジック</span>
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Saving <span class="hljs-subst">${<span class="hljs-keyword">this</span>.name}</span> to the database...`</span>);
+  }
+}
+</div></code></pre>
+<p>この <code>User</code> クラスを<strong>変更しなければならなくなるシナリオ</strong>を考えてみましょう。</p>
+<h4 id="%E3%82%B7%E3%83%8A%E3%83%AA%E3%82%AA-1%E3%83%A6%E3%83%BC%E3%82%B6%E3%83%BC%E6%83%85%E5%A0%B1%E3%81%AE%E4%BB%95%E6%A7%98%E5%A4%89%E6%9B%B4">シナリオ 1：ユーザー情報の仕様変更</h4>
+<p>企画チームから「ユーザーに<strong>電話番号</strong>も登録できるようにしてほしい」という要求が来たとします。</p>
+<p>この場合、あなたはこのように <code>User</code> クラスを変更する必要があります。</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">class</span> User {
+  <span class="hljs-keyword">public</span> name: <span class="hljs-built_in">string</span>;
+  <span class="hljs-keyword">public</span> email: <span class="hljs-built_in">string</span>;
+  <span class="hljs-keyword">public</span> phoneNumber: <span class="hljs-built_in">string</span>; <span class="hljs-comment">// ← 追加</span>
+
+  <span class="hljs-keyword">constructor</span>(<span class="hljs-params">name: <span class="hljs-built_in">string</span>, email: <span class="hljs-built_in">string</span>, phoneNumber: <span class="hljs-built_in">string</span></span>) {
+    <span class="hljs-comment">// ← 変更</span>
+    <span class="hljs-keyword">this</span>.name = name;
+    <span class="hljs-keyword">this</span>.email = email;
+    <span class="hljs-keyword">this</span>.phoneNumber = phoneNumber; <span class="hljs-comment">// ← 追加</span>
+  }
+  <span class="hljs-comment">// ...</span>
+}
+</div></code></pre>
+<p>これは**「ユーザーのデータ構造に関する変更」**という理由による修正です。</p>
+<h4 id="%E3%82%B7%E3%83%8A%E3%83%AA%E3%82%AA-2%E3%83%87%E3%83%BC%E3%82%BF%E4%BF%9D%E5%AD%98%E6%96%B9%E6%B3%95%E3%81%AE%E4%BB%95%E6%A7%98%E5%A4%89%E6%9B%B4">シナリオ 2：データ保存方法の仕様変更</h4>
+<p>インフラチームから「利用するデータベースを、現在のものから<strong>新しい種類のデータベースに変更する</strong>」という決定が伝えられたとします。</p>
+<p>この場合、<code>saveToDatabase</code> メソッドの中身を、新しいデータベースの作法に合わせて書き直す必要があります。</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">class</span> User {
+  <span class="hljs-comment">// ...</span>
+  saveToDatabase() {
+    <span class="hljs-comment">// 新しいデータベースにユーザー情報を保存するロジックに全面変更</span>
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Saving <span class="hljs-subst">${<span class="hljs-keyword">this</span>.name}</span> to the NEW database...`</span>);
+  }
+}
+</div></code></pre>
+<p>これは**「データの保存技術に関する変更」**という理由による修正です。</p>
+<h3 id="%E7%90%86%E7%94%B1%E3%81%8C%E8%A4%87%E6%95%B0%E3%81%82%E3%82%8B%E3%81%93%E3%81%A8%E3%81%AE%E5%95%8F%E9%A1%8C%E7%82%B9">「理由」が複数あることの問題点</h3>
+<p>お気づきでしょうか？</p>
+<p>この <code>User</code> クラスは、</p>
+<ol>
+<li><strong>ユーザー情報の仕様</strong>が変わったとき</li>
+<li><strong>データベースの仕様</strong>が変わったとき</li>
+</ol>
+<p>という、<strong>全く異なる 2 種類の理由</strong>で変更される可能性があります。</p>
+<p>これがまさに**「変更するための理由が 2 つある」**状態です。</p>
+<p>一見問題なさそうに見えますが、例えば「ユーザー情報の管理担当者」と「データベースの管理担当者」が別々の場合、彼らは同じ <code>User.ts</code> というファイルを同時に編集することになり、混乱やバグの原因になります。</p>
+<h3 id="%E8%A7%A3%E6%B1%BA%E7%AD%96%E7%90%86%E7%94%B1%E3%81%94%E3%81%A8%E3%81%AB%E3%82%AF%E3%83%A9%E3%82%B9%E3%82%92%E5%88%86%E3%81%91%E3%82%8B">解決策：理由ごとにクラスを分ける</h3>
+<p>そこで、単一責任の原則に従ってクラスを分割します。</p>
+<p><strong><code>User</code> クラス：</strong> ユーザー情報の管理にのみ責任を持つ</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">class</span> User {
+  <span class="hljs-keyword">public</span> name: <span class="hljs-built_in">string</span>;
+  <span class="hljs-keyword">public</span> email: <span class="hljs-built_in">string</span>;
+
+  <span class="hljs-keyword">constructor</span>(<span class="hljs-params">name: <span class="hljs-built_in">string</span>, email: <span class="hljs-built_in">string</span></span>) {
+    <span class="hljs-keyword">this</span>.name = name;
+    <span class="hljs-keyword">this</span>.email = email;
+  }
+  <span class="hljs-comment">// ...</span>
+}
+</div></code></pre>
+<p>このクラスを変更する理由は、「ユーザーのデータ構造が変わったとき」<strong>だけ</strong>です。</p>
+<p><strong><code>UserRepository</code> クラス：</strong> データベースへの保存にのみ責任を持つ</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">class</span> UserRepository {
+  save(user: User) {
+    <span class="hljs-comment">// データベースにユーザー情報を保存するロジック</span>
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Saving <span class="hljs-subst">${user.name}</span> to the database...`</span>);
+  }
+}
+</div></code></pre>
+<p>このクラスを変更する理由は、「データの保存方法が変わったとき」<strong>だけ</strong>です。</p>
+<h2 id="angular-%E3%81%A7%E3%81%AE%E5%85%B7%E4%BD%93%E4%BE%8B">Angular での具体例</h2>
+<p>Angular アプリケーションでも、同様に SRP を適用することができます。ここでは、ユーザー管理機能を Angular で実装する例を見てみましょう。</p>
+<h3 id="%E9%81%95%E5%8F%8D%E3%81%97%E3%81%A6%E3%81%84%E3%82%8B%E4%BE%8Bangular">違反している例（Angular）：</h3>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">"@angular/core"</span>;
+<span class="hljs-keyword">import</span> { HttpClient } <span class="hljs-keyword">from</span> <span class="hljs-string">"@angular/common/http"</span>;
+<span class="hljs-keyword">import</span> { FormBuilder, FormGroup, Validators } <span class="hljs-keyword">from</span> <span class="hljs-string">"@angular/forms"</span>;
+
+<span class="hljs-meta">@Component</span>({
+  selector: <span class="hljs-string">"app-user"</span>,
+  template: <span class="hljs-string">`
+    &lt;div&gt;
+      &lt;h2&gt;ユーザー管理&lt;/h2&gt;
+      &lt;form [formGroup]="userForm" (ngSubmit)="saveUser()"&gt;
+        &lt;input formControlName="name" placeholder="名前" /&gt;
+        &lt;input formControlName="email" placeholder="メール" /&gt;
+        &lt;button type="submit"&gt;保存&lt;/button&gt;
+      &lt;/form&gt;
+      &lt;div *ngIf="message"&gt;{{ message }}&lt;/div&gt;
+    &lt;/div&gt;
+  `</span>,
+})
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> UserComponent {
+  userForm: FormGroup;
+  message = <span class="hljs-string">""</span>;
+
+  <span class="hljs-keyword">constructor</span>(<span class="hljs-params"><span class="hljs-keyword">private</span> http: HttpClient, <span class="hljs-keyword">private</span> fb: FormBuilder</span>) {
+    <span class="hljs-keyword">this</span>.userForm = <span class="hljs-keyword">this</span>.fb.group({
+      name: [<span class="hljs-string">""</span>, Validators.required],
+      email: [<span class="hljs-string">""</span>, [Validators.required, Validators.email]],
+    });
+  }
+
+  <span class="hljs-comment">// 責任1: ユーザー情報のバリデーション</span>
+  validateUser(): <span class="hljs-built_in">boolean</span> {
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.userForm.get(<span class="hljs-string">"name"</span>)?.value?.length &lt; <span class="hljs-number">2</span>) {
+      <span class="hljs-keyword">this</span>.message = <span class="hljs-string">"名前は2文字以上入力してください"</span>;
+      <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+    }
+    <span class="hljs-keyword">if</span> (!<span class="hljs-keyword">this</span>.userForm.get(<span class="hljs-string">"email"</span>)?.valid) {
+      <span class="hljs-keyword">this</span>.message = <span class="hljs-string">"有効なメールアドレスを入力してください"</span>;
+      <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+  }
+
+  <span class="hljs-comment">// 責任2: HTTP通信でのデータ保存</span>
+  saveUser() {
+    <span class="hljs-keyword">if</span> (!<span class="hljs-keyword">this</span>.validateUser()) {
+      <span class="hljs-keyword">return</span>;
+    }
+
+    <span class="hljs-keyword">const</span> userData = <span class="hljs-keyword">this</span>.userForm.value;
+    <span class="hljs-keyword">this</span>.http.post(<span class="hljs-string">"/api/users"</span>, userData).subscribe({
+      next: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+        <span class="hljs-keyword">this</span>.message = <span class="hljs-string">"ユーザーが保存されました"</span>;
+        <span class="hljs-keyword">this</span>.userForm.reset();
+      },
+      error: <span class="hljs-function">(<span class="hljs-params">error</span>) =&gt;</span> {
+        <span class="hljs-keyword">this</span>.message = <span class="hljs-string">"エラーが発生しました: "</span> + error.message;
+      },
+    });
+  }
+
+  <span class="hljs-comment">// 責任3: UI状態の管理</span>
+  resetForm() {
+    <span class="hljs-keyword">this</span>.userForm.reset();
+    <span class="hljs-keyword">this</span>.message = <span class="hljs-string">""</span>;
+  }
+}
+</div></code></pre>
+<p>このコンポーネントは、以下の 3 つの責任を持っています：</p>
+<ol>
+<li>ユーザー情報のバリデーション</li>
+<li>HTTP 通信でのデータ保存</li>
+<li>UI 状態の管理</li>
+</ol>
+<h3 id="%E6%BA%96%E6%8B%A0%E3%81%97%E3%81%A6%E3%81%84%E3%82%8B%E4%BE%8Bangular">準拠している例（Angular）：</h3>
+<p>責任を分離してより良い設計にしてみましょう。</p>
+<pre class="hljs"><code><div><span class="hljs-comment">// models/user.model.ts - ユーザーデータの定義</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> User {
+  name: <span class="hljs-built_in">string</span>;
+  email: <span class="hljs-built_in">string</span>;
+}
+
+<span class="hljs-comment">// services/user-validation.service.ts - バリデーション専用サービス</span>
+<span class="hljs-keyword">import</span> { Injectable } <span class="hljs-keyword">from</span> <span class="hljs-string">"@angular/core"</span>;
+<span class="hljs-keyword">import</span> { AbstractControl, ValidationErrors, ValidatorFn } <span class="hljs-keyword">from</span> <span class="hljs-string">"@angular/forms"</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> ValidationResult {
+  isValid: <span class="hljs-built_in">boolean</span>;
+  message?: <span class="hljs-built_in">string</span>;
+}
+
+<span class="hljs-meta">@Injectable</span>({
+  providedIn: <span class="hljs-string">"root"</span>,
+})
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> UserValidationService {
+  <span class="hljs-comment">// Angular用のカスタムバリデーター関数を提供</span>
+  nameValidator(): ValidatorFn {
+    <span class="hljs-keyword">return</span> (control: AbstractControl): ValidationErrors | <span class="hljs-function"><span class="hljs-params">null</span> =&gt;</span> {
+      <span class="hljs-keyword">const</span> value = control.value;
+      <span class="hljs-keyword">if</span> (!value || value.length &lt; <span class="hljs-number">2</span>) {
+        <span class="hljs-keyword">return</span> { nameLength: { message: <span class="hljs-string">"名前は2文字以上入力してください"</span> } };
+      }
+      <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;
+    };
+  }
+
+  emailValidator(): ValidatorFn {
+    <span class="hljs-keyword">return</span> (control: AbstractControl): ValidationErrors | <span class="hljs-function"><span class="hljs-params">null</span> =&gt;</span> {
+      <span class="hljs-keyword">const</span> value = control.value;
+      <span class="hljs-keyword">if</span> (!value) {
+        <span class="hljs-keyword">return</span> { required: { message: <span class="hljs-string">"メールアドレスは必須です"</span> } };
+      }
+      <span class="hljs-keyword">if</span> (!value.includes(<span class="hljs-string">"@"</span>) || !value.includes(<span class="hljs-string">"."</span>)) {
+        <span class="hljs-keyword">return</span> {
+          emailFormat: { message: <span class="hljs-string">"有効なメールアドレスを入力してください"</span> },
+        };
+      }
+      <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;
+    };
+  }
+
+  <span class="hljs-comment">// ビジネスレベルのバリデーション（APIサブミット前）</span>
+  validateForSubmit(user: User): ValidationResult {
+    <span class="hljs-comment">// より複雑なビジネスルールがある場合はここで実装</span>
+    <span class="hljs-keyword">if</span> (user.email.endsWith(<span class="hljs-string">"@example.com"</span>)) {
+      <span class="hljs-keyword">return</span> {
+        isValid: <span class="hljs-literal">false</span>,
+        message: <span class="hljs-string">"テスト用のメールアドレスは使用できません"</span>,
+      };
+    }
+    <span class="hljs-keyword">return</span> { isValid: <span class="hljs-literal">true</span> };
+  }
+}
+
+<span class="hljs-comment">// services/user-api.service.ts - API通信専用サービス</span>
+<span class="hljs-keyword">import</span> { Injectable } <span class="hljs-keyword">from</span> <span class="hljs-string">"@angular/core"</span>;
+<span class="hljs-keyword">import</span> { HttpClient } <span class="hljs-keyword">from</span> <span class="hljs-string">"@angular/common/http"</span>;
+<span class="hljs-keyword">import</span> { Observable } <span class="hljs-keyword">from</span> <span class="hljs-string">"rxjs"</span>;
+
+<span class="hljs-meta">@Injectable</span>({
+  providedIn: <span class="hljs-string">"root"</span>,
+})
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> UserApiService {
+  <span class="hljs-keyword">constructor</span>(<span class="hljs-params"><span class="hljs-keyword">private</span> http: HttpClient</span>) {}
+
+  saveUser(user: User): Observable&lt;<span class="hljs-built_in">any</span>&gt; {
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.http.post(<span class="hljs-string">"/api/users"</span>, user);
+  }
+
+  getUsers(): Observable&lt;User[]&gt; {
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.http.get&lt;User[]&gt;(<span class="hljs-string">"/api/users"</span>);
+  }
+}
+
+<span class="hljs-comment">// components/user.component.ts - UI表示・操作専用コンポーネント</span>
+<span class="hljs-keyword">import</span> { Component } <span class="hljs-keyword">from</span> <span class="hljs-string">"@angular/core"</span>;
+<span class="hljs-keyword">import</span> { FormBuilder, FormGroup } <span class="hljs-keyword">from</span> <span class="hljs-string">"@angular/forms"</span>;
+<span class="hljs-keyword">import</span> { UserValidationService } <span class="hljs-keyword">from</span> <span class="hljs-string">"../services/user-validation.service"</span>;
+<span class="hljs-keyword">import</span> { UserApiService } <span class="hljs-keyword">from</span> <span class="hljs-string">"../services/user-api.service"</span>;
+<span class="hljs-keyword">import</span> { User } <span class="hljs-keyword">from</span> <span class="hljs-string">"../models/user.model"</span>;
+
+<span class="hljs-meta">@Component</span>({
+  selector: <span class="hljs-string">"app-user"</span>,
+  template: <span class="hljs-string">`
+    &lt;div&gt;
+      &lt;h2&gt;ユーザー管理&lt;/h2&gt;
+      &lt;form [formGroup]="userForm" (ngSubmit)="onSubmit()"&gt;
+        &lt;div&gt;
+          &lt;input formControlName="name" placeholder="名前" /&gt;
+          &lt;div
+            *ngIf="userForm.get('name')?.errors?.['nameLength']"
+            class="error"
+          &gt;
+            {{ userForm.get('name')?.errors?.['nameLength']?.message }}
+          &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;div&gt;
+          &lt;input formControlName="email" placeholder="メール" /&gt;
+          &lt;div
+            *ngIf="userForm.get('email')?.errors?.['required']"
+            class="error"
+          &gt;
+            {{ userForm.get('email')?.errors?.['required']?.message }}
+          &lt;/div&gt;
+          &lt;div
+            *ngIf="userForm.get('email')?.errors?.['emailFormat']"
+            class="error"
+          &gt;
+            {{ userForm.get('email')?.errors?.['emailFormat']?.message }}
+          &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;button type="submit" [disabled]="userForm.invalid"&gt;保存&lt;/button&gt;
+        &lt;button type="button" (click)="resetForm()"&gt;リセット&lt;/button&gt;
+      &lt;/form&gt;
+      &lt;div *ngIf="message" [class]="messageClass"&gt;{{ message }}&lt;/div&gt;
+    &lt;/div&gt;
+  `</span>,
+})
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">class</span> UserComponent {
+  userForm: FormGroup;
+  message = <span class="hljs-string">""</span>;
+  messageClass = <span class="hljs-string">""</span>;
+
+  <span class="hljs-keyword">constructor</span>(<span class="hljs-params">
+    <span class="hljs-keyword">private</span> fb: FormBuilder,
+    <span class="hljs-keyword">private</span> userValidation: UserValidationService,
+    <span class="hljs-keyword">private</span> userApi: UserApiService
+  </span>) {
+    <span class="hljs-comment">// バリデーションロジックを完全にサービスに委任</span>
+    <span class="hljs-keyword">this</span>.userForm = <span class="hljs-keyword">this</span>.fb.group({
+      name: [<span class="hljs-string">""</span>, [<span class="hljs-keyword">this</span>.userValidation.nameValidator()]],
+      email: [<span class="hljs-string">""</span>, [<span class="hljs-keyword">this</span>.userValidation.emailValidator()]],
+    });
+  }
+
+  onSubmit() {
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.userForm.invalid) {
+      <span class="hljs-keyword">this</span>.showMessage(<span class="hljs-string">"入力内容を確認してください"</span>, <span class="hljs-string">"error"</span>);
+      <span class="hljs-keyword">return</span>;
+    }
+
+    <span class="hljs-keyword">const</span> userData: User = <span class="hljs-keyword">this</span>.userForm.value;
+
+    <span class="hljs-comment">// ビジネスレベルのバリデーションチェック</span>
+    <span class="hljs-keyword">const</span> validationResult = <span class="hljs-keyword">this</span>.userValidation.validateForSubmit(userData);
+
+    <span class="hljs-keyword">if</span> (!validationResult.isValid) {
+      <span class="hljs-keyword">this</span>.showMessage(validationResult.message!, <span class="hljs-string">"error"</span>);
+      <span class="hljs-keyword">return</span>;
+    }
+
+    <span class="hljs-comment">// API通信を専用サービスに委任</span>
+    <span class="hljs-keyword">this</span>.userApi.saveUser(userData).subscribe({
+      next: <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+        <span class="hljs-keyword">this</span>.showMessage(<span class="hljs-string">"ユーザーが保存されました"</span>, <span class="hljs-string">"success"</span>);
+        <span class="hljs-keyword">this</span>.resetForm();
+      },
+      error: <span class="hljs-function">(<span class="hljs-params">error</span>) =&gt;</span> {
+        <span class="hljs-keyword">this</span>.showMessage(<span class="hljs-string">"エラーが発生しました: "</span> + error.message, <span class="hljs-string">"error"</span>);
+      },
+    });
+  }
+
+  resetForm() {
+    <span class="hljs-keyword">this</span>.userForm.reset();
+    <span class="hljs-keyword">this</span>.message = <span class="hljs-string">""</span>;
+  }
+
+  <span class="hljs-keyword">private</span> showMessage(message: <span class="hljs-built_in">string</span>, <span class="hljs-keyword">type</span>: <span class="hljs-string">"success"</span> | <span class="hljs-string">"error"</span>) {
+    <span class="hljs-keyword">this</span>.message = message;
+    <span class="hljs-keyword">this</span>.messageClass = <span class="hljs-keyword">type</span>;
+  }
+}
+</div></code></pre>
+<h3 id="%E5%88%86%E9%9B%A2%E5%BE%8C%E3%81%AE%E3%83%A1%E3%83%AA%E3%83%83%E3%83%88">分離後のメリット：</h3>
+<ol>
+<li>
+<p><strong><code>UserValidationService</code></strong>: すべてのバリデーションロジックを一元管理</p>
+<ul>
+<li><strong>Angular Validators 統合</strong>: カスタム ValidatorFn を提供して Reactive Forms と完全統合</li>
+<li><strong>リアルタイムバリデーション</strong>: フォーム入力中に即座にエラー表示</li>
+<li><strong>ビジネスルール</strong>: より複雑な業務ルール（例：特定ドメインの禁止）を一箇所で管理</li>
+<li><strong>再利用可能</strong>: 他のコンポーネントでも同じバリデーションルールを使用可能</li>
+<li><strong>テスト容易</strong>: バリデーションロジックを独立してテスト可能</li>
+</ul>
+</li>
+<li>
+<p><strong><code>UserApiService</code></strong>: API 通信のみに集中</p>
+<ul>
+<li>API エンドポイント変更時の影響範囲が限定される</li>
+<li>他の機能（ユーザー一覧表示など）でも再利用可能</li>
+</ul>
+</li>
+<li>
+<p><strong><code>UserComponent</code></strong>: UI 表示・操作のみに集中</p>
+<ul>
+<li><strong>単純な UI 制御</strong>: フォームの状態管理とイベントハンドリングのみ</li>
+<li><strong>バリデーション表示</strong>: サービスから提供されたエラーメッセージの表示のみ</li>
+<li><strong>疎結合</strong>: バリデーションロジック変更がコンポーネントに影響しない</li>
+</ul>
+</li>
+</ol>
+<h3 id="%E3%83%90%E3%83%AA%E3%83%87%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E8%A8%AD%E8%A8%88%E3%81%AE%E3%83%9D%E3%82%A4%E3%83%B3%E3%83%88">バリデーション設計のポイント：</h3>
+<p><strong>✅ 単一責任の原則に完全準拠:</strong></p>
+<ul>
+<li><strong>UserValidationService</strong>: すべてのバリデーション責任を一箇所に集約</li>
+<li><strong>UserComponent</strong>: UI 表示・操作のみに責任を限定</li>
+</ul>
+<p><strong>✅ Angular ベストプラクティス:</strong></p>
+<ul>
+<li><strong>Reactive Forms 統合</strong>: カスタム ValidatorFn で Angular の仕組みと完全統合</li>
+<li><strong>リアルタイムフィードバック</strong>: ユーザー入力時に即座にバリデーション結果を表示</li>
+<li><strong>型安全性</strong>: ValidationErrors インターフェースで型安全なエラーハンドリング</li>
+</ul>
+<p><strong>✅ 保守性・拡張性:</strong></p>
+<ul>
+<li>バリデーションルール追加時は<code>UserValidationService</code>のみ変更</li>
+<li>他のフォームコンポーネントでも同じバリデーターを再利用可能</li>
+<li>テストはサービス単位で独立して実行可能</li>
+</ul>
+<p>この設計により、各部分が独立して変更・テスト・再利用できるようになり、保守性の高い Angular アプリケーションを構築することができます。</p>
+<h2 id="%E5%8D%98%E4%B8%80%E8%B2%AC%E4%BB%BB%E3%81%AE%E5%8E%9F%E5%89%87%E3%81%AE%E3%83%87%E3%83%A1%E3%83%AA%E3%83%83%E3%83%88%E3%81%A8%E3%83%88%E3%83%AC%E3%83%BC%E3%83%89%E3%82%AA%E3%83%95">単一責任の原則のデメリットとトレードオフ</h2>
+<p>単一責任の原則（SRP）は、コードの保守性を高めるための強力な指針ですが、銀の弾丸ではありません。この原則を適用する際には、いくつかのデメリットやトレードオフを理解しておくことが重要です。特に、原則を「やりすぎる」と、かえってコードの品質を下げてしまう可能性があります。</p>
+<h3 id="1-%E3%82%AF%E3%83%A9%E3%82%B9%E6%95%B0%E3%81%AE%E5%A2%97%E5%8A%A0%E3%81%A8%E7%AE%A1%E7%90%86%E3%82%B3%E3%82%B9%E3%83%88">1. クラス数の増加と管理コスト</h3>
+<p>最も直接的なデメリットは、<strong>クラスの数が爆発的に増える</strong>ことです。</p>
+<ul>
+<li><strong>ファイル数の増加</strong>: 1 つのクラスが 1 つのファイルに対応する場合、プロジェクト内のファイル数が非常に多くなります。</li>
+<li><strong>全体像の把握が困難に</strong>: クラスが細かく分割されすぎると、ある機能の全体像を理解するために多数のファイルやクラスを飛び回る必要が出てきます。これにより、個々のクラスは単純でも、システム全体の構造が複雑に感じられることがあります。</li>
+</ul>
+<h3 id="2-%E3%82%B3%E3%83%BC%E3%83%89%E3%81%AE%E6%96%AD%E7%89%87%E5%8C%96%E3%81%A8%E8%BF%BD%E8%B7%A1%E3%81%AE%E5%9B%B0%E9%9B%A3%E3%81%95">2. コードの断片化と追跡の困難さ</h3>
+<p>責任を分割すると、関連するロジックが複数のクラスに分散します。</p>
+<ul>
+<li><strong>処理の流れが追いづらい</strong>: 1 つのビジネスロジックを理解するために、複数のクラス間の呼び出し関係を追跡する必要があり、デバッグや仕様変更時の調査が困難になることがあります。</li>
+<li><strong>ボイラープレートコードの増加</strong>: クラス間の連携やデータの受け渡しのために、インターフェースの定義や DI（Dependency Injection）の設定など、本来のロジックとは直接関係ない「つなぎ」のためのコードが増える傾向があります。</li>
+</ul>
+<blockquote>
+<p><strong>用語解説：ボイラープレート（Boilerplate）とは？</strong></p>
+<p>プログラミングにおける「ボイラープレート」とは、**「様々な場所で繰り返し必要になる、定型的なコード」**を指す言葉です。</p>
+<p>この言葉は、かつて新聞業界で、定型的な記事や広告を印刷するための「ボイラープレート（鋼の圧延板）」と呼ばれる金属板を配布していたことに由来します。どの新聞でも同じように使える、まさに「お決まりの文章」でした。</p>
+<p>プログラミングでは、以下のようなものがボイラープレートに当たります。</p>
+<ul>
+<li>フレームワークを使い始めるための初期設定コード</li>
+<li>クラスの基本的な定義やコンストラクタ</li>
+<li>データベースへの接続・切断処理</li>
+<li>今回のように、クラス間でデータを受け渡すためのインターフェース定義や DI の設定</li>
+</ul>
+<p>ボイラープレート自体は、プログラムを動かすために必要なものですが、多すぎると本質的なロジックが埋もれてしまい、コードの可読性を下げてしまうことがあります。単一責任の原則を過剰に適用すると、クラス間の連携が増えるため、このボイラープレートコードが増加する傾向にあります。</p>
+</blockquote>
+<h3 id="3-%E9%81%8E%E5%89%B0%E3%81%AA%E6%8A%BD%E8%B1%A1%E5%8C%96over-engineering">3. 過剰な抽象化（Over-engineering）</h3>
+<p>SRP を厳密に適用しようとしすぎると、<strong>過剰な設計</strong>に陥りがちです。</p>
+<ul>
+<li><strong>不必要な複雑さ</strong>: 将来の変更を見越して細かく分割しすぎた結果、現在の要求に対して不必要に複雑な構造になってしまうことがあります。</li>
+<li><strong>「責任」の定義の難しさ</strong>: 何を「一つの責任」と見なすかは主観的であり、明確な境界線を引くのが難しい場合があります。この判断を誤ると、不自然な分割や、逆に不十分な分割につながります。</li>
+</ul>
+<h3 id="%E3%83%88%E3%83%AC%E3%83%BC%E3%83%89%E3%82%AA%E3%83%95%E3%81%AE%E7%90%86%E8%A7%A3%E3%81%A8%E3%83%90%E3%83%A9%E3%83%B3%E3%82%B9%E6%84%9F%E8%A6%9A">トレードオフの理解とバランス感覚</h3>
+<p>SRP を適用する際は、メリットとデメリットのトレードオフを意識することが重要です。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">メリット（適切に適用した場合）</th>
+<th style="text-align:left">デメリット（過剰に適用した場合）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>高い凝集度</strong>：関連するコードがまとまる</td>
+<td style="text-align:left"><strong>コードの断片化</strong>：ロジックが分散する</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>低い結合度</strong>：クラス間の依存が減る</td>
+<td style="text-align:left"><strong>複雑な依存関係</strong>：クラス間の連携が複雑になる</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>変更が容易</strong>：影響範囲が限定される</td>
+<td style="text-align:left"><strong>変更が困難</strong>：複数クラスの修正が必要になる</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>テストが容易</strong>：独立してテストできる</td>
+<td style="text-align:left"><strong>統合テストが複雑</strong>：複数クラスの連携をテストする必要がある</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>再利用性が高い</strong>：必要な機能だけ使える</td>
+<td style="text-align:left"><strong>再利用性が低い</strong>：細かすぎて単体で役に立たない</td>
+</tr>
+</tbody>
+</table>
+<h3 id="%E7%B5%90%E8%AB%96srp-%E3%81%AF%E9%8A%80%E3%81%AE%E5%BC%BE%E4%B8%B8%E3%81%A7%E3%81%AF%E3%81%AA%E3%81%84">結論：SRP は「銀の弾丸」ではない</h3>
+<p>単一責任の原則は、あくまで「原則」であり、「絶対的なルール」ではありません。</p>
+<p>大切なのは、<strong>「変更を容易にする」という本来の目的</strong>を見失わないことです。クラスを分割することで、将来の変更が楽になるかどうかを常に考え、機械的に分割するのではなく、プロジェクトの規模や複雑さ、チームの開発スタイルに応じて、適切な粒度で責任を分割する<strong>バランス感覚</strong>が求められます。</p>
+<h2 id="%E3%81%BE%E3%81%A8%E3%82%81">まとめ</h2>
+<p>「変更するための理由」とは、**そのコードが責任を持つ「関心事」や「役割」**と考えると分かりやすいです。</p>
+<ul>
+<li>ユーザー情報の管理という「役割」</li>
+<li>データベース永続化という「役割」</li>
+</ul>
+<p>これらは異なる役割なので、それぞれ別のクラスが担当するべきです。そうすることで、片方の役割の仕様変更が、もう片方の役割に影響を与えなくなり、結果として非常に見通しが良く、メンテナンスしやすいコードになるのです。</p>
+<p>単一責任の原則は、変更に強く、保守しやすいクリーンなコードを書くための基本的な指針です。クラスやモジュールを設計する際には、「このクラスを変更する理由は何か？」と自問し、その理由が一つだけになるように責務を分割することを心がけましょう。そうすることで、より堅牢でスケーラブルなアプリケーションを構築することができます。</p>
+
+</body>
+</html>

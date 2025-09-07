@@ -27,7 +27,7 @@ React 開発における最も重要な概念の一つである「State と Prop
 
 **実装例**：
 
-```javascript
+```jsx
 function Question() {
   // State: このコンポーネント内部のデータ
   const [upVotes, setUpVotes] = useState(0);
@@ -57,7 +57,7 @@ function Question() {
 
 **実装例**：
 
-```javascript
+```jsx
 // 親コンポーネント
 function Question() {
   const [upVotes, setUpVotes] = useState(0);
@@ -84,7 +84,7 @@ function Button({ upVotes, onUpVote }) {
 
 **状態の連鎖的更新**：
 
-```javascript
+```jsx
 function App() {
   const [upVotes, setUpVotes] = useState(0); // State
 
@@ -141,7 +141,7 @@ function App() {
 
 まず、フラッシュカードのデータを準備します：
 
-```javascript
+```jsx
 const questions = [
   {
     id: 3457,
@@ -181,7 +181,7 @@ const questions = [
 
 #### Step 1: 基本構造と状態管理
 
-```javascript
+```jsx
 import { useState } from "react";
 
 function FlashCards() {
@@ -200,7 +200,7 @@ function FlashCards() {
 
 #### Step 2: カードリストのレンダリング
 
-```javascript
+```jsx
 function FlashCards() {
   const [selectedId, setSelectedId] = useState(null);
 
@@ -226,7 +226,7 @@ function FlashCards() {
 
 1. **map メソッド**：
 
-   ```javascript
+   ```jsx
    questions.map((question) => (
      // 各質問オブジェクトをJSXに変換
    ))
@@ -234,7 +234,7 @@ function FlashCards() {
 
 2. **条件付きスタイリング**：
 
-   ```javascript
+   ```jsx
    className={question.id === selectedId ? "selected" : ""}
    ```
 
@@ -242,7 +242,7 @@ function FlashCards() {
    - そうでなければ、空文字列（クラスなし）
 
 3. **条件付きコンテンツ**：
-   ```javascript
+   ```jsx
    {
      question.id === selectedId
        ? question.answer // 選択されている場合は答えを表示
@@ -252,7 +252,7 @@ function FlashCards() {
 
 #### Step 3: クリックハンドラーの実装
 
-```javascript
+```jsx
 function FlashCards() {
   const [selectedId, setSelectedId] = useState(null);
 
@@ -282,7 +282,7 @@ function FlashCards() {
 
 **クリック処理の詳細**：
 
-```javascript
+```jsx
 function handleClick(id) {
   setSelectedId(id !== selectedId ? id : null);
 }
@@ -303,13 +303,13 @@ function handleClick(id) {
 
 **正しい実装**：
 
-```javascript
+```jsx
 onClick={() => handleClick(question.id)}
 ```
 
 **よくある間違い**：
 
-```javascript
+```jsx
 // ❌ 関数を即座に実行してしまう
 onClick={handleClick(question.id)}
 
@@ -362,7 +362,7 @@ onClick={handleClick}
 
 ### 完全なアプリケーション
 
-```javascript
+```jsx
 import React, { useState } from "react";
 import "./FlashCards.css";
 
@@ -433,7 +433,7 @@ export default FlashCards;
 
 この FlashCards アプリの最も重要な学習ポイントは、**一つの State 変数で複数の要素を制御する**パターンです：
 
-```javascript
+```jsx
 const [selectedId, setSelectedId] = useState(null);
 ```
 
@@ -445,7 +445,7 @@ const [selectedId, setSelectedId] = useState(null);
 
 ### 状態駆動 UI（State-Driven UI）
 
-```javascript
+```jsx
 // 表示内容の決定
 {question.id === selectedId ? question.answer : question.question}
 
@@ -472,7 +472,7 @@ className={question.id === selectedId ? "selected" : ""}
 
 **React 的（宣言的）アプローチ**：
 
-```javascript
+```jsx
 // 「選択されているときの見た目」を宣言
 {
   question.id === selectedId ? question.answer : question.question;
@@ -481,7 +481,7 @@ className={question.id === selectedId ? "selected" : ""}
 
 **従来の JavaScript（命令的）アプローチなら**：
 
-```javascript
+```jsx
 // DOM要素を直接操作する必要がある
 if (selectedId === question.id) {
   element.textContent = question.answer;
@@ -502,7 +502,7 @@ if (selectedId === question.id) {
 
 **避けるべき設計**：
 
-```javascript
+```jsx
 // ❌ 複雑すぎる状態
 const [card1Open, setCard1Open] = useState(false);
 const [card2Open, setCard2Open] = useState(false);
@@ -511,7 +511,7 @@ const [card2Open, setCard2Open] = useState(false);
 
 ### 3. イベント処理の最適化
 
-```javascript
+```jsx
 // 各カードに固有のIDを渡す仕組み
 onClick={() => handleClick(question.id)}
 ```

@@ -44,7 +44,7 @@
 
 このアプリケーションでは 2 つの独立した状態を管理します：
 
-```javascript
+```jsx
 import { useState } from "react";
 
 function DateCounter() {
@@ -70,7 +70,7 @@ function DateCounter() {
 
 #### 日付計算の実装
 
-```javascript
+```jsx
 function DateCounter() {
   const [step, setStep] = useState(1);
   const [count, setCount] = useState(0);
@@ -96,13 +96,13 @@ function DateCounter() {
 
 1. **基準日の取得**:
 
-   ```javascript
+   ```jsx
    const date = new Date(); // 現在の日時を取得
    ```
 
 2. **日数加算**:
 
-   ```javascript
+   ```jsx
    date.setDate(date.getDate() + count);
    ```
 
@@ -111,7 +111,7 @@ function DateCounter() {
    - `date.setDate()`: 新しい日付を設定
 
 3. **自動的な月・年調整**:
-   ```javascript
+   ```jsx
    // 例：12月31日 + 1日 = 自動的に翌年1月1日になる
    ```
 
@@ -119,7 +119,7 @@ function DateCounter() {
 
 #### HTML range input の制御
 
-```javascript
+```jsx
 function DateCounter() {
   const [step, setStep] = useState(1);
   const [count, setCount] = useState(0);
@@ -163,7 +163,7 @@ function DateCounter() {
    - `value={step}`: 制御されたコンポーネント
 
 2. **値の型変換**:
-   ```javascript
+   ```jsx
    onChange={(e) => setStep(Number(e.target.value))}
    ```
    - `e.target.value`: 常に文字列型
@@ -173,7 +173,7 @@ function DateCounter() {
 
 #### ボタンによる増減機能
 
-```javascript
+```jsx
 function DateCounter() {
   const [step, setStep] = useState(1);
   const [count, setCount] = useState(0);
@@ -225,7 +225,7 @@ function DateCounter() {
 
 #### テキスト入力による直接指定
 
-```javascript
+```jsx
 function DateCounter() {
   const [step, setStep] = useState(1);
   const [count, setCount] = useState(0);
@@ -289,7 +289,7 @@ function DateCounter() {
 
 #### リセットボタンの実装
 
-```javascript
+```jsx
 function DateCounter() {
   const [step, setStep] = useState(1);
   const [count, setCount] = useState(0);
@@ -362,7 +362,7 @@ function DateCounter() {
 
 1. **表示条件の判定**:
 
-   ```javascript
+   ```jsx
    const shouldShowReset = count !== 0 || step !== 1;
    ```
 
@@ -371,7 +371,7 @@ function DateCounter() {
    - `||`: いずれかが true なら表示
 
 2. **条件付きレンダリング**:
-   ```javascript
+   ```jsx
    {
      shouldShowReset && (
        <button className="reset-button" onClick={handleReset}>
@@ -385,7 +385,7 @@ function DateCounter() {
 
 ### エラーハンドリングと入力検証
 
-```javascript
+```jsx
 function DateCounter() {
   const [step, setStep] = useState(1);
   const [count, setCount] = useState(0);
@@ -420,7 +420,7 @@ function DateCounter() {
 
 ### アクセシビリティ改善
 
-```javascript
+```jsx
 return (
   <div className="date-counter">
     {/* ステップ制御 - ラベル付き */}
@@ -596,7 +596,7 @@ return (
 
 ## 完全なアプリケーション実装
 
-```javascript
+```jsx
 import React, { useState } from "react";
 import "./DateCounter.css";
 

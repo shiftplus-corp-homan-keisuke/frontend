@@ -120,7 +120,7 @@ Enter キーを押して、create-react-app に作業を任せましょう。
 3. **App.js の初期化**
    - 既存のコードをクリアして、ゼロから開始
 
-```javascript
+```jsx
 export default function App() {
   return (
     <div className="app">
@@ -141,7 +141,7 @@ export default function App() {
 
 **Logo コンポーネント**：
 
-```javascript
+```jsx
 function Logo() {
   return <h1>🌴 Far Away 💼</h1>;
 }
@@ -156,7 +156,7 @@ function Logo() {
 
 **Form コンポーネント**：
 
-```javascript
+```jsx
 function Form() {
   return <div className="add-form">What do you need for your trip? 😍</div>;
 }
@@ -164,7 +164,7 @@ function Form() {
 
 **PackingList コンポーネント**：
 
-```javascript
+```jsx
 function PackingList() {
   return <div>Ready to pack some items!</div>;
 }
@@ -172,7 +172,7 @@ function PackingList() {
 
 **Stats コンポーネント**：
 
-```javascript
+```jsx
 function Stats() {
   return (
     <footer className="stats">
@@ -205,7 +205,7 @@ React アプリケーション開発において、リストのレンダリン�
 
 まず、CSS ファイルに含まれている初期アイテムの配列を取得します。index.js ファイルを閉じて、このデータを App.js ファイルの最上部に貼り付けます。
 
-```javascript
+```jsx
 const initialItems = [
   { id: 1, description: "Passports", quantity: 2, packed: false },
   { id: 2, description: "Socks", quantity: 12, packed: false },
@@ -225,7 +225,7 @@ const initialItems = [
 
 ### PackingList コンポーネントでのリスト表示
 
-```javascript
+```jsx
 function PackingList() {
   return (
     <div>
@@ -249,7 +249,7 @@ function PackingList() {
 
 各アイテムを表示するための専用コンポーネントを作成します：
 
-```javascript
+```jsx
 function Item({ item }) {
   return (
     <li>
@@ -272,7 +272,7 @@ function Item({ item }) {
 
 正しい CSS クラスを適用するために、HTML 構造を少し調整する必要があります：
 
-```javascript
+```jsx
 function PackingList() {
   return (
     <div>
@@ -310,7 +310,7 @@ Web アプリケーションにおいて、フォームを通じたユーザー�
 
 React でフォームを構築する際は、通常の HTML フォーム要素を使用します。
 
-```javascript
+```jsx
 function Form() {
   return (
     <form className="add-form">
@@ -352,7 +352,7 @@ function Form() {
 
 フォーム送信を処理するためのイベントハンドラーを作成します：
 
-```javascript
+```jsx
 function Form() {
   function handleSubmit(e) {
     e.preventDefault(); // ページリロードを防ぐ
@@ -389,7 +389,7 @@ function Form() {
 
 現時点では、フォームが送信されてもデータを取得していません。次のセクションでは、「制御されたコンポーネント」という重要な概念を学び、フォームデータを適切に管理する方法を習得します。
 
-```javascript
+```jsx
 function handleSubmit(e) {
   e.preventDefault();
 

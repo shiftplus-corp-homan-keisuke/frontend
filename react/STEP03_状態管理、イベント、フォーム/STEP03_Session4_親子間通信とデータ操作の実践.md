@@ -36,7 +36,7 @@
 
 まず、ステートを所有する App コンポーネントで削除関数を定義します：
 
-```javascript
+```jsx
 function App() {
   const [items, setItems] = useState([]);
 
@@ -73,7 +73,7 @@ function App() {
 
 PackingList コンポーネントは、削除関数を受け取って各 Item コンポーネントに渡します：
 
-```javascript
+```jsx
 function PackingList({ items, onDeleteItem }) {
   return (
     <div>
@@ -101,7 +101,7 @@ function PackingList({ items, onDeleteItem }) {
 
 最終的に、実際のクリックイベントを処理する Item コンポーネント：
 
-```javascript
+```jsx
 function Item({ item, onDeleteItem }) {
   return (
     <li>
@@ -176,7 +176,7 @@ function Item({ item, onDeleteItem }) {
 
 1. **関数の即座実行**:
 
-   ```javascript
+   ```jsx
    // ❌ 間違い：関数が即座に実行される
    <button onClick={onDeleteItem(item.id)}>❌</button>
 
@@ -185,7 +185,7 @@ function Item({ item, onDeleteItem }) {
    ```
 
 2. **ID の不一致**:
-   ```javascript
+   ```jsx
    // デバッグのためのログ出力
    function handleDeleteItem(id) {
      console.log("削除するID:", id);
@@ -212,7 +212,7 @@ function Item({ item, onDeleteItem }) {
 
 まず、Item コンポーネントにチェックボックスを追加します：
 
-```javascript
+```jsx
 function Item({ item, onDeleteItem }) {
   return (
     <li>
@@ -241,7 +241,7 @@ function Item({ item, onDeleteItem }) {
 
 App コンポーネントで、アイテムの更新を処理する関数を作成します：
 
-```javascript
+```jsx
 function App() {
   const [items, setItems] = useState([]);
 
@@ -280,13 +280,13 @@ function App() {
 
 2. **条件分岐**:
 
-   ```javascript
+   ```jsx
    item.id === id ? 更新されたオブジェクト : 元のオブジェクト;
    ```
 
 3. **オブジェクトのスプレッド**:
 
-   ```javascript
+   ```jsx
    { ...item, packed: !item.packed }
    ```
 
@@ -301,7 +301,7 @@ function App() {
 
 更新関数も削除関数と同様に、PackingList 経由で Item に渡します：
 
-```javascript
+```jsx
 function PackingList({ items, onDeleteItem, onToggleItem }) {
   return (
     <div>
@@ -324,7 +324,7 @@ function PackingList({ items, onDeleteItem, onToggleItem }) {
 
 最終的に、チェックボックスのイベントハンドラーを実装します：
 
-```javascript
+```jsx
 function Item({ item, onDeleteItem, onToggleItem }) {
   return (
     <li>
@@ -348,7 +348,7 @@ React で使用される主要な不変操作パターン：
 
 #### 配列操作
 
-```javascript
+```jsx
 // 追加
 [...array, newItem]
 
@@ -366,7 +366,7 @@ array.map(item =>
 
 #### オブジェクト操作
 
-```javascript
+```jsx
 // プロパティ更新
 { ...obj, property: newValue }
 
@@ -430,7 +430,7 @@ const { removeProperty, ...rest } = obj;
 
 まず、誤った実装方法を確認しましょう：
 
-```javascript
+```jsx
 // ❌ 避けるべき実装
 function App() {
   const [items, setItems] = useState([]);
@@ -461,7 +461,7 @@ function App() {
 
 代わりに、既存のステートから値を算出します：
 
-```javascript
+```jsx
 function Stats({ items }) {
   // 派生ステート：既存のデータから計算
   const numItems = items.length;
@@ -484,7 +484,7 @@ function Stats({ items }) {
 
 アイテムが無い場合の特別なメッセージを表示する実装：
 
-```javascript
+```jsx
 function Stats({ items }) {
   // 早期リターン：アイテムが無い場合
   if (!items.length) {
@@ -517,7 +517,7 @@ function Stats({ items }) {
 
 Stats コンポーネントが items データにアクセスできるよう、App から渡します：
 
-```javascript
+```jsx
 function App() {
   const [items, setItems] = useState([]);
 
@@ -594,7 +594,7 @@ function App() {
 **重い計算の場合**：
 計算が重い場合は、後で学習する `useMemo` フックでメモ化を検討します：
 
-```javascript
+```jsx
 const expensiveValue = useMemo(() => {
   return heavyCalculation(items);
 }, [items]);
@@ -647,7 +647,7 @@ const expensiveValue = useMemo(() => {
 
 **完全な CRUD 操作**：
 
-```javascript
+```jsx
 // Create: アイテム追加
 handleAddItems(newItem) → [...items, newItem]
 

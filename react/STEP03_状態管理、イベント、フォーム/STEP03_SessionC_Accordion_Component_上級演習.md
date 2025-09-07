@@ -35,7 +35,7 @@
 
 まず、FAQ（よくある質問）形式のデータを準備します：
 
-```javascript
+```jsx
 const faqs = [
   {
     title: "Where are these chairs assembled?",
@@ -56,7 +56,7 @@ const faqs = [
 
 #### Accordion コンポーネント（親）
 
-```javascript
+```jsx
 function Accordion({ data }) {
   return (
     <div className="accordion">
@@ -76,7 +76,7 @@ function Accordion({ data }) {
 
 #### AccordionItem コンポーネント（子）
 
-```javascript
+```jsx
 function AccordionItem({ num, title, text }) {
   return (
     <div className="item">
@@ -94,7 +94,7 @@ function AccordionItem({ num, title, text }) {
 
 1. **番号フォーマット**:
 
-   ```javascript
+   ```jsx
    {
      num < 9 ? `0${num + 1}` : num + 1;
    }
@@ -113,7 +113,7 @@ function AccordionItem({ num, title, text }) {
 
 #### 状態の追加
 
-```javascript
+```jsx
 import { useState } from "react";
 
 function AccordionItem({ num, title, text }) {
@@ -140,7 +140,7 @@ function AccordionItem({ num, title, text }) {
 
 1. **状態の初期化**:
 
-   ```javascript
+   ```jsx
    const [isOpen, setIsOpen] = useState(false);
    ```
 
@@ -148,7 +148,7 @@ function AccordionItem({ num, title, text }) {
 
 2. **状態更新関数**:
 
-   ```javascript
+   ```jsx
    function handleToggle() {
      setIsOpen((current) => !current);
    }
@@ -158,7 +158,7 @@ function AccordionItem({ num, title, text }) {
    - 関数型更新による確実な状態変更
 
 3. **条件付きレンダリング**:
-   ```javascript
+   ```jsx
    {
      isOpen && <div className="content-box">{text}</div>;
    }
@@ -169,7 +169,7 @@ function AccordionItem({ num, title, text }) {
 
 #### クラス名の動的制御
 
-```javascript
+```jsx
 function AccordionItem({ num, title, text }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -193,7 +193,7 @@ function AccordionItem({ num, title, text }) {
 
 1. **テンプレートリテラル**:
 
-   ```javascript
+   ```jsx
    className={`item ${isOpen ? "open" : ""}`}
    ```
 
@@ -215,7 +215,7 @@ function AccordionItem({ num, title, text }) {
 
 ### Part 1 完成版コード
 
-```javascript
+```jsx
 import React, { useState } from "react";
 import "./Accordion.css";
 
@@ -307,7 +307,7 @@ Accordion: [currentOpen: null | number]
 
 #### 親コンポーネントでの状態管理
 
-```javascript
+```jsx
 function Accordion({ data }) {
   // 状態を親コンポーネントにリフトアップ
   const [curOpen, setCurOpen] = useState(null);
@@ -337,7 +337,7 @@ function Accordion({ data }) {
 
 #### 子コンポーネントでの状態計算
 
-```javascript
+```jsx
 function AccordionItem({ num, title, text, curOpen, onOpen }) {
   // 自身の番号と現在開いている番号を比較
   const isOpen = num === curOpen;
@@ -362,14 +362,14 @@ function AccordionItem({ num, title, text, curOpen, onOpen }) {
 
 1. **開閉状態の判定**:
 
-   ```javascript
+   ```jsx
    const isOpen = num === curOpen;
    ```
 
    - 自身の番号が現在開いている番号と一致するかチェック
 
 2. **状態更新ロジック**:
-   ```javascript
+   ```jsx
    function handleToggle() {
      onOpen(isOpen ? null : num);
    }
@@ -381,7 +381,7 @@ function AccordionItem({ num, title, text, curOpen, onOpen }) {
 
 #### データ構造の変更不要でコンテンツ多様化
 
-```javascript
+```jsx
 function Accordion({ data }) {
   const [curOpen, setCurOpen] = useState(null);
 
@@ -422,7 +422,7 @@ function Accordion({ data }) {
 
 #### children prop を受け取る実装
 
-```javascript
+```jsx
 function AccordionItem({ num, title, curOpen, onOpen, children }) {
   const isOpen = num === curOpen;
 
@@ -450,7 +450,7 @@ function AccordionItem({ num, title, curOpen, onOpen, children }) {
 
 1. **コンテンツの多様性**:
 
-   ```javascript
+   ```jsx
    // テキストのみ
    <AccordionItem>{text}</AccordionItem>
 
@@ -498,7 +498,7 @@ Part 2 の実装における完全なデータフローを理解しましょう�
 
 ### 完全な実装（Part 2）
 
-```javascript
+```jsx
 import React, { useState } from "react";
 import "./Accordion.css";
 
@@ -703,7 +703,7 @@ body {
 
 **Part 1: 分散型状態管理**
 
-```javascript
+```jsx
 // 各コンポーネントが独自の状態を持つ
 function AccordionItem() {
   const [isOpen, setIsOpen] = useState(false);
@@ -713,7 +713,7 @@ function AccordionItem() {
 
 **Part 2: 集中型状態管理**
 
-```javascript
+```jsx
 // 親コンポーネントが全体状態を管理
 function Accordion() {
   const [curOpen, setCurOpen] = useState(null);
@@ -739,13 +739,13 @@ function Accordion() {
 
 **従来の prop 渡し**:
 
-```javascript
+```jsx
 <AccordionItem text={el.text} />
 ```
 
 **children prop**:
 
-```javascript
+```jsx
 <AccordionItem>{el.text}</AccordionItem>
 <AccordionItem>
   <p>Complex content</p>

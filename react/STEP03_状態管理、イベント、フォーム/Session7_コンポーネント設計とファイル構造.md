@@ -26,7 +26,7 @@
 
 現在の App.js ファイルから Logo コンポーネントのコードを取得します：
 
-```javascript
+```jsx
 function Logo() {
   return <h1>🌴 Far Away 💼</h1>;
 }
@@ -46,7 +46,7 @@ JavaScript では、モジュールから関数やオブジェクトをエクス
 
 #### 1. 名前付きエクスポート（Named Export）
 
-```javascript
+```jsx
 export function Logo() {
   return <h1>🌴 Far Away 💼</h1>;
 }
@@ -54,13 +54,13 @@ export function Logo() {
 
 この方法を使用すると、Logo という名前のエクスポートが作成されます。この場合、他のファイルでインポートする際には、正確にその名前を使用する必要があります：
 
-```javascript
+```jsx
 import { Logo } from "./Logo";
 ```
 
 #### 2. デフォルトエクスポート（Default Export）
 
-```javascript
+```jsx
 function Logo() {
   return <h1>🌴 Far Away 💼</h1>;
 }
@@ -82,7 +82,7 @@ Logo is not defined
 
 この問題を解決するために、App.js でインポートする必要があります：
 
-```javascript
+```jsx
 import Logo from "./Logo";
 ```
 
@@ -95,13 +95,13 @@ import Logo from "./Logo";
 **名前の変更テスト**：
 実際に、インポート名を変更してテストすることもできます：
 
-```javascript
+```jsx
 import X from "./Logo";
 ```
 
 そして、コンポーネントの使用箇所も変更します：
 
-```javascript
+```jsx
 <X />
 ```
 
@@ -115,7 +115,7 @@ import X from "./Logo";
 
 次のコンポーネントを取得しましょう：
 
-```javascript
+```jsx
 function Form({ onAddItems }) {
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState(1);
@@ -162,13 +162,13 @@ function Form({ onAddItems }) {
 
 そして、再びデフォルトエクスポートを追加します：
 
-```javascript
+```jsx
 export default Form;
 ```
 
 App.js に戻って、Form をインポートする必要があります：
 
-```javascript
+```jsx
 import Form from "./Form";
 ```
 
@@ -177,7 +177,7 @@ import Form from "./Form";
 
 App.js からこの行を取得する必要があります：
 
-```javascript
+```jsx
 import { useState } from "react";
 ```
 
@@ -215,7 +215,7 @@ VS Code は、この関数内で必要なすべての部分を自動的にイン
 **エクスポート方式の違い**：
 VS Code は名前付きエクスポートを使用しています：
 
-```javascript
+```jsx
 export function PackingList({ items, onDeleteItem, onToggleItem }) {
   // ...
 }
@@ -223,7 +223,7 @@ export function PackingList({ items, onDeleteItem, onToggleItem }) {
 
 そして、インポートも名前付きインポートの方式で行っています：
 
-```javascript
+```jsx
 import { PackingList } from "./PackingList";
 ```
 
@@ -231,7 +231,7 @@ import { PackingList } from "./PackingList";
 
 一貫性のために、デフォルトエクスポートに変更しましょう：
 
-```javascript
+```jsx
 function PackingList({ items, onDeleteItem, onToggleItem }) {
   // ...
 }
@@ -241,7 +241,7 @@ export default PackingList;
 
 そして、インポート方式も変更します：
 
-```javascript
+```jsx
 import PackingList from "./PackingList";
 ```
 
@@ -255,7 +255,7 @@ import PackingList from "./PackingList";
 
 再び、item が作成され、ここでデフォルトエクスポートを書く必要があります：
 
-```javascript
+```jsx
 export default Item;
 ```
 
@@ -265,7 +265,7 @@ export default Item;
 
 したがって、デフォルトインポートとして、基本的にインポートする必要があります：
 
-```javascript
+```jsx
 import Item from "./Item";
 ```
 
@@ -278,13 +278,13 @@ import Item from "./Item";
 
 デフォルトエクスポートに変更します：
 
-```javascript
+```jsx
 export default Stats;
 ```
 
 そして、インポートも修正します：
 
-```javascript
+```jsx
 import Stats from "./Stats";
 ```
 
@@ -316,7 +316,7 @@ import Stats from "./Stats";
 
 index.js でパスを修正する必要があります：
 
-```javascript
+```jsx
 // 修正前
 import App from "./App";
 
@@ -364,7 +364,7 @@ src/
 
 **1. デフォルトエクスポート**
 
-```javascript
+```jsx
 // 関数の場合
 function MyComponent() {
   return <div>Hello</div>;
@@ -379,7 +379,7 @@ export default function MyComponent() {
 
 **2. 名前付きエクスポート**
 
-```javascript
+```jsx
 // 複数の要素をエクスポート
 export function ComponentA() {
   /* ... */
@@ -405,27 +405,27 @@ export { ComponentA, ComponentB, CONSTANT_VALUE };
 
 **1. デフォルトインポート**
 
-```javascript
+```jsx
 import MyComponent from "./MyComponent";
 import AnyName from "./MyComponent"; // 任意の名前を使用可能
 ```
 
 **2. 名前付きインポート**
 
-```javascript
+```jsx
 import { ComponentA, ComponentB } from "./Components";
 import { ComponentA as CompA } from "./Components"; // 別名を使用
 ```
 
 **3. 混合インポート**
 
-```javascript
+```jsx
 import DefaultComponent, { namedExport1, namedExport2 } from "./Module";
 ```
 
 **4. 全体インポート**
 
-```javascript
+```jsx
 import * as Utils from "./utils";
 // Utils.functionA(), Utils.functionB() として使用
 ```
@@ -434,7 +434,7 @@ import * as Utils from "./utils";
 
 **1. コンポーネントはデフォルトエクスポートを使用**
 
-```javascript
+```jsx
 // 推奨
 export default function Button() {
   return <button>Click me</button>;
@@ -443,7 +443,7 @@ export default function Button() {
 
 **2. ユーティリティ関数は名前付きエクスポートを使用**
 
-```javascript
+```jsx
 // utils.js
 export function formatDate(date) {
   /* ... */
@@ -455,7 +455,7 @@ export function validateEmail(email) {
 
 **3. 定数は名前付きエクスポートを使用**
 
-```javascript
+```jsx
 // constants.js
 export const API_URL = "https://api.example.com";
 export const MAX_ITEMS = 100;
@@ -483,7 +483,7 @@ export const MAX_ITEMS = 100;
 
 重要な原則として、各コンポーネントファイルで使用する React の機能は、そのファイル内で個別にインポートする必要があります：
 
-```javascript
+```jsx
 // Form.js
 import { useState } from "react";
 
@@ -499,7 +499,7 @@ function Form() {
 
 コンポーネントを分離すると、個別にテストしやすくなります：
 
-```javascript
+```jsx
 // Logo.test.js
 import { render, screen } from "@testing-library/react";
 import Logo from "./Logo";
@@ -565,7 +565,7 @@ src/
 
 この場合、インポートは以下のようになります：
 
-```javascript
+```jsx
 import Logo from "./components/Logo";
 import Form from "./components/Form";
 ```

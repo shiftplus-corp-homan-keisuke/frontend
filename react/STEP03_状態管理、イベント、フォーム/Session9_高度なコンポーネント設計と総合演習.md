@@ -30,7 +30,7 @@ children プロパティを再度活用して、さらに別の再利用可能�
 
 このコンポーネントを「StepMessage」と呼びます。
 
-```javascript
+```jsx
 function StepMessage({ step, children }) {
   return (
     <div className="message">
@@ -65,7 +65,7 @@ function StepMessage({ step, children }) {
 
 そこで、今度は step を取得し、その step の直後に、受け取った children を単純に表示しましょう。
 
-```javascript
+```jsx
 function StepMessage({ step, children }) {
   return (
     <div className="message">
@@ -100,7 +100,7 @@ StepMessage の開始タグと終了タグの間にあるものです。
 
 さて、ここのメッセージを StepMessage に置き換えてみましょう。
 
-```javascript
+```jsx
 <StepMessage step={step}>Learn React ⚛️</StepMessage>
 ```
 
@@ -132,7 +132,7 @@ H3 要素は P 要素の中に入れることができません。
 
 そこで、この P を div に置き換えましょう。
 
-```javascript
+```jsx
 function StepMessage({ step, children }) {
   return (
     <div className="message">
@@ -169,7 +169,7 @@ function StepMessage({ step, children }) {
 
 別の段落に絵文字を入れてみましょう。
 
-```javascript
+```jsx
 <StepMessage step={1}>
   <p>Pass in content 👋</p>
 </StepMessage>
@@ -189,7 +189,7 @@ function StepMessage({ step, children }) {
 
 そして別の絵文字にしてみましょう。
 
-```javascript
+```jsx
 <StepMessage step={2}>
   <p>Read children prop 📖</p>
 </StepMessage>
@@ -229,7 +229,7 @@ function StepMessage({ step, children }) {
 
 これらは文字列のようにする必要があります。
 
-```javascript
+```jsx
 <Button
   bgColor="#7950f2"
   textColor="#fff"
@@ -409,7 +409,7 @@ children プロパティを活用すべきです。
 
 そして、ここで現在開いているアイテムの番号を保存します。
 
-```javascript
+```jsx
 function Accordion({ data }) {
   const [curOpen, setCurOpen] = useState(null);
 
@@ -471,7 +471,7 @@ onOpen という名前にしましょう。そして setCurOpen を渡します�
 
 curOpen と onOpen です。
 
-```javascript
+```jsx
 function AccordionItem({ num, title, curOpen, onOpen, children }) {
   const isOpen = num === curOpen;
 
@@ -717,7 +717,7 @@ null になるべきで、そうでなければ
 
 ### 完成したアコーディオンコンポーネントのコード
 
-```javascript
+```jsx
 // app.js
 import { useState } from "react";
 import "./styles.css";
@@ -799,7 +799,7 @@ function AccordionItem({ num, title, curOpen, onOpen, children }) {
 }
 ```
 
-```javascript
+```jsx
 // index.js
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
@@ -1564,7 +1564,7 @@ output に渡す準備ができています。
 
 ### 完成したチップ計算機のコード
 
-```javascript
+```jsx
 // app.js
 import "./styles.css";
 import { useState } from "react";
@@ -1654,7 +1654,7 @@ function Reset({ onReset }) {
 }
 ```
 
-```javascript
+```jsx
 // index.js
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";

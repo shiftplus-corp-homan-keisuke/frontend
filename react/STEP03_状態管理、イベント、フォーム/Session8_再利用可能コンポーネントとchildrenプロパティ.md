@@ -84,7 +84,7 @@ div を閉じることができます。
 
 このコンポーネントをどこかに含めるとすぐに受け取る prop ですが、すでにその prop が存在するかのように使用できます。
 
-```javascript
+```jsx
 function AccordionItem({ num, title, text }) {
   return (
     <div className="item">
@@ -100,7 +100,7 @@ function AccordionItem({ num, title, text }) {
 
 すぐに prop を使用します。
 
-```javascript
+```jsx
 function AccordionItem({ num, title, text }) {
   return (
     <div className="item">
@@ -121,7 +121,7 @@ function AccordionItem({ num, title, text }) {
 
 しかし、後でそれを変更します。
 
-```javascript
+```jsx
 function AccordionItem({ num, title, text }) {
   return (
     <div className="item">
@@ -141,7 +141,7 @@ function AccordionItem({ num, title, text }) {
 
 そして、これは再び実際のテキストが入る場所です。
 
-```javascript
+```jsx
 function AccordionItem({ num, title, text }) {
   return (
     <div className="item">
@@ -176,7 +176,7 @@ function AccordionItem({ num, title, text }) {
 
 そうすれば、同じアコーディオンを異なる配列で再利用できます。
 
-```javascript
+```jsx
 function Accordion({ data }) {
   return <div className="accordion"></div>;
 }
@@ -218,7 +218,7 @@ map のコールバックは、実際に現在の要素に加えて、現在の�
 
 それで終わりです。
 
-```javascript
+```jsx
 function Accordion({ data }) {
   return (
     <div className="accordion">
@@ -266,7 +266,7 @@ function Accordion({ data }) {
 
 しかし、そうでなければ、ここで、それは単に番号プラス 1 です。
 
-```javascript
+```jsx
 function AccordionItem({ num, title, text }) {
   return (
     <div className="item">
@@ -285,7 +285,7 @@ function AccordionItem({ num, title, text }) {
 
 それで動作するはずです。
 
-```javascript
+```jsx
 function AccordionItem({ num, title, text }) {
   return (
     <div className="item">
@@ -346,7 +346,7 @@ useState が自動的にインポートされました。
 
 デフォルトでは、各ボックスを閉じたいからです。
 
-```javascript
+```jsx
 function AccordionItem({ num, title, text }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -379,7 +379,7 @@ JavaScript モードに入れましょう。
 
 そして、このような条件付きレンダリングです。
 
-```javascript
+```jsx
 function AccordionItem({ num, title, text }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -406,7 +406,7 @@ isOpen と言いましょう。
 
 そうでなければ、プラスを表示してください。
 
-```javascript
+```jsx
 function AccordionItem({ num, title, text }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -461,7 +461,7 @@ current と呼ぶことができます。
 
 そして、反対のことをしたいだけです。
 
-```javascript
+```jsx
 function AccordionItem({ num, title, text }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -506,7 +506,7 @@ function AccordionItem({ num, title, text }) {
 
 例えば、各要素のタイトルです。
 
-```javascript
+```jsx
 function Accordion({ data }) {
   return (
     <div className="accordion">
@@ -546,7 +546,7 @@ isOpen に基づいて、
 
 open または何も追加したいと思います。
 
-```javascript
+```jsx
 function AccordionItem({ num, title, text }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -595,7 +595,7 @@ function AccordionItem({ num, title, text }) {
 
 **app.js**
 
-```javascript
+```jsx
 import { useState } from "react";
 import "./styles.css";
 
@@ -653,7 +653,7 @@ function AccordionItem({ num, title, text }) {
 
 **index.js**
 
-```javascript
+```jsx
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
@@ -838,7 +838,7 @@ textColor、backgroundColor、onClick ハンドラー、そしてテキストで
 
 今構築しているコンポーネントを使用するまで。
 
-```javascript
+```jsx
 function Button({ textColor, bgColor, onClick, text }) {
   return (
     <button
@@ -901,7 +901,7 @@ bgColor です。
 
 これは現在、textColor、background、onClick ハンドラー、そしてテキストを受け入れます。
 
-```javascript
+```jsx
 <Button
   textColor="#fff"
   bgColor="#7950f2"
@@ -937,7 +937,7 @@ emoji です。
 
 span を作成して、そこに絵文字を入れて、それからテキストです。
 
-```javascript
+```jsx
 function Button({ textColor, bgColor, onClick, text, emoji }) {
   return (
     <button
@@ -961,7 +961,7 @@ previous にはこれが欲しいです。
 
 これです。
 
-```javascript
+```jsx
 <Button
   textColor="#fff"
   bgColor="#7950f2"
@@ -1043,7 +1043,7 @@ React コンポーネントでまったく同じことを行うことができ�
 
 そして再び、React コンポーネントでまったく同じことを行うことができます。
 
-```javascript
+```jsx
 <Button textColor="#fff" bgColor="#7950f2" onClick={handlePrevious}>
   <span>👈</span>Previous
 </Button>
@@ -1061,7 +1061,7 @@ React コンポーネントでまったく同じことを行うことができ�
 
 とても簡単ですよね？
 
-```javascript
+```jsx
 <Button textColor="#fff" bgColor="#7950f2" onClick={handleNext}>
   Next<span>👉</span>
 </Button>
@@ -1089,7 +1089,7 @@ children プロパティは、各 React コンポーネントが自動的に受�
 
 そして、単純に children と書く必要があります。
 
-```javascript
+```jsx
 function Button({ textColor, bgColor, onClick, children }) {
   return (
     <button

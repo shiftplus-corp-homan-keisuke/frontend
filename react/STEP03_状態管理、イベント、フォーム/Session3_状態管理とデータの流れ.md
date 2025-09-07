@@ -43,7 +43,7 @@
 
 まず、フォーム要素の値を管理するための状態を作成します。
 
-```javascript
+```jsx
 import { useState } from "react";
 
 function Form() {
@@ -64,7 +64,7 @@ function Form() {
 
 次に、作成した状態をフォーム要素の value 属性に設定します。
 
-```javascript
+```jsx
 function Form() {
   const [description, setDescription] = useState("");
 
@@ -86,7 +86,7 @@ function Form() {
 
 最後に、ユーザーの入力に応じて状態を更新するイベントハンドラーを追加します。
 
-```javascript
+```jsx
 function Form() {
   const [description, setDescription] = useState("");
 
@@ -109,7 +109,7 @@ function Form() {
 
 onChange イベントハンドラーの動作を詳しく理解しましょう：
 
-```javascript
+```jsx
 onChange={(e) => setDescription(e.target.value)}
 ```
 
@@ -128,7 +128,7 @@ onChange={(e) => setDescription(e.target.value)}
 
 動作を視覚的に確認するために、コンソールログを追加してみましょう：
 
-```javascript
+```jsx
 function Form() {
   const [description, setDescription] = useState("");
 
@@ -174,7 +174,7 @@ React Developer Tools を使用すると、状態の変化をリアルタイム�
 
 ### 基本実装
 
-```javascript
+```jsx
 function Form() {
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState(5); // デモ用に5を設定
@@ -206,7 +206,7 @@ function Form() {
 
 **問題が発生する例**:
 
-```javascript
+```jsx
 // 初期値は数値
 const [quantity, setQuantity] = useState(5);
 
@@ -223,7 +223,7 @@ onChange={(e) => setQuantity(e.target.value)} // "5" (文字列)
 
 数値として正しく保持するために、明示的に数値変換を行います：
 
-```javascript
+```jsx
 function Form() {
   const [quantity, setQuantity] = useState(1); // 実用的なデフォルト値
 
@@ -240,7 +240,7 @@ function Form() {
 
 **変換方法の比較**:
 
-```javascript
+```jsx
 // 方法1: Number() 関数（推奨）
 onChange={(e) => setQuantity(Number(e.target.value))}
 
@@ -259,7 +259,7 @@ onChange={(e) => setQuantity(parseInt(e.target.value, 10))}
 
 ### 完全なフォーム実装
 
-```javascript
+```jsx
 import { useState } from "react";
 
 function Form() {
@@ -319,7 +319,7 @@ function Form() {
 
 **1. バリデーション機能**:
 
-```javascript
+```jsx
 if (!description) return;
 ```
 
@@ -329,7 +329,7 @@ if (!description) return;
 
 **2. オブジェクト作成**:
 
-```javascript
+```jsx
 const newItem = {
   description, // ES6 ショートハンド記法
   quantity, // quantity: quantity と同じ
@@ -340,7 +340,7 @@ const newItem = {
 
 **3. フォームリセット**:
 
-```javascript
+```jsx
 setDescription("");
 setQuantity(1);
 ```
@@ -374,7 +374,7 @@ setQuantity(1);
 
 ### 1. 簡単なフォームリセット
 
-```javascript
+```jsx
 // 従来の方法（DOM操作）
 document.getElementById("myInput").value = "";
 document.getElementById("mySelect").selectedIndex = 0;
@@ -386,7 +386,7 @@ setQuantity(1);
 
 ### 2. リアルタイムバリデーション
 
-```javascript
+```jsx
 function Form() {
   const [email, setEmail] = useState("");
   const [isValid, setIsValid] = useState(true);
@@ -410,7 +410,7 @@ function Form() {
 
 ### 3. 条件付きレンダリング
 
-```javascript
+```jsx
 function Form() {
   const [showAdvanced, setShowAdvanced] = useState(false);
 
@@ -431,7 +431,7 @@ function Form() {
 
 ### 4. データの一元管理
 
-```javascript
+```jsx
 function Form() {
   const [formData, setFormData] = useState({
     name: "",
@@ -471,7 +471,7 @@ Form コンポーネントと PackingList コンポーネントは**兄弟関係
 
 ### なぜ props では解決できないのか
 
-```javascript
+```jsx
 // ❌ これは不可能
 function Form() {
   const newItem = {
@@ -495,7 +495,7 @@ Props は親から子への一方向の通信手段であり、兄弟コンポ�
 2. **Props でデータを渡す**: 親から子コンポーネントにデータを props として渡す
 3. **コールバック関数**: 子から親にデータを送信するための関数を props として渡す
 
-```javascript
+```jsx
 // 次のセッションで実装予定
 function App() {
   const [items, setItems] = useState([]);
@@ -523,7 +523,7 @@ React を学習する上で最も重要な概念の一つが、状態（state）
 
 **内部データ（Internal Data）**:
 
-```javascript
+```jsx
 function Counter() {
   const [count, setCount] = useState(0); // 内部状態
 
@@ -553,7 +553,7 @@ function Counter() {
 
 **外部データ（External Data）**:
 
-```javascript
+```jsx
 // 親コンポーネント
 function App() {
   const [upVotes, setUpVotes] = useState(0);
@@ -595,7 +595,7 @@ function Question({ title, upVotes, onUpVote }) {
 
 **状態が Props として渡される**:
 
-```javascript
+```jsx
 function App() {
   const [upVotes, setUpVotes] = useState(0); // これは状態
 
@@ -631,7 +631,7 @@ function Button({ upVotes }) {
 
 ### 実践的な例：投票システム
 
-```javascript
+```jsx
 // 親コンポーネント（状態を管理）
 function VotingApp() {
   const [questions, setQuestions] = useState([
@@ -687,7 +687,7 @@ function Question({ title, upVotes, onUpVote }) {
 
 ### 演習 1: 基本的な制御された要素
 
-```javascript
+```jsx
 import { useState } from "react";
 
 function NameForm() {
@@ -715,7 +715,7 @@ function NameForm() {
 
 ### 演習 2: 複数の制御された要素
 
-```javascript
+```jsx
 import { useState } from "react";
 
 function UserRegistrationForm() {
@@ -814,7 +814,7 @@ function UserRegistrationForm() {
 
 ### 演習 3: リアルタイムバリデーション
 
-```javascript
+```jsx
 import { useState } from "react";
 
 function ValidatedForm() {
@@ -939,7 +939,7 @@ function ValidatedForm() {
 
 **原因**: `onChange` ハンドラーが設定されていない
 
-```javascript
+```jsx
 // ❌ 問題のあるコード
 <input
   type="text"
@@ -969,7 +969,7 @@ Warning: You provided a `value` prop to a form field without an `onChange` handl
 
 **症状**: 数値として扱いたいのに文字列になる
 
-```javascript
+```jsx
 // ❌ 問題のあるコード
 const [quantity, setQuantity] = useState(1);
 onChange={(e) => setQuantity(e.target.value)} // 文字列になる
@@ -982,7 +982,7 @@ onChange={(e) => setQuantity(Number(e.target.value))} // 数値に変換
 
 **症状**: チェックボックスが正しく動作しない
 
-```javascript
+```jsx
 // ❌ 問題のあるコード
 <input
   type="checkbox"
@@ -1022,7 +1022,7 @@ onChange={(e) => setQuantity(Number(e.target.value))} // 数値に変換
 
 ### デバッグのベストプラクティス
 
-```javascript
+```jsx
 function Form() {
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState(1);

@@ -68,7 +68,7 @@ Web で最も重要なことの一つは、フォームを通じて Web アプ�
 
 そして、必要なのは、再び map メソッドを使用して、この配列をループし、option 要素のリストを作成することです。
 
-```javascript
+```jsx
 function Form() {
   return (
     <form className="add-form">
@@ -269,7 +269,7 @@ Vanilla JavaScript でフォームを扱うことに慣れている場合は、�
 
 そして、必要なのは、再びmapメソッドを使用して、この配列をループし、option要素のリストを作成することです。
 
-```javascript
+```jsx
 function Form() {
   return (
     <form className="add-form">
@@ -391,7 +391,7 @@ Vanilla JavaScript でフォームを扱うことに慣れている場合は、�
 
 同じページに留まりたいのです。シングルページアプリケーションを構築しています。
 
-```javascript
+```jsx
 function Form() {
   function handleSubmit(e) {
     e.preventDefault();
@@ -542,7 +542,7 @@ VS Code がここでこのオートコンプリートメニュー D を表示す
 
 この import 文が自動的に追加されます。何らかの理由で VS Code でそれが動作しない場合は、手動で入力してください。
 
-```javascript
+```jsx
 import { useState } from "react";
 
 function Form() {
@@ -591,7 +591,7 @@ React が制御したい入力に来て、value を指定します。
 
 代わりに、`description`が欲しいです。
 
-```javascript
+```jsx
 <input type="text" placeholder="Item..." value={description} />
 ```
 
@@ -617,7 +617,7 @@ React が制御したい入力に来て、value を指定します。
 
 そのため、3 番目のステップが必要です。それは、`onChange`イベントハンドラーを提供することです。
 
-```javascript
+```jsx
 <input
   type="text"
   placeholder="Item..."
@@ -658,7 +658,7 @@ React が制御したい入力に来て、value を指定します。
 
 数量用の状態も作成しましょう。
 
-```javascript
+```jsx
 const [quantity, setQuantity] = useState(1);
 ```
 
@@ -666,7 +666,7 @@ const [quantity, setQuantity] = useState(1);
 
 そして、select 要素に値と onChange を追加します。
 
-```javascript
+```jsx
 <select
   value={quantity}
   onChange={(e) => setQuantity(Number(e.target.value))}
@@ -675,7 +675,7 @@ const [quantity, setQuantity] = useState(1);
 
 ここで重要なのは、e.target.value は常に文字列であるため、Number()を使用して数値に変換することです。
 
-```javascript
+```jsx
 import { useState } from "react";
 
 function Form() {

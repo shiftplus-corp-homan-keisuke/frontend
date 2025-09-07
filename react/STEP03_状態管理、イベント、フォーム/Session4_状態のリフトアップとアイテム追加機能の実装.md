@@ -640,7 +640,7 @@ onAddItems。
 
 #### 1. App コンポーネント（親コンポーネント）
 
-```javascript
+```jsx
 function App() {
   const [items, setItems] = useState([]); // 状態をここに配置
 
@@ -661,7 +661,7 @@ function App() {
 
 #### 2. Form コンポーネント（子コンポーネント）
 
-```javascript
+```jsx
 function Form({ onAddItems }) {
   // 関数をpropsで受け取る
   const [description, setDescription] = useState("");
@@ -691,7 +691,7 @@ function Form({ onAddItems }) {
 
 #### 3. PackingList コンポーネント（子コンポーネント）
 
-```javascript
+```jsx
 function PackingList({ items }) {
   // 状態をpropsで受け取る
   return (
@@ -758,7 +758,7 @@ function PackingList({ items }) {
 
 このパターンは非常に重要で、React アプリケーションでよく使用されます：
 
-```javascript
+```jsx
 // 親コンポーネント
 function Parent() {
   const [state, setState] = useState(initialValue);
@@ -796,7 +796,7 @@ function Child({ onStateChange }) {
 
 状態更新時の不変性について詳しく説明します：
 
-```javascript
+```jsx
 function handleAddItems(item) {
   // ❌ 間違った方法：既存の配列を変更（ミューテーション）
   // items.push(item);
@@ -844,7 +844,7 @@ function handleAddItems(item) {
 
 1. **props の受け渡し忘れ**：
 
-   ```javascript
+   ```jsx
    // ❌ 間違い
    <Form /> // onAddItemsを渡していない
 
@@ -854,7 +854,7 @@ function handleAddItems(item) {
 
 2. **props の受け取り忘れ**：
 
-   ```javascript
+   ```jsx
    // ❌ 間違い
    function Form() { // propsを受け取っていない
 
@@ -864,7 +864,7 @@ function handleAddItems(item) {
 
 3. **関数名の間違い**：
 
-   ```javascript
+   ```jsx
    // ❌ 間違い
    onAddItems(newItem); // 関数が定義されていない
 

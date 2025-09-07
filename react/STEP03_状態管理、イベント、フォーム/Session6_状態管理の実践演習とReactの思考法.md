@@ -68,7 +68,7 @@
 
 ### データ構造の確認
 
-```javascript
+```jsx
 const questions = [
   {
     id: 3457,
@@ -112,7 +112,7 @@ const questions = [
 
 JavaScript モードに入り、questions 配列を取得して map メソッドを使用します。
 
-```javascript
+```jsx
 {questions.map((question) => (
   // ここでJSXをレンダリング
 ))}
@@ -124,14 +124,14 @@ JavaScript モードに入り、questions 配列を取得して map メソッド
 
 ここで JSX を直接返すこともできます。今回はそれを行います。
 
-````javascript
+````jsx
 そして、各要素を`question`としましょう。そして、各質問に対してJSXをレンダリングできます。
 
 多くの場合、ここで追加のコンポーネントを作成します。現在構築している「Far Away」旅行リストアプリで行ったように。しかし、必須ではありません。
 
 ここでJSXを直接返すこともできます。今回はそれを行います。
 
-```javascript
+```jsx
 {questions.map((question) => (
   <div>
   </div>
@@ -162,7 +162,7 @@ div を閉じて、paragraph も閉じます。
 
 そうです、それぞれに一意の key が必要です。ここに追加しましょう。
 
-```javascript
+```jsx
 {
   questions.map((question) => (
     <div key={question.id}>
@@ -192,7 +192,7 @@ div を閉じて、paragraph も閉じます。
 
 ### 状態の定義
 
-```javascript
+```jsx
 const [selectedId, setSelectedId] = useState(null);
 ```
 
@@ -224,7 +224,7 @@ selectedID をここで何かに使用しましょう。
 
 理解しやすくするために、ここで`null`の代わりに実際の ID の一つを使用してみましょう。
 
-```javascript
+```jsx
 const [selectedId, setSelectedId] = useState(9103);
 ```
 
@@ -240,7 +240,7 @@ const [selectedId, setSelectedId] = useState(9103);
 
 それを行うことができます：
 
-```javascript
+```jsx
 {
   question.id === selectedId ? question.answer : question.question;
 }
@@ -258,7 +258,7 @@ const [selectedId, setSelectedId] = useState(9103);
 
 この div に追加しましょう。
 
-```javascript
+```jsx
 className={question.id === selectedId ? "selected" : ""}
 ```
 
@@ -286,7 +286,7 @@ className={question.id === selectedId ? "selected" : ""}
 
 ### 状態を null に戻す
 
-```javascript
+```jsx
 const [selectedId, setSelectedId] = useState(null);
 ```
 
@@ -302,7 +302,7 @@ const [selectedId, setSelectedId] = useState(null);
 
 ### イベントハンドラーの実装
 
-```javascript
+```jsx
 function handleClick(id) {
   setSelectedId(id);
 }
@@ -320,7 +320,7 @@ function handleClick(id) {
 
 つまり、この関数はその ID を受け取る必要があり、ここで設定できます。
 
-```javascript
+```jsx
 onClick={() => handleClick(question.id)}
 ```
 
@@ -336,7 +336,7 @@ onClick={() => handleClick(question.id)}
 
 React がイベントが発生するとすぐに関数を呼び出せるように、関数を渡したいのです。
 
-```javascript
+```jsx
 onClick={() => handleClick(question.id)}
 ```
 
@@ -374,7 +374,7 @@ React DevTools を確認してみましょう。CodeSandbox には実際に Reac
 
 基本的に、ここでこの ID を条件に基づいて設定したいのです。
 
-```javascript
+```jsx
 function handleClick(id) {
   setSelectedId(id !== selectedId ? id : null);
 }
@@ -398,7 +398,7 @@ null の場合、どれもアクティブになりません。
 
 ### 完全な FlashCards コンポーネント
 
-```javascript
+```jsx
 function FlashCards() {
   const [selectedId, setSelectedId] = useState(null);
 
@@ -436,7 +436,7 @@ function FlashCards() {
 
 #### app.js
 
-```javascript
+```jsx
 import "./styles.css";
 import { useState } from "react";
 
@@ -509,7 +509,7 @@ function FlashCards() {
 
 #### index.js
 
-```javascript
+```jsx
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
@@ -623,7 +623,7 @@ input 要素を使用できます。
 
 説明したように、これは input 要素で、タイプは range です。
 
-```javascript
+```jsx
 <input type="range" min="0" max="10" />
 ```
 
@@ -657,7 +657,7 @@ React がこの値を制御していない状態です。
 
 この要素の値は、もちろんそのステップ状態によって制御されるべきです。
 
-```javascript
+```jsx
 <input
   type="range"
   min="0"
@@ -695,7 +695,7 @@ React がこの値を制御していない状態です。
 
 以前学習した解決方法と同じく、値を状態に設定する前に数値に変換する必要があります。
 
-```javascript
+```jsx
 onChange={(e) => setStep(Number(e.target.value))}
 ```
 
@@ -713,7 +713,7 @@ CodeSandbox の統合に一部問題があるかもしれませんが、核と�
 
 元の span 要素の代わりに、input 要素を使用します。
 
-```javascript
+```jsx
 <input
   type="text"
   value={count}
@@ -771,7 +771,7 @@ React DevTools を閉じて、確実にするためにページをリロード�
 
 そのボタンを配置する div を作成しましょう。
 
-```javascript
+```jsx
 <div>
   <button onClick={handleReset}>Reset</button>
 </div>
@@ -791,7 +791,7 @@ React DevTools を閉じて、確実にするためにページをリロード�
 
 セッター関数を使用して、これら 2 つを初期状態に戻すだけです。
 
-```javascript
+```jsx
 function handleReset() {
   setCount(0);
   setStep(1);
@@ -810,7 +810,7 @@ function handleReset() {
 
 JavaScript ブロックでラップして、以下のような条件を設定できます：
 
-```javascript
+```jsx
 {
   count !== 0 || step !== 1 ? (
     <div>
@@ -842,7 +842,7 @@ count が 0 と異なる、または step が 1 と異なる場合に表示し�
 
 ### 完全なコンポーネント実装
 
-```javascript
+```jsx
 import { useState } from "react";
 import "./styles.css";
 
@@ -912,7 +912,7 @@ function Counter() {
 
 #### index.js
 
-```javascript
+```jsx
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 

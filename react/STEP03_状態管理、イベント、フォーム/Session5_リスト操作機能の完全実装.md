@@ -31,7 +31,7 @@
 
 まず、状態が存在する App コンポーネントに戻って、新しい関数`handleDeleteItem`を作成します。
 
-```javascript
+```jsx
 function App() {
   const [items, setItems] = useState([]);
 
@@ -66,7 +66,7 @@ function App() {
 
 この新しい items 配列は現在の配列に基づいているので、現在のアイテムを入力として受け取るコールバック関数が必要です。
 
-```javascript
+```jsx
 function handleDeleteItem(id) {
   setItems((items) => items.filter((item) => item.id !== id));
 }
@@ -84,7 +84,7 @@ function handleDeleteItem(id) {
 
 この関数を props として PackingList にも渡す必要があります。アイテムは PackingList 内で呼び出されるからです。
 
-```javascript
+```jsx
 <PackingList items={items} onDeleteItem={handleDeleteItem} />
 ```
 
@@ -92,7 +92,7 @@ function handleDeleteItem(id) {
 
 PackingList でこの prop を受け取りましょう：
 
-```javascript
+```jsx
 function PackingList({ items, onDeleteItem }) {
   return (
     <div className="list">
@@ -112,7 +112,7 @@ function PackingList({ items, onDeleteItem }) {
 
 したがって、item と一緒にここでも渡す必要があります：
 
-```javascript
+```jsx
 <Item item={item} key={item.id} onDeleteItem={onDeleteItem} />
 ```
 
@@ -122,7 +122,7 @@ PackingList 自体は実際にはそれを必要としませんが、これが�
 
 ### Item コンポーネントでの実装
 
-```javascript
+```jsx
 function Item({ item, onDeleteItem }) {
   return (
     <li>
@@ -150,7 +150,7 @@ Form で実際にこれを活用しました。そこではイベントオブジ
 
 そのため、ここで新しい関数を作成し、現在の ID を渡す必要があります：
 
-```javascript
+```jsx
 <button onClick={() => onDeleteItem(item.id)}>❌</button>
 ```
 
@@ -170,7 +170,7 @@ Form で実際にこれを活用しました。そこではイベントオブジ
 
 もちろん、これらの初期アイテムを初期状態として使用することもできました：
 
-```javascript
+```jsx
 const [items, setItems] = useState(initialItems);
 ```
 
@@ -192,7 +192,7 @@ const [items, setItems] = useState(initialItems);
 
 Item コンポーネントに移動し、span の前に input を追加しましょう：
 
-```javascript
+```jsx
 function Item({ item, onDeleteItem }) {
   return (
     <li>
@@ -216,7 +216,7 @@ function Item({ item, onDeleteItem }) {
 
 まず、値は`item.packed`状態によって与えられます：
 
-```javascript
+```jsx
 <input type="checkbox" value={item.packed} />
 ```
 
@@ -224,7 +224,7 @@ function Item({ item, onDeleteItem }) {
 
 実際には、ここは`checked`であるべきです。`value`ではありません。チェックボックスの場合は`checked`プロパティを使用します。
 
-```javascript
+```jsx
 <input type="checkbox" checked={item.packed} onChange={() => {}} />
 ```
 
@@ -242,7 +242,7 @@ function Item({ item, onDeleteItem }) {
 
 この関数を書きましょう：
 
-```javascript
+```jsx
 function App() {
   const [items, setItems] = useState([]);
 
@@ -301,7 +301,7 @@ function App() {
 
 再び、props を通信チャネルとして使用します：
 
-```javascript
+```jsx
 <PackingList
   items={items}
   onDeleteItem={handleDeleteItem}
@@ -311,7 +311,7 @@ function App() {
 
 これをコピーして、props のリストに追加しましょう：
 
-```javascript
+```jsx
 function PackingList({ items, onDeleteItem, onToggleItem }) {
   return (
     <div className="list">
@@ -334,7 +334,7 @@ function PackingList({ items, onDeleteItem, onToggleItem }) {
 
 最後に、ここで受け取ります：
 
-```javascript
+```jsx
 function Item({ item, onDeleteItem, onToggleItem }) {
   return (
     <li>
@@ -390,7 +390,7 @@ function Item({ item, onDeleteItem, onToggleItem }) {
 
 ここに 3 つの状態があります。3 つの`useState`関数呼び出しで確認できます：
 
-```javascript
+```jsx
 // ❌ 問題のある実装
 function SomeComponent() {
   const [cart, setCart] = useState([]);
@@ -420,7 +420,7 @@ function SomeComponent() {
 
 代わりに、カートから`numItems`と`totalPrice`状態を単純に派生させることができ、これによりすべての問題が解決されます。カートにはすでに必要なすべてのデータが含まれているからです。
 
-```javascript
+```jsx
 // ✅ 正しい実装：派生状態を使用
 function SomeComponent() {
   const [cart, setCart] = useState([]);
@@ -461,7 +461,7 @@ function SomeComponent() {
 
 派生状態を使用する前に、やってはいけない方法を示します。
 
-```javascript
+```jsx
 // ❌ やってはいけない方法
 function Stats({ items }) {
   const [numItems, setNumItems] = useState(0);
@@ -486,7 +486,7 @@ React 18 では、これらはバッチ処理されるはずです。つまり�
 
 代わりに、`numItems`という新しい変数を定義できますが、items 配列に基づいて計算することができます：
 
-```javascript
+```jsx
 // ✅ 正しい方法
 function Stats({ items }) {
   const numItems = items.length;
@@ -508,7 +508,7 @@ function Stats({ items }) {
 
 また、実際には 3 つの値を計算するので、ここで計算すると 3 つの props を渡す必要があり、あまり意味がありません。
 
-```javascript
+```jsx
 function Stats({ items }) {
   // 早期リターン：アイテムがない場合
   if (!items.length) {
@@ -540,7 +540,7 @@ function Stats({ items }) {
 
 Stats コンポーネントも Items 状態を必要とする別のコンポーネントなので、PackingList に渡したのと同じように、prop として渡します：
 
-```javascript
+```jsx
 <Stats items={items} />
 ```
 
@@ -556,7 +556,7 @@ Enter を押すと何が起こるか見てください。すぐに 2 から 3 �
 
 他の派生状態も導出しましょう。パック済みのアイテム数とパーセンテージの両方がアイテム自体に依存しています。
 
-```javascript
+```jsx
 const numPacked = items.filter((item) => item.packed).length;
 ```
 
@@ -566,7 +566,7 @@ const numPacked = items.filter((item) => item.packed).length;
 
 最後にパーセンテージです。これは非常に簡単です：
 
-```javascript
+```jsx
 const percentage = Math.round((numPacked / numItems) * 100);
 ```
 
@@ -584,7 +584,7 @@ const percentage = Math.round((numPacked / numItems) * 100);
 
 JavaScript モードに入り、percentage が 100 に等しい場合、内容はこの文字列になるようにします：
 
-```javascript
+```jsx
 {
   percentage === 100
     ? "You got everything! Ready to go ✈️"
@@ -614,7 +614,7 @@ JavaScript モードに入り、percentage が 100 に等しい場合、内容�
 
 アイテムの長さがない場合、単純にリターンします：
 
-```javascript
+```jsx
 if (!items.length) {
   return (
     <p className="stats">
@@ -660,7 +660,7 @@ if (!items.length) {
 
 この div の後、実際にはこの順序なしリストの後に行いましょう。
 
-```javascript
+```jsx
 function PackingList({ items, onDeleteItem, onToggleItem }) {
   return (
     <div className="list">
@@ -715,7 +715,7 @@ select 要素内では、いつものように、異なる値を持つ option �
 
 まず、新しい状態を作成します：
 
-```javascript
+```jsx
 function PackingList({ items, onDeleteItem, onToggleItem }) {
   const [sortBy, setSortBy] = useState("input");
 
@@ -733,7 +733,7 @@ function PackingList({ items, onDeleteItem, onToggleItem }) {
 
 その状態をここで値として使用しましょう：
 
-```javascript
+```jsx
 <select value={sortBy}>
 ```
 
@@ -743,7 +743,7 @@ function PackingList({ items, onDeleteItem, onToggleItem }) {
 
 React が警告を出しているのは、3 番目のステップが欠けているからです。onChange イベントハンドラーをアタッチして、ユーザーがそこで選択したものに基づいて状態を更新できるようにする必要があります。
 
-```javascript
+```jsx
 <select
   value={sortBy}
   onChange={(e) => setSortBy(e.target.value)}
@@ -774,7 +774,7 @@ React が警告を出しているのは、3 番目のステップが欠けてい
 
 単純に新しい変数を作成し、実際には let 変数を作成します：
 
-```javascript
+```jsx
 function PackingList({ items, onDeleteItem, onToggleItem }) {
   const [sortBy, setSortBy] = useState("input");
 
@@ -837,7 +837,7 @@ function PackingList({ items, onDeleteItem, onToggleItem }) {
 
 `sortBy`が"description"と等しい場合、実際にアイテムをソートしたいと思います：
 
-```javascript
+```jsx
 if (sortBy === "description") {
   sortedItems = items
     .slice()
@@ -861,7 +861,7 @@ if (sortBy === "description") {
 
 最後に、最後のケースのコードも追加しましょう。packed によるものです：
 
-```javascript
+```jsx
 if (sortBy === "packed") {
   sortedItems = items
     .slice()
@@ -915,7 +915,7 @@ React が常にこの入力フィールドの値を持つようにするため�
 
 select の後に、シンプルなボタンを追加します：
 
-```javascript
+```jsx
 <div className="actions">
   <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
     <option value="input">Sort by input order</option>
@@ -949,7 +949,7 @@ select の後に、シンプルなボタンを追加します：
 
 単純にもう 1 つ追加しましょう：
 
-```javascript
+```jsx
 function App() {
   const [items, setItems] = useState([]);
 
@@ -1003,7 +1003,7 @@ function App() {
 
 そこでこれを prop に渡します：
 
-```javascript
+```jsx
 <PackingList
   items={items}
   onDeleteItem={handleDeleteItem}
@@ -1018,7 +1018,7 @@ function App() {
 
 この PackingList は本当に多くの props を受け取ります：
 
-```javascript
+```jsx
 function PackingList({ items, onDeleteItem, onToggleItem, onClearList }) {
   // ...
 }
@@ -1030,7 +1030,7 @@ function PackingList({ items, onDeleteItem, onToggleItem, onClearList }) {
 
 これを渡すだけです：
 
-```javascript
+```jsx
 <button onClick={onClearList}>Clear list</button>
 ```
 
@@ -1054,7 +1054,7 @@ function PackingList({ items, onDeleteItem, onToggleItem, onClearList }) {
 
 これは標準的な DOM 関数なので、非常に簡単です：
 
-```javascript
+```jsx
 function handleClearList() {
   const confirmed = window.confirm(
     "Are you sure you want to delete all items?"

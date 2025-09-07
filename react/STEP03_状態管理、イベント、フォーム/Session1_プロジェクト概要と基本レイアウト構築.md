@@ -110,7 +110,7 @@ Enter キーを押すと、create-react-app が処理を開始します。
 
 まず、不要な import 文を削除しましょう。
 
-```javascript
+```jsx
 // 削除する不要なimport
 import logo from "./logo.svg";
 import "./App.css";
@@ -124,7 +124,7 @@ import "./App.css";
 
 ### 基本的な App コンポーネントの作成
 
-```javascript
+```jsx
 export default function App() {
   // ここにコンポーネントの内容を書いていきます
 }
@@ -134,13 +134,13 @@ export default function App() {
 
 それでは、前のセクションで話した他のコンポーネントを作成していきましょう。
 
-```javascript
+```jsx
 function Logo() {}
 ```
 
 そして、コードを素早く複製して、これを少し速くしましょう。
 
-```javascript
+```jsx
 function Form() {}
 
 function PackingList() {}
@@ -167,7 +167,7 @@ function Stats() {}
 
 絵文字がうまく動作しない場合は、いつでもこのプロジェクトの最終ファイルからコピーできます。または、もちろん無視することもできます。これらは単にデザインを少し良くするためのものです。
 
-```javascript
+```jsx
 function Logo() {
   return <h1>🌴 Far Away 💼</h1>;
 }
@@ -179,7 +179,7 @@ function Logo() {
 
 ### Form コンポーネントの作成
 
-```javascript
+```jsx
 function Form() {
   return (
     <div className="add-form">
@@ -199,7 +199,7 @@ function Form() {
 
 ### PackingList コンポーネントの作成
 
-```javascript
+```jsx
 function PackingList() {
   return (
     <div className="list">
@@ -213,7 +213,7 @@ function PackingList() {
 
 ### Stats コンポーネントの作成
 
-```javascript
+```jsx
 function Stats() {
   return (
     <footer className="stats">
@@ -235,7 +235,7 @@ footer 要素を使用しています。統計情報はページの下部に配�
 
 app のクラスを持つ div 要素を 1 つ作成し、そこに 4 つのコンポーネントを含めてください。
 
-```javascript
+```jsx
 export default function App() {
   return (
     <div className="app">
@@ -286,7 +286,7 @@ npm start
 
 もしスタイリングに問題がある場合は、CSS クラス名が正しく設定されているかを確認してください。例えば、Stats コンポーネントの footer には`stats`クラスが必要です。
 
-```javascript
+```jsx
 function Stats() {
   return (
     <footer className="stats">
@@ -316,7 +316,7 @@ function Stats() {
 
 App.js ファイルの最上部に以下のデータを追加します：
 
-```javascript
+```jsx
 const initialItems = [
   { id: 1, description: "Passports", quantity: 2, packed: false },
   { id: 2, description: "Socks", quantity: 12, packed: false },
@@ -336,7 +336,7 @@ const initialItems = [
 
 まず、適切なセマンティック HTML を使用します。リストアイテムを表示するため、ul（順序なしリスト）要素を使用します：
 
-```javascript
+```jsx
 function PackingList() {
   return (
     <div className="list">
@@ -350,7 +350,7 @@ function PackingList() {
 
 React でリストをレンダリングする方法を覚えていますか？JavaScript の map メソッドを配列で使用します：
 
-```javascript
+```jsx
 function PackingList() {
   return (
     <div className="list">
@@ -375,7 +375,7 @@ function PackingList() {
 
 次に、個別のアイテムを表示する Item コンポーネントを作成します：
 
-```javascript
+```jsx
 function Item({ item }) {
   return (
     <li>
@@ -401,7 +401,7 @@ function Item({ item }) {
 
 ここで実際に div を作成して、この div が list クラスを持つことになっています。
 
-```javascript
+```jsx
 function PackingList() {
   return (
     <div className="list">
@@ -429,7 +429,7 @@ function PackingList() {
 
 そして、item.quantity も欲しいです。item.quantity です。
 
-```javascript
+```jsx
 function Item({ item }) {
   return (
     <li>
@@ -455,7 +455,7 @@ Prettier が時々 JSX でこのような空の文字列を作成することに
 
 それも動作します。
 
-```javascript
+```jsx
 function Item({ item }) {
   return (
     <li>
@@ -492,7 +492,7 @@ style と書いて、すぐに JavaScript モードに入ります。
 
 代わりに、実際に三項演算子を使用して、スタイルが実際に受け取るべきオブジェクトを決定しましょう。
 
-```javascript
+```jsx
 function Item({ item }) {
   return (
     <li>

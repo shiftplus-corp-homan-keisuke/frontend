@@ -1,10 +1,11 @@
-
 # Session5: リスト操作機能の完全実装
 
 ## 学習目標
-このセッションでは、Far Awayアプリケーションを完成させるために、残りの重要な機能を実装します。アイテムの削除、チェック機能、派生状態を使った統計計算、ソート機能、そしてリストのクリア機能を学習します。
+
+このセッションでは、Far Away アプリケーションを完成させるために、残りの重要な機能を実装します。アイテムの削除、チェック機能、派生状態による統計計算、ソート機能、そしてリストのクリア機能を学習します。
 
 ### このセッションで学ぶこと
+
 - 子から親への通信パターンの応用
 - 配列の不変性を保った削除・更新操作
 - 派生状態（Derived State）の概念と実装
@@ -22,36 +23,33 @@
 
 ### 削除機能の設計思想
 
-このクリックはItemコンポーネント内で発生します。各アイテムは実際にはItemコンポーネントなので、これらの「×」ボタンのクリックはItem内で発生します。
+このクリックは Item コンポーネント内で発生します。各アイテムは実際には Item コンポーネントなので、これらの「×」ボタンのクリックは Item 内で発生します。
 
-しかし、状態は実際にはAppコンポーネント、つまり親コンポーネントに存在します。そのため、これは子から親への通信のもう一つの例となります。
+しかし、状態は App コンポーネント、つまり親コンポーネントに存在します。そのため、これは子から親への通信のもう一つの例となります。
 
-### handleDeleteItem関数の実装
+### handleDeleteItem 関数の実装
 
-まず、状態が存在するAppコンポーネントに戻って、新しい関数`handleDeleteItem`を作成します。
+まず、状態が存在する App コンポーネントに戻って、新しい関数`handleDeleteItem`を作成します。
 
 ```javascript
 function App() {
   const [items, setItems] = useState([]);
 
   function handleAddItems(item) {
-    setItems(items => [...items, item]);
+    setItems((items) => [...items, item]);
   }
 
   function handleDeleteItem(id) {
     // アイテムを削除するために、どのアイテムを削除するかを知る必要がある
     // そのため、この関数を呼び出すときにIDを渡す
-    setItems(items => items.filter(item => item.id !== id));
+    setItems((items) => items.filter((item) => item.id !== id));
   }
 
   return (
     <div className="app">
       <Logo />
       <Form onAddItems={handleAddItems} />
-      <PackingList 
-        items={items} 
-        onDeleteItem={handleDeleteItem}
-      />
+      <PackingList items={items} onDeleteItem={handleDeleteItem} />
       <Stats items={items} />
     </div>
   );
@@ -60,42 +58,39 @@ function App() {
 
 ### 削除操作の詳細解説
 
-アイテムを削除するには、削除すべきアイテムがどれかを知る必要があります。そのため、後でこの関数を呼び出すときにIDを渡します。
+アイテムを削除するには、削除すべきアイテムがどれかを知る必要があります。そのため、後でこの関数を呼び出すときに ID を渡します。
 
-各アイテムにはIDがあるので、そのIDを使用して対応するオブジェクトをitems配列から削除できます。
+各アイテムには ID があるので、その ID を使用して対応するオブジェクトを items 配列から削除できます。
 
 削除操作自体については、状態を更新することでユーザーインターフェースからアイテムを削除します。`setItems`を呼び出し、アイテムが削除された後の新しい配列を渡します。
 
-この新しいitems配列は現在の配列に基づいているので、現在のアイテムを入力として受け取るコールバック関数が必要です。
+この新しい items 配列は現在の配列に基づいているので、現在のアイテムを入力として受け取るコールバック関数が必要です。
 
 ```javascript
 function handleDeleteItem(id) {
-  setItems(items => items.filter(item => item.id !== id));
+  setItems((items) => items.filter((item) => item.id !== id));
 }
 ```
 
-`items.filter`を使用して配列をループし、各反復でitemsオブジェクトにアクセスします。基本的に、ここで渡されたIDを持つアイテムを除外したいのです。
+`items.filter`を使用して配列をループし、各反復で items オブジェクトにアクセスします。基本的に、ここで渡された ID を持つアイテムを除外したいのです。
 
-`item.id !== id`という条件が真の場合、そのアイテムは新しい配列に含まれます（削除されていないアイテムの配列）。しかし、これが偽の場合、つまり`item.id`がIDと等しい場合、その要素は最終的な配列の一部ではなくなります。
+`item.id !== id`という条件が真の場合、そのアイテムは新しい配列に含まれます（残すアイテムの配列になります）。しかし、この条件が偽の場合、つまり`item.id`が ID と等しい場合、その要素は新しい配列から除外されます。
 
-これが配列から要素を削除する方法です。この仕組みが理解できない場合は、JavaScriptの基本概念を復習するセクションに戻ってください。そこで詳しく説明しています。
+これが配列から要素を削除する方法です。この仕組みが理解できない場合は、JavaScript の基本概念を復習するセクションに戻ってください。そこで詳しく説明しています。
 
-### propsの受け渡し
+### props の受け渡し
 
 次に、クリックが発生したときにこの関数を呼び出す必要があります。どうやってそこに到達するのでしょうか？
 
-この関数をpropsとしてPackingListにも渡す必要があります。アイテムはPackingList内で呼び出されるからです。
+この関数を props として PackingList にも渡す必要があります。アイテムは PackingList 内で呼び出されるからです。
 
 ```javascript
-<PackingList 
-  items={items} 
-  onDeleteItem={handleDeleteItem}
-/>
+<PackingList items={items} onDeleteItem={handleDeleteItem} />
 ```
 
-同じ命名規則を使用して、propを`onDeleteItem`と呼び、関数`handleDeleteItem`を渡します。
+同じ命名規則を使用して、prop を`onDeleteItem`と呼び、関数`handleDeleteItem`を渡します。
 
-PackingListでこのpropを受け取りましょう：
+PackingList でこの prop を受け取りましょう：
 
 ```javascript
 function PackingList({ items, onDeleteItem }) {
@@ -103,11 +98,7 @@ function PackingList({ items, onDeleteItem }) {
     <div className="list">
       <ul>
         {items.map((item) => (
-          <Item 
-            item={item} 
-            key={item.id}
-            onDeleteItem={onDeleteItem}
-          />
+          <Item item={item} key={item.id} onDeleteItem={onDeleteItem} />
         ))}
       </ul>
     </div>
@@ -115,33 +106,29 @@ function PackingList({ items, onDeleteItem }) {
 }
 ```
 
-これは非常に便利です。なぜなら、PackingListがどのpropsを受け取るかがすぐにわかるからです。
+これは非常に便利です。なぜなら、PackingList が受け取る props が一目でわかるからです。
 
-クリックは実際にはこのボタンで発生することを覚えておいてください。つまり、Itemコンポーネント内で発生します。そのため、ここでもこのpropにアクセスする必要があります。
+クリックは実際にはこのボタンで発生することを覚えておいてください。つまり、Item コンポーネント内で発生します。そのため、ここでもこの prop にアクセスする必要があります。
 
-したがって、アイテムと一緒にここでも渡す必要があります：
+したがって、item と一緒にここでも渡す必要があります：
 
 ```javascript
-<Item 
-  item={item} 
-  key={item.id}
-  onDeleteItem={onDeleteItem}
-/>
+<Item item={item} key={item.id} onDeleteItem={onDeleteItem} />
 ```
 
-基本的に、このpropをPackingListを通してItemに渡しています。AppからPackingListに移動し、次に各Itemに移動します。
+基本的に、この prop を PackingList を通して Item に渡しています。App から PackingList に移動し、次に各 Item に移動します。
 
-PackingList自体は実際にはそれを必要としませんが、もちろん、これが受け取ることができる唯一の場所です。AppからItemに直接渡すことはできないからです。
+PackingList 自体は実際にはそれを必要としませんが、これが受け取ることができる唯一の場所です。App から Item に直接渡すことはできないからです。
 
-### Itemコンポーネントでの実装
+### Item コンポーネントでの実装
 
 ```javascript
 function Item({ item, onDeleteItem }) {
   return (
     <li>
-      <input 
-        type="checkbox" 
-        value={item.packed} 
+      <input
+        type="checkbox"
+        value={item.packed}
         onChange={() => {}} // 後で実装
       />
       <span style={item.packed ? { textDecoration: "line-through" } : {}}>
@@ -153,35 +140,33 @@ function Item({ item, onDeleteItem }) {
 }
 ```
 
-ここで`onClick`propを使用し、ハンドラー関数を指定します。
+ここで`onClick`prop を使用し、ハンドラー関数を指定します。
 
 単に`onDeleteItem`とだけ書くと、これは機能しません。なぜでしょうか？
 
-### イベントハンドラーの正しい書き方
+単に関数をこのように指定すると、React はイベントが発生したときに関数を呼び出し、イベントオブジェクトを渡します。
 
-単に関数をこのように指定すると、Reactはイベントが発生したときに関数を呼び出し、イベントオブジェクトを渡します。
+Form で実際にこれを活用しました。そこではイベントオブジェクトを受け取りました。しかし、今回はイベントオブジェクトを受け取りたいのではなく、現在のアイテムの ID を渡したいのです。
 
-フォームで実際にこれを活用しました。そこではイベントを受け取りました。しかし、今回はイベントを受け取りたいのではなく、現在のアイテムのIDを受け取りたいのです。
-
-そのため、ここで新しい関数を作成し、現在のIDを渡す必要があります：
+そのため、ここで新しい関数を作成し、現在の ID を渡す必要があります：
 
 ```javascript
 <button onClick={() => onDeleteItem(item.id)}>❌</button>
 ```
 
-これを忘れないことが非常に重要です。そうしないと、Reactが関数をすぐに呼び出してしまい、それは望ましくありません。ここには関数が必要で、Reactがイベントが発生したときにのみこの関数を呼び出せるようにします。
+これを忘れないことが非常に重要です。そうしないと、React が関数をすぐに呼び出してしまい、それは望ましくありません。ここには関数への参照が必要で、React がイベントが発生したときにのみこの関数を呼び出せるようにします。
 
 ### 動作確認
 
 これで完成です。テストしてみましょう。
 
-アイテムを追加して削除ボタンをクリックすると、アイテムが削除されます。コンソールにIDもログ出力され、そのIDに基づいて新しいitems配列が設定されます。
+アイテムを追加して削除ボタンをクリックすると、アイテムが削除されます。コンソールに ID もログ出力され、その ID に基づいて新しい items 配列が設定されます。
 
-状態が更新され、Reactがコンポーネントを再レンダリングします。より具体的には、コンポーネントのビューを再レンダリングします。
+状態が更新され、React がコンポーネントを再レンダリングします。より正確には、コンポーネントツリーを再レンダリングします。
 
 ### 初期アイテムの削除
 
-ここで、ESLintから初期アイテムが使用されていないという警告が出ているので、それらを削除しましょう。ESLintからの非常に有用な指摘です。
+ここで、ESLint から初期アイテムが使用されていないという警告が出ているので、それらを削除しましょう。ESLint からの有用な指摘です。
 
 もちろん、これらの初期アイテムを初期状態として使用することもできました：
 
@@ -189,7 +174,7 @@ function Item({ item, onDeleteItem }) {
 const [items, setItems] = useState(initialItems);
 ```
 
-そうすると、リロードするたびにデフォルトで3つのアイテムが表示されます。それらを状態に追加し、すべて同じように動作します。削除してもリロードすれば戻ってきます。
+そうすると、リロードするたびにデフォルトで 3 つのアイテムが表示されます。それらを状態に追加し、すべて同じように動作します。削除してもリロードすれば戻ってきます。
 
 しかし、それは望ましくないので、すべて削除しましょう。
 
@@ -205,7 +190,7 @@ const [items, setItems] = useState(initialItems);
 
 まず、チェックボックスを作成する必要があります。現在はチェックボックスがありません。
 
-Itemコンポーネントに移動し、spanの前にinputを追加しましょう：
+Item コンポーネントに移動し、span の前に input を追加しましょう：
 
 ```javascript
 function Item({ item, onDeleteItem }) {
@@ -227,38 +212,31 @@ function Item({ item, onDeleteItem }) {
 
 この要素を制御された要素に変換したいと思います。制御された要素とは、要素の値が何らかの状態によって定義され、変更をリッスンして状態を適切に更新するイベントハンドラーも持つ要素のことです。
 
-この2つのことを行いましょう。
+この 2 つのことを行いましょう。
 
 まず、値は`item.packed`状態によって与えられます：
 
 ```javascript
-<input 
-  type="checkbox" 
-  value={item.packed}
-/>
+<input type="checkbox" value={item.packed} />
 ```
 
-この`packed`は常にtrueまたはfalseの値で、これはチェックボックスの値に渡す必要がある値の型です。
+この`packed`は常に true または false の値で、これはチェックボックスの値に渡す必要がある値の型です。
 
-実際には、ここは`checked`であるべきで、`packed`ではありません。おそらくすでに気づいていたでしょう。
+実際には、ここは`checked`であるべきです。`value`ではありません。チェックボックスの場合は`checked`プロパティを使用します。
 
 ```javascript
-<input 
-  type="checkbox" 
-  value={item.packed}
-  onChange={() => {}}
-/>
+<input type="checkbox" checked={item.packed} onChange={() => {}} />
 ```
 
 次に、`onChange`ハンドラーを追加する必要があります。変更イベントをリッスンする必要があります。これは基本的にチェックボックスをクリックするたびに発生します。
 
 今のところ、空の関数を指定しましょう。何もしない関数です。
 
-### handleToggleItem関数の実装
+### handleToggleItem 関数の実装
 
-もちろん、ここで最終的に指定する関数は、アイテム状態のpacked値を変更します。そして、その関数は状態が実際に存在する場所、つまりApp内に配置されます。
+もちろん、ここで最終的に指定する関数は、アイテム状態の packed 値を変更します。そして、その関数は状態が実際に存在する場所、つまり App 内に配置されます。
 
-そして、`onDeleteItem`と同じように、propを使用してそれを渡します。これは似たようなものです。アイテムを削除する代わりに、単に1つのアイテムを更新します。
+そして、`onDeleteItem`と同じように、props を使用してそれを渡します。これは同じような仕組みです。アイテムを削除する代わりに、単にアイテムのプロパティを 1 つ更新します。
 
 その更新は、チェックボックスをクリックするたびに発生します。
 
@@ -269,19 +247,17 @@ function App() {
   const [items, setItems] = useState([]);
 
   function handleAddItems(item) {
-    setItems(items => [...items, item]);
+    setItems((items) => [...items, item]);
   }
 
   function handleDeleteItem(id) {
-    setItems(items => items.filter(item => item.id !== id));
+    setItems((items) => items.filter((item) => item.id !== id));
   }
 
   function handleToggleItem(id) {
-    setItems(items => 
-      items.map(item => 
-        item.id === id 
-          ? { ...item, packed: !item.packed }
-          : item
+    setItems((items) =>
+      items.map((item) =>
+        item.id === id ? { ...item, packed: !item.packed } : item
       )
     );
   }
@@ -290,8 +266,8 @@ function App() {
     <div className="app">
       <Logo />
       <Form onAddItems={handleAddItems} />
-      <PackingList 
-        items={items} 
+      <PackingList
+        items={items}
         onDeleteItem={handleDeleteItem}
         onToggleItem={handleToggleItem}
       />
@@ -301,39 +277,39 @@ function App() {
 }
 ```
 
-`handle`キーワードで始まり、次に`toggleItem`とします。ここではpacked プロパティのみを切り替えるからです。オブジェクト全体の更新を許可するのではなく、そのpackedプロパティの値を変更するだけです。
+`handle`キーワードで始まり、次に`toggleItem`とします。ここでは packed プロパティのみを切り替えるからです。オブジェクト全体の更新を許可するのではなく、その packed プロパティの値を変更するだけです。
 
-変更するオブジェクトを知るために、再びIDを渡す必要があります。
+変更するオブジェクトを特定するために、再び ID を渡す必要があります。
 
-そして、`setItems`を呼び出します。以前と同様に、現在の配列に依存する新しい配列を渡す必要があります。
+そして、`setItems`を呼び出します。以前と同様に、現在の配列に基づいて新しい配列を作成する必要があります。
 
-配列内のオブジェクトの1つを更新するために、`map`プロパティを使用して配列全体をループします。これにより、最終的に初期items配列と同じ長さの新しい配列が返されます。
+配列内のオブジェクトの 1 つを更新するために、`map`メソッドを使用して配列全体をループします。これにより、最終的に元の items 配列と同じ長さの新しい配列が返されます。
 
-しかし、オブジェクトの1つが更新されます。
+しかし、オブジェクトの 1 つが更新されます。
 
-反復では、各要素をitemと呼びます。そして、ここで行うことは次のとおりです：
+各要素の処理では、各要素を item と呼びます。そして、ここで行うことは次のとおりです：
 
-アイテムが渡されたIDと等しいIDを持つ場合、つまり、これが実際に更新したいオブジェクトである場合、現在のアイテムに基づいて新しいオブジェクトを作成し、packedを`item.packed`の反対に設定します。
+現在のアイテムの ID が渡された ID と一致する場合、つまり、これが実際に更新したいオブジェクトである場合、現在の item に基づいて新しいオブジェクトを作成し、packed プロパティを`!item.packed`（現在の値の反対）に設定します。
 
-それ以外の場合、他のすべてのオブジェクトについては、単に現在のアイテムを返します。
+それ以外の場合、他のすべてのオブジェクトについては、変更せずに現在の item をそのまま返します。
 
-もう一度強調したいのは、これが配列内のオブジェクトを更新する方法であることを、JavaScriptの基本概念を復習するセクションで詳しく説明したということです。これが奇妙に見える場合は、そちらを参照してください。
+もう一度強調したいのは、これが配列内のオブジェクトを更新する方法であることを、JavaScript の基本概念を復習するセクションで詳しく説明したということです。これが奇妙に見える場合は、そちらを参照してください。
 
-### propsの受け渡し
+### props の受け渡し
 
-この関数をPackingListに追加して、PackingListがそれをItemに追加できるようにしましょう。
+この関数を PackingList に追加して、PackingList がそれを Item に追加できるようにしましょう。
 
-再び、propsを通信チャネルとして使用します：
+再び、props を通信チャネルとして使用します：
 
 ```javascript
-<PackingList 
-  items={items} 
+<PackingList
+  items={items}
   onDeleteItem={handleDeleteItem}
   onToggleItem={handleToggleItem}
 />
 ```
 
-これをコピーして、propsのリストに追加しましょう：
+これをコピーして、props のリストに追加しましょう：
 
 ```javascript
 function PackingList({ items, onDeleteItem, onToggleItem }) {
@@ -341,8 +317,8 @@ function PackingList({ items, onDeleteItem, onToggleItem }) {
     <div className="list">
       <ul>
         {items.map((item) => (
-          <Item 
-            item={item} 
+          <Item
+            item={item}
             key={item.id}
             onDeleteItem={onDeleteItem}
             onToggleItem={onToggleItem}
@@ -354,7 +330,7 @@ function PackingList({ items, onDeleteItem, onToggleItem }) {
 }
 ```
 
-そして、それをItem自体に渡します。
+そして、それを Item 自体に渡します。
 
 最後に、ここで受け取ります：
 
@@ -362,8 +338,8 @@ function PackingList({ items, onDeleteItem, onToggleItem }) {
 function Item({ item, onDeleteItem, onToggleItem }) {
   return (
     <li>
-      <input 
-        type="checkbox" 
+      <input
+        type="checkbox"
         value={item.packed}
         onChange={() => onToggleItem(item.id)}
       />
@@ -376,9 +352,9 @@ function Item({ item, onDeleteItem, onToggleItem }) {
 }
 ```
 
-再び、PackingListをItem自体に到達するための中間ステップとして使用する必要があります。
+再び、PackingList を Item 自体に到達するための中間ステップとして使用する必要があります。
 
-そして、ここでこの空の関数を`onToggleItem`の呼び出しに置き換えることができます。以前と同様に、現在のIDを渡して、変更する必要があるオブジェクトを実際に知ることができるようにします。
+そして、ここでこの空の関数を`onToggleItem`の呼び出しに置き換えることができます。以前と同様に、現在の ID を渡して、変更する必要があるオブジェクトを実際に知ることができるようにします。
 
 ### 動作確認
 
@@ -392,9 +368,9 @@ function Item({ item, onDeleteItem, onToggleItem }) {
 
 削除もまだ動作します。
 
-これで、アイテムに対して実行できる2つの操作の構築が完了しました。パック状態の切り替えと削除です。
+これで、アイテムに対して実行できる 2 つの操作の構築が完了しました。パック状態の切り替えと削除です。
 
-次に進む前に、ここで書いたコードを確認してください。基本的に、ここで起こっていることすべて、なぜこの方法で行っているのか、そしてこれらの関数をpropsとして必要なコンポーネントまで渡す方法を理解していることを確認してください。
+次に進む前に、ここで書いたコードを確認してください。基本的に、ここで起こっていることすべて、なぜこの方法で行っているのか、そしてこれらの関数を props として必要なコンポーネントまで渡す方法を理解していることを確認してください。
 
 これは、再び子から親への通信であり、常に使用するものです。
 
@@ -406,13 +382,13 @@ function Item({ item, onDeleteItem, onToggleItem }) {
 
 状態管理の講義で言及したもう一つの側面は派生状態でした。複雑に聞こえますが、実際にはかなり簡単です。
 
-基本的に、派生状態は既存の状態やpropsから計算される状態のことです。
+基本的に、派生状態は既存の状態や props から計算される状態のことです。
 
 実際のコードを見てみましょう。
 
 ### 問題のある実装例
 
-ここに3つの状態があります。3つの`useState`関数呼び出しで確認できます：
+ここに 3 つの状態があります。3 つの`useState`関数呼び出しで確認できます：
 
 ```javascript
 // ❌ 問題のある実装
@@ -430,7 +406,7 @@ function SomeComponent() {
 
 `numItems`は単にカート内のアイテム数で、`totalPrice`はカート内のすべての価格の合計です。
 
-そのため、これら2つの状態のすべてのデータは実際にはすでにカートにあるので、これらの追加の状態変数を作成する必要はありません。そうすることは実際にかなり問題があります。
+そのため、これら 2 つの状態のすべてのデータは実際にはすでにカートにあるので、これらの追加の状態変数を作成する必要はありません。そうすることは実際にかなり問題があります。
 
 ### 問題点の詳細
 
@@ -438,7 +414,7 @@ function SomeComponent() {
 
 この状況では、カートを更新するたびに、アイテム数と総価格も手動で更新する必要があります。そうしないと、状態が同期しなくなります。
 
-しかし、これら3つの状態を別々に更新することで2番目の問題が生じます。コンポーネントが3回再レンダリングされることになり、この例では完全に不要です。
+しかし、これら 3 つの状態を別々に更新することで 2 番目の問題が生じます。コンポーネントが 3 回再レンダリングされることになり、この例では完全に不要です。
 
 ### 正しい実装：派生状態の使用
 
@@ -469,7 +445,7 @@ function SomeComponent() {
 
 もちろん、ほとんどの場合、状態を派生させることはできませんが、このような状況がある場合、つまり一つの状態が別の状態から簡単に計算できる場合は、常に派生状態を選択してください。
 
-実際に必要なのが1つだけなのに、2つの状態変数を作成しないでください。これは非常に一般的な初心者の間違いですが、今ではそれを避けることができるでしょう。
+実際に必要なのが 1 つだけなのに、2 つの状態変数を作成しないでください。これは非常に一般的な初心者の間違いですが、今ではそれを避けることができるでしょう。
 
 ## 統計情報の計算：派生状態の実践
 
@@ -479,7 +455,7 @@ function SomeComponent() {
 
 リスト上のアイテム数、すでにパックしたアイテム数、そしてそのパーセンテージを計算します。
 
-これらの数値について考えてみると、例えば、リスト内のアイテム数は、items配列自体から直接計算できますよね？そのため、派生状態はこれに最適です。
+これらの数値について考えてみると、例えば、リスト内のアイテム数は、items 配列自体から直接計算できますよね？そのため、派生状態はこれに最適です。
 
 ### 間違った方法の例
 
@@ -496,25 +472,25 @@ function Stats({ items }) {
 }
 ```
 
-状態を作成し、初期値を0アイテムとします。
+状態を作成し、初期値を 0 アイテムとします。
 
-この問題は、前述したように、この状態も更新する必要があることです。例えば、新しいアイテムが1つ追加されるたびに、アイテムの設定に加えて、この数値も増加させる必要があります。
+この問題は、前述したように、この状態も更新する必要があることです。例えば、新しいアイテムが 1 つ追加されるたびに、アイテムの追加に加えて、この数値も増加させる必要があります。
 
-これにより、これら2つの状態が同期していることを確認できますが、もちろん、忘れる可能性のある多くの追加作業があり、少なくとも1つが不要な複数の再レンダリングを引き起こす可能性があります。
+これにより、これら 2 つの状態が同期していることを確認できますが、忘れる可能性のある多くの追加作業があり、少なくとも 1 つが不要な複数の再レンダリングを引き起こす可能性があります。
 
-React 18では、これらはバッチ処理されるはずです。つまり、これら2つは同時に発生するはずですが、それについては後で詳しく説明します。
+React 18 では、これらはバッチ処理されるはずです。つまり、これら 2 つは同時に発生するはずですが、それについては後で詳しく説明します。
 
 いずれにせよ、これはひどいアイデアです。
 
 ### 正しい方法：派生状態の使用
 
-代わりに、`numItems`という新しい変数を定義できますが、items配列に基づいて計算することができます：
+代わりに、`numItems`という新しい変数を定義できますが、items 配列に基づいて計算することができます：
 
 ```javascript
 // ✅ 正しい方法
 function Stats({ items }) {
   const numItems = items.length;
-  
+
   // アイテムが更新されるとコンポーネントが再レンダリングされ、
   // この値も自動的に再計算される
 }
@@ -522,15 +498,15 @@ function Stats({ items }) {
 
 これは、アイテムが更新されるとすぐに、この状態が更新され、コンポーネントが再レンダリングされるため機能します。
 
-コンポーネントが再レンダリングされると、ここの関数が再び呼び出されます。したがって、このコードが再び実行されます。新しいアイテムが追加された場合、アイテム状態（この配列）は異なり、したがって長さも異なります。
+コンポーネントが再レンダリングされると、ここの関数が再び呼び出されます。したがって、このコードが再び実行されます。新しいアイテムが追加された場合、items 状態（この配列）は異なり、したがって長さも異なります。
 
-### Statsコンポーネントでの実装
+### Stats コンポーネントでの実装
 
-この`numItems`変数は、実際にはAppコンポーネントではなく、Statsコンポーネントで必要です。
+この`numItems`変数は、実際には App コンポーネントではなく、Stats コンポーネントで必要です。
 
-2つのオプションがあります。1つ目は`numItems`をここに保持し、propとしてStatsに渡すことです。しかし、より理にかなっているのは、実際にStats自体でこの状態を計算することです。
+2 つのオプションがあります。1 つ目は`numItems`をここに保持し、prop として Stats に渡すことです。しかし、より理にかなっているのは、実際に Stats 自体でこの状態を計算することです。
 
-また、実際には3つの値を計算するので、ここで計算すると3つのpropsを渡す必要があり、あまり意味がありません。
+また、実際には 3 つの値を計算するので、ここで計算すると 3 つの props を渡す必要があり、あまり意味がありません。
 
 ```javascript
 function Stats({ items }) {
@@ -545,49 +521,48 @@ function Stats({ items }) {
 
   // 派生状態の計算
   const numItems = items.length;
-  const numPacked = items.filter(item => item.packed).length;
+  const numPacked = items.filter((item) => item.packed).length;
   const percentage = Math.round((numPacked / numItems) * 100);
 
   return (
     <footer className="stats">
       <em>
-        {percentage === 100 
+        {percentage === 100
           ? "You got everything! Ready to go ✈️"
-          : `💼 You have ${numItems} items on your list, and you already packed ${numPacked} (${percentage}%)`
-        }
+          : `💼 You have ${numItems} items on your list, and you already packed ${numPacked} (${percentage}%)`}
       </em>
     </footer>
   );
 }
 ```
 
-しかし、保存するとすぐにエラーが発生します。Statsコンポーネントがこのitemsが何であるかを知らないからです。
+しかし、保存するとすぐにエラーが発生します。Stats コンポーネントがこの items が何であるかを知らないからです。
 
-Statsコンポーネントもアイテム状態を必要とする別のコンポーネントなので、PackingListに渡したのと同じように、propとして渡します：
+Stats コンポーネントも Items 状態を必要とする別のコンポーネントなので、PackingList に渡したのと同じように、prop として渡します：
 
 ```javascript
 <Stats items={items} />
 ```
 
-もちろん、ここでそのpropを受け入れる必要があります。これで問題が解決されます。
+もちろん、ここでその prop を受け取る必要があります。これで問題が解決されます。
 
 ここでその値を使用できます。リストに`numItems`個のアイテムがあります。
 
-実際、今は0ですが、ここに靴下とシャツを追加すると、新しいアイテムを追加するとすぐに配列が成長し、この数値も更新されることがわかります。
+実際、今は 0 ですが、ここに靴下とシャツを追加すると、新しいアイテムを追加するとすぐに配列が成長し、この数値も更新されることがわかります。
 
-Enterを押すと何が起こるか見てください。すぐに2から3に変わりました。
+Enter を押すと何が起こるか見てください。すぐに 2 から 3 に変わりました。
 
 ### 他の派生状態の計算
 
 他の派生状態も導出しましょう。パック済みのアイテム数とパーセンテージの両方がアイテム自体に依存しています。
 
 ```javascript
-const numPacked = items.filter(item => item.packed).length;
+const numPacked = items.filter((item) => item.packed).length;
 ```
 
-パック済みの数は、すでにパックされているアイテムでフィルタリングされたitems配列です。これは新しい配列なので、その長さを取ることができます。
+パック済みの数は、すでにパックされているアイテムでフィルタリングされた items 配列です。これは新しい配列なので、その長さを取ることができます。
 
-すでにパック済みの数が表示され、すぐに0になりますが、それらの1つをパック済みとしてマークすると、美しく動作します。2つ、そしてすべて。素晴らしい。
+すでにパック済みの数が表示され、すぐに 0 になりますが、それらの 1 つをパック済みとしてマークすると、美しく動作します。2 つ、そしてすべて。素晴らしい。
 
 最後にパーセンテージです。これは非常に簡単です：
 
@@ -595,7 +570,7 @@ const numPacked = items.filter(item => item.packed).length;
 const percentage = Math.round((numPacked / numItems) * 100);
 ```
 
-パック済みの数をアイテム数で割り、100を掛けて、すべてを`Math.round`で囲みます。
+パック済みの数をアイテム数で割り、100 を掛けて、すべてを`Math.round`で囲みます。
 
 これも動作し、100%に達します。
 
@@ -605,34 +580,35 @@ const percentage = Math.round((numPacked / numItems) * 100);
 
 ここでそれを書きましょう。そのために、さらに条件付きレンダリングが必要です。
 
-実際には、このem要素内の内容を条件付きで定義します。
+実際には、この em 要素内の内容を条件付きで定義します。
 
-JavaScriptモードに入り、パーセンテージが100に等しい場合、内容はこの文字列になるようにします：
+JavaScript モードに入り、percentage が 100 に等しい場合、内容はこの文字列になるようにします：
 
 ```javascript
-{percentage === 100 
-  ? "You got everything! Ready to go ✈️"
-  : `💼 You have ${numItems} items on your list, and you already packed ${numPacked} (${percentage}%)`
+{
+  percentage === 100
+    ? "You got everything! Ready to go ✈️"
+    : `💼 You have ${numItems} items on your list, and you already packed ${numPacked} (${percentage}%)`;
 }
 ```
 
 ここに飛行機の絵文字も追加しましょう。
 
-テンプレートリテラルを作成したくない場合は、もちろん、これらの各ケースに対して単純に1つのemをレンダリングすることもできました。
+テンプレートリテラルを作成したくない場合は、もちろん、これらの各ケースに対して単純に 1 つの em をレンダリングすることもできました。
 
 これは正しく見えませんが、おそらくここのせいです。しかし、間違ったアプリにいるにもかかわらず、動作しているように見えます。
 
 ああ、でもここにはすでに正しいメッセージがあります。
 
-これらの1つのチェックを外してみましょう。リストに3つのアイテムがあります。素晴らしい。
+これらの 1 つのチェックを外してみましょう。リストに 3 つのアイテムがあります。素晴らしい。
 
 これとこれも削除しましょう。
 
 ### 早期リターンパターンの実装
 
-すでに0個パックしており、この場合も別のメッセージを表示したいと思います。
+すでに 0 個パックしており、この場合も別のメッセージを表示したいと思います。
 
-配列にアイテムがない場合、これらすべての計算を実行する必要さえありません。とにかく0になるだけだからです。
+配列にアイテムがない場合、これらすべての計算を実行する必要さえありません。とにかく 0 になるだけだからです。
 
 ここで、条件付きレンダリングとしての早期リターンの良い使用例を示したいと思います。
 
@@ -652,15 +628,15 @@ if (!items.length) {
 
 そうです、ここにあります。ここで定義したテキスト、この段落です。
 
-ここでクラス名はfooterではなく、statsです。基本的にここと同じです。
+ここでクラス名は footer ではなく、stats です。基本的にここと同じです。
 
-そして、このテキストを取得しました。これは、この場合、配列に要素がないのであれば、これらすべての計算に悩む必要さえないからです。
+そして、このテキストを取得しました。これは、この場合、配列に要素がないのであれば、これらすべての計算を行う必要さえないからです。
 
 この場合、もちろん、これらの計算を行うことは問題ありませんでした。多くの作業ではなく、ここで条件付きレンダリングを行うこともできました。
 
 しかし、これは早期リターンのオプションも時々良いことを示すためでした。私に言わせれば、ここでもかなり読みやすいです。
 
-このコンポーネントに到着したとき、おそらく以前に見たことがないかもしれません。同僚の1人が書いたものだからです。そうすると、アイテムがない場合はこれを返すだけで、他のすべての場合はコンポーネントの残りのロジックを実行することがすぐにわかります。
+このコンポーネントに到着したとき、おそらく以前に見たことがないかもしれません。同僚の 1 人が書いたものだからです。そうすると、アイテムがない場合はこれを返すだけで、他のすべての場合はコンポーネントの残りのロジックを実行することがすぐにわかります。
 
 素晴らしい。うまくいったと思うので、次に、派生状態のもう一つの使用例を見てみましょう。このソート機能を実装することです。
 
@@ -670,19 +646,19 @@ if (!items.length) {
 
 ### ソート機能の概要
 
-アプリケーションに新しい機能を追加しましょう。ユーザーが3つの異なる基準でアイテムをソートできるようにします。
+アプリケーションに新しい機能を追加しましょう。ユーザーが 3 つの異なる基準でアイテムをソートできるようにします。
 
-基本的に、このセレクトボックスを構築し、そこからユーザーがリストをソートする基準を選択できるようにします。これはほとんどのWebアプリケーションで非常に一般的なものです。
+基本的に、このセレクトボックスを構築し、そこからユーザーがリストをソートする基準を選択できるようにします。これはほとんどの Web アプリケーションで非常に一般的なものです。
 
 その非常にシンプルなバージョンを構築しましょう。
 
-### PackingListコンポーネントでの実装
+### PackingList コンポーネントでの実装
 
-これをPackingListコンポーネントで直接行います。これだけのために新しいコンポーネントを作成すると、状態をさらにリフトアップする追加の作業が少し発生するからです。
+これを PackingList コンポーネントで直接行います。これだけのために新しいコンポーネントを作成すると、状態をさらにリフトアップする追加の作業が少し発生するからです。
 
-ここではシンプルに保ち、さらに混乱させたくありません。PackingListで直接行うことは問題ありません。
+ここではシンプルに保ち、さらに混乱させたくありません。PackingList で直接行うことは問題ありません。
 
-このdivの後、実際にはこの順序なしリストの後に行いましょう。
+この div の後、実際にはこの順序なしリストの後に行いましょう。
 
 ```javascript
 function PackingList({ items, onDeleteItem, onToggleItem }) {
@@ -690,15 +666,15 @@ function PackingList({ items, onDeleteItem, onToggleItem }) {
     <div className="list">
       <ul>
         {items.map((item) => (
-          <Item 
-            item={item} 
+          <Item
+            item={item}
             key={item.id}
             onDeleteItem={onDeleteItem}
             onToggleItem={onToggleItem}
           />
         ))}
       </ul>
-      
+
       <div className="actions">
         <select>
           <option value="input">Sort by input order</option>
@@ -711,9 +687,9 @@ function PackingList({ items, onDeleteItem, onToggleItem }) {
 }
 ```
 
-すでに作成したactionsというクラス名でdivを作成します。ここにはそのselect要素があり、後でリスト全体をクリアするボタンもあります。
+すでに作成した actions というクラス名で div を作成します。ここにはその select 要素があり、後でリスト全体をクリアするボタンもあります。
 
-select要素内では、いつものように、異なる値を持つoption要素が必要です。
+select 要素内では、いつものように、異なる値を持つ option 要素が必要です。
 
 後でこれらの値に基づいて、順序付けられたリストを計算します。
 
@@ -727,15 +703,15 @@ select要素内では、いつものように、異なる値を持つoption要�
 
 素晴らしい。そこにあります。見た目も良いです。
 
-### 制御された要素としてのselect
+### 制御された要素としての select
 
 実際にこれを実装する方法を見てみましょう。
 
-まず、コンポーネント内で、つまりReactアプリケーション内で、現在選択されている要素が何かを知る必要があります。
+まず、コンポーネント内で、つまり React アプリケーション内で、現在選択されている要素が何かを知る必要があります。
 
 そのために、これを再び制御された要素に変換します。
 
-そのために、3つのステップが必要です。
+そのために、3 つのステップが必要です。
 
 まず、新しい状態を作成します：
 
@@ -753,7 +729,7 @@ function PackingList({ items, onDeleteItem, onToggleItem }) {
 
 デフォルトは最初のものになります。デフォルトで入力でソートされるようにしたいと思います。
 
-この入力は、ここで定義したこの文字列と正確に同じですが、descriptionやpackedでもかまいません。
+この入力は、ここで定義したこの文字列と正確に同じですが、description や packed でもかまいません。
 
 その状態をここで値として使用しましょう：
 
@@ -761,26 +737,26 @@ function PackingList({ items, onDeleteItem, onToggleItem }) {
 <select value={sortBy}>
 ```
 
-上でpackedを使用した場合、UIにすでに反映されているはずです。
+上で packed を使用した場合、UI にすでに反映されているはずです。
 
 デフォルトでパック状態でソートが表示されているのがわかります。この文字列を使用したからです。
 
-Reactが文句を言っているのは、3番目の部分が欠けているからです。変更されたイベントハンドラーをアタッチして、ユーザーがそこで選択したものに基づいて日付を設定できるようにする必要があります。
+React が警告を出しているのは、3 番目のステップが欠けているからです。onChange イベントハンドラーをアタッチして、ユーザーがそこで選択したものに基づいて状態を更新できるようにする必要があります。
 
 ```javascript
-<select 
-  value={sortBy} 
+<select
+  value={sortBy}
   onChange={(e) => setSortBy(e.target.value)}
 >
 ```
 
-この関数は自動的にイベントを受け取り、`setSortBy`を使用して`event.target.value`を使用できます。
+この関数は自動的にイベントオブジェクトを受け取るので、`setSortBy`を使用して`e.target.value`を設定できます。
 
 ある時点で、この種のことを書くことに本当に慣れ、それが第二の天性になるでしょう。これは常に従う必要があるレシピのようなもので、常に正確に同じ方法で動作します。
 
 見てみましょう。うまく動作します。
 
-コンポーネントをチェックアウトすると、まずもう少しスペースが必要で、ここに状態内にソートバイステータスがあることがわかります。
+コンポーネントの状態を確認すると、まず画面に少しスペースが必要ですが、ここに状態内に sortBy の値があることがわかります。
 
 素晴らしい。これで作業できます。
 
@@ -788,15 +764,15 @@ Reactが文句を言っているのは、3番目の部分が欠けているか�
 
 アプリケーションが選択した基準でここにアイテムを表示するようにするにはどうすればよいでしょうか？
 
-基本的に、その基準でソートされた新しいアイテムを作成します。
+その基準でソートされた新しい items 配列を作成します。
 
-元のitems配列を操作するつもりはありません。その状態は変更されないままにしておく必要があります。
+元の items 配列を操作するつもりはありません。その状態は変更されないままにしておく必要があります。
 
-代わりに、再び派生状態を使用します。1つの配列のソートは、もちろん、その初期配列に基づいて計算できるからです。それは完全に理にかなっていますよね？
+代わりに、再び派生状態を使用します。1 つの配列のソートは、その初期配列に基づいて計算できるからです。それは完全に理にかなっていますよね？
 
 再び、ここで新しい状態変数を作成しません。それは完全に不要だからです。
 
-単純に新しい変数を作成し、実際にはlet変数を作成します：
+単純に新しい変数を作成し、実際には let 変数を作成します：
 
 ```javascript
 function PackingList({ items, onDeleteItem, onToggleItem }) {
@@ -824,20 +800,17 @@ function PackingList({ items, onDeleteItem, onToggleItem }) {
     <div className="list">
       <ul>
         {sortedItems.map((item) => (
-          <Item 
-            item={item} 
+          <Item
+            item={item}
             key={item.id}
             onDeleteItem={onDeleteItem}
             onToggleItem={onToggleItem}
           />
         ))}
       </ul>
-      
+
       <div className="actions">
-        <select 
-          value={sortBy} 
-          onChange={(e) => setSortBy(e.target.value)}
-        >
+        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
           <option value="input">Sort by input order</option>
           <option value="description">Sort by description</option>
           <option value="packed">Sort by packed status</option>
@@ -848,53 +821,57 @@ function PackingList({ items, onDeleteItem, onToggleItem }) {
 }
 ```
 
-`sortedItems`と呼び、letを使用しているので、いくつかの簡単なif文を実行できます。
+`sortedItems`と呼び、let を使用しているので、いくつかの簡単な if 文を実行できます。
 
-`sortBy`が入力と等しい場合、これがデフォルトですよね？この場合、`sortedItems`は元のアイテムと等しくなるだけです。
+`sortBy`が"input"と等しい場合、これがデフォルトですよね？この場合、`sortedItems`は元の items と等しくなるだけです。
 
-もちろん、最終的には、元のitems配列をレンダリングする代わりに、これらのソートされたアイテムを使用する必要があります。
+もちろん、最終的には、元の items 配列をレンダリングする代わりに、これらのソートされたアイテムを使用する必要があります。
 
 ここでいくつかのアイテムを入れてみましょう。靴下、充電器。これらは書きやすいです。
 
-今のところ、これだけが動作します。これを行うと、`sortedItems`はこの空の変数になり、Reactはそれをレンダリングする方法がわからないため、エラーが発生します。
+今のところ、これだけが動作します。これを行うと、`sortedItems`はこの空の変数になり、React はそれをレンダリングする方法がわからないため、エラーが発生します。
 
 ここですべてを再び書く必要があります。靴下、シャツ、充電器。
 
-他の2つのケースのifを書きましょう。
+他の 2 つのケースの if を書きましょう。
 
-`sortBy`が説明と等しい場合、実際にアイテムをソートしたいと思います：
+`sortBy`が"description"と等しい場合、実際にアイテムをソートしたいと思います：
 
 ```javascript
 if (sortBy === "description") {
-  sortedItems = items.slice().sort((a, b) => a.description.localeCompare(b.description));
+  sortedItems = items
+    .slice()
+    .sort((a, b) => a.description.localeCompare(b.description));
 }
 ```
 
 `sortedItems`は`items`になります。まず`slice`を使用します。これにより、基本的に配列のコピーを取得します。これは非常に重要です。`sort`メソッドは変更メソッドだからです。
 
-これを行わないと、アイテムも実際にソートされてしまいます。それは望ましくありません。
+これを行わないと、元の items も実際にソートされてしまいます。それは望ましくありません。アプリケーションの元の状態を変更してはいけないからです。
 
-`slice().sort`を使用します。ここでは、JavaScriptセクションの復習ですでにこのメソッドの動作を説明したので、コードを書くだけです。
+`slice().sort`を使用します。ここでは、JavaScript セクションの復習ですでにこのメソッドの動作を説明したので、コードを書くだけです。
 
 この場合、アルファベット順にソートしたいので、`localeCompare`メソッドを使用できます。
 
-配列の1つのオブジェクトであるaを取り、そのdescriptionを取ります。これは各オブジェクトのプロパティの1つです。
+配列の 1 つのオブジェクトである a を取り、その description を取ります。これは各オブジェクトのプロパティの 1 つです。
 
 これは文字列なので、`localeCompare`を呼び出すことができます。ここで別の文字列を渡します。これは`b.description`です。
 
 これで動作するはずです。
 
-最後に、最後のケースのコードも追加しましょう。packedによるものです：
+最後に、最後のケースのコードも追加しましょう。packed によるものです：
 
 ```javascript
 if (sortBy === "packed") {
-  sortedItems = items.slice().sort((a, b) => Number(a.packed) - Number(b.packed));
+  sortedItems = items
+    .slice()
+    .sort((a, b) => Number(a.packed) - Number(b.packed));
 }
 ```
 
 非常に似ています。`sortedItems`は`items`のコピーを取り、`.sort`します。
 
-そして、基本的に比較されている配列の2つのオブジェクトであるaとbです。
+そして、基本的に比較されている配列の 2 つのオブジェクトである a と b です。
 
 パック状態でソートしたいので、これはブール値なので、まず数値に変換する必要があります。
 
@@ -922,7 +899,7 @@ if (sortBy === "packed") {
 
 再び、ソートされたアイテムの新しい状態を作成しませんでした。必要な状態は`sortBy`状態だけです。
 
-Reactが常にこの入力フィールドの値を持つようにするためです。
+React が常にこの入力フィールドの値を持つようにするためです。
 
 そして、それに基づいて、この派生状態のソートされたアイテムを作成し、最終的にユーザーインターフェースにレンダリングします。
 
@@ -936,20 +913,17 @@ Reactが常にこの入力フィールドの値を持つようにするためで
 
 アプリケーションを機能完全にするために、リスト全体を一度にクリアするボタンを追加しましょう。
 
-selectの後に、シンプルなボタンを追加します：
+select の後に、シンプルなボタンを追加します：
 
 ```javascript
 <div className="actions">
-  <select 
-    value={sortBy} 
-    onChange={(e) => setSortBy(e.target.value)}
-  >
+  <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
     <option value="input">Sort by input order</option>
     <option value="description">Sort by description</option>
     <option value="packed">Sort by packed status</option>
   </select>
-  
-  <button>Clear list</button>
+
+  <button onClick={onClearList}>Clear list</button>
 </div>
 ```
 
@@ -965,34 +939,32 @@ selectの後に、シンプルなボタンを追加します：
 
 本当に自分でこれを試してください。これは本当に良い学習体験だからです。
 
-そして、そのタスクを終えたら、1分後、または5分後にここに戻ってきてください。
+そして、そのタスクを終えたら、1 分後、または 5 分後にここに戻ってきてください。
 
-### handleClearList関数の実装
+### handleClearList 関数の実装
 
 他のすべての関数の近くに関数を作成します。
 
 `handleAddItems`、`Delete`、`Toggle`があります。
 
-単純にもう1つ追加しましょう：
+単純にもう 1 つ追加しましょう：
 
 ```javascript
 function App() {
   const [items, setItems] = useState([]);
 
   function handleAddItems(item) {
-    setItems(items => [...items, item]);
+    setItems((items) => [...items, item]);
   }
 
   function handleDeleteItem(id) {
-    setItems(items => items.filter(item => item.id !== id));
+    setItems((items) => items.filter((item) => item.id !== id));
   }
 
   function handleToggleItem(id) {
-    setItems(items => 
-      items.map(item => 
-        item.id === id 
-          ? { ...item, packed: !item.packed }
-          : item
+    setItems((items) =>
+      items.map((item) =>
+        item.id === id ? { ...item, packed: !item.packed } : item
       )
     );
   }
@@ -1005,8 +977,8 @@ function App() {
     <div className="app">
       <Logo />
       <Form onAddItems={handleAddItems} />
-      <PackingList 
-        items={items} 
+      <PackingList
+        items={items}
         onDeleteItem={handleDeleteItem}
         onToggleItem={handleToggleItem}
         onClearList={handleClearList}
@@ -1027,13 +999,13 @@ function App() {
 
 しかし、今度はこの関数をボタンに接続する必要があります。
 
-そのボタンはPackingListにあります。
+そのボタンは PackingList にあります。
 
-そこでこれをpropに渡します：
+そこでこれを prop に渡します：
 
 ```javascript
-<PackingList 
-  items={items} 
+<PackingList
+  items={items}
   onDeleteItem={handleDeleteItem}
   onToggleItem={handleToggleItem}
   onClearList={handleClearList}
@@ -1044,7 +1016,7 @@ function App() {
 
 それを取得しましょう。
 
-このPackingListは本当に多くのpropsを受け取ります：
+この PackingList は本当に多くの props を受け取ります：
 
 ```javascript
 function PackingList({ items, onDeleteItem, onToggleItem, onClearList }) {
@@ -1052,7 +1024,7 @@ function PackingList({ items, onDeleteItem, onToggleItem, onClearList }) {
 }
 ```
 
-そして、ここで`onClick`propです。
+そして、ここで`onClick`prop です。
 
 新しい関数を作成する必要さえありません。
 
@@ -1072,27 +1044,27 @@ function PackingList({ items, onDeleteItem, onToggleItem, onClearList }) {
 
 ### 確認ダイアログの追加
 
-ここでもう1つ、このデモアプリでは、ユーザーが誤ってすべてを削除することを防いでいます。
+ここでもう 1 つ、このデモアプリでは、ユーザーが誤ってすべてを削除することを防いでいます。
 
-リストをクリアをクリックすると、まずすべてのアイテムを削除するかどうかを尋ねられ、OKをクリックした場合にのみ、すべてが削除されます。
+リストをクリアをクリックすると、まずすべてのアイテムを削除するかどうかを尋ねられ、OK をクリックした場合にのみ、すべてが削除されます。
 
 見てください、今は空です。
 
 ここでも同じことを素早く行いましょう。
 
-これは標準的なDOM関数なので、非常に簡単です：
+これは標準的な DOM 関数なので、非常に簡単です：
 
 ```javascript
 function handleClearList() {
   const confirmed = window.confirm(
     "Are you sure you want to delete all items?"
   );
-  
+
   if (confirmed) setItems([]);
 }
 ```
 
-これは実際にはJavaScriptの一部ではありませんが、Web APIの一部です。
+これは実際には JavaScript の一部ではありませんが、Web API の一部です。
 
 いずれにせよ、ここで変数を作成できます。
 
@@ -1106,11 +1078,11 @@ function handleClearList() {
 
 「すべてのアイテムを削除してもよろしいですか？」
 
-ユーザーが「OK」をクリックすると、confirmedはtrueになり、「キャンセル」をクリックした場合はfalseになります。
+ユーザーが「OK」をクリックすると、confirmed は true になり、「キャンセル」をクリックした場合は false になります。
 
 これで条件付きで実行できます。
 
-confirmedの場合、アイテムを空の配列に設定します。
+confirmed の場合、アイテムを空の配列に設定します。
 
 確認のために、リロードしましょう。
 
@@ -1120,13 +1092,13 @@ confirmedの場合、アイテムを空の配列に設定します。
 
 最近、すべてのスクロールに少しイライラしたかもしれません。コンポーネントがどんどん大きくなっているからです。
 
-例えば、ここで何かを渡したい場合、ここまでスクロールして、例えばこれらのpropsを受け入れる必要がありました。
+例えば、ここで何かを渡したい場合、ここまでスクロールして、例えばこれらの props を受け入れる必要がありました。
 
-そのため、最初に言ったように、実際のアプリケーションでは通常、ファイルごとに1つのコンポーネントがあります。
+そのため、最初に言ったように、実際のアプリケーションでは通常、ファイルごとに 1 つのコンポーネントがあります。
 
-次の講義では、基本的にこの1つのファイルを複数のファイルに分割する方法のトリックを示します。
+次の講義では、基本的にこの 1 つのファイルを複数のファイルに分割する方法のトリックを示します。
 
-コンポーネントごとに1つのファイルです。
+コンポーネントごとに 1 つのファイルです。
 
 ## コンポーネントを別々のファイルに移動
 
@@ -1134,13 +1106,13 @@ confirmedの場合、アイテムを空の配列に設定します。
 
 最近、コンポーネントがどんどん大きくなり、多くのスクロールが必要になっていることにお気づきかもしれません。
 
-例えば、ここで何かを渡したい場合、ここまでスクロールして、これらのpropsを受け入れる必要がありました。
+例えば、ここで何かを渡したい場合、ここまでスクロールして、これらの props を受け入れる必要がありました。
 
-そのため、最初に言ったように、実際のアプリケーションでは通常、ファイルごとに1つのコンポーネントがあります。
+そのため、最初に言ったように、実際のアプリケーションでは通常、ファイルごとに 1 つのコンポーネントがあります。
 
 ### ファイル分割の実装
 
-次の講義では、基本的にこの1つのファイルを複数のファイルに分割する方法のトリックを示します。コンポーネントごとに1つのファイルです。
+次の講義では、基本的にこの 1 つのファイルを複数のファイルに分割する方法のトリックを示します。コンポーネントごとに 1 つのファイルです。
 
 これにより、コードの管理がはるかに簡単になり、各コンポーネントの責任が明確になります。
 
@@ -1151,26 +1123,31 @@ confirmedの場合、アイテムを空の配列に設定します。
 このセッションでは、以下の重要な概念を学習しました：
 
 #### 1. 子から親への通信パターン
+
 - アイテム削除機能の実装を通じて学習
-- propsを使った関数の受け渡し
+- props を使った関数の受け渡し
 - イベントハンドラーの正しい書き方
 
 #### 2. 配列の不変性を保った操作
+
 - `filter`メソッドによる削除操作
 - `map`メソッドによる更新操作
 - スプレッド演算子を使ったオブジェクトの更新
 
 #### 3. 派生状態（Derived State）
+
 - 既存の状態から計算される値
 - 不要な状態の作成を避ける
 - パフォーマンスの向上と同期問題の回避
 
 #### 4. 条件付きレンダリングの高度な使用
+
 - 早期リターンパターン
 - 三項演算子による条件分岐
 - 状態に応じた動的なメッセージ表示
 
 #### 5. 配列操作メソッドの実践的使用
+
 - `filter`：要素の削除
 - `map`：要素の更新
 - `sort`：要素の並び替え
@@ -1179,22 +1156,26 @@ confirmedの場合、アイテムを空の配列に設定します。
 ### 実装した機能
 
 1. **アイテム削除機能**
-   - 各アイテムの×ボタンによる削除
-   - IDベースの要素特定
+
+   - 各アイテムの × ボタンによる削除
+   - ID ベースの要素特定
    - 状態の適切な更新
 
 2. **アイテム更新機能（チェック機能）**
+
    - チェックボックスによるパック状態の切り替え
    - 制御された要素としての実装
    - 視覚的フィードバック（取り消し線）
 
 3. **統計情報の表示**
+
    - 総アイテム数の計算
    - パック済みアイテム数の計算
    - 完了パーセンテージの計算
    - 状況に応じたメッセージ表示
 
 4. **ソート機能**
+
    - 入力順、アルファベット順、パック状態順でのソート
    - セレクトボックスによる制御
    - 派生状態を使った効率的な実装
@@ -1209,16 +1190,18 @@ confirmedの場合、アイテムを空の配列に設定します。
 次のセッションでは、以下のトピックを学習します：
 
 1. **コンポーネントの分割**
-   - ファイルごとに1つのコンポーネント
-   - import/exportの使用
+
+   - ファイルごとに 1 つのコンポーネント
+   - import/export の使用
    - プロジェクト構造の最適化
 
 2. **より高度な状態管理**
+
    - 複雑な状態の管理方法
    - 状態の正規化
    - パフォーマンスの最適化
 
-3. **Reactの思考法**
+3. **React の思考法**
    - コンポーネント設計の原則
    - 再利用可能なコンポーネントの作成
    - 保守性の高いコードの書き方
@@ -1228,11 +1211,13 @@ confirmedの場合、アイテムを空の配列に設定します。
 学習を深めるために、以下の課題に取り組んでみてください：
 
 1. **機能拡張**
+
    - アイテムの編集機能を追加
    - カテゴリ別のフィルタリング機能
    - 重要度による優先順位付け
 
 2. **ユーザビリティ向上**
+
    - キーボードショートカットの追加
    - ドラッグ&ドロップによる並び替え
    - アニメーション効果の追加
@@ -1242,4 +1227,4 @@ confirmedの場合、アイテムを空の配列に設定します。
    - データのインポート/エクスポート
    - 複数のリストの管理
 
-これらの課題を通じて、Reactの理解をさらに深め、実践的なスキルを身につけることができます。
+これらの課題を通じて、React の理解をさらに深め、実践的なスキルを身につけることができます。

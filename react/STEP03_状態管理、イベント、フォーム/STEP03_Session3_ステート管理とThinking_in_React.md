@@ -140,7 +140,7 @@ React におけるステートは、大きく 2 つのカテゴリに分類さ�
 
 **使用例**：
 
-```javascript
+```jsx
 function SearchBar() {
   const [searchText, setSearchText] = useState(""); // ローカルステート
 
@@ -263,7 +263,7 @@ Form コンポーネント → アイテム配列 → PackingList コンポー�
 
 ### App コンポーネントでのステート作成
 
-```javascript
+```jsx
 function App() {
   const [items, setItems] = useState([]);
 
@@ -290,7 +290,7 @@ function App() {
 
 ### Form コンポーネントの修正
 
-```javascript
+```jsx
 function Form({ onAddItems }) {
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState(1);
@@ -325,7 +325,7 @@ function Form({ onAddItems }) {
 
 ### PackingList コンポーネントの修正
 
-```javascript
+```jsx
 function PackingList({ items }) {
   return (
     <div>
@@ -380,7 +380,7 @@ function PackingList({ items }) {
 
 **動作検証例**：
 
-```javascript
+```jsx
 // 入力例 1
 { description: "Shirts", quantity: 10, packed: false, id: 1703123456789 }
 
@@ -416,7 +416,7 @@ function PackingList({ items }) {
 
 **最初のアプローチ**：
 
-```javascript
+```jsx
 function PromotionsComponent() {
   const [coupons, setCoupons] = useState([]); // ローカルステート
 
@@ -451,7 +451,7 @@ CheckoutComponent
 
 **解決後の構造**：
 
-```javascript
+```jsx
 function CheckoutComponent() {
   const [coupons, setCoupons] = useState([]); // 共通の親に移動
 
@@ -490,7 +490,7 @@ function TotalComponent({ coupons }) {
 
 **通常の props 渡し**：
 
-```javascript
+```jsx
 // 親コンポーネント
 <ChildComponent data={someData} />;
 
@@ -504,7 +504,7 @@ function ChildComponent({ data }) {
 
 **関数を props として渡す**：
 
-```javascript
+```jsx
 // 親コンポーネント
 function Parent() {
   const [state, setState] = useState(initialValue);
@@ -580,7 +580,7 @@ function Child({ currentValue, onUpdateValue }) {
 
 **技術的な仕組み**：
 
-```javascript
+```jsx
 // 見た目上は「子から親へ」のデータフロー
 onAddItems(newItem); // 子から呼び出し
 

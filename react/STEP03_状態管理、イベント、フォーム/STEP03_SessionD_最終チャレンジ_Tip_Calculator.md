@@ -93,7 +93,7 @@ npm start
 
 まず、全てのコンポーネントを静的な状態で作成します：
 
-```javascript
+```jsx
 import { useState } from "react";
 
 function TipCalculator() {
@@ -144,7 +144,7 @@ function Reset() {
 
 親コンポーネントに状態を追加し、制御されたコンポーネントを実装：
 
-```javascript
+```jsx
 function TipCalculator() {
   const [bill, setBill] = useState("");
   const [percentage1, setPercentage1] = useState(0);
@@ -187,7 +187,7 @@ function TipCalculator() {
 
 #### BillInput コンポーネント
 
-```javascript
+```jsx
 function BillInput({ bill, onSetBill }) {
   return (
     <div>
@@ -211,7 +211,7 @@ function BillInput({ bill, onSetBill }) {
 
 #### SelectPercentage コンポーネント
 
-```javascript
+```jsx
 function SelectPercentage({ children, percentage, onSelect }) {
   return (
     <div>
@@ -238,7 +238,7 @@ function SelectPercentage({ children, percentage, onSelect }) {
 
 #### Output コンポーネント
 
-```javascript
+```jsx
 function Output({ bill, tip }) {
   return (
     <h3>
@@ -255,7 +255,7 @@ function Output({ bill, tip }) {
 
 #### Reset コンポーネント
 
-```javascript
+```jsx
 function Reset({ onReset }) {
   return <button onClick={onReset}>Reset</button>;
 }
@@ -265,7 +265,7 @@ function Reset({ onReset }) {
 
 #### 派生ステートの実装
 
-```javascript
+```jsx
 const tip = bill * ((percentage1 + percentage2) / 2 / 100);
 ```
 
@@ -277,7 +277,7 @@ const tip = bill * ((percentage1 + percentage2) / 2 / 100);
 
 #### 条件付きレンダリングの活用
 
-```javascript
+```jsx
 {
   bill > 0 && (
     <>
@@ -298,7 +298,7 @@ const tip = bill * ((percentage1 + percentage2) / 2 / 100);
 
 ### App.js
 
-```javascript
+```jsx
 import { useState } from "react";
 import "./App.css";
 
@@ -447,7 +447,7 @@ h3 {
 
 **解決**: 親コンポーネントで全状態を管理し、props で値と更新関数を渡す
 
-```javascript
+```jsx
 // ❌ 個別管理（計算不可能）
 function BillInput() {
   const [bill, setBill] = useState(""); // この値を他コンポーネントで使えない
@@ -466,7 +466,7 @@ function TipCalculator() {
 
 **解決**: 既存の状態から計算される値として実装
 
-```javascript
+```jsx
 // ❌ 独立した状態（同期問題のリスク）
 const [tip, setTip] = useState(0);
 // bill, percentage1, percentage2が変更される度にsetTipを呼ぶ必要
@@ -482,7 +482,7 @@ const tip = bill * ((percentage1 + percentage2) / 2 / 100);
 
 **解決**: children prop を活用して 1 つのコンポーネントで 2 つの用途に対応
 
-```javascript
+```jsx
 // 同じコンポーネントで異なるラベルを表示
 <SelectPercentage percentage={percentage1} onSelect={setPercentage1}>
   How did you like the service?
@@ -497,7 +497,7 @@ const tip = bill * ((percentage1 + percentage2) / 2 / 100);
 
 **3 つのステップの実装例**：
 
-```javascript
+```jsx
 // 1. 状態の作成
 const [bill, setBill] = useState("");
 

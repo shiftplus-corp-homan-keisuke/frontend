@@ -34,7 +34,7 @@
 
 ソート機能は PackingList コンポーネント内で管理します。App コンポーネントではなく、この階層で管理する理由を理解することが重要です：
 
-```javascript
+```jsx
 import { useState } from "react";
 
 function PackingList({ items, onDeleteItem, onToggleItem }) {
@@ -84,7 +84,7 @@ function PackingList({ items, onDeleteItem, onToggleItem }) {
 
 #### 1. 入力順ソート（input）
 
-```javascript
+```jsx
 if (sortBy === "input") {
   sortedItems = items;
 }
@@ -96,7 +96,7 @@ if (sortBy === "input") {
 
 #### 2. アルファベット順ソート（description）
 
-```javascript
+```jsx
 sortedItems = items
   .slice() // 重要：元の配列のコピーを作成
   .sort((a, b) => a.description.localeCompare(b.description));
@@ -116,7 +116,7 @@ sortedItems = items
 
 #### 3. パッキング状況順ソート（packed）
 
-```javascript
+```jsx
 sortedItems = items.slice().sort((a, b) => Number(a.packed) - Number(b.packed));
 ```
 
@@ -128,7 +128,7 @@ sortedItems = items.slice().sort((a, b) => Number(a.packed) - Number(b.packed));
 
 ### 制御されたコンポーネントとしてのセレクトボックス
 
-```javascript
+```jsx
 <select
   value={sortBy}  // 現在の状態を反映
   onChange={(e) => setSortBy(e.target.value)}  // 状態を更新
@@ -205,7 +205,7 @@ sortedItems = items.slice().sort((a, b) => Number(a.packed) - Number(b.packed));
 
 全てのアイテムを一度に削除する機能を追加します：
 
-```javascript
+```jsx
 function App() {
   const [items, setItems] = useState([]);
 
@@ -239,7 +239,7 @@ function App() {
 
 ### PackingList での一括操作 UI
 
-```javascript
+```jsx
 function PackingList({ items, onDeleteItem, onToggleItem, onClearList }) {
   const [sortBy, setSortBy] = useState("input");
 
@@ -274,7 +274,7 @@ function PackingList({ items, onDeleteItem, onToggleItem, onClearList }) {
 
 ### 確認ダイアログによるユーザー保護
 
-```javascript
+```jsx
 function handleClearList() {
   const confirmed = window.confirm(
     "Are you sure you want to delete all items?"
@@ -297,7 +297,7 @@ function handleClearList() {
 
 リストが空の場合はボタンを無効化または非表示にする改善：
 
-```javascript
+```jsx
 <div className="actions">
   <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
     <option value="input">Sort by input order</option>
@@ -319,7 +319,7 @@ function handleClearList() {
 
 実用的なアプリケーションでは、他の一括操作も考えられます：
 
-```javascript
+```jsx
 // 全てをパッキング済みにする
 function handleMarkAllAsPacked() {
   setItems((items) => items.map((item) => ({ ...item, packed: true })));
@@ -375,7 +375,7 @@ src/
 
 **Logo.js**:
 
-```javascript
+```jsx
 function Logo() {
   return <h1>🌴 Far Away 💼</h1>;
 }
@@ -393,7 +393,7 @@ export default Logo;
 
 **Form.js**:
 
-```javascript
+```jsx
 import { useState } from "react";
 
 function Form({ onAddItems }) {
@@ -449,7 +449,7 @@ export default Form;
 
 **PackingList.js**:
 
-```javascript
+```jsx
 import { useState } from "react";
 import Item from "./Item";
 
@@ -503,7 +503,7 @@ export default PackingList;
 
 **Item.js**:
 
-```javascript
+```jsx
 function Item({ item, onDeleteItem, onToggleItem }) {
   return (
     <li>
@@ -527,7 +527,7 @@ export default Item;
 
 **Stats.js**:
 
-```javascript
+```jsx
 function Stats({ items }) {
   if (!items.length) {
     return (
@@ -559,7 +559,7 @@ export default Stats;
 
 **App.js**:
 
-```javascript
+```jsx
 import { useState } from "react";
 import Logo from "./components/Logo";
 import Form from "./components/Form";
@@ -625,7 +625,7 @@ export default App;
 
 **Named Export（名前付きエクスポート）**:
 
-```javascript
+```jsx
 // Logo.js
 export function Logo() { ... }
 export function SubLogo() { ... }
@@ -636,7 +636,7 @@ import { Logo, SubLogo } from "./components/Logo";
 
 **Default Export（デフォルトエクスポート）**:
 
-```javascript
+```jsx
 // Logo.js
 function Logo() { ... }
 export default Logo;
@@ -721,7 +721,7 @@ Form Component (Low Level)
 
 **将来的な最適化候補**：
 
-```javascript
+```jsx
 // useMemo による重い計算のメモ化
 const expensiveStats = useMemo(() => {
   return calculateComplexStats(items);

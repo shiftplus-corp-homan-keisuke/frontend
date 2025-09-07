@@ -32,7 +32,7 @@ React では、**すべての状態を一箇所（React アプリケーション
 
 まず、入力フィールドのための state 変数を作成します：
 
-```javascript
+```jsx
 function Form() {
   const [description, setDescription] = useState("");
 
@@ -46,7 +46,7 @@ function Form() {
 
 次に、その状態を入力要素の値として使用します：
 
-```javascript
+```jsx
 <input
   type="text"
   placeholder="Item..."
@@ -60,7 +60,7 @@ function Form() {
 
 最後に、入力が変更されたときに状態を更新するイベントハンドラーを追加します：
 
-```javascript
+```jsx
 <input
   type="text"
   placeholder="Item..."
@@ -81,7 +81,7 @@ function Form() {
 
 同じパターンを select 要素にも適用します：
 
-```javascript
+```jsx
 function Form() {
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState(1);
@@ -123,7 +123,7 @@ function Form() {
 
 制御されたコンポーネントを使用して、フォーム送信時にデータを処理します：
 
-```javascript
+```jsx
 function handleSubmit(e) {
   e.preventDefault();
 
@@ -177,7 +177,7 @@ React Dev Tools を使用して状態の変化を確認できます：
 
 現時点で、フォーム送信時に以下の処理が行われています：
 
-```javascript
+```jsx
 function handleSubmit(e) {
   e.preventDefault();
 
@@ -199,7 +199,7 @@ function handleSubmit(e) {
 
 **期待される出力例**：
 
-```javascript
+```jsx
 {
   description: "Shirts",
   quantity: 10,
@@ -224,7 +224,7 @@ function handleSubmit(e) {
 
 Form コンポーネント内にアイテムリスト用の state を作成します：
 
-```javascript
+```jsx
 function Form() {
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState(1);
@@ -345,7 +345,7 @@ React 開発において頻繁に聞かれる重要な質問の一つが「ス�
 
 重要な接続点として、**ステートが props として渡される**ケースがあります：
 
-```javascript
+```jsx
 // 親コンポーネント
 function Parent() {
   const [upVotes, setUpVotes] = useState(0); // これはstate
@@ -373,7 +373,7 @@ function Child({ upVotes }) {
 
 ### 実際の使用例での理解
 
-```javascript
+```jsx
 // Form コンポーネント（ステートを持つ）
 function Form() {
   const [description, setDescription] = useState(""); // state
@@ -449,7 +449,7 @@ function DisplayComponent({ text }) {
 
 制御されたコンポーネントのパターンは、React 開発における「レシピ」のようなものです：
 
-```javascript
+```jsx
 // 基本パターン（どのフォーム要素でも同じ）
 const [value, setValue] = useState(初期値);
 

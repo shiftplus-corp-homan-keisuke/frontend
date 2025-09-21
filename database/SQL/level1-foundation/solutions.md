@@ -49,7 +49,7 @@ SELECT * FROM employees WHERE department_id = 10;
 **解答:**
 ```sql
 SELECT * FROM employees
-WHERE department_id = 10 AND salary >= 50000000;
+WHERE department_id = 10 AND salary >= 500000;
 ```
 
 **解説:**
@@ -449,7 +449,7 @@ HAVING AVG(e.salary) >= 8000;
 **解答:**
 ```sql
 INSERT INTO employees (employee_id, first_name, last_name, email, hire_date, job_title, salary, department_id)
-VALUES (200, 'Taro', 'Yamada', 'tyamada@company.com', '2024-04-01', 'エンジニア', 5500, 60);
+VALUES (200, 'Taro', 'Yamada', 'tyamada@company.com', '2022-04-01', 'エンジニア', 5500, 60);
 ```
 
 **解説:**
@@ -464,8 +464,8 @@ VALUES (200, 'Taro', 'Yamada', 'tyamada@company.com', '2024-04-01', 'エンジ�
 ```sql
 INSERT INTO employees (employee_id, first_name, last_name, email, hire_date, job_title, salary, department_id)
 VALUES
-    (201, 'Hanako', 'Sato', 'hsato@company.com', '2024-04-02', 'FI_ACCOUNT', 4500, 100),
-    (202, 'Jiro', 'Suzuki', 'jsuzuki@company.com', '2024-04-03', 'IT_PROG', 500000, 60);
+    (201, 'Hanako', 'Sato', 'hsato@company.com', '2022-04-02', 'FI_ACCOUNT', 4500, 100),
+    (202, 'Jiro', 'Suzuki', 'jsuzuki@company.com', '2022-04-03', 'IT_PROG', 500000, 60);
 ```
 
 **解説:**
@@ -534,7 +534,7 @@ WHERE employee_id = 202;
 **解答:**
 ```sql
 DELETE FROM employees 
-WHERE department_id = 30 AND salary < 1500000;
+WHERE department_id = 30 AND salary < 500000;
 ```
 
 **解説:**
@@ -648,7 +648,7 @@ VALUES (120, 'Research', '東京');
 
 -- 2. 新しい従業員を追加
 INSERT INTO employees (employee_id, first_name, last_name, email, hire_date, job_title, salary, department_id)
-VALUES (203, 'Saburo', 'Tanaka', 'stanaka@company.com', '2024-04-04', 'エンジニア', 5800, 120);
+VALUES (203, 'Saburo', 'Tanaka', 'stanaka@company.com', '2022-04-04', 'エンジニア', 5800, 120);
 
 -- 3. 従業員の給与を更新
 UPDATE employees 

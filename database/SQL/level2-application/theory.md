@@ -376,7 +376,7 @@ LEFT JOIN departments d ON e.department_id = d.department_id;
 CREATE VIEW high_salary_employees AS
 SELECT employee_id, first_name, last_name, salary
 FROM employees
-WHERE salary >= 8000;
+WHERE salary >= 700000;
 ```
 
 ### 5.3 ビューの活用
@@ -517,7 +517,7 @@ SELECT * FROM employees WHERE last_name = 'Smith';
 
 -- 複合インデックスが効果的なクエリ
 SELECT * FROM employees 
-WHERE department_id = 10 AND salary > 5000;
+WHERE department_id = 10 AND salary > 500000;
 ```
 
 ### 7.4 インデックスの削除

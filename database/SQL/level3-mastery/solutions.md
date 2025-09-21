@@ -197,7 +197,7 @@ WITH customer_annual_sales AS (
         customer_id,
         SUM(amount) as annual_sales
     FROM sales
-    WHERE EXTRACT(YEAR FROM sale_date) = 2024
+    WHERE EXTRACT(YEAR FROM sale_date) = 2022
     GROUP BY customer_id
 ),
 customer_quartiles AS (
@@ -882,8 +882,8 @@ END;
 $$;
 
 -- 使用例
-SELECT * FROM calculate_sales_summary('2024-01-01', '2024-12-31');
-SELECT * FROM calculate_sales_summary('2024-01-01', '2024-12-31', 'Electronics');
+SELECT * FROM calculate_sales_summary('2022-01-01', '2022-12-31');
+SELECT * FROM calculate_sales_summary('2022-01-01', '2022-12-31', 'Electronics');
 ```
 
 **解説:**
@@ -1019,7 +1019,7 @@ SELECT
     old_values,
     new_values
 FROM audit_log
-WHERE table_name = 'customers' AND record_id = '123'
+WHERE table_name = 'customers' AND record_id = '1'
 ORDER BY changed_at DESC;
 
 -- 変更頻度の高いテーブル
@@ -1420,7 +1420,7 @@ $$;
 -- 使用例（リトライ機構付き）
 DO $$
 DECLARE
-    v_product_id INT := 101;
+    v_product_id INT := 1;
     v_quantity_change INT := -5;
     v_version INT;
     v_success BOOLEAN := FALSE;
@@ -1939,7 +1939,7 @@ END;
 $$;
 
 -- 使用例
-SELECT * FROM generate_comprehensive_ecommerce_report('2024-01-01', '2024-12-31');
+SELECT * FROM generate_comprehensive_ecommerce_report('2022-01-01', '2022-12-31');
 ```
 
 **解説:**

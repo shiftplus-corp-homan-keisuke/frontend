@@ -395,7 +395,7 @@ FROM employees;
 SELECT 
     department_id,
     COUNT(*) as total_employees,
-    SUM(CASE WHEN salary >= 8000 THEN 1 ELSE 0 END) as high_salary_count,
+    SUM(CASE WHEN salary >= 700000 THEN 1 ELSE 0 END) as high_salary_count,
     SUM(CASE WHEN salary >= 5000 AND salary < 8000 THEN 1 ELSE 0 END) as mid_salary_count,
     SUM(CASE WHEN salary < 5000 THEN 1 ELSE 0 END) as low_salary_count
 FROM employees
@@ -853,7 +853,7 @@ SELECT
     salary,
     department_id
 FROM employees
-WHERE salary >= 8000;
+WHERE salary >= 700000;
 ```
 
 **解説:**
@@ -1062,7 +1062,7 @@ MODIFY COLUMN last_name VARCHAR(50) NOT NULL;
 -- 簡単な例として給与の妥当性チェック
 ALTER TABLE employees
 ADD CONSTRAINT chk_salary_range
-CHECK (salary > 0 AND salary <= 10000000);
+CHECK (salary > 0 AND salary <= 1000000);
 ```
 
 **解説:**
@@ -1141,7 +1141,7 @@ SELECT * FROM employees WHERE last_name = 'Smith';
 
 -- 複合インデックス使用
 SELECT * FROM employees 
-WHERE department_id = 10 AND salary > 5000;
+WHERE department_id = 10 AND salary > 500000;
 
 -- 一意インデックス使用
 SELECT * FROM employees WHERE email = 'john.doe@company.com';
@@ -1343,7 +1343,7 @@ UNION ALL
 SELECT 'Salary Out of Range' as issue_type,
        e.employee_id, e.first_name, e.last_name, e.salary
 FROM employees e
-WHERE e.salary < 0 OR e.salary > 1000000;
+WHERE e.salary < 0 OR e.salary > 900000;
 ```
 
 **解説:**

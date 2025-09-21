@@ -36,7 +36,7 @@ SELECT employee_id, first_name, last_name FROM employees;
 
 **解答:**
 ```sql
-SELECT * FROM employees WHERE department_id = 60;
+SELECT * FROM employees WHERE department_id = 10;
 ```
 
 **解説:**
@@ -48,8 +48,8 @@ SELECT * FROM employees WHERE department_id = 60;
 
 **解答:**
 ```sql
-SELECT * FROM employees 
-WHERE department_id = 60 AND salary >= 5000;
+SELECT * FROM employees
+WHERE department_id = 10 AND salary >= 50000000;
 ```
 
 **解説:**
@@ -63,19 +63,19 @@ WHERE department_id = 60 AND salary >= 5000;
 ```sql
 SELECT first_name, last_name, salary 
 FROM employees 
-WHERE salary >= 5000 AND salary <= 10000;
+WHERE salary >= 500000 AND salary <= 800000;
 ```
 
 **別解（BETWEEN使用）:**
 ```sql
 SELECT first_name, last_name, salary 
 FROM employees 
-WHERE salary BETWEEN 5000 AND 10000;
+WHERE salary BETWEEN 500000 AND 800000;
 ```
 
 **解説:**
 - BETWEEN演算子は範囲指定に便利
-- BETWEENは境界値を含む（5000と10000も含まれる）
+- BETWEENは境界値を含む（500000と800000も含まれる）
 
 ### 問題1-6: パターンマッチング
 
@@ -210,7 +210,7 @@ SELECT MAX(salary), MIN(salary) FROM employees;
 
 **解答:**
 ```sql
-SELECT AVG(salary) FROM employees WHERE department_id = 60;
+SELECT AVG(salary) FROM employees WHERE department_id = 10;
 ```
 
 **解説:**
@@ -229,7 +229,7 @@ SELECT
     MAX(salary) as max_salary,
     MIN(salary) as min_salary
 FROM employees 
-WHERE department_id = 100;
+WHERE department_id = 20;
 ```
 
 **解説:**
@@ -323,7 +323,7 @@ HAVING AVG(salary) >= 7000;
 ```sql
 SELECT department_id, COUNT(*) 
 FROM employees 
-WHERE salary >= 5000 
+WHERE salary >= 500000 
 GROUP BY department_id 
 HAVING COUNT(*) >= 2;
 ```
@@ -378,7 +378,7 @@ WHERE d.department_name = 'IT';
 **解説:**
 - 結合後にWHERE句で条件指定
 - 結合条件（ON句）と抽出条件（WHERE句）は別々に指定
-- IT部署の従業員のみ抽出
+- 営業部の従業員のみ抽出
 
 ### 問題4-3: 結合と並び替え
 
@@ -465,7 +465,7 @@ VALUES (200, 'Taro', 'Yamada', 'tyamada@company.com', '2024-04-01', 'エンジ�
 INSERT INTO employees (employee_id, first_name, last_name, email, hire_date, job_title, salary, department_id)
 VALUES
     (201, 'Hanako', 'Sato', 'hsato@company.com', '2024-04-02', 'FI_ACCOUNT', 4500, 100),
-    (202, 'Jiro', 'Suzuki', 'jsuzuki@company.com', '2024-04-03', 'IT_PROG', 5000, 60);
+    (202, 'Jiro', 'Suzuki', 'jsuzuki@company.com', '2024-04-03', 'IT_PROG', 500000, 60);
 ```
 
 **解説:**
@@ -493,7 +493,7 @@ WHERE employee_id = 200;
 **解答:**
 ```sql
 UPDATE employees 
-SET salary = 5000, department_id = 90 
+SET salary = 500000, department_id = 30 
 WHERE employee_id = 201;
 ```
 
@@ -507,8 +507,8 @@ WHERE employee_id = 201;
 **解答:**
 ```sql
 UPDATE employees 
-SET salary = salary * 1.1 
-WHERE department_id = 60;
+SET salary = salary * 1.1
+WHERE department_id = 10;
 ```
 
 **解説:**
@@ -534,7 +534,7 @@ WHERE employee_id = 202;
 **解答:**
 ```sql
 DELETE FROM employees 
-WHERE department_id = 90 AND salary < 15000;
+WHERE department_id = 30 AND salary < 1500000;
 ```
 
 **解説:**
@@ -605,16 +605,16 @@ WHERE (e.department_id, e.salary) IN (
 ```sql
 SELECT e.first_name, e.last_name, e.salary
 FROM employees e
-WHERE e.department_id = 60
+WHERE e.department_id = 10
 AND e.salary >= (
     SELECT AVG(salary)
     FROM employees
-    WHERE department_id = 60
+    WHERE department_id = 10
 );
 ```
 
 **解説:**
-- IT部署（department_id = 60）の従業員に限定
+- 営業部（department_id = 10）の従業員に限定
 - サブクエリでIT部署内の平均給与を計算
 - 部署内平均以上の給与の従業員を抽出
 

@@ -279,12 +279,12 @@ WHERE 条件;
 -- 特定の従業員の給与を更新
 UPDATE employees
 SET salary = 6000
-WHERE employee_id = 1001;
+WHERE employee_id = 101;
 
 -- 複数列を同時に更新
 UPDATE employees
 SET salary = 6500, department_id = 20
-WHERE employee_id = 1001;
+WHERE employee_id = 101;
 ```
 
 ### 5.3 DELETE文（データの削除）
@@ -301,7 +301,7 @@ WHERE 条件;
 ```sql
 -- 特定の従業員を削除
 DELETE FROM employees
-WHERE employee_id = 1001;
+WHERE employee_id = 101;
 
 -- 条件に合致する複数行を削除
 DELETE FROM employees

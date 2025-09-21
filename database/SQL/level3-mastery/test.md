@@ -195,7 +195,7 @@ D) 専用のロックテーブルを作成する
 
 ```sql
 SELECT * FROM orders 
-WHERE customer_id = 123 
+WHERE customer_id = 1 
   AND order_date BETWEEN '2024-01-01' AND '2024-12-31'
   AND status = 'COMPLETED'
 ORDER BY order_date DESC;

@@ -119,9 +119,9 @@ WHERE salary = (SELECT MAX(salary) FROM employees);
 SELECT employee_id, first_name
 FROM employees
 WHERE department_id IN (
-    SELECT department_id 
-    FROM departments 
-    WHERE location_id = 1700
+    SELECT department_id
+    FROM departments
+    WHERE location = '東京'
 );
 ```
 
@@ -368,10 +368,9 @@ SELECT
     e.last_name,
     e.salary,
     d.department_name,
-    l.city
+    d.location
 FROM employees e
-LEFT JOIN departments d ON e.department_id = d.department_id
-LEFT JOIN locations l ON d.location_id = l.location_id;
+LEFT JOIN departments d ON e.department_id = d.department_id;
 
 -- 高給取り従業員ビュー
 CREATE VIEW high_salary_employees AS

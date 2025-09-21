@@ -58,10 +58,9 @@ SELECT
     e.first_name,
     e.last_name,
     d.department_name,
-    l.city
+    d.location
 FROM employees e
-LEFT JOIN departments d ON e.department_id = d.department_id
-LEFT JOIN locations l ON d.location_id = l.location_id;
+LEFT JOIN departments d ON e.department_id = d.department_id;
 ```
 
 **解説:**
@@ -84,11 +83,10 @@ SELECT
     e.first_name,
     e.last_name,
     d.department_name,
-    l.city
+    d.location
 FROM employees e
 LEFT JOIN departments d ON e.department_id = d.department_id
-LEFT JOIN locations l ON d.location_id = l.location_id
-WHERE l.city != 'Tokyo' OR l.city IS NULL OR d.department_id IS NULL;
+WHERE d.location != '東京' OR d.location IS NULL OR d.department_id IS NULL;
 ```
 
 **解説:**
@@ -162,8 +160,7 @@ FROM employees
 WHERE department_id IN (
     SELECT d.department_id
     FROM departments d
-    JOIN locations l ON d.location_id = l.location_id
-    WHERE l.city = 'Tokyo'
+    WHERE d.location = '東京'
 );
 ```
 
@@ -802,8 +799,7 @@ SELECT
     l.city,
     l.country_id
 FROM employees e
-LEFT JOIN departments d ON e.department_id = d.department_id
-LEFT JOIN locations l ON d.location_id = l.location_id;
+LEFT JOIN departments d ON e.department_id = d.department_id;
 ```
 
 **解説:**
@@ -918,8 +914,7 @@ SELECT
     l.country_id
 FROM employees e
 LEFT JOIN departments d ON e.department_id = d.department_id
-LEFT JOIN jobs j ON e.job_id = j.job_id
-LEFT JOIN locations l ON d.location_id = l.location_id;
+LEFT JOIN jobs j ON e.job_id = j.job_id;
 ```
 
 **解説:**
@@ -1180,7 +1175,6 @@ SELECT
     CONCAT(max_emp.first_name, ' ', max_emp.last_name) as highest_paid_employee,
     CONCAT(min_emp.first_name, ' ', min_emp.last_name) as lowest_paid_employee
 FROM departments d
-LEFT JOIN locations l ON d.location_id = l.location_id
 LEFT JOIN employees e ON d.department_id = e.department_id
 LEFT JOIN employees max_emp ON d.department_id = max_emp.department_id 
     AND max_emp.salary = (

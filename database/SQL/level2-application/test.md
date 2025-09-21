@@ -22,10 +22,7 @@
 employees (employee_id, first_name, last_name, email, hire_date, job_id, salary, commission_pct, manager_id, department_id)
 
 -- 部署テーブル
-departments (department_id, department_name, manager_id, location_id)
-
--- 所在地テーブル
-locations (location_id, street_address, city, state_province, country_id)
+departments (department_id, department_name, manager_id, location)
 
 -- 職種テーブル
 jobs (job_id, job_title, min_salary, max_salary)
@@ -270,8 +267,8 @@ D) 自動的にインデックスを作成する
 次のサブクエリの種類として正しいものはどれか。
 
 ```sql
-SELECT * FROM employees 
-WHERE department_id IN (SELECT department_id FROM departments WHERE location_id = 1700);
+SELECT * FROM employees
+WHERE department_id IN (SELECT department_id FROM departments WHERE location = '東京');
 ```
 
 A) 相関サブクエリ  

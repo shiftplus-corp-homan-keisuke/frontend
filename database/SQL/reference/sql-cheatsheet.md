@@ -480,7 +480,7 @@ SELECT * FROM employees FORCE INDEX (idx_dept_salary) WHERE department_id = 10;
 
 ```sql
 -- 文字列結合
-SELECT CONCAT(first_name, ' ', last_name) as full_name FROM employees;
+SELECT CONCAT(first_name, ' ', last_name) as CONCAT(first_name, ' ', last_name) as full_name FROM employees;
 
 -- 文字列長
 SELECT LENGTH(first_name) FROM employees;

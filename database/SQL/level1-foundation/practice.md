@@ -105,10 +105,10 @@
 従業員テーブルを部署ID でグループ化し、従業員数が3人以上の部署のみを表示してください。
 
 ### 問題3-5: HAVING句と集約関数
-従業員テーブルを部署ID でグループ化し、平均給与が7000以上の部署の部署ID と平均給与を取得してください。
+従業員テーブルを部署ID でグループ化し、平均給与が700000以上の部署の部署ID と平均給与を取得してください。
 
 ### 問題3-6: WHEREとHAVINGの組み合わせ
-従業員テーブルから給与が5000以上の従業員のみを対象として、部署ID でグループ化し、従業員数が2人以上の部署を取得してください。
+従業員テーブルから給与が500000以上の従業員のみを対象として、部署ID でグループ化し、従業員数が2人以上の部署を取得してください。
 
 ### 問題3-7: 複数列でのGROUP BY
 従業員テーブルをjob_title でグループ化し、各職種の従業員数と平均給与を取得してください。
@@ -121,7 +121,7 @@
 従業員テーブル（employees）と部署テーブル（departments）を結合し、従業員の名前、姓、部署名を取得してください。
 
 ### 問題4-2: 結合と条件指定
-従業員テーブルと部署テーブルを結合し、IT部署（department_name = 'IT'）の従業員の名前、姓、部署名を取得してください。
+従業員テーブルと部署テーブルを結合し、開発部（department_name = '開発部'）の従業員の名前、姓、部署名を取得してください。
 
 ### 問題4-3: 結合と並び替え
 従業員テーブルと部署テーブルを結合し、全ての従業員の名前、姓、部署名を部署名の昇順で取得してください。
@@ -133,7 +133,7 @@
 従業員テーブルと部署テーブルを結合し、各部署の従業員数を部署名と共に取得してください。
 
 ### 問題4-6: 結合と条件付き集約
-従業員テーブルと部署テーブルを結合し、各部署の平均給与を求め、平均給与が8000以上の部署のみを部署名と共に取得してください。
+従業員テーブルと部署テーブルを結合し、各部署の平均給与を求め、平均給与が700000以上の部署のみを部署名と共に取得してください。
 
 ---
 
@@ -147,19 +147,19 @@
 - email: 'tyamada@company.com'
 - hire_date: '2022-04-01'
 - job_title: 'エンジニア'
-- salary: 5500
+- salary: 550000
 - department_id: 60
 
 ### 問題5-2: INSERT文（複数行）
 従業員テーブルに以下の2名の従業員を一度に追加してください：
-1. employee_id: 201, first_name: 'Hanako', last_name: 'Sato', email: 'hsato@company.com', hire_date: '2022-04-02', job_title: '経理担当', salary: 4500, department_id: 100
-2. employee_id: 202, first_name: 'Jiro', last_name: 'Suzuki', email: 'jsuzuki@company.com', hire_date: '2022-04-03', job_title: 'エンジニア', salary: 5000, department_id: 60
+1. employee_id: 201, first_name: 'Hanako', last_name: 'Sato', email: 'hsato@company.com', hire_date: '2022-04-02', job_title: '経理担当', salary: 450000, department_id: 20
+2. employee_id: 202, first_name: 'Jiro', last_name: 'Suzuki', email: 'jsuzuki@company.com', hire_date: '2022-04-03', job_title: 'エンジニア', salary: 500000, department_id: 10
 
 ### 問題5-3: UPDATE文（単一行）
-従業員ID が200の従業員の給与を6000に更新してください。
+従業員ID が200の従業員の給与を600000に更新してください。
 
 ### 問題5-4: UPDATE文（複数列）
-従業員ID が201の従業員の給与を5000に、部署ID を90に更新してください。
+従業員ID が201の従業員の給与を500000に、部署ID を30に更新してください。
 
 ### 問題5-5: UPDATE文（条件付き）
 部署ID が60の全ての従業員の給与を10%増加させてください。
@@ -191,9 +191,9 @@ IT部署の従業員の中で、給与が部署内平均以上の従業員の名
 
 ### 問題6-6: データ操作の組み合わせ
 以下の操作を順番に実行してください：
-1. 新しい部署「Research」（department_id: 120, location: '東京'）を追加
-2. この部署に新しい従業員「Saburo Tanaka」（employee_id: 203, email: stanaka@company.com, hire_date: 2022-04-04, job_title: 'エンジニア', salary: 5800）を追加
-3. この従業員の給与を6200に更新
+1. 新しい部署「Research」（department_id: 60, location: '名古屋'）を追加
+2. この部署に新しい従業員「Saburo Tanaka」（employee_id: 203, email: stanaka@company.com, hire_date: 2022-04-04, job_title: 'エンジニア', salary: 580000）を追加
+3. この従業員の給与を620000に更新
 4. Research部署の従業員数と平均給与を確認
 
 ---

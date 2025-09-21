@@ -103,7 +103,7 @@ RANGE BETWEEN start_point AND end_point
 WITH monthly_sales AS (
     SELECT 
         DATE_TRUNC('month', order_date) as month,
-        SUM(amount) as total_sales
+        SUM(total_amount) as total_sales
     FROM orders
     GROUP BY DATE_TRUNC('month', order_date)
 )
@@ -125,7 +125,7 @@ ORDER BY month;
 SELECT 
     order_date,
     amount,
-    AVG(amount) OVER (
+    AVG(total_amount) OVER (
         ORDER BY order_date 
         ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
     ) as moving_avg_7days,
@@ -151,7 +151,7 @@ SELECT
 FROM (
     SELECT 
         customer_id,
-        SUM(amount) as total_sales
+        SUM(total_amount) as total_sales
     FROM orders
     GROUP BY customer_id
 ) customer_sales
@@ -404,9 +404,9 @@ monthly_sales AS (
     SELECT 
         DATE_TRUNC('month', order_date) as month,
         product_category,
-        SUM(amount) as total_sales,
+        SUM(total_amount) as total_sales,
         COUNT(*) as order_count,
-        AVG(amount) as avg_order_value
+        AVG(total_amount) as avg_order_value
     FROM orders o
     INNER JOIN products p ON o.product_id = p.product_id
     GROUP BY DATE_TRUNC('month', order_date), product_category
@@ -478,8 +478,8 @@ customer_metrics AS (
     SELECT 
         customer_id,
         COUNT(*) as total_orders,
-        SUM(amount) as total_spent,
-        AVG(amount) as avg_order_value,
+        SUM(total_amount) as total_spent,
+        AVG(total_amount) as avg_order_value,
         MAX(order_date) as last_order_date,
         MIN(order_date) as first_order_date,
         EXTRACT(DAYS FROM MAX(order_date) - MIN(order_date)) as customer_lifespan_days
@@ -771,7 +771,7 @@ BEGIN
         SELECT 
             o.order_id,
             o.customer_id,
-            o.amount,
+            o.total_amount,
             p.product_id,
             p.product_name,
             p.category
@@ -782,9 +782,9 @@ BEGIN
     ),
     summary_stats AS (
         SELECT 
-            SUM(amount) as total_sales,
+            SUM(total_amount) as total_sales,
             COUNT(*) as total_orders,
-            AVG(amount) as avg_order_value,
+            AVG(total_amount) as avg_order_value,
             COUNT(DISTINCT customer_id) as unique_customers
         FROM sales_data
     ),
@@ -792,10 +792,10 @@ BEGIN
         SELECT 
             product_id,
             product_name,
-            SUM(amount) as product_sales
+            SUM(total_amount) as product_sales
         FROM sales_data
         GROUP BY product_id, product_name
-        ORDER BY SUM(amount) DESC
+        ORDER BY SUM(total_amount) DESC
         LIMIT 1
     )
     SELECT 
@@ -844,9 +844,9 @@ BEGIN
     LOOP
         -- 顧客の統計情報を計算
         SELECT 
-            COALESCE(SUM(amount), 0),
+            COALESCE(SUM(total_amount), 0),
             COUNT(*),
-            COALESCE(AVG(amount), 0),
+            COALESCE(AVG(total_amount), 0),
             COALESCE(EXTRACT(DAYS FROM CURRENT_DATE - MAX(order_date)), 999)
         INTO v_total_spent, v_total_orders, v_avg_order_value, v_last_order_days
         FROM orders 
@@ -1089,8 +1089,8 @@ BEGIN
     -- 顧客統計を再計算
     SELECT 
         COUNT(*),
-        COALESCE(SUM(amount), 0),
-        COALESCE(AVG(amount), 0),
+        COALESCE(SUM(total_amount), 0),
+        COALESCE(AVG(total_amount), 0),
         MAX(order_date)
     INTO v_total_orders, v_total_spent, v_avg_order_value, v_last_order_date
     FROM orders 
@@ -1526,14 +1526,14 @@ SELECT ...;
 -- 元のクエリ（遅い）
 SELECT 
     customer_id,
-    SUM(amount) as total_sales,
+    SUM(total_amount) as total_sales,
     COUNT(*) as order_count
 FROM orders 
 WHERE order_date BETWEEN '2022-01-01' AND '2022-12-31'
   AND status = 'COMPLETED'
   AND amount >= 1000
 GROUP BY customer_id
-HAVING SUM(amount) >= 10000
+HAVING SUM(total_amount) >= 10000
 ORDER BY total_sales DESC;
 
 -- 最適化のためのインデックス作成
@@ -1610,8 +1610,8 @@ $$;
 -- 【悪い例】相関サブクエリ
 SELECT 
     c.customer_id,
-    c.customer_name,
-    (SELECT SUM(amount) FROM orders o WHERE o.customer_id = c.customer_id) as total_sales
+    c.contact_name,
+    (SELECT SUM(total_amount) FROM orders o WHERE o.customer_id = c.customer_id) as total_sales
 FROM customers c
 WHERE (SELECT COUNT(*) FROM orders o WHERE o.customer_id = c.customer_id) > 5;
 
@@ -1619,7 +1619,7 @@ WHERE (SELECT COUNT(*) FROM orders o WHERE o.customer_id = c.customer_id) > 5;
 WITH customer_stats AS (
     SELECT 
         customer_id,
-        SUM(amount) as total_sales,
+        SUM(total_amount) as total_sales,
         COUNT(*) as order_count
     FROM orders
     GROUP BY customer_id
@@ -1627,24 +1627,24 @@ WITH customer_stats AS (
 )
 SELECT 
     c.customer_id,
-    c.customer_name,
+    c.contact_name,
     cs.total_sales
 FROM customers c
 INNER JOIN customer_stats cs ON c.customer_id = cs.customer_id;
 
 -- 【悪い例】DISTINCT with ORDER BY
-SELECT DISTINCT customer_id, customer_name
+SELECT DISTINCT customer_id, contact_name
 FROM customers c
 INNER JOIN orders o ON c.customer_id = o.customer_id
-ORDER BY customer_name;
+ORDER BY contact_name;
 
 -- 【良い例】EXISTS
-SELECT customer_id, customer_name
+SELECT customer_id, contact_name
 FROM customers c
 WHERE EXISTS (
     SELECT 1 FROM orders o WHERE o.customer_id = c.customer_id
 )
-ORDER BY customer_name;
+ORDER BY contact_name;
 
 -- 【悪い例】関数をWHERE句で使用
 SELECT * FROM orders 
@@ -1652,8 +1652,8 @@ WHERE EXTRACT(YEAR FROM order_date) = 2022;
 
 -- 【良い例】範囲検索
 SELECT * FROM orders 
-WHERE order_date >= '2022-01-01' 
-  AND order_date < '2025-01-01';
+WHERE order_date >= '2024-01-01'
+  AND order_date < '2024-12-31';
 ```
 
 #### 例4: 統計情報とヒント
@@ -1679,11 +1679,11 @@ ALTER TABLE orders ALTER COLUMN customer_id SET STATISTICS 1000;
 -- クエリヒント（PostgreSQL拡張）
 /*+ HashJoin(o c) */
 SELECT /*+ USE_HASH(o c) */ 
-    c.customer_name,
-    SUM(o.amount)
+    c.contact_name,
+    SUM(o.total_amount)
 FROM orders o
 INNER JOIN customers c ON o.customer_id = c.customer_id
-GROUP BY c.customer_name;
+GROUP BY c.contact_name;
 ```
 
 ### 試験ポイント
@@ -2009,7 +2009,7 @@ SELECT
         ELSE NULL
     END as yoy_growth_rate
 FROM sales_with_comparison
-WHERE year >= 2023
+WHERE year >= 2022
 ORDER BY year, month;
 ```
 
@@ -2020,11 +2020,11 @@ WITH RECURSIVE employee_hierarchy AS (
     -- 管理者（上司がいない）
     SELECT 
         employee_id,
-        employee_name,
+        CONCAT(first_name, ' ', last_name) as employee_name,
         manager_id,
         0 as level,
         ARRAY[employee_id] as path,
-        employee_name as hierarchy_path
+        CONCAT(first_name, ' ', last_name) as employee_name as hierarchy_path
     FROM employees
     WHERE manager_id IS NULL
     
@@ -2033,18 +2033,18 @@ WITH RECURSIVE employee_hierarchy AS (
     -- 部下
     SELECT 
         e.employee_id,
-        e.employee_name,
+        e.CONCAT(first_name, ' ', last_name) as employee_name,
         e.manager_id,
         eh.level + 1,
         eh.path || e.employee_id,
-        eh.hierarchy_path || ' > ' || e.employee_name
+        eh.hierarchy_path || ' > ' || e.CONCAT(first_name, ' ', last_name) as employee_name
     FROM employees e
     INNER JOIN employee_hierarchy eh ON e.manager_id = eh.employee_id
     WHERE NOT (e.employee_id = ANY(eh.path)) -- 循環参照防止
 )
 SELECT 
     employee_id,
-    REPEAT('  ', level) || employee_name as indented_name,
+    REPEAT('  ', level) || CONCAT(first_name, ' ', last_name) as employee_name as indented_name,
     level,
     hierarchy_path,
     array_length(path, 1) as hierarchy_depth
@@ -2058,22 +2058,22 @@ ORDER BY path;
 
 -- 【最適化前】
 SELECT 
-    c.customer_name,
+    c.contact_name,
     COUNT(o.order_id) as order_count,
     SUM(o.total_amount) as total_spent
 FROM customers c
 LEFT JOIN orders o ON c.customer_id = o.customer_id
-WHERE c.registration_date >= '2023-01-01'
-  AND (o.order_date IS NULL OR o.order_date >= '2023-01-01')
-GROUP BY c.customer_id, c.customer_name
+WHERE c.registration_date >= '2022-01-01'
+  AND (o.order_date IS NULL OR o.order_date >= '2024-01-01')
+GROUP BY c.customer_id, c.contact_name
 HAVING COUNT(o.order_id) >= 2
 ORDER BY total_spent DESC;
 
 -- 【最適化後】
 WITH active_customers AS (
-    SELECT customer_id, customer_name
+    SELECT customer_id, contact_name
     FROM customers
-    WHERE registration_date >= '2023-01-01'
+    WHERE registration_date >= '2022-01-01'
 ),
 customer_orders AS (
     SELECT 
@@ -2081,12 +2081,12 @@ customer_orders AS (
         COUNT(*) as order_count,
         SUM(total_amount) as total_spent
     FROM orders
-    WHERE order_date >= '2023-01-01'
+    WHERE order_date >= '2024-01-01'
     GROUP BY customer_id
     HAVING COUNT(*) >= 5
 )
 SELECT 
-    ac.customer_name,
+    ac.contact_name,
     COALESCE(co.order_count, 0) as order_count,
     COALESCE(co.total_spent, 0) as total_spent
 FROM active_customers ac
@@ -2139,8 +2139,8 @@ SELECT
 FROM products p
 JOIN categories c ON p.category_id = c.category_id
 LEFT JOIN reviews r ON p.product_id = r.product_id
-WHERE p.created_at >= '2023-01-01'
-  AND r.created_at >= '2023-01-01'
+WHERE p.created_at >= '2022-01-01'
+  AND r.created_at >= '2022-01-01'
 GROUP BY p.product_id, p.product_name, c.category_name
 HAVING COUNT(r.review_id) >= 10
 ORDER BY avg_rating DESC;

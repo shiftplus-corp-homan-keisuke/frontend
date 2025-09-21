@@ -341,8 +341,8 @@ SELECT
     last_name,
     salary,
     CASE 
-        WHEN salary >= 10000 THEN '高給'
-        WHEN salary >= 5000 THEN '中給'
+        WHEN salary >= 800000 THEN '高給'
+        WHEN salary >= 500000 THEN '中給'
         ELSE '低給'
     END as salary_level
 FROM employees;
@@ -396,8 +396,8 @@ SELECT
     department_id,
     COUNT(*) as total_employees,
     SUM(CASE WHEN salary >= 700000 THEN 1 ELSE 0 END) as high_salary_count,
-    SUM(CASE WHEN salary >= 5000 AND salary < 8000 THEN 1 ELSE 0 END) as mid_salary_count,
-    SUM(CASE WHEN salary < 5000 THEN 1 ELSE 0 END) as low_salary_count
+    SUM(CASE WHEN salary >= 500000 AND salary < 700000 THEN 1 ELSE 0 END) as mid_salary_count,
+    SUM(CASE WHEN salary < 500000 THEN 1 ELSE 0 END) as low_salary_count
 FROM employees
 WHERE department_id IS NOT NULL
 GROUP BY department_id;
@@ -503,8 +503,8 @@ SELECT
     END as commission,
     salary + (salary * COALESCE(commission_pct, 0)) as total_income,
     CASE 
-        WHEN salary + (salary * COALESCE(commission_pct, 0)) >= 10000 THEN '高'
-        WHEN salary + (salary * COALESCE(commission_pct, 0)) >= 5000 THEN '中'
+        WHEN salary + (salary * COALESCE(commission_pct, 0)) >= 800000 THEN '高'
+        WHEN salary + (salary * COALESCE(commission_pct, 0)) >= 500000 THEN '中'
         ELSE '低'
     END as income_level
 FROM employees;
@@ -841,7 +841,7 @@ GROUP BY d.department_id, d.department_name;
 
 ### 問題5-3: 条件付きビューの作成
 
-**問題:** 給与が8000以上の高給取り従業員のみを表示するビューを作成してください。
+**問題:** 給与が700000以上の高給取り従業員のみを表示するビューを作成してください。
 
 **解答:**
 ```sql

@@ -52,7 +52,7 @@ C) `SELECT employee_id, first_name, last_name, salary FROM employees SORT BY sal
 D) `SELECT employee_id, first_name, last_name, salary FROM employees ORDER salary DESC;`
 
 ### 問題2（WHERE句）
-従業員テーブルから、部署ID（department_id）が60で、かつ給与が5000以上の従業員の情報を取得するSQL文として正しいものはどれですか。
+従業員テーブルから、部署ID（department_id）が10で、かつ給与が500000以上の従業員の情報を取得するSQL文として正しいものはどれですか。
 
 **選択肢:**
 A) `SELECT * FROM employees WHERE department_id = 10 OR salary >= 500000;`
@@ -109,19 +109,19 @@ D) 上記すべて正しい
 従業員テーブルに新しい従業員を追加するSQL文として正しいものはどれですか。
 
 **選択肢:**
-A) `INSERT employees VALUES (300, 'John', 'Doe', 'jdoe@company.com', '2022-01-01', 'IT_PROG', 5000, 60);`
-B) `INSERT INTO employees (employee_id, first_name, last_name, email, hire_date, job_title, salary, department_id) VALUES (300, 'John', 'Doe', 'jdoe@company.com', '2022-01-01', 'エンジニア', 5000, 60);`
-C) `INSERT employees SET employee_id=600, first_name='John', last_name='Doe';`
+A) `INSERT employees VALUES (300, 'John', 'Doe', 'jdoe@company.com', '2022-01-01', 'IT_PROG', 500000, 10);`
+B) `INSERT INTO employees (employee_id, first_name, last_name, email, hire_date, job_title, salary, department_id) VALUES (300, 'John', 'Doe', 'jdoe@company.com', '2022-01-01', 'エンジニア', 500000, 10);`
+C) `INSERT employees SET employee_id=300, first_name='John', last_name='Doe';`
 D) `ADD TO employees VALUES (300, 'John', 'Doe', 'jdoe@company.com');`
 
 ### 問題9（UPDATE文）
-従業員ID が300の従業員の給与を6000に更新するSQL文として正しいものはどれですか。
+従業員ID が300の従業員の給与を600000に更新するSQL文として正しいものはどれですか。
 
 **選択肢:**
-A) `UPDATE employees SET salary = 6000 WHERE employee_id = 100;`
-B) `MODIFY employees SET salary = 6000 WHERE employee_id = 100;`
-C) `CHANGE employees SET salary = 6000 WHERE employee_id = 100;`
-D) `ALTER employees SET salary = 6000 WHERE employee_id = 100;`
+A) `UPDATE employees SET salary = 600000 WHERE employee_id = 300;`
+B) `MODIFY employees SET salary = 600000 WHERE employee_id = 300;`
+C) `CHANGE employees SET salary = 600000 WHERE employee_id = 300;`
+D) `ALTER employees SET salary = 600000 WHERE employee_id = 300;`
 
 ### 問題10（DELETE文）
 従業員テーブルから従業員ID が300の従業員を削除するSQL文として正しいものはどれですか。
@@ -139,7 +139,7 @@ SELECT department_id, AVG(salary)
 FROM employees
 WHERE salary >= 450000
 GROUP BY department_id
-HAVING AVG(salary) >= 5000
+HAVING AVG(salary) >= 500000
 ORDER BY AVG(salary) DESC;
 ```
 
@@ -197,12 +197,12 @@ C) `SELECT * FROM employees WHERE first_name MATCH 'A%n';`
 D) `SELECT * FROM employees WHERE first_name CONTAINS 'A%n';`
 
 ### 問題15（BETWEEN演算子）
-従業員テーブルから、給与が4000以上8000以下の従業員を取得するSQL文として正しいものはどれですか。
+従業員テーブルから、給与が450000以上700000以下の従業員を取得するSQL文として正しいものはどれですか。
 
 **選択肢:**
 A) `SELECT * FROM employees WHERE salary BETWEEN 450000 AND 700000;`
 B) `SELECT * FROM employees WHERE salary >= 450000 AND salary <= 700000;`
-C) `SELECT * FROM employees WHERE salary FROM 4000 TO 8000;`
+C) `SELECT * FROM employees WHERE salary FROM 450000 TO 700000;`
 D) AとBの両方が正しい
 
 ### 問題16（複数テーブル結合）
@@ -273,7 +273,7 @@ D) BEGINは使用できない
 **選択肢:**
 A) `SELECT * FROM employees WHERE salary > 500000;`
 B) `SELECT employee_id, first_name, last_name FROM employees WHERE salary > 500000;`
-C) `SELECT * FROM employees;`（アプリケーション側で給与5000以上をフィルタ）
+C) `SELECT * FROM employees;`（アプリケーション側で給与500000以上をフィルタ）
 D) パフォーマンスに差はない
 
 ---

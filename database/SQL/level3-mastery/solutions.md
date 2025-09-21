@@ -24,7 +24,7 @@ WITH monthly_sales AS (
     SELECT 
         customer_id,
         DATE_TRUNC('month', sale_date) as sale_month,
-        SUM(amount) as monthly_amount
+        SUM(sales_amount) as monthly_amount
     FROM sales
     GROUP BY customer_id, DATE_TRUNC('month', sale_date)
 )
@@ -78,7 +78,7 @@ WITH daily_product_sales AS (
     SELECT 
         product_id,
         sale_date,
-        SUM(amount) as daily_amount
+        SUM(sales_amount) as daily_amount
     FROM sales
     GROUP BY product_id, sale_date
 )
@@ -123,8 +123,8 @@ FROM (
     SELECT 
         product_id,
         sale_date,
-        SUM(amount) as daily_amount,
-        LEAD(SUM(amount), 1) OVER (
+        SUM(sales_amount) as daily_amount,
+        LEAD(SUM(sales_amount), 1) OVER (
             PARTITION BY product_id 
             ORDER BY sale_date
         ) as next_day_amount
@@ -195,7 +195,7 @@ LAST_VALUE(amount) OVER (
 WITH customer_annual_sales AS (
     SELECT 
         customer_id,
-        SUM(amount) as annual_sales
+        SUM(sales_amount) as annual_sales
     FROM sales
     WHERE EXTRACT(YEAR FROM sale_date) = 2022
     GROUP BY customer_id
@@ -237,7 +237,7 @@ WITH daily_product_sales AS (
     SELECT 
         product_id,
         sale_date,
-        SUM(amount) as daily_sales
+        SUM(sales_amount) as daily_sales
     FROM sales
     GROUP BY product_id, sale_date
 )
@@ -268,7 +268,7 @@ WITH daily_sales AS (
     SELECT 
         product_id,
         sale_date,
-        SUM(amount) as daily_sales,
+        SUM(sales_amount) as daily_sales,
         ROW_NUMBER() OVER (PARTITION BY product_id ORDER BY sale_date) as rn
     FROM sales
     GROUP BY product_id, sale_date
@@ -414,7 +414,7 @@ WITH RECURSIVE manager_hierarchy AS (
     -- アンカー部分: 指定従業員
     SELECT 
         employee_id,
-        employee_name,
+        CONCAT(first_name, ' ', last_name) as employee_name,
         manager_id,
         0 as level
     FROM employees
@@ -425,7 +425,7 @@ WITH RECURSIVE manager_hierarchy AS (
     -- 再帰部分: 上司を辿る
     SELECT 
         e.employee_id,
-        e.employee_name,
+        e.CONCAT(first_name, ' ', last_name) as employee_name,
         e.manager_id,
         mh.level + 1
     FROM employees e
@@ -434,7 +434,7 @@ WITH RECURSIVE manager_hierarchy AS (
 )
 SELECT 
     employee_id,
-    employee_name,
+    CONCAT(first_name, ' ', last_name) as employee_name,
     level,
     CASE level
         WHEN 0 THEN '本人'
@@ -484,7 +484,7 @@ manager_stats AS (
 )
 SELECT 
     e.employee_id,
-    e.employee_name,
+    e.CONCAT(first_name, ' ', last_name) as employee_name,
     COALESCE(ms.direct_subordinates, 0) as direct_subordinates,
     COALESCE(ms.total_subordinates, 0) as total_subordinates
 FROM employees e
@@ -837,7 +837,7 @@ BEGIN
             oi.product_id,
             p.product_name,
             p.category,
-            oi.quantity * oi.unit_price as item_amount
+            oi.quantity * oi.unit_unit_price as item_amount
         FROM orders o
         INNER JOIN order_items oi ON o.order_id = oi.order_id
         INNER JOIN products p ON oi.product_id = p.product_id
@@ -1017,7 +1017,7 @@ SELECT
     c.company_name,
     p.product_name,
     sr.quantity,
-    sr.unit_price,
+    sr.unit_unit_price,
     sr.sales_amount
 FROM sales_records sr
 JOIN customers c ON sr.customer_id = c.customer_id
@@ -1533,8 +1533,8 @@ CREATE TABLE products (
     product_name VARCHAR(255) NOT NULL,
     description TEXT,
     short_description VARCHAR(500),
-    price DECIMAL(10,2) NOT NULL CHECK (price >= 0),
-    cost_price DECIMAL(10,2) CHECK (cost_price >= 0),
+    unit_price DECIMAL(10,2) NOT NULL CHECK (unit_price >= 0),
+    cost_unit_price DECIMAL(10,2) CHECK (cost_unit_price >= 0),
     weight DECIMAL(8,3),
     dimensions JSONB, -- {"length": 10, "width": 5, "height": 3}
     stock_quantity INT DEFAULT 0 CHECK (stock_quantity >= 0),
@@ -1598,8 +1598,8 @@ CREATE TABLE order_items (
     order_id INT REFERENCES orders(order_id) ON DELETE CASCADE,
     product_id INT REFERENCES products(product_id),
     quantity INT NOT NULL CHECK (quantity > 0),
-    unit_price DECIMAL(10,2) NOT NULL CHECK (unit_price >= 0),
-    total_price DECIMAL(12,2) NOT NULL CHECK (total_price >= 0),
+    unit_unit_price DECIMAL(10,2) NOT NULL CHECK (unit_unit_price >= 0),
+    total_unit_price DECIMAL(12,2) NOT NULL CHECK (total_unit_price >= 0),
     product_snapshot JSONB, -- 注文時の商品情報
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -1637,7 +1637,7 @@ ALTER TABLE orders ADD CONSTRAINT chk_total_calculation
 CHECK (total_amount = subtotal + tax_amount + shipping_amount - discount_amount);
 
 ALTER TABLE order_items ADD CONSTRAINT chk_item_total 
-CHECK (total_price = quantity * unit_price);
+CHECK (total_unit_price = quantity * unit_unit_price);
 
 -- 統計更新トリガー
 CREATE OR REPLACE FUNCTION update_customer_stats()
@@ -1703,7 +1703,7 @@ monthly_category_sales AS (
     SELECT 
         p.category,
         DATE_TRUNC('month', o.order_date) as sale_month,
-        SUM(oi.total_price) as monthly_sales
+        SUM(oi.total_unit_price) as monthly_sales
     FROM orders o
     INNER JOIN order_items oi ON o.order_id = oi.order_id
     INNER JOIN products p ON oi.product_id = p.product_id
@@ -1895,7 +1895,7 @@ BEGIN
         FROM (
             SELECT 
                 p.category,
-                SUM(oi.total_price) as category_revenue
+                SUM(oi.total_unit_price) as category_revenue
             FROM order_items oi
             INNER JOIN products p ON oi.product_id = p.product_id
             INNER JOIN orders o ON oi.order_id = o.order_id

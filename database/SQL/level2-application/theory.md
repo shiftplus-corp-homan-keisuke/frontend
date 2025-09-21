@@ -188,8 +188,8 @@ END
 -- 給与レベルの分類
 SELECT employee_id, first_name, salary,
     CASE 
-        WHEN salary >= 10000 THEN '高給'
-        WHEN salary >= 5000 THEN '中給'
+        WHEN salary >= 800000 THEN '高給'
+        WHEN salary >= 500000 THEN '中給'
         ELSE '低給'
     END as salary_level
 FROM employees;
@@ -213,15 +213,15 @@ FROM employees;
 -- 条件別集計
 SELECT 
     COUNT(*) as total_employees,
-    COUNT(CASE WHEN salary >= 5000 THEN 1 END) as high_salary_count,
-    COUNT(CASE WHEN salary < 5000 THEN 1 END) as low_salary_count
+    COUNT(CASE WHEN salary >= 500000 THEN 1 END) as high_salary_count,
+    COUNT(CASE WHEN salary < 500000 THEN 1 END) as low_salary_count
 FROM employees;
 
 -- 部署別給与レベル集計
 SELECT department_id,
-    SUM(CASE WHEN salary >= 10000 THEN 1 ELSE 0 END) as high_salary,
-    SUM(CASE WHEN salary BETWEEN 5000 AND 9999 THEN 1 ELSE 0 END) as mid_salary,
-    SUM(CASE WHEN salary < 5000 THEN 1 ELSE 0 END) as low_salary
+    SUM(CASE WHEN salary >= 800000 THEN 1 ELSE 0 END) as high_salary,
+    SUM(CASE WHEN salary BETWEEN 500000 AND 799999 THEN 1 ELSE 0 END) as mid_salary,
+    SUM(CASE WHEN salary < 500000 THEN 1 ELSE 0 END) as low_salary
 FROM employees
 GROUP BY department_id;
 ```
@@ -403,7 +403,7 @@ GROUP BY department_name;
 CREATE OR REPLACE VIEW employee_summary AS
 SELECT 
     employee_id,
-    CONCAT(first_name, ' ', last_name) as full_name,
+    CONCAT(first_name, ' ', last_name) as CONCAT(first_name, ' ', last_name) as full_name,
     salary
 FROM employees;
 
@@ -566,7 +566,7 @@ DROP INDEX idx_employee_last_name;
 
 2. 各部署で給与が最も高い従業員を相関サブクエリを使って取得するSQL文を記述してください。
 
-3. 従業員の給与を「高給（8000以上）」「中給（5000以上8000未満）」「低給（5000未満）」に分類するCASE文を使ったSQL文を記述してください。
+3. 従業員の給与を「高給（700000以上）」「中給（500000以上700000未満）」「低給（500000未満）」に分類するCASE文を使ったSQL文を記述してください。
 
 4. 部署別に給与の高い順でランキングを付けるウィンドウ関数を使ったSQL文を記述してください。
 

@@ -48,11 +48,11 @@ WHERE 条件;
 SELECT * FROM employees WHERE department_id = 10;
 
 -- 給与が5000以上の従業員を取得
-SELECT * FROM employees WHERE salary >= 5000;
+SELECT * FROM employees WHERE salary >= 500000;
 
 -- 複数条件の組み合わせ
 SELECT * FROM employees
-WHERE department_id = 10 AND salary >= 5000;
+WHERE department_id = 10 AND salary >= 500000;
 ```
 
 ### 1.3 ORDER BY句による並び替え
@@ -195,7 +195,7 @@ HAVING AVG(salary) >= 6000;
 -- WHERE句とHAVING句の組み合わせ
 SELECT department_id, AVG(salary)
 FROM employees
-WHERE salary >= 3000  -- 個別の行をフィルタ
+WHERE salary >= 450000  -- 個別の行をフィルタ
 GROUP BY department_id
 HAVING AVG(salary) >= 5000;  -- グループをフィルタ
 ```
@@ -254,13 +254,13 @@ VALUES (値1, 値2, ...);
 ```sql
 -- 新しい従業員を追加
 INSERT INTO employees (employee_id, first_name, last_name, email, hire_date)
-VALUES (1001, '太郎', '田中', 'tanaka@example.com', '2024-01-01');
+VALUES (1001, '太郎', '田中', 'tanaka@example.com', '2022-01-01');
 
 -- 複数行を一度に挿入
 INSERT INTO employees (employee_id, first_name, last_name, email, hire_date)
 VALUES
-    (1002, '花子', '佐藤', 'sato@example.com', '2024-01-02'),
-    (1003, '次郎', '鈴木', 'suzuki@example.com', '2024-01-03');
+    (1002, '花子', '佐藤', 'sato@example.com', '2022-01-02'),
+    (1003, '次郎', '鈴木', 'suzuki@example.com', '2022-01-03');
 ```
 
 ### 5.2 UPDATE文（データの更新）
@@ -305,7 +305,7 @@ WHERE employee_id = 101;
 
 -- 条件に合致する複数行を削除
 DELETE FROM employees
-WHERE department_id = 30 AND salary < 3000;
+WHERE department_id = 30 AND salary < 450000;
 ```
 
 ## 試験ポイント
@@ -342,7 +342,7 @@ WHERE department_id = 30 AND salary < 3000;
 
 3. 従業員テーブル（employees）と部署テーブル（departments）を結合して、従業員名と所属部署名を表示するSQL文を記述してください。
 
-4. 新しい従業員（ID: 2001, 名前: 山田太郎, メール: yamada@example.com, 入社日: 2024-04-01）を追加するSQL文を記述してください。
+4. 新しい従業員（ID: 2001, 名前: 山田太郎, メール: yamada@example.com, 入社日: 2022-04-01）を追加するSQL文を記述してください。
 
 5. 従業員ID 2001の給与を7000に更新するSQL文を記述してください。
 

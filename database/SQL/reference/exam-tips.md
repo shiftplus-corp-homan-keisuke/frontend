@@ -141,7 +141,7 @@ SELECT
     sales_amount,
     RANK() OVER (PARTITION BY department_id ORDER BY sales_amount DESC) as rank
 FROM sales_data
-WHERE sales_date BETWEEN '2024-01-01' AND '2024-12-31';
+WHERE sales_date BETWEEN '2022-01-01' AND '2022-12-31';
 ```
 
 **攻略ポイント**:

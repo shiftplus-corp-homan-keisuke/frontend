@@ -104,7 +104,7 @@ HAVING COUNT(*) >= 3;
 ```sql
 -- INSERT（挿入）
 INSERT INTO employees (employee_id, first_name, last_name, email, hire_date, job_title, salary, department_id)
-VALUES (999, '太郎', '新入', 'shinnyu.taro@company.com', '2024-04-01', '新入社員', 300000, 10);
+VALUES (999, '太郎', '新入', 'shinnyu.taro@company.com', '2022-04-01', '新入社員', 300000, 10);
 
 -- UPDATE（更新）
 UPDATE employees 
@@ -113,7 +113,7 @@ WHERE department_id = 10;
 
 -- DELETE（削除）
 DELETE FROM employees 
-WHERE employee_id = 999;
+WHERE employee_id = 100;
 ```
 
 ## 🔗 結合（Level 2）

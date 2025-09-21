@@ -145,15 +145,15 @@
 - first_name: 'Taro'
 - last_name: 'Yamada'
 - email: 'tyamada@company.com'
-- hire_date: '2024-04-01'
+- hire_date: '2022-04-01'
 - job_title: 'エンジニア'
 - salary: 5500
 - department_id: 60
 
 ### 問題5-2: INSERT文（複数行）
 従業員テーブルに以下の2名の従業員を一度に追加してください：
-1. employee_id: 201, first_name: 'Hanako', last_name: 'Sato', email: 'hsato@company.com', hire_date: '2024-04-02', job_title: '経理担当', salary: 4500, department_id: 100
-2. employee_id: 202, first_name: 'Jiro', last_name: 'Suzuki', email: 'jsuzuki@company.com', hire_date: '2024-04-03', job_title: 'エンジニア', salary: 5000, department_id: 60
+1. employee_id: 201, first_name: 'Hanako', last_name: 'Sato', email: 'hsato@company.com', hire_date: '2022-04-02', job_title: '経理担当', salary: 4500, department_id: 100
+2. employee_id: 202, first_name: 'Jiro', last_name: 'Suzuki', email: 'jsuzuki@company.com', hire_date: '2022-04-03', job_title: 'エンジニア', salary: 5000, department_id: 60
 
 ### 問題5-3: UPDATE文（単一行）
 従業員ID が200の従業員の給与を6000に更新してください。
@@ -192,7 +192,7 @@ IT部署の従業員の中で、給与が部署内平均以上の従業員の名
 ### 問題6-6: データ操作の組み合わせ
 以下の操作を順番に実行してください：
 1. 新しい部署「Research」（department_id: 120, location: '東京'）を追加
-2. この部署に新しい従業員「Saburo Tanaka」（employee_id: 203, email: stanaka@company.com, hire_date: 2024-04-04, job_title: 'エンジニア', salary: 5800）を追加
+2. この部署に新しい従業員「Saburo Tanaka」（employee_id: 203, email: stanaka@company.com, hire_date: 2022-04-04, job_title: 'エンジニア', salary: 5800）を追加
 3. この従業員の給与を6200に更新
 4. Research部署の従業員数と平均給与を確認
 

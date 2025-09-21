@@ -107,7 +107,7 @@ D) 両方とも同順位を考慮しない
 
 ```sql
 CREATE VIEW high_salary_view AS
-SELECT * FROM employees WHERE salary >= 8000;
+SELECT * FROM employees WHERE salary >= 700000;
 ```
 
 A) ビューは物理的にデータを保存する  
@@ -172,7 +172,7 @@ D) インデックスが自動的に作成される
 （last_nameにインデックスが作成されている場合）
 
 A) `SELECT * FROM employees WHERE UPPER(last_name) = 'SMITH';`  
-B) `SELECT * FROM employees WHERE last_name LIKE '%smith%';`  
+B) `SELECT * FROM employees WHERE last_name LIKE '%田中%';`  
 C) `SELECT * FROM employees WHERE last_name = 'Smith';`  
 D) `SELECT * FROM employees WHERE last_name != 'Smith';`
 

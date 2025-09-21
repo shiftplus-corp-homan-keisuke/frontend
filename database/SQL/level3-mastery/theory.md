@@ -270,14 +270,14 @@ ORDER BY path;
 ```sql
 WITH RECURSIVE date_series AS (
     -- アンカー部分: 開始日
-    SELECT DATE '2024-01-01' as date_value
+    SELECT DATE '2022-01-01' as date_value
     
     UNION ALL
     
     -- 再帰部分: 次の日を生成
     SELECT date_value + INTERVAL '1 day'
     FROM date_series
-    WHERE date_value < DATE '2024-12-31'
+    WHERE date_value < DATE '2022-12-31'
 )
 SELECT 
     date_value,
@@ -816,8 +816,8 @@ END;
 $$;
 
 -- ファンクションの使用例
-SELECT * FROM calculate_sales_summary('2024-01-01', '2024-12-31');
-SELECT * FROM calculate_sales_summary('2024-01-01', '2024-12-31', 'Electronics');
+SELECT * FROM calculate_sales_summary('2022-01-01', '2022-12-31');
+SELECT * FROM calculate_sales_summary('2022-01-01', '2022-12-31', 'Electronics');
 ```
 
 #### 例3: 複雑なビジネスロジック処理
@@ -1529,7 +1529,7 @@ SELECT
     SUM(amount) as total_sales,
     COUNT(*) as order_count
 FROM orders 
-WHERE order_date BETWEEN '2024-01-01' AND '2024-12-31'
+WHERE order_date BETWEEN '2022-01-01' AND '2022-12-31'
   AND status = 'COMPLETED'
   AND amount >= 1000
 GROUP BY customer_id
@@ -1566,11 +1566,11 @@ CREATE TABLE orders_partitioned (
 ) PARTITION BY RANGE (order_date);
 
 -- 月別パーティション作成
-CREATE TABLE orders_2024_01 PARTITION OF orders_partitioned
-    FOR VALUES FROM ('2024-01-01') TO ('2024-02-01');
+CREATE TABLE orders_2022_01 PARTITION OF orders_partitioned
+    FOR VALUES FROM ('2022-01-01') TO ('2022-02-01');
 
-CREATE TABLE orders_2024_02 PARTITION OF orders_partitioned
-    FOR VALUES FROM ('2024-02-01') TO ('2024-03-01');
+CREATE TABLE orders_2022_02 PARTITION OF orders_partitioned
+    FOR VALUES FROM ('2022-02-01') TO ('2022-03-01');
 
 -- 自動パーティション作成関数
 CREATE OR REPLACE FUNCTION create_monthly_partition(
@@ -1648,11 +1648,11 @@ ORDER BY customer_name;
 
 -- 【悪い例】関数をWHERE句で使用
 SELECT * FROM orders 
-WHERE EXTRACT(YEAR FROM order_date) = 2024;
+WHERE EXTRACT(YEAR FROM order_date) = 2022;
 
 -- 【良い例】範囲検索
 SELECT * FROM orders 
-WHERE order_date >= '2024-01-01' 
+WHERE order_date >= '2022-01-01' 
   AND order_date < '2025-01-01';
 ```
 
@@ -2066,7 +2066,7 @@ LEFT JOIN orders o ON c.customer_id = o.customer_id
 WHERE c.registration_date >= '2023-01-01'
   AND (o.order_date IS NULL OR o.order_date >= '2023-01-01')
 GROUP BY c.customer_id, c.customer_name
-HAVING COUNT(o.order_id) >= 5
+HAVING COUNT(o.order_id) >= 2
 ORDER BY total_spent DESC;
 
 -- 【最適化後】

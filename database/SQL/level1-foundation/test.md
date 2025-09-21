@@ -109,8 +109,8 @@ D) 上記すべて正しい
 従業員テーブルに新しい従業員を追加するSQL文として正しいものはどれですか。
 
 **選択肢:**
-A) `INSERT employees VALUES (300, 'John', 'Doe', 'jdoe@company.com', '2024-01-01', 'IT_PROG', 5000, 60);`
-B) `INSERT INTO employees (employee_id, first_name, last_name, email, hire_date, job_title, salary, department_id) VALUES (300, 'John', 'Doe', 'jdoe@company.com', '2024-01-01', 'エンジニア', 5000, 60);`
+A) `INSERT employees VALUES (300, 'John', 'Doe', 'jdoe@company.com', '2022-01-01', 'IT_PROG', 5000, 60);`
+B) `INSERT INTO employees (employee_id, first_name, last_name, email, hire_date, job_title, salary, department_id) VALUES (300, 'John', 'Doe', 'jdoe@company.com', '2022-01-01', 'エンジニア', 5000, 60);`
 C) `INSERT employees SET employee_id=600, first_name='John', last_name='Doe';`
 D) `ADD TO employees VALUES (300, 'John', 'Doe', 'jdoe@company.com');`
 
@@ -118,26 +118,26 @@ D) `ADD TO employees VALUES (300, 'John', 'Doe', 'jdoe@company.com');`
 従業員ID が300の従業員の給与を6000に更新するSQL文として正しいものはどれですか。
 
 **選択肢:**
-A) `UPDATE employees SET salary = 6000 WHERE employee_id = 600;`
-B) `MODIFY employees SET salary = 6000 WHERE employee_id = 600;`
-C) `CHANGE employees SET salary = 6000 WHERE employee_id = 600;`
-D) `ALTER employees SET salary = 6000 WHERE employee_id = 600;`
+A) `UPDATE employees SET salary = 6000 WHERE employee_id = 100;`
+B) `MODIFY employees SET salary = 6000 WHERE employee_id = 100;`
+C) `CHANGE employees SET salary = 6000 WHERE employee_id = 100;`
+D) `ALTER employees SET salary = 6000 WHERE employee_id = 100;`
 
 ### 問題10（DELETE文）
 従業員テーブルから従業員ID が300の従業員を削除するSQL文として正しいものはどれですか。
 
 **選択肢:**
-A) `REMOVE FROM employees WHERE employee_id = 600;`
-B) `DELETE employees WHERE employee_id = 600;`
-C) `DELETE FROM employees WHERE employee_id = 600;`
-D) `DROP FROM employees WHERE employee_id = 600;`
+A) `REMOVE FROM employees WHERE employee_id = 100;`
+B) `DELETE employees WHERE employee_id = 100;`
+C) `DELETE FROM employees WHERE employee_id = 100;`
+D) `DROP FROM employees WHERE employee_id = 100;`
 
 ### 問題11（SQL実行順序）
 以下のSQL文の実行順序として正しいものはどれですか。
 ```sql
 SELECT department_id, AVG(salary)
 FROM employees
-WHERE salary >= 3000
+WHERE salary >= 450000
 GROUP BY department_id
 HAVING AVG(salary) >= 5000
 ORDER BY AVG(salary) DESC;
@@ -191,7 +191,7 @@ D) どちらも間違っている
 従業員テーブルから、名前（first_name）が「A」で始まり、かつ「n」で終わる従業員を取得するSQL文として正しいものはどれですか。
 
 **選択肢:**
-A) `SELECT * FROM employees WHERE first_name LIKE 'A%n';`
+A) `SELECT * FROM employees WHERE first_name LIKE '太%';`
 B) `SELECT * FROM employees WHERE first_name LIKE 'A*n';`
 C) `SELECT * FROM employees WHERE first_name MATCH 'A%n';`
 D) `SELECT * FROM employees WHERE first_name CONTAINS 'A%n';`
@@ -200,8 +200,8 @@ D) `SELECT * FROM employees WHERE first_name CONTAINS 'A%n';`
 従業員テーブルから、給与が4000以上8000以下の従業員を取得するSQL文として正しいものはどれですか。
 
 **選択肢:**
-A) `SELECT * FROM employees WHERE salary BETWEEN 4000 AND 8000;`
-B) `SELECT * FROM employees WHERE salary >= 4000 AND salary <= 8000;`
+A) `SELECT * FROM employees WHERE salary BETWEEN 450000 AND 700000;`
+B) `SELECT * FROM employees WHERE salary >= 450000 AND salary <= 700000;`
 C) `SELECT * FROM employees WHERE salary FROM 4000 TO 8000;`
 D) AとBの両方が正しい
 
@@ -257,7 +257,7 @@ D) DECIMALは文字列型である
 ```sql
 BEGIN;
 UPDATE employees SET salary = salary * 1.1 WHERE department_id = 10;
-DELETE FROM employees WHERE salary < 300000;
+DELETE FROM employees WHERE salary < 45000000;
 COMMIT;
 ```
 
@@ -271,8 +271,8 @@ D) BEGINは使用できない
 大量のデータを持つテーブルに対して以下のクエリを実行する場合、最もパフォーマンスが良いと考えられるものはどれですか。
 
 **選択肢:**
-A) `SELECT * FROM employees WHERE salary > 5000;`
-B) `SELECT employee_id, first_name, last_name FROM employees WHERE salary > 5000;`
+A) `SELECT * FROM employees WHERE salary > 500000;`
+B) `SELECT employee_id, first_name, last_name FROM employees WHERE salary > 500000;`
 C) `SELECT * FROM employees;`（アプリケーション側で給与5000以上をフィルタ）
 D) パフォーマンスに差はない
 

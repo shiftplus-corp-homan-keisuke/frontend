@@ -32,11 +32,11 @@
 
 ```sql
 WITH sales_data AS (
-    SELECT 'A' as product, '2024-01-01'::DATE as sale_date, 100 as amount
-    UNION ALL SELECT 'A', '2024-01-02'::DATE, 150
-    UNION ALL SELECT 'A', '2024-01-03'::DATE, 120
-    UNION ALL SELECT 'B', '2024-01-01'::DATE, 200
-    UNION ALL SELECT 'B', '2024-01-02'::DATE, 180
+    SELECT 'A' as product, '2022-01-01'::DATE as sale_date, 100 as amount
+    UNION ALL SELECT 'A', '2022-01-02'::DATE, 150
+    UNION ALL SELECT 'A', '2022-01-03'::DATE, 120
+    UNION ALL SELECT 'B', '2022-01-01'::DATE, 200
+    UNION ALL SELECT 'B', '2022-01-02'::DATE, 180
 )
 SELECT 
     product,
@@ -48,10 +48,10 @@ FROM sales_data
 ORDER BY product, sale_date;
 ```
 
-A) 商品Aの2024-01-01のprev_amountは100、next_amountは150
-B) 商品Aの2024-01-01のprev_amountは0、next_amountは150
-C) 商品Bの2024-01-02のprev_amountは200、next_amountはNULL
-D) 商品Bの2024-01-02のprev_amountは200、next_amountは0
+A) 商品Aの2022-01-01のprev_amountは100、next_amountは150
+B) 商品Aの2022-01-01のprev_amountは0、next_amountは150
+C) 商品Bの2022-01-02のprev_amountは200、next_amountはNULL
+D) 商品Bの2022-01-02のprev_amountは200、next_amountは0
 
 ### 問題2: NTILE関数の理解（3点）
 
@@ -196,7 +196,7 @@ D) 専用のロックテーブルを作成する
 ```sql
 SELECT * FROM orders 
 WHERE customer_id = 1 
-  AND order_date BETWEEN '2024-01-01' AND '2024-12-31'
+  AND order_date BETWEEN '2022-01-01' AND '2022-12-31'
   AND status = 'COMPLETED'
 ORDER BY order_date DESC;
 ```
@@ -382,7 +382,7 @@ D) 単一の高性能サーバーを使用
 ## 解答と解説
 
 ### 問題1: B
-**解説:** LAG関数の第3パラメータ（デフォルト値）により、前の行がない場合は0が返されます。商品Aの最初の行（2024-01-01）のprev_amountは0、next_amountは次の行の150になります。
+**解説:** LAG関数の第3パラメータ（デフォルト値）により、前の行がない場合は0が返されます。商品Aの最初の行（2022-01-01）のprev_amountは0、next_amountは次の行の150になります。
 
 ### 問題2: A
 **解説:** NTILE(4)で13人を4グループに分ける場合、13÷4=3余り1となり、余りは最初のグループから順に配分されます。結果：4人、3人、3人、3人となります。

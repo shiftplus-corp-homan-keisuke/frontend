@@ -11,7 +11,6 @@ STEP01「JavaScript復習とTypeScript導入」の理論学習内容を総復習
 - [ ] TypeScriptの型安全性の重要性の理解
 - [ ] 基本的な型注釈の理解と実践
 - [ ] 関数の型定義の習得
-- [ ] 実践での活用場面の把握
 
 ---
 
@@ -85,13 +84,11 @@ const htmlTemplate = `
 console.log("5" + 3);     // "53" (文字列結合)
 console.log("5" - 3);     // 2 (数値計算)
 console.log("" == false); // true
-console.log([] + {});     // "[object Object]"
 ```
 
 #### undefined/null混在問題
 ```javascript
 let undefinedValue;
-let nullValue = null;
 console.log(undefinedValue == null);  // true (緩い比較)
 console.log(undefinedValue === null); // false (厳密な比較)
 ```
@@ -221,107 +218,3 @@ function applyOperation(
   return operation(x, y);
 }
 ```
-
----
-
-## 4. 実践での活用場面
-
-### 4.1 API レスポンスの型定義
-
-```typescript
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  profile?: {
-    bio: string;
-    avatar: string;
-  };
-}
-
-interface ApiResponse<T> {
-  success: boolean;
-  data: T;
-  message?: string;
-}
-
-async function fetchUser(userId: number): Promise<ApiResponse<User>> {
-  const response = await fetch(`/api/users/${userId}`);
-  return response.json();
-}
-```
-
-### 4.2 フォーム入力の検証
-
-```typescript
-interface ContactForm {
-  name: string;
-  email: string;
-  message: string;
-}
-
-interface ValidationResult {
-  isValid: boolean;
-  errors: { [key in keyof ContactForm]?: string };
-}
-
-function validateContactForm(form: ContactForm): ValidationResult {
-  const errors: ValidationResult['errors'] = {};
-  
-  if (!form.name.trim()) errors.name = "名前は必須です";
-  if (!form.email.includes("@")) errors.email = "有効なメールアドレスを入力してください";
-  
-  return {
-    isValid: Object.keys(errors).length === 0,
-    errors
-  };
-}
-```
-
-### 4.3 コンポーネントの Props 定義
-
-```typescript
-interface ButtonProps {
-  children: React.ReactNode;
-  onClick: () => void;
-  variant?: "primary" | "secondary" | "danger";
-  disabled?: boolean;
-}
-
-function Button({ children, onClick, variant = "primary", disabled = false }: ButtonProps) {
-  return (
-    <button className={`btn btn-${variant}`} onClick={onClick} disabled={disabled}>
-      {children}
-    </button>
-  );
-}
-```
-
----
-
-## 📚 学習のポイント
-
-### 重要な概念の整理
-
-1. **型安全性の価値** - コンパイル時エラー検出、コードの自己文書化、IDE支援向上
-2. **型注釈 vs 型推論** - 明示的な型注釈が必要な場面と型推論に任せられる場面の使い分け
-3. **実践的な型設計** - インターフェースの活用、ユニオン型の使い分け、オプショナルプロパティの適切な使用
-
-### 次のステップへの準備
-
-STEP01で学習した基礎知識は、以降のより高度な型システムの基盤となります：
-- **STEP02**: 型推論・リテラル型・Union型
-- **STEP03**: インターフェースとオブジェクト型
-- **STEP04**: 型ガード
-- **STEP05**: ジェネリクス
-
----
-
-## 🔗 関連リソース
-
-- [Step01_JavaScript復習とTypeScript導入.md](./Step01/Step01_JavaScript復習とTypeScript導入.md) - 詳細な学習内容
-- [Step01_Session1_JavaScript復習とTypeScript基礎.md](./Step01/Step01_Session1_JavaScript復習とTypeScript基礎.md) - セッション1の内容
-- [Step01_補足_専門用語集.md](./Step01/Step01_補足_専門用語集.md) - 重要な概念と用語の詳細解説
-- [Step01_補足_実践コード例.md](./Step01/Step01_補足_実践コード例.md) - 段階的な学習用コード集
-
-この総復習を通じて、TypeScriptの基礎的な型システムを確実に理解し、実践的な開発に活用できる知識を身につけましょう。

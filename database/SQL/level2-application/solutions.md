@@ -934,7 +934,7 @@ LEFT JOIN departments d ON e.department_id = d.department_id
 ```sql
 SELECT AVG(salary) as tokyo_avg_salary
 FROM employee_details
-WHERE city = 'Tokyo';
+WHERE city = '東京';
 ```
 
 **解説:**

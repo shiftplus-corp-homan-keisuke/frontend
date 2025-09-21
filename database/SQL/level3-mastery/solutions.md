@@ -1009,28 +1009,33 @@ CREATE TRIGGER orders_audit_trigger
 - **セッション情報**: ユーザーとセッションの記録
 - **エラーハンドリング**: 監査エラーでも元操作は継続
 
-**監査ログ分析クエリ:**
+**売上データ分析クエリ:**
 ```sql
--- 特定レコードの変更履歴
-SELECT 
-    changed_at,
-    operation,
-    changed_by,
-    old_values,
-    new_values
-FROM audit_log
-WHERE table_name = 'customers' AND record_id = '1'
-ORDER BY changed_at DESC;
+-- 特定顧客の売上履歴
+SELECT
+    sr.sale_date,
+    c.company_name,
+    p.product_name,
+    sr.quantity,
+    sr.unit_price,
+    sr.sales_amount
+FROM sales_records sr
+JOIN customers c ON sr.customer_id = c.customer_id
+JOIN products p ON sr.product_id = p.product_id
+WHERE sr.customer_id = 1
+ORDER BY sr.sale_date DESC;
 
--- 変更頻度の高いテーブル
-SELECT 
-    table_name,
-    COUNT(*) as change_count,
-    COUNT(DISTINCT record_id) as affected_records
-FROM audit_log
-WHERE changed_at >= CURRENT_DATE - INTERVAL '30 days'
-GROUP BY table_name
-ORDER BY change_count DESC;
+-- 売上頻度の高い商品
+SELECT
+    p.product_name,
+    COUNT(*) as sale_count,
+    COUNT(DISTINCT sr.customer_id) as customer_count,
+    SUM(sr.sales_amount) as total_sales
+FROM sales_records sr
+JOIN products p ON sr.product_id = p.product_id
+WHERE sr.sale_date >= CURRENT_DATE - INTERVAL '30 days'
+GROUP BY p.product_id, p.product_name
+ORDER BY sale_count DESC;
 ```
 
 ### 問題5-2: 在庫自動更新トリガー

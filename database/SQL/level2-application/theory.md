@@ -386,7 +386,7 @@ WHERE salary >= 700000;
 ```sql
 -- ビューからのデータ取得
 SELECT * FROM employee_details
-WHERE city = 'Tokyo';
+WHERE city = '東京';
 
 -- ビューを使った集計
 SELECT department_name, AVG(salary) as avg_salary

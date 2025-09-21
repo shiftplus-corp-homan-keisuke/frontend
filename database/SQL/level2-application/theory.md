@@ -16,11 +16,15 @@
 
 ## 1. 外部結合（OUTER JOIN）
 
+**外部結合とは、結合条件に一致しない行も結果に含める結合方法です。**
+
 ### 1.1 外部結合の概念
 
 外部結合は、結合条件に一致しない行も結果に含める結合方法です。内部結合では取得できない「存在しないデータ」も分析対象にできます。
 
 ### 1.2 LEFT JOIN（左外部結合）
+
+**LEFT JOINとは、左側のテーブルの全ての行を保持し、右側のテーブルから一致する行を結合する方法です。**
 
 ```sql
 SELECT テーブル1.列名, テーブル2.列名
@@ -44,6 +48,8 @@ GROUP BY d.department_id, d.department_name;
 
 ### 1.3 RIGHT JOIN（右外部結合）
 
+**RIGHT JOINとは、右側のテーブルの全ての行を保持し、左側のテーブルから一致する行を結合する方法です。**
+
 ```sql
 SELECT テーブル1.列名, テーブル2.列名
 FROM テーブル1
@@ -60,6 +66,8 @@ RIGHT JOIN departments d ON e.department_id = d.department_id;
 
 ### 1.4 FULL OUTER JOIN（完全外部結合）
 
+**FULL OUTER JOINとは、両方のテーブルの全ての行を保持し、一致する行は結合し、一致しない行はNULLで補完する方法です。**
+
 ```sql
 SELECT テーブル1.列名, テーブル2.列名
 FROM テーブル1
@@ -75,6 +83,8 @@ FULL OUTER JOIN departments d ON e.department_id = d.department_id;
 ```
 
 ## 2. サブクエリと相関サブクエリ
+
+**サブクエリとは、SQL文の中に埋め込まれた別のSELECT文です。**
 
 ### 2.1 サブクエリの基本
 
@@ -102,6 +112,8 @@ WHERE salary = (SELECT MAX(salary) FROM employees);
 
 ### 2.2 IN句でのサブクエリ
 
+**IN句でのサブクエリとは、複数の値の中から一致するものを検索する際に使用する方法です。**
+
 ```sql
 -- 特定の部署に所属する従業員を取得
 SELECT employee_id, first_name
@@ -115,6 +127,8 @@ WHERE department_id IN (
 
 ### 2.3 EXISTS句でのサブクエリ
 
+**EXISTS句でのサブクエリとは、サブクエリの結果が存在するかどうかを判定する方法です。**
+
 ```sql
 -- 従業員が存在する部署のみを取得
 SELECT department_id, department_name
@@ -127,6 +141,8 @@ WHERE EXISTS (
 ```
 
 ### 2.4 相関サブクエリ
+
+**相関サブクエリとは、外側のクエリの値を参照するサブクエリです。**
 
 相関サブクエリは、外側のクエリの値を参照するサブクエリです。
 
@@ -152,7 +168,11 @@ WHERE e1.salary > (
 
 ## 3. CASE文とCOALESCE関数
 
+**CASE文とは、条件に応じて異なる値を返す条件分岐処理を行う構文です。**
+
 ### 3.1 CASE文による条件分岐
+
+**CASE文とは、条件に応じて異なる値を返す条件分岐処理を行う構文です。**
 
 ```sql
 -- 基本構文
@@ -187,6 +207,8 @@ FROM employees;
 
 ### 3.2 集約関数でのCASE文活用
 
+**集約関数でのCASE文活用とは、条件に応じた集計処理を行う方法です。**
+
 ```sql
 -- 条件別集計
 SELECT 
@@ -205,6 +227,8 @@ GROUP BY department_id;
 ```
 
 ### 3.3 COALESCE関数
+
+**COALESCE関数とは、NULL値を他の値で置き換える関数です。**
 
 COALESCE関数は、NULL値を他の値で置き換える関数です。
 
@@ -225,6 +249,8 @@ FROM employees;
 
 ## 4. ウィンドウ関数の基礎
 
+**ウィンドウ関数とは、行のグループ（ウィンドウ）に対して計算を行う関数です。**
+
 ### 4.1 ウィンドウ関数の概念
 
 ウィンドウ関数は、行のグループ（ウィンドウ）に対して計算を行う関数です。GROUP BYとは異なり、元の行数を保持します。
@@ -239,6 +265,8 @@ FROM employees;
 ```
 
 ### 4.2 ROW_NUMBER関数
+
+**ROW_NUMBER関数とは、各行に一意の連番を付与する関数です。**
 
 各行に一意の連番を付与します。
 
@@ -259,6 +287,8 @@ FROM employees;
 
 ### 4.3 RANK関数
 
+**RANK関数とは、同順位を考慮したランキングを付与する関数です（同順位の次は順位が飛ぶ）。**
+
 同順位を考慮したランキングを付与します（同順位の次は順位が飛ぶ）。
 
 ```sql
@@ -278,6 +308,8 @@ FROM employees;
 
 ### 4.4 DENSE_RANK関数
 
+**DENSE_RANK関数とは、同順位を考慮したランキングを付与する関数です（同順位の次は連続した順位）。**
+
 同順位を考慮したランキングを付与します（同順位の次は連続した順位）。
 
 ```sql
@@ -288,6 +320,8 @@ FROM employees;
 ```
 
 ### 4.5 集約ウィンドウ関数
+
+**集約ウィンドウ関数とは、ウィンドウ内でSUM、AVG、COUNTなどの集約処理を行う関数です。**
 
 ```sql
 -- 累積合計
@@ -306,11 +340,15 @@ FROM employees;
 
 ## 5. ビューの作成と活用
 
+**ビューとは、1つ以上のテーブルから作成される仮想的なテーブルです。**
+
 ### 5.1 ビューの基本概念
 
 ビューは、1つ以上のテーブルから作成される仮想的なテーブルです。
 
 ### 5.2 ビューの作成
+
+**ビューの作成とは、CREATE VIEW文を使用して仮想的なテーブルを定義することです。**
 
 ```sql
 -- 基本構文
@@ -344,6 +382,8 @@ WHERE salary >= 8000;
 
 ### 5.3 ビューの活用
 
+**ビューの活用とは、作成したビューを通常のテーブルと同様に使用してデータを取得することです。**
+
 ```sql
 -- ビューからのデータ取得
 SELECT * FROM employee_details
@@ -356,6 +396,8 @@ GROUP BY department_name;
 ```
 
 ### 5.4 ビューの更新と削除
+
+**ビューの更新と削除とは、既存のビューの定義を変更したり、不要になったビューを削除することです。**
 
 ```sql
 -- ビューの更新
@@ -372,7 +414,11 @@ DROP VIEW employee_summary;
 
 ## 6. 制約（Constraints）
 
+**制約とは、テーブルのデータの整合性を保つためのルールです。**
+
 ### 6.1 PRIMARY KEY制約
+
+**PRIMARY KEY制約とは、テーブルの各行を一意に識別するための制約です。**
 
 ```sql
 -- テーブル作成時に指定
@@ -387,6 +433,8 @@ ADD CONSTRAINT pk_departments PRIMARY KEY (department_id);
 ```
 
 ### 6.2 FOREIGN KEY制約
+
+**FOREIGN KEY制約とは、他のテーブルとの参照整合性を保つための制約です。**
 
 ```sql
 -- テーブル作成時に指定
@@ -405,6 +453,8 @@ FOREIGN KEY (department_id) REFERENCES departments(department_id);
 
 ### 6.3 CHECK制約
 
+**CHECK制約とは、列の値が特定の条件を満たすことを保証する制約です。**
+
 ```sql
 -- 給与の範囲制限
 ALTER TABLE employees 
@@ -417,6 +467,8 @@ ADD CONSTRAINT chk_gender CHECK (gender IN ('M', 'F'));
 
 ### 6.4 UNIQUE制約
 
+**UNIQUE制約とは、列の値が一意であることを保証する制約です。**
+
 ```sql
 -- メールアドレスの一意性
 ALTER TABLE employees 
@@ -424,6 +476,8 @@ ADD CONSTRAINT uk_email UNIQUE (email);
 ```
 
 ### 6.5 NOT NULL制約
+
+**NOT NULL制約とは、列にNULL値の格納を禁止する制約です。**
 
 ```sql
 -- 必須項目の指定
@@ -433,11 +487,15 @@ MODIFY first_name VARCHAR(50) NOT NULL;
 
 ## 7. インデックスの基本概念
 
+**インデックスとは、データベースの検索性能を向上させるためのデータ構造です。**
+
 ### 7.1 インデックスとは
 
 インデックスは、データベースの検索性能を向上させるためのデータ構造です。
 
 ### 7.2 インデックスの作成
+
+**インデックスの作成とは、CREATE INDEX文を使用してテーブルの列に検索用のインデックスを作成することです。**
 
 ```sql
 -- 単一列インデックス
@@ -452,6 +510,8 @@ CREATE UNIQUE INDEX idx_employee_email ON employees(email);
 
 ### 7.3 インデックスの効果
 
+**インデックスの効果とは、検索処理の高速化やソート処理の最適化などの性能向上効果です。**
+
 ```sql
 -- インデックスが効果的なクエリ
 SELECT * FROM employees WHERE last_name = 'Smith';
@@ -462,6 +522,8 @@ WHERE department_id = 10 AND salary > 5000;
 ```
 
 ### 7.4 インデックスの削除
+
+**インデックスの削除とは、DROP INDEX文を使用して不要になったインデックスを削除することです。**
 
 ```sql
 DROP INDEX idx_employee_last_name;

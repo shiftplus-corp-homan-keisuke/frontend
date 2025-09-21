@@ -16,6 +16,8 @@
 
 ### 1.1 SELECT文の基本構文
 
+SELECT文とは、データベースのテーブルからデータを取得するためのSQL文です。必要な列を指定してデータを抽出できます。
+
 ```sql
 SELECT 列名1, 列名2, ...
 FROM テーブル名;
@@ -32,6 +34,8 @@ SELECT employee_id, first_name, last_name FROM employees;
 
 ### 1.2 WHERE句による条件指定
 
+WHERE句とは、SELECT文で取得するデータに条件を指定するためのSQL句です。特定の条件に合致するレコードのみを抽出できます。
+
 ```sql
 SELECT 列名1, 列名2, ...
 FROM テーブル名
@@ -47,11 +51,13 @@ SELECT * FROM employees WHERE department_id = 10;
 SELECT * FROM employees WHERE salary >= 5000;
 
 -- 複数条件の組み合わせ
-SELECT * FROM employees 
+SELECT * FROM employees
 WHERE department_id = 10 AND salary >= 5000;
 ```
 
 ### 1.3 ORDER BY句による並び替え
+
+ORDER BY句とは、SELECT文で取得したデータを指定した列の値で並び替えるためのSQL句です。昇順（ASC）または降順（DESC）で並び替えができます。
 
 ```sql
 SELECT 列名1, 列名2, ...
@@ -68,11 +74,13 @@ SELECT * FROM employees ORDER BY salary ASC;
 SELECT * FROM employees ORDER BY salary DESC;
 
 -- 複数列での並び替え
-SELECT * FROM employees 
+SELECT * FROM employees
 ORDER BY department_id ASC, salary DESC;
 ```
 
 ### 1.4 LIMIT句による取得件数制限
+
+LIMIT句とは、SELECT文で取得するレコード数を制限するためのSQL句です。大量のデータから上位N件のみを取得したい場合に使用します。
 
 ```sql
 SELECT 列名1, 列名2, ...
@@ -83,14 +91,16 @@ LIMIT 件数;
 **例：**
 ```sql
 -- 上位10件のみ取得
-SELECT * FROM employees 
-ORDER BY salary DESC 
+SELECT * FROM employees
+ORDER BY salary DESC
 LIMIT 10;
 ```
 
 ## 2. 集約関数
 
 ### 2.1 基本的な集約関数
+
+集約関数とは、複数の行のデータを集計して1つの値を返すSQL関数です。データの合計、平均、件数などを計算できます。
 
 | 関数 | 説明 | 例 |
 |------|------|-----|
@@ -129,6 +139,8 @@ SELECT COUNT(*) FROM employees;
 
 ### 3.1 GROUP BY句による グループ化
 
+GROUP BY句とは、指定した列の値が同じレコードをグループ化して、グループごとに集約関数を適用するためのSQL句です。
+
 ```sql
 SELECT 列名, 集約関数(列名)
 FROM テーブル名
@@ -138,17 +150,19 @@ GROUP BY 列名;
 **例：**
 ```sql
 -- 部署別の従業員数
-SELECT department_id, COUNT(*) 
-FROM employees 
+SELECT department_id, COUNT(*)
+FROM employees
 GROUP BY department_id;
 
 -- 部署別の平均給与
-SELECT department_id, AVG(salary) 
-FROM employees 
+SELECT department_id, AVG(salary)
+FROM employees
 GROUP BY department_id;
 ```
 
 ### 3.2 HAVING句による集約結果の条件指定
+
+HAVING句とは、GROUP BYで作成されたグループに対して条件を指定するためのSQL句です。集約関数の結果に条件を設定できます。
 
 ```sql
 SELECT 列名, 集約関数(列名)
@@ -160,15 +174,15 @@ HAVING 集約関数の条件;
 **例：**
 ```sql
 -- 従業員数が5人以上の部署
-SELECT department_id, COUNT(*) 
-FROM employees 
-GROUP BY department_id 
+SELECT department_id, COUNT(*)
+FROM employees
+GROUP BY department_id
 HAVING COUNT(*) >= 5;
 
 -- 平均給与が6000以上の部署
-SELECT department_id, AVG(salary) 
-FROM employees 
-GROUP BY department_id 
+SELECT department_id, AVG(salary)
+FROM employees
+GROUP BY department_id
 HAVING AVG(salary) >= 6000;
 ```
 
@@ -179,16 +193,18 @@ HAVING AVG(salary) >= 6000;
 
 ```sql
 -- WHERE句とHAVING句の組み合わせ
-SELECT department_id, AVG(salary) 
-FROM employees 
+SELECT department_id, AVG(salary)
+FROM employees
 WHERE salary >= 3000  -- 個別の行をフィルタ
-GROUP BY department_id 
+GROUP BY department_id
 HAVING AVG(salary) >= 5000;  -- グループをフィルタ
 ```
 
 ## 4. 基本的な内部結合（INNER JOIN）
 
 ### 4.1 INNER JOINの基本構文
+
+INNER JOINとは、複数のテーブルを結合して関連するデータを1つの結果として取得するためのSQL文です。両方のテーブルに存在するデータのみが結果に含まれます。
 
 ```sql
 SELECT テーブル1.列名, テーブル2.列名
@@ -227,6 +243,8 @@ INNER JOIN locations l ON d.location_id = l.location_id;
 
 ### 5.1 INSERT文（データの挿入）
 
+INSERT文とは、テーブルに新しいレコード（行）を追加するためのSQL文です。指定した列に対応する値を挿入できます。
+
 ```sql
 -- 基本構文
 INSERT INTO テーブル名 (列名1, 列名2, ...)
@@ -241,12 +259,14 @@ VALUES (1001, '太郎', '田中', 'tanaka@example.com', '2024-01-01');
 
 -- 複数行を一度に挿入
 INSERT INTO employees (employee_id, first_name, last_name, email, hire_date)
-VALUES 
+VALUES
     (1002, '花子', '佐藤', 'sato@example.com', '2024-01-02'),
     (1003, '次郎', '鈴木', 'suzuki@example.com', '2024-01-03');
 ```
 
 ### 5.2 UPDATE文（データの更新）
+
+UPDATE文とは、テーブル内の既存のレコードの値を変更するためのSQL文です。WHERE句で条件を指定して特定のレコードのみを更新できます。
 
 ```sql
 -- 基本構文
@@ -269,6 +289,8 @@ WHERE employee_id = 1001;
 ```
 
 ### 5.3 DELETE文（データの削除）
+
+DELETE文とは、テーブルから既存のレコード（行）を削除するためのSQL文です。WHERE句で条件を指定して特定のレコードのみを削除できます。
 
 ```sql
 -- 基本構文

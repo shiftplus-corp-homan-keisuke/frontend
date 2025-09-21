@@ -101,13 +101,13 @@
 #### 1. 複雑な結合問題
 ```sql
 -- 典型例：従業員、部署、プロジェクトの3テーブル結合
-SELECT e.employee_name, d.department_name, p.project_name
+SELECT e.CONCAT(first_name, ' ', last_name) as employee_name, d.department_name, p.project_name
 FROM employees e
 JOIN departments d ON e.department_id = d.department_id
 LEFT JOIN project_assignments pa ON e.employee_id = pa.employee_id
 LEFT JOIN projects p ON pa.project_id = p.project_id
 WHERE d.location = '東京'
-ORDER BY e.employee_name;
+ORDER BY e.CONCAT(first_name, ' ', last_name) as employee_name;
 ```
 
 **攻略ポイント**:
@@ -118,7 +118,7 @@ ORDER BY e.employee_name;
 #### 2. 相関サブクエリ問題
 ```sql
 -- 典型例：各部署の最高給与者を抽出
-SELECT employee_name, department_id, salary
+SELECT CONCAT(first_name, ' ', last_name) as employee_name, department_id, salary
 FROM employees e1
 WHERE salary = (
     SELECT MAX(salary)
@@ -136,7 +136,7 @@ WHERE salary = (
 ```sql
 -- 典型例：部署別売上ランキング
 SELECT 
-    employee_name,
+    CONCAT(first_name, ' ', last_name) as employee_name,
     department_id,
     sales_amount,
     RANK() OVER (PARTITION BY department_id ORDER BY sales_amount DESC) as rank
@@ -155,7 +155,7 @@ WHERE sales_date BETWEEN '2022-01-01' AND '2022-12-31';
 WITH monthly_sales AS (
     SELECT 
         DATE_FORMAT(sale_date, '%Y-%m') as month,
-        SUM(amount) as total_sales
+        SUM(sales_amount) as total_sales
     FROM sales
     GROUP BY DATE_FORMAT(sale_date, '%Y-%m')
 )

@@ -47,7 +47,7 @@ WHERE 条件;
 -- 特定の部署の従業員を取得
 SELECT * FROM employees WHERE department_id = 10;
 
--- 給与が5000以上の従業員を取得
+-- 給与が500000以上の従業員を取得
 SELECT * FROM employees WHERE salary >= 500000;
 
 -- 複数条件の組み合わせ
@@ -179,11 +179,11 @@ FROM employees
 GROUP BY department_id
 HAVING COUNT(*) >= 5;
 
--- 平均給与が6000以上の部署
+-- 平均給与が600000以上の部署
 SELECT department_id, AVG(salary)
 FROM employees
 GROUP BY department_id
-HAVING AVG(salary) >= 6000;
+HAVING AVG(salary) >= 600000;
 ```
 
 ### 3.3 WHEREとHAVINGの違い
@@ -197,7 +197,7 @@ SELECT department_id, AVG(salary)
 FROM employees
 WHERE salary >= 450000  -- 個別の行をフィルタ
 GROUP BY department_id
-HAVING AVG(salary) >= 5000;  -- グループをフィルタ
+HAVING AVG(salary) >= 500000;  -- グループをフィルタ
 ```
 
 ## 4. 基本的な内部結合（INNER JOIN）
@@ -278,13 +278,13 @@ WHERE 条件;
 ```sql
 -- 特定の従業員の給与を更新
 UPDATE employees
-SET salary = 6000
-WHERE employee_id = 101;
+SET salary = 600000
+WHERE employee_id = 100;
 
 -- 複数列を同時に更新
 UPDATE employees
-SET salary = 6500, department_id = 20
-WHERE employee_id = 101;
+SET salary = 650000, department_id = 20
+WHERE employee_id = 100;
 ```
 
 ### 5.3 DELETE文（データの削除）
@@ -301,7 +301,7 @@ WHERE 条件;
 ```sql
 -- 特定の従業員を削除
 DELETE FROM employees
-WHERE employee_id = 101;
+WHERE employee_id = 100;
 
 -- 条件に合致する複数行を削除
 DELETE FROM employees
@@ -336,7 +336,7 @@ WHERE department_id = 30 AND salary < 450000;
 
 ## 確認問題
 
-1. 従業員テーブル（employees）から、給与が5000以上の従業員の名前と給与を給与の降順で取得するSQL文を記述してください。
+1. 従業員テーブル（employees）から、給与が500000以上の従業員の名前と給与を給与の降順で取得するSQL文を記述してください。
 
 2. 部署別の従業員数と平均給与を求め、従業員数が3人以上の部署のみを表示するSQL文を記述してください。
 
@@ -344,7 +344,7 @@ WHERE department_id = 30 AND salary < 450000;
 
 4. 新しい従業員（ID: 2001, 名前: 山田太郎, メール: yamada@example.com, 入社日: 2022-04-01）を追加するSQL文を記述してください。
 
-5. 従業員ID 2001の給与を7000に更新するSQL文を記述してください。
+5. 従業員ID 101の給与を700000に更新するSQL文を記述してください。
 
 ---
 

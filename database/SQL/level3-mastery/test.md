@@ -32,7 +32,7 @@
 
 ```sql
 WITH sales_data AS (
-    SELECT 'A' as product, '2022-01-01'::DATE as sale_date, 100 as amount
+    SELECT 'A' as product, '2022-01-01'::DATE as sale_date, 100 as sales_amount
     UNION ALL SELECT 'A', '2022-01-02'::DATE, 150
     UNION ALL SELECT 'A', '2022-01-03'::DATE, 120
     UNION ALL SELECT 'B', '2022-01-01'::DATE, 200
@@ -41,17 +41,17 @@ WITH sales_data AS (
 SELECT 
     product,
     sale_date,
-    amount,
-    LAG(amount, 1, 0) OVER (PARTITION BY product ORDER BY sale_date) as prev_amount,
-    LEAD(amount, 1, 0) OVER (PARTITION BY product ORDER BY sale_date) as next_amount
+    sales_amount,
+    LAG(sales_amount, 1, 0) OVER (PARTITION BY product ORDER BY sale_date) as prev_sales_amount,
+    LEAD(sales_amount, 1, 0) OVER (PARTITION BY product ORDER BY sale_date) as next_sales_amount
 FROM sales_data
 ORDER BY product, sale_date;
 ```
 
-A) 商品Aの2022-01-01のprev_amountは100、next_amountは150
-B) 商品Aの2022-01-01のprev_amountは0、next_amountは150
-C) 商品Bの2022-01-02のprev_amountは200、next_amountはNULL
-D) 商品Bの2022-01-02のprev_amountは200、next_amountは0
+A) 商品Aの2022-01-01のprev_sales_amountは100、next_sales_amountは150
+B) 商品Aの2022-01-01のprev_sales_amountは0、next_sales_amountは150
+C) 商品Bの2022-01-02のprev_sales_amountは200、next_sales_amountはNULL
+D) 商品Bの2022-01-02のprev_sales_amountは200、next_sales_amountは0
 
 ### 問題2: NTILE関数の理解（3点）
 
@@ -88,12 +88,12 @@ D) WHERE条件が無効なため、1のみが返される
 SELECT 
     product_id,
     sale_date,
-    amount,
-    LAST_VALUE(amount) OVER (
+    sales_amount,
+    LAST_VALUE(sales_amount) OVER (
         PARTITION BY product_id 
         ORDER BY sale_date
         -- ここにフレーム句が必要
-    ) as last_amount
+    ) as last_sales_amount
 FROM sales;
 ```
 
@@ -128,7 +128,7 @@ D) 親子関係の存在チェックを行う
 SELECT 
     customer_id,
     order_date,
-    amount,
+    sales_amount,
     ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date) as rn
 FROM orders;
 ```
@@ -136,7 +136,7 @@ FROM orders;
 A) CREATE INDEX ON orders(customer_id)
 B) CREATE INDEX ON orders(order_date)
 C) CREATE INDEX ON orders(customer_id, order_date)
-D) CREATE INDEX ON orders(amount)
+D) CREATE INDEX ON orders(sales_amount)
 
 ### 問題8: ストアドプロシージャのエラーハンドリング（4点）
 
@@ -294,10 +294,10 @@ D) 部門別の従業員数を集計する
 
 移動平均を計算するウィンドウ関数で、過去3日間の平均を求める正しい構文はどれですか？
 
-A) AVG(amount) OVER (ORDER BY date ROWS 3 PRECEDING)
-B) AVG(amount) OVER (ORDER BY date ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)
-C) AVG(amount) OVER (ORDER BY date RANGE BETWEEN 3 PRECEDING AND CURRENT ROW)
-D) AVG(amount) OVER (PARTITION BY date ROWS 3)
+A) AVG(sales_amount) OVER (ORDER BY date ROWS 3 PRECEDING)
+B) AVG(sales_amount) OVER (ORDER BY date ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)
+C) AVG(sales_amount) OVER (ORDER BY date RANGE BETWEEN 3 PRECEDING AND CURRENT ROW)
+D) AVG(sales_amount) OVER (PARTITION BY date ROWS 3)
 
 ### 問題23: トリガー関数の実装（3点）
 
@@ -382,7 +382,7 @@ D) 単一の高性能サーバーを使用
 ## 解答と解説
 
 ### 問題1: B
-**解説:** LAG関数の第3パラメータ（デフォルト値）により、前の行がない場合は0が返されます。商品Aの最初の行（2022-01-01）のprev_amountは0、next_amountは次の行の150になります。
+**解説:** LAG関数の第3パラメータ（デフォルト値）により、前の行がない場合は0が返されます。商品Aの最初の行（2022-01-01）のprev_sales_amountは0、next_sales_amountは次の行の150になります。
 
 ### 問題2: A
 **解説:** NTILE(4)で13人を4グループに分ける場合、13÷4=3余り1となり、余りは最初のグループから順に配分されます。結果：4人、3人、3人、3人となります。

@@ -27,22 +27,39 @@
 
 ```sql
 -- 売上テーブル
-CREATE TABLE sales (
-    sale_id SERIAL PRIMARY KEY,
+-- 売上実績テーブル（実際のsales_recordsテーブル構造に統一）
+CREATE TABLE sales_records (
+    record_id SERIAL PRIMARY KEY,
+    sale_date DATE NOT NULL,
+    employee_id INT,
     customer_id INT,
     product_id INT,
-    sale_date DATE,
-    amount DECIMAL(10,2),
-    quantity INT,
-    region VARCHAR(50)
+    quantity INT NOT NULL,
+    unit_price DECIMAL(8,2) NOT NULL,
+    discount_rate DECIMAL(3,2) DEFAULT 0,
+    sales_amount DECIMAL(10,2) NOT NULL,
+    cost_amount DECIMAL(10,2),
+    profit_amount DECIMAL(10,2),
+    region VARCHAR(50),
+    sales_channel VARCHAR(20)
 );
 
--- 顧客テーブル
+-- 顧客テーブル（実際のcustomersテーブル構造に統一）
 CREATE TABLE customers (
-    customer_id SERIAL PRIMARY KEY,
-    customer_name VARCHAR(100),
-    registration_date DATE,
-    customer_type VARCHAR(20) -- 'PREMIUM', 'STANDARD', 'BASIC'
+    customer_id INT PRIMARY KEY,
+    company_name VARCHAR(100) NOT NULL,
+    contact_name VARCHAR(50),
+    contact_title VARCHAR(50),
+    address VARCHAR(100),
+    city VARCHAR(50),
+    region VARCHAR(50),
+    postal_code VARCHAR(20),
+    country VARCHAR(50) DEFAULT 'Japan',
+    phone VARCHAR(20),
+    email VARCHAR(100),
+    credit_limit DECIMAL(10,2),
+    registration_date DATE DEFAULT (CURRENT_DATE),
+    status VARCHAR(10) DEFAULT 'ACTIVE'
 );
 
 -- 商品テーブル
@@ -175,14 +192,22 @@ CREATE TABLE departments (
     budget DECIMAL(12,2)
 );
 
--- 従業員テーブル
+-- 従業員テーブル（実際のemployeesテーブル構造に統一）
 CREATE TABLE employees (
-    employee_id SERIAL PRIMARY KEY,
-    employee_name VARCHAR(100),
-    dept_id INT,
+    employee_id INT PRIMARY KEY,
+    first_name VARCHAR(30) NOT NULL,
+    last_name VARCHAR(30) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    phone_number VARCHAR(20),
+    hire_date DATE NOT NULL,
+    job_title VARCHAR(50) NOT NULL,
+    salary DECIMAL(10,2) NOT NULL,
+    commission_pct DECIMAL(3,2),
     manager_id INT,
-    salary DECIMAL(10,2),
-    hire_date DATE
+    department_id INT,
+    status VARCHAR(10) DEFAULT 'ACTIVE',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- カテゴリテーブル（階層構造）

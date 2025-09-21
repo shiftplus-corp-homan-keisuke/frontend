@@ -308,13 +308,13 @@ HAVING COUNT(*) >= 3;
 ```sql
 SELECT department_id, AVG(salary) 
 FROM employees 
-GROUP BY department_id 
-HAVING AVG(salary) >= 7000;
+GROUP BY department_id
+HAVING AVG(salary) >= 700000;
 ```
 
 **解説:**
 - 集約関数の結果に対する条件指定
-- 平均給与が7000以上の部署のみ抽出
+- 平均給与が700000以上の部署のみ抽出
 - 集約関数は2回計算される（SELECT句とHAVING句）
 
 ### 問題3-6: WHEREとHAVINGの組み合わせ
@@ -372,7 +372,7 @@ INNER JOIN departments d ON e.department_id = d.department_id;
 SELECT e.first_name, e.last_name, d.department_name
 FROM employees e
 INNER JOIN departments d ON e.department_id = d.department_id
-WHERE d.department_name = 'IT';
+WHERE d.department_name = '開発部';
 ```
 
 **解説:**
@@ -432,12 +432,12 @@ SELECT d.department_name, AVG(e.salary) as avg_salary
 FROM employees e
 INNER JOIN departments d ON e.department_id = d.department_id
 GROUP BY d.department_name
-HAVING AVG(e.salary) >= 8000;
+HAVING AVG(e.salary) >= 700000;
 ```
 
 **解説:**
 - 結合、集約、条件指定を組み合わせ
-- 平均給与が8000以上の部署のみ表示
+- 平均給与が700000以上の部署のみ表示
 - 複合的なデータ分析の例
 
 ---
@@ -449,7 +449,7 @@ HAVING AVG(e.salary) >= 8000;
 **解答:**
 ```sql
 INSERT INTO employees (employee_id, first_name, last_name, email, hire_date, job_title, salary, department_id)
-VALUES (200, 'Taro', 'Yamada', 'tyamada@company.com', '2022-04-01', 'エンジニア', 5500, 60);
+VALUES (200, 'Taro', 'Yamada', 'tyamada@company.com', '2022-04-01', 'エンジニア', 550000, 10);
 ```
 
 **解説:**
@@ -477,8 +477,8 @@ VALUES
 
 **解答:**
 ```sql
-UPDATE employees 
-SET salary = 6000 
+UPDATE employees
+SET salary = 600000
 WHERE employee_id = 200;
 ```
 
@@ -648,11 +648,11 @@ VALUES (120, 'Research', '東京');
 
 -- 2. 新しい従業員を追加
 INSERT INTO employees (employee_id, first_name, last_name, email, hire_date, job_title, salary, department_id)
-VALUES (203, 'Saburo', 'Tanaka', 'stanaka@company.com', '2022-04-04', 'エンジニア', 5800, 120);
+VALUES (203, 'Saburo', 'Tanaka', 'stanaka@company.com', '2022-04-04', 'エンジニア', 580000, 60);
 
 -- 3. 従業員の給与を更新
-UPDATE employees 
-SET salary = 6200 
+UPDATE employees
+SET salary = 620000
 WHERE employee_id = 203;
 
 -- 4. Research部署の統計を確認
@@ -662,7 +662,7 @@ SELECT
     AVG(e.salary) as avg_salary
 FROM employees e
 INNER JOIN departments d ON e.department_id = d.department_id
-WHERE d.department_name = 'Research'
+WHERE d.department_name = '総務部'
 GROUP BY d.department_name;
 ```
 

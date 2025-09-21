@@ -20,7 +20,7 @@ CREATE TABLE employees (
     email VARCHAR(100),
     phone_number VARCHAR(20),
     hire_date DATE,
-    job_id VARCHAR(10),
+    job_title VARCHAR(50),
     salary DECIMAL(8,2),
     commission_pct DECIMAL(2,2),
     manager_id INT,
@@ -34,19 +34,7 @@ CREATE TABLE departments (
     department_id INT PRIMARY KEY,
     department_name VARCHAR(50),
     manager_id INT,
-    location_id INT
-);
-```
-
-### locations（所在地テーブル）
-```sql
-CREATE TABLE locations (
-    location_id INT PRIMARY KEY,
-    street_address VARCHAR(100),
-    postal_code VARCHAR(12),
-    city VARCHAR(50),
-    state_province VARCHAR(50),
-    country_id CHAR(2)
+    location VARCHAR(50)
 );
 ```
 
@@ -122,7 +110,7 @@ D) 上記すべて正しい
 
 **選択肢:**
 A) `INSERT employees VALUES (300, 'John', 'Doe', 'jdoe@company.com', '2024-01-01', 'IT_PROG', 5000, 60);`
-B) `INSERT INTO employees (employee_id, first_name, last_name, email, hire_date, job_id, salary, department_id) VALUES (300, 'John', 'Doe', 'jdoe@company.com', '2024-01-01', 'IT_PROG', 5000, 60);`
+B) `INSERT INTO employees (employee_id, first_name, last_name, email, hire_date, job_title, salary, department_id) VALUES (300, 'John', 'Doe', 'jdoe@company.com', '2024-01-01', 'エンジニア', 5000, 60);`
 C) `INSERT employees SET employee_id=300, first_name='John', last_name='Doe';`
 D) `ADD TO employees VALUES (300, 'John', 'Doe', 'jdoe@company.com');`
 
@@ -225,16 +213,14 @@ A)
 ```sql
 SELECT e.first_name, d.department_name, l.city
 FROM employees e
-INNER JOIN departments d ON e.department_id = d.department_id
-INNER JOIN locations l ON d.location_id = l.location_id;
+INNER JOIN departments d ON e.department_id = d.department_id;
 ```
 
 B)
 ```sql
-SELECT e.first_name, d.department_name, l.city
-FROM employees e, departments d, locations l
-WHERE e.department_id = d.department_id
-AND d.location_id = l.location_id;
+SELECT e.first_name, d.department_name, d.location
+FROM employees e, departments d
+WHERE e.department_id = d.department_id;
 ```
 
 C) AとBの両方が正しい

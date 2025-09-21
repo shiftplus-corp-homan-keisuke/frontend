@@ -17,7 +17,7 @@ CREATE TABLE employees (
     email VARCHAR(100),
     phone_number VARCHAR(20),
     hire_date DATE,
-    job_id VARCHAR(10),
+    job_title VARCHAR(50),
     salary DECIMAL(8,2),
     commission_pct DECIMAL(2,2),
     manager_id INT,
@@ -36,28 +36,9 @@ CREATE TABLE departments (
 );
 
 -- 職種テーブル
-CREATE TABLE jobs (
-    job_id VARCHAR(10) PRIMARY KEY,
-    job_title VARCHAR(50),
+
     min_salary DECIMAL(8,2),
     max_salary DECIMAL(8,2)
-);
-
--- 国テーブル
-CREATE TABLE countries (
-    country_id CHAR(2) PRIMARY KEY,
-    country_name VARCHAR(50),
-    region_id INT
-);
-
--- 職歴テーブル
-CREATE TABLE job_history (
-    employee_id INT,
-    start_date DATE,
-    end_date DATE,
-    job_id VARCHAR(10),
-    department_id INT,
-    PRIMARY KEY (employee_id, start_date)
 );
 ```
 
@@ -70,10 +51,10 @@ CREATE TABLE job_history (
 全部署の情報と部署に所属する従業員数を表示してください。従業員がいない部署は0として表示してください。
 
 ### 問題1-3: 複数テーブルの外部結合
-全従業員の情報（従業員ID、氏名、部署名、所在地の都市名）を表示してください。部署未配属や所在地不明の従業員も含めて表示してください。
+全従業員の情報（従業員ID、氏名、部署名、所在地）を表示してください。部署未配属の従業員も含めて表示してください。
 
 ### 問題1-4: 外部結合での条件指定
-東京（Tokyo）以外の都市にある部署の従業員情報を表示してください。部署未配属の従業員も含めて表示してください。
+東京以外の所在地にある部署の従業員情報を表示してください。部署未配属の従業員も含めて表示してください。
 
 ### 問題1-5: 完全外部結合（対応DBMS限定）
 従業員テーブルと部署テーブルの完全な対応関係を表示してください。従業員がいない部署と部署未配属の従業員の両方を含めてください。

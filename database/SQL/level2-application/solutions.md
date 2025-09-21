@@ -49,7 +49,7 @@ GROUP BY d.department_id, d.department_name;
 
 ### 問題1-3: 複数テーブルの外部結合
 
-**問題:** 全従業員の情報（従業員ID、氏名、部署名、所在地の都市名）を表示してください。部署未配属や所在地不明の従業員も含めて表示してください。
+**問題:** 全従業員の情報（従業員ID、氏名、部署名、所在地）を表示してください。部署未配属の従業員も含めて表示してください。
 
 **解答:**
 ```sql
@@ -74,7 +74,7 @@ LEFT JOIN departments d ON e.department_id = d.department_id;
 
 ### 問題1-4: 外部結合での条件指定
 
-**問題:** 東京（Tokyo）以外の都市にある部署の従業員情報を表示してください。部署未配属の従業員も含めて表示してください。
+**問題:** 東京以外の所在地にある部署の従業員情報を表示してください。部署未配属の従業員も含めて表示してください。
 
 **解答:**
 ```sql
@@ -90,8 +90,8 @@ WHERE d.location != '東京' OR d.location IS NULL OR d.department_id IS NULL;
 ```
 
 **解説:**
-- WHERE句でTokyo以外の条件を指定
-- NULL値の従業員（部署未配属や所在地不明）も含めるためOR条件を使用
+- WHERE句で東京以外の条件を指定
+- NULL値の従業員（部署未配属）も含めるためOR条件を使用
 - IS NULLを使ってNULL値を明示的にチェック
 
 **学習ポイント:**
@@ -274,12 +274,12 @@ WHERE NOT EXISTS (
 
 **解答:**
 ```sql
-SELECT employee_id, first_name, last_name, salary, job_id, department_id
+SELECT employee_id, first_name, last_name, salary, job_title, department_id
 FROM employees
-WHERE (salary, job_id) IN (
-    SELECT MAX(e2.salary), e2.job_id
+WHERE (salary, job_title) IN (
+    SELECT MAX(e2.salary), e2.job_title
     FROM employees e2
-    GROUP BY e2.department_id, e2.job_id
+    GROUP BY e2.department_id, e2.job_title
     HAVING MAX(e2.salary) = (
         SELECT MAX(e3.salary)
         FROM employees e3
@@ -914,12 +914,12 @@ SELECT
     l.country_id
 FROM employees e
 LEFT JOIN departments d ON e.department_id = d.department_id
-LEFT JOIN jobs j ON e.job_id = j.job_id;
+
 ```
 
 **解説:**
 - CREATE OR REPLACEでビューを更新
-- 新しいテーブル（jobs）を結合に追加
+- 新しい列を結合に追加
 - 既存のビューを安全に更新
 
 **学習ポイント:**
@@ -1059,15 +1059,15 @@ MODIFY COLUMN last_name VARCHAR(50) NOT NULL;
 **解答:**
 ```sql
 -- 複雑な制約のため、トリガーまたはアプリケーションレベルでの制御が推奨
--- 簡単な例として期間の妥当性チェック
-ALTER TABLE job_history 
-ADD CONSTRAINT chk_date_range 
-CHECK (end_date > start_date);
+-- 簡単な例として給与の妥当性チェック
+ALTER TABLE employees
+ADD CONSTRAINT chk_salary_range
+CHECK (salary > 0 AND salary <= 10000000);
 ```
 
 **解説:**
 - 複雑な制約はCHECK制約だけでは限界がある
-- 期間の妥当性など基本的なチェックは可能
+- 給与の妥当性など基本的なチェックは可能
 - 複雑なビジネスルールはトリガーやアプリケーションで実装
 
 **学習ポイント:**
@@ -1343,8 +1343,7 @@ UNION ALL
 SELECT 'Salary Out of Range' as issue_type,
        e.employee_id, e.first_name, e.last_name, e.salary
 FROM employees e
-JOIN jobs j ON e.job_id = j.job_id
-WHERE e.salary < j.min_salary OR e.salary > j.max_salary;
+WHERE e.salary < 0 OR e.salary > 1000000;
 ```
 
 **解説:**

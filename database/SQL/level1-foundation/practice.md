@@ -7,39 +7,27 @@
 ## 使用するサンプルテーブル
 
 ### employees（従業員テーブル）
-| employee_id | first_name | last_name | email | phone_number | hire_date | job_id | salary | commission_pct | manager_id | department_id |
-|-------------|------------|-----------|-------|--------------|-----------|--------|--------|----------------|------------|---------------|
-| 100 | Steven | King | sking@company.com | 515.123.4567 | 2003-06-17 | AD_PRES | 24000 | NULL | NULL | 90 |
-| 101 | Neena | Kochhar | nkochhar@company.com | 515.123.4568 | 2005-09-21 | AD_VP | 17000 | NULL | 100 | 90 |
-| 102 | Lex | De Haan | ldehaan@company.com | 515.123.4569 | 2001-01-13 | AD_VP | 17000 | NULL | 100 | 90 |
-| 103 | Alexander | Hunold | ahunold@company.com | 590.423.4567 | 2006-01-03 | IT_PROG | 9000 | NULL | 102 | 60 |
-| 104 | Bruce | Ernst | bernst@company.com | 590.423.4568 | 2007-05-21 | IT_PROG | 6000 | NULL | 103 | 60 |
-| 105 | David | Austin | daustin@company.com | 590.423.4569 | 2005-06-25 | IT_PROG | 4800 | NULL | 103 | 60 |
-| 106 | Valli | Pataballa | vpataballa@company.com | 590.423.4560 | 2006-02-05 | IT_PROG | 4800 | NULL | 103 | 60 |
-| 107 | Diana | Lorentz | dlorentz@company.com | 590.423.5567 | 2007-02-07 | IT_PROG | 4200 | NULL | 103 | 60 |
-| 108 | Nancy | Greenberg | ngreenbe@company.com | 515.124.4569 | 2002-08-17 | FI_MGR | 12008 | NULL | 101 | 100 |
-| 109 | Daniel | Faviet | dfaviet@company.com | 515.124.4169 | 2002-08-16 | FI_ACCOUNT | 9000 | NULL | 108 | 100 |
+| employee_id | first_name | last_name | email | phone_number | hire_date | job_title | salary | commission_pct | manager_id | department_id |
+|-------------|------------|-----------|-------|--------------|-----------|-----------|--------|----------------|------------|---------------|
+| 100 | 太郎 | 田中 | tanaka.taro@company.com | 03-1234-5678 | 2020-01-15 | 営業部長 | 800000 | 0.10 | NULL | 10 |
+| 101 | 花子 | 佐藤 | sato.hanako@company.com | 03-1234-5679 | 2020-03-01 | 営業主任 | 600000 | 0.08 | 100 | 10 |
+| 102 | 次郎 | 鈴木 | suzuki.jiro@company.com | 03-1234-5680 | 2021-04-01 | 営業担当 | 450000 | 0.05 | 101 | 10 |
+| 200 | 健一 | 山田 | yamada.kenichi@company.com | 06-2345-6789 | 2019-05-01 | 開発部長 | 900000 | NULL | NULL | 20 |
+| 201 | 由美 | 渡辺 | watanabe.yumi@company.com | 06-2345-6790 | 2020-02-15 | シニアエンジニア | 700000 | NULL | 200 | 20 |
+| 202 | 大輔 | 伊藤 | ito.daisuke@company.com | 06-2345-6791 | 2021-01-10 | エンジニア | 550000 | NULL | 201 | 20 |
+| 300 | 博 | 小林 | kobayashi.hiroshi@company.com | 03-3456-7890 | 2020-07-01 | マーケティング部長 | 750000 | NULL | NULL | 30 |
+| 400 | 正雄 | 吉田 | yoshida.masao@company.com | 03-4567-8901 | 2018-04-01 | 人事部長 | 720000 | NULL | NULL | 40 |
+| 500 | 智子 | 松本 | matsumoto.tomoko@company.com | 03-5678-9012 | 2019-10-01 | 経理部長 | 680000 | NULL | NULL | 50 |
 
 ### departments（部署テーブル）
-| department_id | department_name | manager_id | location_id |
-|---------------|-----------------|------------|-------------|
-| 10 | Administration | 200 | 1700 |
-| 20 | Marketing | 201 | 1800 |
-| 50 | Shipping | 121 | 1500 |
-| 60 | IT | 103 | 1400 |
-| 80 | Sales | 145 | 2500 |
-| 90 | Executive | 100 | 1700 |
-| 100 | Finance | 108 | 1700 |
-| 110 | Accounting | 205 | 1700 |
-
-### locations（所在地テーブル）
-| location_id | street_address | postal_code | city | state_province | country_id |
-|-------------|----------------|-------------|------|----------------|------------|
-| 1400 | 2014 Jabberwocky Rd | 26192 | Southlake | Texas | US |
-| 1500 | 2011 Interiors Blvd | 99236 | South San Francisco | California | US |
-| 1700 | 2004 Charade Rd | 98199 | Seattle | Washington | US |
-| 1800 | 147 Spadina Ave | M5V 2L7 | Toronto | Ontario | CA |
-| 2500 | Magdalen Centre, The Oxford Science Park | OX9 9ZB | Oxford | Oxford | UK |
+| department_id | department_name | manager_id | location |
+|---------------|-----------------|------------|----------|
+| 10 | 営業部 | 100 | 東京 |
+| 20 | 開発部 | 200 | 大阪 |
+| 30 | マーケティング部 | 300 | 東京 |
+| 40 | 人事部 | 400 | 東京 |
+| 50 | 経理部 | 500 | 東京 |
+| 60 | 総務部 | NULL | 名古屋 |
 
 ---
 
@@ -123,7 +111,7 @@
 従業員テーブルから給与が5000以上の従業員のみを対象として、部署ID でグループ化し、従業員数が2人以上の部署を取得してください。
 
 ### 問題3-7: 複数列でのGROUP BY
-従業員テーブルをjob_id でグループ化し、各職種の従業員数と平均給与を取得してください。
+従業員テーブルをjob_title でグループ化し、各職種の従業員数と平均給与を取得してください。
 
 ---
 
@@ -138,8 +126,8 @@
 ### 問題4-3: 結合と並び替え
 従業員テーブルと部署テーブルを結合し、全ての従業員の名前、姓、部署名を部署名の昇順で取得してください。
 
-### 問題4-4: 3つのテーブルの結合
-従業員テーブル、部署テーブル、所在地テーブル（locations）を結合し、従業員の名前、姓、部署名、都市名（city）を取得してください。
+### 問題4-4: 2つのテーブルの結合と所在地情報
+従業員テーブルと部署テーブルを結合し、従業員の名前、姓、部署名、所在地を取得してください。
 
 ### 問題4-5: 結合と集約
 従業員テーブルと部署テーブルを結合し、各部署の従業員数を部署名と共に取得してください。
@@ -158,14 +146,14 @@
 - last_name: 'Yamada'
 - email: 'tyamada@company.com'
 - hire_date: '2024-04-01'
-- job_id: 'IT_PROG'
+- job_title: 'エンジニア'
 - salary: 5500
 - department_id: 60
 
 ### 問題5-2: INSERT文（複数行）
 従業員テーブルに以下の2名の従業員を一度に追加してください：
-1. employee_id: 201, first_name: 'Hanako', last_name: 'Sato', email: 'hsato@company.com', hire_date: '2024-04-02', job_id: 'FI_ACCOUNT', salary: 4500, department_id: 100
-2. employee_id: 202, first_name: 'Jiro', last_name: 'Suzuki', email: 'jsuzuki@company.com', hire_date: '2024-04-03', job_id: 'IT_PROG', salary: 5000, department_id: 60
+1. employee_id: 201, first_name: 'Hanako', last_name: 'Sato', email: 'hsato@company.com', hire_date: '2024-04-02', job_title: '経理担当', salary: 4500, department_id: 100
+2. employee_id: 202, first_name: 'Jiro', last_name: 'Suzuki', email: 'jsuzuki@company.com', hire_date: '2024-04-03', job_title: 'エンジニア', salary: 5000, department_id: 60
 
 ### 問題5-3: UPDATE文（単一行）
 従業員ID が200の従業員の給与を6000に更新してください。
@@ -203,8 +191,8 @@ IT部署の従業員の中で、給与が部署内平均以上の従業員の名
 
 ### 問題6-6: データ操作の組み合わせ
 以下の操作を順番に実行してください：
-1. 新しい部署「Research」（department_id: 120, location_id: 1400）を追加
-2. この部署に新しい従業員「Saburo Tanaka」（employee_id: 203, email: stanaka@company.com, hire_date: 2024-04-04, job_id: IT_PROG, salary: 5800）を追加
+1. 新しい部署「Research」（department_id: 120, location: '東京'）を追加
+2. この部署に新しい従業員「Saburo Tanaka」（employee_id: 203, email: stanaka@company.com, hire_date: 2024-04-04, job_title: 'エンジニア', salary: 5800）を追加
 3. この従業員の給与を6200に更新
 4. Research部署の従業員数と平均給与を確認
 

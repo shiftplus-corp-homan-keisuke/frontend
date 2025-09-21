@@ -229,10 +229,10 @@ FROM employees e
 INNER JOIN departments d ON e.department_id = d.department_id;
 ```
 
-### 4.3 複数テーブルの結合
+### 4.3 テーブルの結合
 
 ```sql
--- 2つのテーブルを結合（実際のデータベース構造に合わせて修正）
+-- 従業員と部署テーブルを結合
 SELECT e.first_name, d.department_name, d.location
 FROM employees e
 INNER JOIN departments d ON e.department_id = d.department_id;

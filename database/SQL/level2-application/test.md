@@ -19,13 +19,12 @@
 
 ```sql
 -- 従業員テーブル
-employees (employee_id, first_name, last_name, email, hire_date, job_id, salary, commission_pct, manager_id, department_id)
+employees (employee_id, first_name, last_name, email, hire_date, job_title, salary, commission_pct, manager_id, department_id)
 
 -- 部署テーブル
 departments (department_id, department_name, manager_id, location)
 
--- 職種テーブル
-jobs (job_id, job_title, min_salary, max_salary)
+
 
 -- 売上テーブル
 sales (sale_id, employee_id, customer_id, sale_date, amount)

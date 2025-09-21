@@ -337,13 +337,13 @@ HAVING COUNT(*) >= 2;
 
 **解答:**
 ```sql
-SELECT job_id, COUNT(*), AVG(salary) 
-FROM employees 
-GROUP BY job_id;
+SELECT job_title, COUNT(*), AVG(salary)
+FROM employees
+GROUP BY job_title;
 ```
 
 **解説:**
-- job_idでグループ化
+- job_titleでグループ化
 - 各職種の従業員数と平均給与を表示
 - 職種別の分析が可能
 
@@ -401,8 +401,7 @@ ORDER BY d.department_name;
 ```sql
 SELECT e.first_name, e.last_name, d.department_name, l.city
 FROM employees e
-INNER JOIN departments d ON e.department_id = d.department_id
-INNER JOIN locations l ON d.location_id = l.location_id;
+INNER JOIN departments d ON e.department_id = d.department_id;
 ```
 
 **解説:**
@@ -449,8 +448,8 @@ HAVING AVG(e.salary) >= 8000;
 
 **解答:**
 ```sql
-INSERT INTO employees (employee_id, first_name, last_name, email, hire_date, job_id, salary, department_id)
-VALUES (200, 'Taro', 'Yamada', 'tyamada@company.com', '2024-04-01', 'IT_PROG', 5500, 60);
+INSERT INTO employees (employee_id, first_name, last_name, email, hire_date, job_title, salary, department_id)
+VALUES (200, 'Taro', 'Yamada', 'tyamada@company.com', '2024-04-01', 'エンジニア', 5500, 60);
 ```
 
 **解説:**
@@ -463,8 +462,8 @@ VALUES (200, 'Taro', 'Yamada', 'tyamada@company.com', '2024-04-01', 'IT_PROG', 5
 
 **解答:**
 ```sql
-INSERT INTO employees (employee_id, first_name, last_name, email, hire_date, job_id, salary, department_id)
-VALUES 
+INSERT INTO employees (employee_id, first_name, last_name, email, hire_date, job_title, salary, department_id)
+VALUES
     (201, 'Hanako', 'Sato', 'hsato@company.com', '2024-04-02', 'FI_ACCOUNT', 4500, 100),
     (202, 'Jiro', 'Suzuki', 'jsuzuki@company.com', '2024-04-03', 'IT_PROG', 5000, 60);
 ```
@@ -644,12 +643,12 @@ WHERE e.department_id IN (
 **解答:**
 ```sql
 -- 1. 新しい部署を追加
-INSERT INTO departments (department_id, department_name, location_id)
-VALUES (120, 'Research', 1400);
+INSERT INTO departments (department_id, department_name, location)
+VALUES (120, 'Research', '東京');
 
 -- 2. 新しい従業員を追加
-INSERT INTO employees (employee_id, first_name, last_name, email, hire_date, job_id, salary, department_id)
-VALUES (203, 'Saburo', 'Tanaka', 'stanaka@company.com', '2024-04-04', 'IT_PROG', 5800, 120);
+INSERT INTO employees (employee_id, first_name, last_name, email, hire_date, job_title, salary, department_id)
+VALUES (203, 'Saburo', 'Tanaka', 'stanaka@company.com', '2024-04-04', 'エンジニア', 5800, 120);
 
 -- 3. 従業員の給与を更新
 UPDATE employees 

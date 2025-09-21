@@ -81,7 +81,7 @@ WHERE salary BETWEEN 500000 AND 800000;
 
 **解答:**
 ```sql
-SELECT * FROM employees WHERE first_name LIKE 'D%';
+SELECT * FROM employees WHERE first_name LIKE '太%';
 ```
 
 **解説:**

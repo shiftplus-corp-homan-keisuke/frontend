@@ -55,10 +55,10 @@ D) `SELECT employee_id, first_name, last_name, salary FROM employees ORDER salar
 従業員テーブルから、部署ID（department_id）が60で、かつ給与が5000以上の従業員の情報を取得するSQL文として正しいものはどれですか。
 
 **選択肢:**
-A) `SELECT * FROM employees WHERE department_id = 60 OR salary >= 5000;`
-B) `SELECT * FROM employees WHERE department_id = 60 AND salary >= 5000;`
-C) `SELECT * FROM employees WHERE department_id == 60 AND salary >= 5000;`
-D) `SELECT * FROM employees WHERE department_id = 60 & salary >= 5000;`
+A) `SELECT * FROM employees WHERE department_id = 10 OR salary >= 500000;`
+B) `SELECT * FROM employees WHERE department_id = 10 AND salary >= 500000;`
+C) `SELECT * FROM employees WHERE department_id == 10 AND salary >= 500000;`
+D) `SELECT * FROM employees WHERE department_id = 10 & salary >= 500000;`
 
 ### 問題3（集約関数）
 従業員テーブルの全従業員の平均給与を求めるSQL文として正しいものはどれですか。
@@ -111,26 +111,26 @@ D) 上記すべて正しい
 **選択肢:**
 A) `INSERT employees VALUES (300, 'John', 'Doe', 'jdoe@company.com', '2024-01-01', 'IT_PROG', 5000, 60);`
 B) `INSERT INTO employees (employee_id, first_name, last_name, email, hire_date, job_title, salary, department_id) VALUES (300, 'John', 'Doe', 'jdoe@company.com', '2024-01-01', 'エンジニア', 5000, 60);`
-C) `INSERT employees SET employee_id=300, first_name='John', last_name='Doe';`
+C) `INSERT employees SET employee_id=600, first_name='John', last_name='Doe';`
 D) `ADD TO employees VALUES (300, 'John', 'Doe', 'jdoe@company.com');`
 
 ### 問題9（UPDATE文）
 従業員ID が300の従業員の給与を6000に更新するSQL文として正しいものはどれですか。
 
 **選択肢:**
-A) `UPDATE employees SET salary = 6000 WHERE employee_id = 300;`
-B) `MODIFY employees SET salary = 6000 WHERE employee_id = 300;`
-C) `CHANGE employees SET salary = 6000 WHERE employee_id = 300;`
-D) `ALTER employees SET salary = 6000 WHERE employee_id = 300;`
+A) `UPDATE employees SET salary = 6000 WHERE employee_id = 600;`
+B) `MODIFY employees SET salary = 6000 WHERE employee_id = 600;`
+C) `CHANGE employees SET salary = 6000 WHERE employee_id = 600;`
+D) `ALTER employees SET salary = 6000 WHERE employee_id = 600;`
 
 ### 問題10（DELETE文）
 従業員テーブルから従業員ID が300の従業員を削除するSQL文として正しいものはどれですか。
 
 **選択肢:**
-A) `REMOVE FROM employees WHERE employee_id = 300;`
-B) `DELETE employees WHERE employee_id = 300;`
-C) `DELETE FROM employees WHERE employee_id = 300;`
-D) `DROP FROM employees WHERE employee_id = 300;`
+A) `REMOVE FROM employees WHERE employee_id = 600;`
+B) `DELETE employees WHERE employee_id = 600;`
+C) `DELETE FROM employees WHERE employee_id = 600;`
+D) `DROP FROM employees WHERE employee_id = 600;`
 
 ### 問題11（SQL実行順序）
 以下のSQL文の実行順序として正しいものはどれですか。
@@ -256,8 +256,8 @@ D) DECIMALは文字列型である
 以下のSQL文の実行について正しい説明はどれですか。
 ```sql
 BEGIN;
-UPDATE employees SET salary = salary * 1.1 WHERE department_id = 60;
-DELETE FROM employees WHERE salary < 3000;
+UPDATE employees SET salary = salary * 1.1 WHERE department_id = 10;
+DELETE FROM employees WHERE salary < 300000;
 COMMIT;
 ```
 

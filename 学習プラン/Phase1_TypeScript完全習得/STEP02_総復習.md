@@ -2,7 +2,7 @@
 
 ## 📋 概要
 
-STEP02「高度な型システムと型推論メカニズム」の理論学習内容を総復習するためのコンパクトなドキュメントです。
+STEP02「高度な型システムと型推論メカニズム」の理論学習内容を総復習するためのドキュメントです。
 
 ## 🎯 学習目標
 
@@ -12,7 +12,6 @@ STEP02「高度な型システムと型推論メカニズム」の理論学習�
 - [ ] 構造的型付けの概念
 - [ ] タプル型の基本活用
 - [ ] 関数オーバーロードの要点
-- [ ] 実践での活用場面の把握
 
 ---
 
@@ -282,69 +281,4 @@ function format(value: string | number | Date): string {
 }
 ```
 
-### 5.2 条件付きオーバーロード
-
-```typescript
-function createElement(tag: "div"): HTMLDivElement;
-function createElement(tag: "span"): HTMLSpanElement;
-function createElement(tag: string): HTMLElement;
-
-function createElement(tag: string): HTMLElement {
-  return document.createElement(tag);
-}
-```
-
 **活用場面**: ユーティリティ関数、DOM操作、型安全なAPI設計
-
----
-
-## 6. 実践での活用場面（簡潔版）
-
-### 6.1 状態管理
-```typescript
-type LoadingState = 
-  | { status: "idle" }
-  | { status: "loading" }
-  | { status: "success"; data: any }
-  | { status: "error"; error: string };
-```
-
-### 6.2 API エラーハンドリング
-```typescript
-type ApiResponse<T> = 
-  | { success: true; data: T }
-  | { success: false; error: string };
-```
-
-### 6.3 条件分岐の型安全性
-```typescript
-function processData(data: unknown) {
-  if (isValidData(data)) {
-    // data は ValidData 型として扱われる
-    return data.process();
-  }
-}
-```
-
----
-
-## 📝 まとめ
-
-### 重要ポイント
-1. **ユニオン型**: 柔軟な型定義でDiscriminated Unionパターンを活用
-2. **型ガード**: typeof、in、instanceof、カスタム型ガードを使い分け
-3. **const assertion**: `as const`で厳密な型推論を制御
-4. **構造的型付け**: 型の構造による互換性を理解
-5. **タプル型**: 固定長配列で型安全な複数値の管理
-6. **関数オーバーロード**: 型に応じた適切な戻り値の提供
-
-### 次のステップへの準備
-- インターフェースとオブジェクト型の詳細学習
-- より高度な型操作とユーティリティ型の習得
-- 実践プロジェクトでの型設計パターンの適用
-
-## 🔗 関連リソース
-
-- [TypeScript Handbook - Union Types](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#union-types)
-- [TypeScript Handbook - Type Guards](https://www.typescriptlang.org/docs/handbook/2/narrowing.html)
-- [TypeScript Handbook - const assertions](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-4.html#const-assertions)

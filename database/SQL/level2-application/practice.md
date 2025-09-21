@@ -29,15 +29,8 @@ CREATE TABLE departments (
     department_id INT PRIMARY KEY,
     department_name VARCHAR(50),
     manager_id INT,
-    location_id INT
+    location VARCHAR(50)
 );
-
--- 所在地テーブル
-CREATE TABLE locations (
-    location_id INT PRIMARY KEY,
-    street_address VARCHAR(100),
-    postal_code VARCHAR(12),
-    city VARCHAR(50),
     state_province VARCHAR(50),
     country_id CHAR(2)
 );

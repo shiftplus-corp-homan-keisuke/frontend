@@ -232,11 +232,10 @@ INNER JOIN departments d ON e.department_id = d.department_id;
 ### 4.3 複数テーブルの結合
 
 ```sql
--- 3つのテーブルを結合
-SELECT e.first_name, d.department_name, l.city
+-- 2つのテーブルを結合（実際のデータベース構造に合わせて修正）
+SELECT e.first_name, d.department_name, d.location
 FROM employees e
-INNER JOIN departments d ON e.department_id = d.department_id
-INNER JOIN locations l ON d.location_id = l.location_id;
+INNER JOIN departments d ON e.department_id = d.department_id;
 ```
 
 ## 5. 基本的なデータ操作

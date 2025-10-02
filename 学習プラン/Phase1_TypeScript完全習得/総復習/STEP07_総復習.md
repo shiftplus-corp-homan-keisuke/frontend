@@ -29,9 +29,9 @@ import { z } from "zod";
 
 // スキーマ定義（単一の真実の源）
 const UserSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   name: z.string().min(1).max(100),
-  email: z.string().email(),
+  email: z.email(),
   age: z.number().int().min(0).max(150),
 });
 
@@ -159,36 +159,6 @@ const ProductSchema = z.object({
 }, {
   message: "割引価格は元の価格より安く設定してください",
   path: ["discountPrice"],
-});
-```
-
-### 3.2 superRefine()による高度な検証
-
-```typescript
-const UserRegistrationSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
-  confirmPassword: z.string(),
-  birthDate: z.string().datetime(),
-}).superRefine((data, ctx) => {
-  // パスワード確認
-  if (data.password !== data.confirmPassword) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ["confirmPassword"],
-      message: "パスワードが一致しません",
-    });
-  }
-
-  // 年齢制限
-  const age = new Date().getFullYear() - new Date(data.birthDate).getFullYear();
-  if (age < 13) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ["birthDate"],
-      message: "13歳以上である必要があります",
-    });
-  }
 });
 ```
 

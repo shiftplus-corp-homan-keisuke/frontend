@@ -83,20 +83,6 @@ function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
 }
 ```
 
-### 2.2 条件付き制約
-
-```typescript
-type StringOrNumber<T> = T extends string ? string : T extends number ? number : never;
-
-function processValue<T extends string | number>(value: T): StringOrNumber<T> {
-  if (typeof value === "string") {
-    return value.toUpperCase() as StringOrNumber<T>;
-  } else {
-    return (value * 2) as StringOrNumber<T>;
-  }
-}
-```
-
 ---
 
 ## 3. 高階関数とジェネリクス
@@ -142,53 +128,9 @@ function safeFilterWithTypeGuard<T, U extends T>(
 
 ---
 
-## 4. 条件付き型と型推論
+## 4. ジェネリクスの実践パターン
 
-### 4.1 条件付き型（Conditional Types）
-
-```typescript
-// 基本的な条件付き型
-type IsString<T> = T extends string ? true : false;
-type NonNullable<T> = T extends null | undefined ? never : T;
-
-// 配列の要素型を取得
-type ArrayElement<T> = T extends (infer U)[] ? U : never;
-
-// Promise の値型を取得
-type Awaited<T> = T extends Promise<infer U> ? U : T;
-```
-
-### 4.2 infer キーワードの活用
-
-```typescript
-// 関数の戻り値型を取得
-type ReturnType<T> = T extends (...args: any[]) => infer R ? R : never;
-
-// 関数の引数型を取得
-type Parameters<T> = T extends (...args: infer P) => any ? P : never;
-
-// タプルの先頭と末尾
-type Head<T> = T extends [infer H, ...any[]] ? H : never;
-type Tail<T> = T extends [any, ...infer T] ? T : never;
-```
-
-### 4.3 分散条件付き型
-
-```typescript
-// 分散条件付き型
-type ToArray<T> = T extends any ? T[] : never;
-type Test = ToArray<string | number>; // string[] | number[]
-
-// 分散を防ぐ方法
-type ToArrayNonDistributive<T> = [T] extends [any] ? T[] : never;
-type Test2 = ToArrayNonDistributive<string | number>; // (string | number)[]
-```
-
----
-
-## 5. ジェネリクスの実践パターン
-
-### 5.1 Repository パターン
+### 4.1 Repository パターン
 
 ```typescript
 // 基本的なエンティティ
@@ -208,7 +150,7 @@ interface IRepository<T extends BaseEntity> {
 }
 ```
 
-### 5.2 ファクトリーパターン
+### 4.2 ファクトリーパターン
 
 ```typescript
 // ファクトリーインターフェース
@@ -235,7 +177,7 @@ class ConfigurableFactory<T> implements IFactory<T> {
 }
 ```
 
-### 5.3 イベントシステム
+### 4.3 イベントシステム
 
 ```typescript
 // 型安全なイベントシステム

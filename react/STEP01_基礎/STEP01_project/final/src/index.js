@@ -77,8 +77,7 @@ function Menu() {
       {numPizzas > 0 ? (
         <>
           <p>
-            Authentic Italian cuisine. 6 creative dishes to choose from. All
-            from our stone oven, all organic, all delicious.
+            本格イタリアン、石窯からお届けする、創造性あふれる6つの料理。すべて有機食材を使用し、どれも絶品です
           </p>
 
           <ul className="pizzas">
@@ -88,7 +87,7 @@ function Menu() {
           </ul>
         </>
       ) : (
-        <p>We're still working on our menu. Please come back later :)</p>
+        <p>ただいまメニューを準備中です。また後ほどお越しください。</p>
       )}
     </main>
   );
@@ -123,7 +122,7 @@ function Footer() {
         <Order closeHour={closeHour} openHour={openHour} />
       ) : (
         <p>
-          We're happy to welcome you between {openHour}:00 and {closeHour}:00.
+          {openHour}:00から{closeHour}:00の間、皆様のご来店をお待ちしております。
         </p>
       )}
     </footer>
@@ -134,10 +133,9 @@ function Order({ closeHour, openHour }) {
   return (
     <div className="order">
       <p>
-        We're open from {openHour}:00 to {closeHour}:00. Come visit us or order
-        online.
+        {openHour}:00から{closeHour}:00まで営業しております。ご来店またはオンラインでご注文ください。
       </p>
-      <button className="btn">Order</button>
+      <button className="btn">注文する</button>
     </div>
   );
 }

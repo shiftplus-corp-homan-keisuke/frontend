@@ -19,7 +19,7 @@ Session1 で作ったピザメニューアプリをさらに発展させなが�
 
 ### JSX の本質的な理解
 
-このコースですでに JSX を書いてきましたが、JSX とは何か、なぜ React で重要なのかを深く理解しましょう。
+このSTEPですでに JSX を書いてきましたが、JSX とは何か、なぜ React で重要なのかを深く理解しましょう。
 
 コンポーネントには独自のデータ、ロジック、外観が含まれます。UI の一部として、どのように見えるかを正確に記述できる必要があります。
 
@@ -37,11 +37,13 @@ HTML を書きつつ、必要に応じて JavaScript の変数や他の React �
 
 では、React はどうやってこの HTML のようなコードを理解するのでしょう？
 
-JSX は JavaScript の拡張なので、JSX を JavaScript に変換する仕組みがあります。これは Create React App に含まれる Babel というツールが自動で行います。
+JSX は JavaScript の拡張なので、JSX を JavaScript に変換する Babel というツールが自動で行います。
 
 変換後は、各 JSX 要素が React.createElement 関数の呼び出しに変わります。
 
-これは以前の純粋な React 講義で見たものです。Babel がなければ JSX は使えません。
+Babel がなければ JSX は使えません。
+
+![image-20251009004912447](assets/image-20251009004912447.png)
 
 ### 変換の必要性と意義
 
@@ -162,13 +164,13 @@ function App() {
 
 ```jsx
 function Footer() {
-  return React.createElement("footer", null, "We're currently open!");
+  return React.createElement("footer", null, "現在営業中です！");
 }
 ```
 
 JSX なしで React.createElement を使うと、どれだけ書きづらいかが分かります。
 
-footer 要素を返し、props は不要なので null、子要素はテキストだけです。「We're currently open」と表示します。
+footer 要素を返し、props は不要なので null、子要素はテキストだけです。「現在営業中です！」と表示します。
 
 ```jsx
 function App() {
@@ -193,7 +195,7 @@ function App() {
 ```jsx
 function Footer() {
   return (
-    <footer>We're currently open! {new Date().toLocaleTimeString()}</footer>
+    <footer>現在営業中です！ {new Date().toLocaleTimeString()}</footer>
   );
 }
 ```
@@ -258,7 +260,7 @@ function Footer() {
   console.log(hour);
 
   return (
-    <footer>We're currently open! {new Date().toLocaleTimeString()}</footer>
+    <footer>現在営業中です！ {new Date().toLocaleTimeString()}</footer>
   );
 }
 ```
@@ -279,24 +281,24 @@ function Footer() {
 
   // 条件付きロジック
   if (hour >= openHour && hour <= closeHour) {
-    alert("We're currently open!");
+    alert("現在営業中です！");
   } else {
-    alert("Sorry, we're closed");
+    alert("申し訳ございません、閉店しております");
   }
 
   return (
-    <footer>We're currently open! {new Date().toLocaleTimeString()}</footer>
+    <footer>現在営業中です！ {new Date().toLocaleTimeString()}</footer>
   );
 }
 ```
 
-openHour（12 時）と closeHour（22 時）を定義し、時刻が営業中なら「We're currently open!」、そうでなければ「Sorry, we're closed」とアラートを出します。
+openHour（12 時）と closeHour（22 時）を定義し、時刻が営業中なら「現在営業中です！」、そうでなければ「申し訳ございません、閉店しております」とアラートを出します。
 
 なお、React の StrictMode ではコンポーネントが 2 回レンダリングされるため、アラートも 2 回表示されます。
 
 ### より実用的なアプローチ
 
-openHour を 8 に変えると「We are currently open!」と表示されます。
+openHour を 8 に変えると「現在営業中です！」と表示されます。
 
 alert は実際のアプリでは使いませんが、ここではデモとして使っています。
 
@@ -310,7 +312,7 @@ function Footer() {
   console.log(isOpen);
 
   return (
-    <footer>We're currently open! {new Date().toLocaleTimeString()}</footer>
+    <footer>現在営業中です！ {new Date().toLocaleTimeString()}</footer>
   );
 }
 ```
@@ -413,7 +415,7 @@ function Header() {
 function Footer() {
   return (
     <footer className="footer">
-      <p>We're currently open! {new Date().toLocaleTimeString()}</p>
+      <p>現在営業中です！ {new Date().toLocaleTimeString()}</p>
     </footer>
   );
 }
@@ -470,12 +472,12 @@ JSX の価値を理解するために、JSX を使わない場合を見てみま
 ```jsx
 // JSXなしの場合（非推奨）
 function Footer() {
-  return React.createElement("footer", null, "We're currently open!");
+  return React.createElement("footer", null, "現在営業中です！");
 }
 
 // JSXを使用した場合（推奨）
 function Footer() {
-  return <footer>We're currently open!</footer>;
+  return <footer>現在営業中です！</footer>;
 }
 ```
 

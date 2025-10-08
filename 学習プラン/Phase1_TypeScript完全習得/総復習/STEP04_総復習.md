@@ -263,10 +263,6 @@ function isArrayOf<T>(
 }
 ```
 
----
-
-## 
-
 ### 3.1 `asserts`キーワードの使用
 
 **概念**

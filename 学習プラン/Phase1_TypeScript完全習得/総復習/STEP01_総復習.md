@@ -32,6 +32,7 @@ const { name, age } = { name: "Alice", age: 30 };
 function greetUser({ name, age }) {
   return `Hello, ${name}! You are ${age} years old.`;
 }
+
 ```
 
 **活用場面**: API レスポンスの抽出、関数の引数処理、配列データの処理

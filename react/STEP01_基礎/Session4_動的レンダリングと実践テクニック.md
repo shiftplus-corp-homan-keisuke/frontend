@@ -46,31 +46,30 @@ React の素晴らしい点は、多くの場合、すでに持っている Java
 それでは、実際にどのように実装するかを見てみましょう。
 
 まずは新しい div を作成します。後でこれをリスト要素に変換しますが、最初はどんな要素でも構いません。
-``jsx
+```jsx
 function Menu() {
-const pizzas = pizzaData;
+    const pizzas = pizzaData;
 
-return (
-<main className="menu">
-<h2>Our Menu</h2>
+    return (
+        <main className="menu">
+        <h2>Our Menu</h2>
 
-      <div>
-        {pizzaData.map((pizza) => (
-          <Pizza
-            name={pizza.name}
-            ingredients={pizza.ingredients}
-            price={pizza.price}
-            photoName={pizza.photoName}
-            key={pizza.name}
-          />
-        ))}
-      </div>
-    </main>
-
-);
+          <div>
+            {pizzaData.map((pizza) => (
+              <Pizza
+                name={pizza.name}
+                ingredients={pizza.ingredients}
+                price={pizza.price}
+                photoName={pizza.photoName}
+                key={pizza.name}
+              />
+            ))}
+          </div>
+        </main>
+	);
 }
 
-````
+```
 
 まず、JavaScriptのコード内でpizzaDataを取得します。これは単なる配列です。
 
@@ -114,7 +113,7 @@ function Pizza({ pizzaObj }) {
     </li>
   );
 }
-````
+```
 
 これで、pizzaData 配列に基づいたすべてのピザのリストが表示されます。
 
@@ -313,38 +312,37 @@ function Menu() {
 
 三項演算子には 3 つの部分があります。最初の部分は条件で、この条件が true の場合、演算の結果はこの演算子の 2 番目の部分になります。
 
-しかし、三項演算子には 3 番目の部分も必要で、これは基本的に else 分岐のようなものです。```jsx
-
+しかし、三項演算子には 3 番目の部分も必要で、これは基本的に else 分岐のようなものです。
+```jsx
 function Menu() {
-const numPizzas = pizzaData.length;
+    const numPizzas = pizzaData.length;
 
-return (
-<main className="menu">
-<h2>Our Menu</h2>
+    return (
+    <main className="menu">
+    <h2>Our Menu</h2>
 
-      {numPizzas > 0 ? (
-        // 条件がtrueの場合の表示
-        <>
-          <p>
-            本格的なイタリア料理。創造的な6つの料理からお選びください。
-            すべて石窯で、すべてオーガニック、すべて美味しい。
-          </p>
-          <ul className="pizzas">
-            {pizzaData.map((pizza) => (
-              <Pizza pizzaObj={pizza} key={pizza.name} />
-            ))}
-          </ul>
-        </>
-      ) : (
-        // 条件がfalseの場合の表示
-        <p>メニューを準備中です。後ほどお越しください :)</p>
-      )}
-    </main>
-
-);
+          {numPizzas > 0 ? (
+            // 条件がtrueの場合の表示
+            <>
+              <p>
+                本格的なイタリア料理。創造的な6つの料理からお選びください。
+                すべて石窯で、すべてオーガニック、すべて美味しい。
+              </p>
+              <ul className="pizzas">
+                {pizzaData.map((pizza) => (
+                  <Pizza pizzaObj={pizza} key={pizza.name} />
+                ))}
+              </ul>
+            </>
+          ) : (
+            // 条件がfalseの場合の表示
+            <p>メニューを準備中です。後ほどお越しください :)</p>
+          )}
+        </main>
+    );
 }
 
-````
+```
 
 以前と全く同じ結果が得られることがわかります。
 
@@ -369,7 +367,7 @@ return (
 } else {
   return <p>ピザがありません</p>;
 }}
-````
+```
 
 架空の実験をしてみましょう。「numPizzas > 0 の場合、これを」と書いたとしましょう。しかし、それは実際には起こりません。
 
@@ -893,7 +891,7 @@ function Pizza({ pizzaObj }) {
 }
 ```
 
-これが私たちが求めていたものです。なぜこれが機能したかを要約しましょう。
+これが求めていたものです。なぜこれが機能したかを要約しましょう。
 
 テンプレートリテラルがあり、ここで単純に JavaScript 式を書きます。そして、三項演算子で、これが存在するかどうかをチェックし、もしそうなら。
 

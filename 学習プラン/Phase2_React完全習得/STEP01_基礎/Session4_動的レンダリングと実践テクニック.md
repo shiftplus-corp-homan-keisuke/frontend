@@ -51,6 +51,7 @@ function Menu() {
 const pizzas = pizzaData;
 
 return (
+
 <main className="menu">
 <h2>Our Menu</h2>
 
@@ -319,6 +320,7 @@ function Menu() {
 const numPizzas = pizzaData.length;
 
 return (
+
 <main className="menu">
 <h2>Our Menu</h2>
 

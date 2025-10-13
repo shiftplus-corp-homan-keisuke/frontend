@@ -93,64 +93,15 @@ function Header() {
 }
 ```
 
-48 ピクセルと言いましょう。そして、JavaScript オブジェクトを書いているので、この値は常に文字列である必要があります。
+48 ピクセルとしょう。そして、JavaScript オブジェクトを書いているので、この値は常に文字列である必要があります。
 
 別のものを試してみましょう。textTransform。そして、VS Code が常にここで利用可能なオプションを表示することがわかります。
 
 これらのプロパティ値を常に文字列として書くようにしてください。なぜなら、これは最終的に単なる JavaScript オブジェクトだからです。
 
-そして、これをここから抽出することもできます。これを切り取って、ここで変数を作成しましょう。const style、そしてもちろん任意の変数名にできます。
-
-そして、それをここに配置します。そして、すべてまだ同じに見えます。
+そして、これをここから抽出することもできます。これを切り取って、ここで style 変数を作成しましょう。もちろん任意の変数名にできます。
 
 これが、個々のコンポーネントにスタイルを追加する最も簡単な方法です。
-
-#### インラインスタイルの記述方法
-
-```jsx
-function Header() {
-  // スタイルオブジェクトを変数として定義
-  const headerStyle = {
-    color: "red",
-    fontSize: "48px",
-    textTransform: "uppercase",
-    textAlign: "center",
-  };
-
-  return (
-    <header>
-      <h1 style={headerStyle}>Fast React Pizza Co.</h1>
-    </header>
-  );
-}
-```
-
-**重要なポイント**：
-
-- **二重の波括弧**：`{{ }}`は外側が JavaScript モード、内側がオブジェクト
-- **camelCase 記法**：`font-size` → `fontSize`、`text-transform` → `textTransform`
-- **文字列値**：すべての CSS 値は文字列として記述（`"48px"`、`"red"`）
-
-#### 動的スタイリングの例
-
-```jsx
-function Pizza({ soldOut }) {
-  const pizzaStyle = {
-    opacity: soldOut ? 0.6 : 1,
-    filter: soldOut ? "grayscale(100%)" : "none",
-  };
-
-  return (
-    <div className="pizza" style={pizzaStyle}>
-      {/* ピザの内容 */}
-    </div>
-  );
-}
-```
-
-### 外部 CSS ファイルの活用
-
-#### より実用的なアプローチ
 
 ただし、アプリケーションが大きくなると、すべてのコンポーネントにインラインスタイルを書くのは大変です。実際の現場ではあまり使われません。
 
@@ -158,13 +109,11 @@ function Pizza({ soldOut }) {
 
 React アプリケーションで最も一般的なスタイリング方法は、外部 CSS ファイルを使うことです。他の Web ページと同じやり方です。
 
-#### CSS ファイルのインポート
-
 この場合、CSS と JavaScript/HTML の関心が混ざることになりますが、React では特に問題ありません。
 
 また、後ほど「styled components」という手法も学びます。
 
-しかし、今のところ、この講義の最初に含めた CSS ファイルを見てみましょう。
+しかし、今のところ、このSTEPの最初に含めた CSS ファイルを見てみましょう。
 
 これは、いくつかのクラスが定義された一般的な CSS ファイルです。
 
@@ -960,7 +909,7 @@ function Menu({ isOpen }) {
 
       {/* 条件付きレンダリング */}
       {soldOut && <span className="sold-out">SOLD OUT</span>}
-
+    
       {/* 三項演算子でJSXを返す */}
       {soldOut ? (
         <p className="unavailable">現在品切れです</p>

@@ -46,7 +46,7 @@ React の優れた点の一つは、多くの場合、既存の JavaScript の�
 それでは、実際の実装方法を見ていきましょう。
 
 まず、新しい`div`要素を作成します。後でこれをリスト要素に変換しますが、最初はどんな要素でも問題ありません。
-``jsx
+```jsx
 function Menu() {
 const pizzas = pizzaData;
 
@@ -62,7 +62,6 @@ return (
             ingredients={pizza.ingredients}
             price={pizza.price}
             photoName={pizza.photoName}
-            key={pizza.name}
           />
         ))}
       </div>
@@ -71,7 +70,7 @@ return (
 );
 }
 
-````
+```
 
 まず、JavaScript モード内で`pizzaData`を取得します。これは単純な配列データです。
 
@@ -91,31 +90,30 @@ function Menu() {
     <main className="menu">
       <h2>Our Menu</h2>
 
-      <ul className="pizzas">
+      <div className="pizzas">
         {pizzas.map((pizza) => (
           <Pizza
             pizzaObj={pizza}
-            key={pizza.name}
           />
         ))}
-      </ul>
+      </div>
     </main>
   );
 }
 
 function Pizza({ pizzaObj }) {
   return (
-    <li className="pizza">
+    <div className="pizza">
       <img src={pizzaObj.photoName} alt={pizzaObj.name} />
       <div>
         <h3>{pizzaObj.name}</h3>
         <p>{pizzaObj.ingredients}</p>
         <span>¥{pizzaObj.price}</span>
       </div>
-    </li>
+    </div>
   );
 }
-````
+```
 
 これで、`pizzaData`配列に基づいたすべてのピザのリストが表示されます。
 
@@ -314,7 +312,8 @@ function Menu() {
 
 三項演算子は 3 つの部分から構成されています。最初の部分は条件式で、この条件が`true`の場合、演算結果は 2 番目の部分（`?`の後）の値になります。
 
-そして、三項演算子には 3 番目の部分（`:`の後）も必要です。これは基本的に`else`分岐に相当します。```jsx
+そして、三項演算子には 3 番目の部分（`:`の後）も必要です。これは基本的に`else`分岐に相当します。
+```jsx
 
 function Menu() {
 const numPizzas = pizzaData.length;
@@ -346,7 +345,7 @@ return (
 );
 }
 
-````
+```
 
 以前と全く同じ結果が得られることが確認できます。
 
@@ -837,8 +836,6 @@ React Fragment は、DOM に実際の要素として出力されることなく�
 ---
 
 ## 🎨 動的スタイリング：条件に応じたクラス名とテキストの設定
-
-### 動的スタイリングとは
 
 プロジェクトを完成させるために、要素内のテキストとクラス名を条件に応じて動的に設定する方法を学びましょう。
 

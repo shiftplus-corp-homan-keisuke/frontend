@@ -10,7 +10,7 @@
 
 ### 実験1: let変数での直接更新
 
-```javascript
+```jsx
 function App() {
   // ❌ constをletに変更（間違った方法）
   let [step, setStep] = useState(1);
@@ -37,20 +37,6 @@ function App() {
 
 ### なぜこれが問題なのか？
 
-```mermaid
-graph TD
-    A[ボタンクリック] --> B[step = step + 1]
-    B --> C[変数は更新される]
-    C --> D[しかしReactは知らない]
-    D --> E[再レンダリングが発生しない]
-    E --> F[UIは更新されない]
-    
-    G[正しい方法] --> H[setStep(step + 1)]
-    H --> I[Reactが状態変更を検知]
-    I --> J[再レンダリングが発生]
-    J --> K[UIが更新される]
-```
-
 **理由：**
 - Reactは、これが状態を更新しようとしていることを知る方法がない
 - Reactは魔法の方法で変数の変更を検知できない
@@ -58,7 +44,7 @@ graph TD
 
 ### 正しい方法との比較
 
-```javascript
+```jsx
 function App() {
   const [step, setStep] = useState(1);
   
@@ -88,7 +74,7 @@ function App() {
 
 ### 問題のあるコード例
 
-```javascript
+```jsx
 function App() {
   // オブジェクト状態を作成（セッター関数を取得しない）
   const [test] = useState({ name: "Jonas" });
@@ -129,7 +115,7 @@ graph TD
 
 ### 正しいオブジェクト状態の更新方法
 
-```javascript
+```jsx
 function App() {
   // ✅ セッター関数も取得
   const [test, setTest] = useState({ name: "Jonas" });
@@ -152,7 +138,7 @@ function App() {
 
 ### 基本原則
 
-```javascript
+```jsx
 // ❌ 状態を直接変更（ミューテーション）
 state.property = newValue;
 state.push(newItem);
@@ -166,7 +152,7 @@ setState(state.map((item, i) => i === index ? newValue : item));
 
 ### 配列状態の正しい更新方法
 
-```javascript
+```jsx
 function TodoList() {
   const [todos, setTodos] = useState([]);
   
@@ -202,7 +188,7 @@ function TodoList() {
 
 以下のコードの問題点を見つけて修正してください：
 
-```javascript
+```jsx
 function BuggyCounter() {
   let [count, setCount] = useState(0);
   const [user, setUser] = useState({ name: "Alice", age: 25 });
@@ -230,7 +216,7 @@ function BuggyCounter() {
 
 以下の要件を満たすコンポーネントを作成してください：
 
-```javascript
+```jsx
 function UserProfile() {
   const [user, setUser] = useState({
     name: "John",

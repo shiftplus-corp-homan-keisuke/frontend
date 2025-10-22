@@ -12,7 +12,7 @@
 
 このセクションでは、イベントと状態について学習し、いくつかのステップをナビゲートできるシンプルなコンポーネントを構築します。この講義では、そのコンポーネントの静的な部分の構築から始めます。
 
-startarディレクトリをコピーしてターミナルを開きましょう。以下のコマンドを実行してアプリを起動します
+starterディレクトリをコピーしてターミナルを開きましょう。以下のコマンドを実行してアプリを起動します
 
 ```
 npm install
@@ -48,7 +48,7 @@ DOM要素を直接選択しません。そのため、addEventListenerも使用�
 
 ### インラインでのイベントハンドラー定義
 
-```javascript
+```jsx
 // 基本的なイベントハンドラーの例
 function App() {
   return (
@@ -82,7 +82,7 @@ function App() {
 
 ### 重要なポイント：関数 vs 関数呼び出し
 
-```javascript
+```jsx
 // ❌ 間違った方法：関数を呼び出している
 <button onClick={alert("TEST")}>
   Click me
@@ -104,7 +104,7 @@ function App() {
 
 通常、イベントハンドラー関数を直接onClickプロパティに定義するのではなく、代わりに別の関数を作成し、その関数をここに渡します。
 
-```javascript
+```jsx
 function App() {
   // イベントハンドラー関数をコンポーネント内で定義
   function handlePrevious() {
@@ -154,7 +154,7 @@ function App() {
 
 Reactでは、クリックイベント以外にも様々なイベントを処理できます：
 
-```javascript
+```jsx
 function EventExamples() {
   return (
     <div>
@@ -182,7 +182,7 @@ function EventExamples() {
 
 以下のコンポーネントを作成してください：
 
-```javascript
+```jsx
 function ClickCounter() {
   // ここにイベントハンドラーを実装してください
   
@@ -203,7 +203,7 @@ function ClickCounter() {
 
 ### 演習2: 複数のイベントハンドラー
 
-```javascript
+```jsx
 function InteractiveButton() {
   return (
     <button>
@@ -286,7 +286,7 @@ graph TD
 
 まず、静的な変数を削除して、useStateを使用します：
 
-```javascript
+```jsx
 import { useState } from 'react';
 
 const messages = [
@@ -311,7 +311,7 @@ function App() {
 useStateが何を返すのかを、段階的に理解しましょう：
 
 **ステップ1：useStateの戻り値を確認**
-```javascript
+```jsx
 function App() {
   const array = useState(1);
   console.log(array);
@@ -324,7 +324,7 @@ function App() {
 - `array[1]`：状態を更新するための関数
 
 **ステップ2：通常の配列アクセス方法**
-```javascript
+```jsx
 const array = useState(1);
 const currentValue = array[0];  // 1
 const updateFunction = array[1]; // function
@@ -334,7 +334,7 @@ updateFunction(2); // 状態を2に更新
 ```
 
 **ステップ3：分割代入を使った簡潔な書き方**
-```javascript
+```jsx
 // 上記と同じ意味だが、より簡潔
 const [currentValue, updateFunction] = useState(1);
 //     ↑            ↑
@@ -342,7 +342,7 @@ const [currentValue, updateFunction] = useState(1);
 ```
 
 **命名規則：**
-```javascript
+```jsx
 const [step, setStep] = useState(1);
 //     ↑     ↑
 //   状態名  set + 状態名
@@ -352,7 +352,7 @@ const [step, setStep] = useState(1);
 
 ### ステップ2: JSXでの状態使用
 
-```javascript
+```jsx
 function App() {
   const [step, setStep] = useState(1);
   
@@ -389,7 +389,7 @@ function App() {
 
 ### ステップ3: イベントハンドラーでの状態更新
 
-```javascript
+```jsx
 function App() {
   const [step, setStep] = useState(1);
   
@@ -411,7 +411,7 @@ function App() {
 
 ## 完全なStepsコンポーネント
 
-```javascript
+```jsx
 import { useState } from 'react';
 
 const messages = [
@@ -518,7 +518,7 @@ sequenceDiagram
 
 最初の実装では、ボタンを連続でクリックすると問題が発生します：
 
-```javascript
+```jsx
 // ❌ 問題のあるコード
 function handleNext() {
   setStep(step + 1); // step が 4, 5, 6... と無制限に増加
@@ -531,7 +531,7 @@ function handlePrevious() {
 
 **修正版：**
 
-```javascript
+```jsx
 // ✅ 修正されたコード
 function handleNext() {
   if (step < 3) {  // 最大値をチェック
@@ -552,7 +552,7 @@ useStateは**Reactフック**です。フックには重要なルールがあり
 
 ### ✅ 正しい使用方法
 
-```javascript
+```jsx
 function App() {
   // ✅ コンポーネントのトップレベルで使用
   const [step, setStep] = useState(1);
@@ -564,7 +564,7 @@ function App() {
 
 ### ❌ 間違った使用方法
 
-```javascript
+```jsx
 function App() {
   // ❌ 条件文の中で使用
   if (someCondition) {
@@ -594,7 +594,7 @@ function App() {
 
 以下のカウンターコンポーネントを完成させてください：
 
-```javascript
+```jsx
 import { useState } from 'react';
 
 function Counter() {
@@ -614,7 +614,7 @@ function Counter() {
 
 ### 演習2: 表示/非表示の切り替え
 
-```javascript
+```jsx
 import { useState } from 'react';
 
 function ToggleComponent() {

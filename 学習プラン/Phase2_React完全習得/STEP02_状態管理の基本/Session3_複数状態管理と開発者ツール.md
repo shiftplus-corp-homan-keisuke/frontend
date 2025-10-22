@@ -18,7 +18,7 @@
 
 まず、新しい状態変数を追加してみましょう：
 
-```javascript
+```jsx
 import { useState } from 'react';
 
 const messages = [
@@ -59,7 +59,7 @@ export default App;
 
 `step`状態が変更されても`isOpen`状態には影響しません。同様に、`isOpen`状態が変更されても`step`状態は保持されます。これは、Reactが各状態を個別に管理しているためです。
 
-```javascript
+```jsx
 function App() {
   const [step, setStep] = useState(1);      // ステップの状態
   const [isOpen, setIsOpen] = useState(true); // 開閉の状態
@@ -143,7 +143,7 @@ graph TD
 
 #### 複数状態の管理パターン
 
-```javascript
+```jsx
 function MultiStateExample() {
   // 各状態は独立して管理される
   const [count, setCount] = useState(0);
@@ -183,7 +183,7 @@ function MultiStateExample() {
 
 次に、`isOpen`状態に基づいてコンポーネントの表示/非表示を制御してみましょう：
 
-```javascript
+```jsx
 function App() {
   const [step, setStep] = useState(1);
   const [isOpen, setIsOpen] = useState(true);
@@ -267,7 +267,7 @@ function App() {
 
 不要なラッパー要素を削除して、フラグメントを使用しましょう。フラグメントはこのJSX要素のルートのようなものです。これはDOMでは消えます。
 
-```javascript
+```jsx
 return (
   <>
     <button className="close" onClick={() => setIsOpen(!isOpen)}>
@@ -383,7 +383,7 @@ CSSでできることと少し似ています。これはCSSに触発されて�
 
 handleNext関数が実際には2回前進するようにしたいとしましょう。ステップ状態を2回設定したいとしましょう。それを行うことを妨げるものは何もありません。これを一度行って、それを複製できます。
 
-```javascript
+```jsx
 function handleNext() {
   setStep(step + 1);
   setStep(step + 1); // 2回呼び出し
@@ -402,7 +402,7 @@ function handleNext() {
 
 #### 問題の根本原因
 
-```javascript
+```jsx
 // ❌ 問題のあるコード
 function handleNext() {
   setStep(step + 1); // step = 1
@@ -437,7 +437,7 @@ sequenceDiagram
 
 #### 問題の根本原因
 
-```javascript
+```jsx
 // ❌ 問題のあるコード
 function handleNext() {
   setStep(step + 1); // step = 1
@@ -470,7 +470,7 @@ sequenceDiagram
 
 これを削除して、関数を作成しましょう。簡単なアロー関数を作成します。
 
-```javascript
+```jsx
 function handleNext() {
   setStep((s) => s + 1);
   setStep((s) => s + 1);
@@ -525,7 +525,7 @@ sequenceDiagram
 
 #### 実践的な比較例
 
-```javascript
+```jsx
 function Counter() {
   const [count, setCount] = useState(0);
   
@@ -557,7 +557,7 @@ function Counter() {
 
 さて、ここでは実際にはこれを望んでいません。ただ1つずつ進むだけです。しかし、将来の更新のために安全であるために、現在の状態値に基づいて状態を更新するときは、常にこのようなコールバックを使用するのが良いアイデアです。
 
-```javascript
+```jsx
 function handlePrevious() {
   if (step > 1) setStep((s) => s - 1);
 }
@@ -569,7 +569,7 @@ function handleNext() {
 
 ここでも同じことをしましょう。ここでも同じことをしています。この開いている状態も、現在の状態に基づいて設定しています。sと呼び、そして、それを切り替えましょう。
 
-```javascript
+```jsx
 <button className="close" onClick={() => setIsOpen((s) => !s)}>
   &times;
 </button>
@@ -691,7 +691,7 @@ Vanilla JavaScriptでアプリを構築することに慣れている場合、�
 
 コピー＆ペーストをあまり行う必要はありません。これを削除して、実際にはそれをStepsと呼びます。
 
-```javascript
+```jsx
 function Steps() {
   const [step, setStep] = useState(1);
   const [isOpen, setIsOpen] = useState(true);
@@ -745,7 +745,7 @@ function Steps() {
 
 そして、ここで再びAppを行います。export default function App、そして、このアプリは基本的に2つのStepsを含みます。
 
-```javascript
+```jsx
 function App() {
   return (
     <div>
@@ -812,7 +812,7 @@ React開発者ツールでそれをうまく確認できます。今、より大
 
 以下の要件を満たすタイマーコンポーネントを作成してください：
 
-```javascript
+```jsx
 function Timer() {
   // 必要な状態を定義してください
   // - seconds: 現在の秒数
@@ -844,7 +844,7 @@ function Timer() {
 
 複数の状態を管理するショッピングカートを作成してください：
 
-```javascript
+```jsx
 function ShoppingCart() {
   // 必要な状態：
   // - items: カート内のアイテム配列
@@ -895,7 +895,7 @@ function ShoppingCart() {
 
 以下のコードを修正して、安全な状態更新パターンに変更してください：
 
-```javascript
+```jsx
 function ProblematicComponent() {
   const [count, setCount] = useState(0);
   const [multiplier, setMultiplier] = useState(1);
@@ -939,7 +939,7 @@ function ProblematicComponent() {
 
 #### 演習1の解答例
 
-```javascript
+```jsx
 function Timer() {
   const [seconds, setSeconds] = useState(0);
   const [isRunning, setIsRunning] = useState(false);

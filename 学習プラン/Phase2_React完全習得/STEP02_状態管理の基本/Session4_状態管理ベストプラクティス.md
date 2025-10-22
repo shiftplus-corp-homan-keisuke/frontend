@@ -72,7 +72,7 @@
 
 このように、同じコンポーネントでも、それぞれが独自の状態を持ち、他のインスタンスに影響を与えることなく動作します。
 
-```javascript
+```jsx
 function Counter({ name }) {
   const [score, setScore] = useState(0);
   
@@ -155,7 +155,7 @@ graph TD
 
 #### 実践的な例
 
-```javascript
+```jsx
 function AppStateExample() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -186,7 +186,7 @@ function AppStateExample() {
 
 #### 宣言的 vs 命令的アプローチ
 
-```javascript
+```jsx
 // 命令的アプローチ（Vanilla JavaScript）
 function updateCounterImperative(count) {
   const counterElement = document.getElementById('counter');
@@ -267,7 +267,7 @@ Vanilla JavaScriptでアプリを構築することに慣れている場合、�
 
 モーダルウィンドウの場合、「isOpen」という状態変数を作成できます。それは、モーダルが現在開いているかどうかを追跡します。
 
-```javascript
+```jsx
 function Modal() {
   const [isOpen, setIsOpen] = useState(false);
   
@@ -298,7 +298,7 @@ function Modal() {
 
 **コンポーネントの外観や表示するデータを変更したい場合は、状態を更新するだけです。通常はイベントハンドラー関数内で行います。**
 
-```javascript
+```jsx
 function UserProfile() {
   const [user, setUser] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -328,7 +328,7 @@ function UserProfile() {
 
 コンポーネントを構築する際は、**画面にレンダリングされるコンポーネントのビューを、時間とともに変化し進化する状態の反映として捉える**と理解しやすくなります。
 
-```javascript
+```jsx
 function WeatherApp() {
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -357,13 +357,14 @@ function WeatherApp() {
 
 **再レンダリングを引き起こす必要のない変数には状態を使用しないでください。**不必要な再レンダリングが発生し、パフォーマンスの問題を引き起こす可能性があります。
 
-```javascript
+```jsx
 function ProductList() {
   // ❌ 悪い例：定数データを状態として管理
   // const [categories, setCategories] = useState(['電子機器', '本', '衣類']);
   
   // ✅ 良い例：定数は通常の変数として定義
   const categories = ['電子機器', '本', '衣類'];
+```
 
 ## Vanilla JavaScriptとの実装比較
 
@@ -374,7 +375,8 @@ function ProductList() {
 同じ「ステップを1つ進める」機能を、Vanilla JavaScriptとReactで実装した場合の違いを詳しく比較します：
 
 **Vanilla JavaScript（命令的アプローチ）：**
-```javascript
+
+```jsx
 // 1. 状態を手動で更新
 let step = 1;
 step = step + 1; // step = 2
@@ -393,7 +395,7 @@ if (step === 3) {
 ```
 
 **React（宣言的アプローチ）：**
-```javascript
+```jsx
 // 1. 状態のみ更新（UIは自動で同期される）
 setStep(step + 1);
 
@@ -526,7 +528,7 @@ return (
 
 #### React実装
 
-```javascript
+```jsx
 import { useState } from 'react';
 
 const messages = [
@@ -602,7 +604,7 @@ graph TD
 #### 1. 状態管理の方法
 
 **Vanilla JavaScript:**
-```javascript
+```jsx
 // 手動での状態管理
 let step = 1;
 
@@ -614,7 +616,7 @@ function updateStep(newStep) {
 ```
 
 **React:**
-```javascript
+```jsx
 // Reactが管理する状態
 const [step, setStep] = useState(1);
 
@@ -625,7 +627,7 @@ setStep(2); // UIは自動で更新される
 #### 2. DOM操作の方法
 
 **Vanilla JavaScript（命令的）:**
-```javascript
+```jsx
 // 何をどのように変更するかを詳細に指示
 function updateUI() {
     messageEl.textContent = `Step ${step}: ${messages[step - 1]}`;
@@ -638,7 +640,7 @@ function updateUI() {
 ```
 
 **React（宣言的）:**
-```javascript
+```jsx
 // 現在の状態に基づいてUIがどうあるべきかを宣言
 return (
     <div className="steps">
@@ -967,11 +969,11 @@ flowchart TD
 4. **発展的な概念**: Context API、カスタムフック、状態管理ライブラリの学習
 
 React開発の旅はここから本格的に始まります。状態管理の基礎をしっかりと身につけ、次のレベルへと進んでいきましょう。継続的な実践を通じて、これらの概念を自分のものにしていくことが重要です。
-  
+
   // ✅ 良い例：変化するデータのみ状態として管理
   const [selectedCategory, setSelectedCategory] = useState('電子機器');
   const [products, setProducts] = useState([]);
-  
+
   return (
     <div>
       <select 

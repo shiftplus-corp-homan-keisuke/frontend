@@ -858,7 +858,6 @@ function Menu({ isOpen }) {
 
   return renderOpenMenu();
 }
-```
 
 // ...（重複部分を削除し、説明を簡潔にまとめます）
 
@@ -878,7 +877,7 @@ function Menu({ isOpen }) {
 );
 }
 
-````
+```
 
 ### JSX と HTML の違い
 

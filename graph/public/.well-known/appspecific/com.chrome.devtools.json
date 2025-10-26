@@ -1,0 +1,6 @@
+{
+  "name": "Next.js Development Server",
+  "version": "1.0.0",
+  "description": "Next.js development server for CSV Chart Generator",
+  "devtools_page": "/_next/static/chunks/webpack.js"
+}

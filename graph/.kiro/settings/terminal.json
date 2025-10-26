@@ -1,0 +1,6 @@
+{
+  "defaultShell": "wsl",
+  "environment": "wsl",
+  "platform": "linux",
+  "workingDirectory": "/home/homan/react/graph"
+}

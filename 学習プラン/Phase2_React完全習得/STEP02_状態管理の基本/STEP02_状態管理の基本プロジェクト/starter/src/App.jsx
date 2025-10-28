@@ -99,4 +99,100 @@ function ToggleComponent() {
   // );
 }
 
+/*
+演習5: 
+以下のコードの問題点を見つけて修正してください：
+*/
+function BuggyCounter() {
+  // let [count, setCount] = useState(0);
+  // const [user, setUser] = useState({ name: "Alice", age: 25 });
+
+  // function incrementCount() {
+  //   count = count + 1; // 問題1
+  // }
+
+  // function updateAge() {
+  //   user.age = user.age + 1; // 問題2
+  // }
+
+  // return (
+  //   <div>
+  //     <p>Count: {count}</p>
+  //     <p>
+  //       User: {user.name}, Age: {user.age}
+  //     </p>
+  //     <button onClick={incrementCount}>Increment</button>
+  //     <button onClick={updateAge}>Age Up</button>
+  //   </div>
+  // );
+}
+
+/*
+演習6: 
+以下の要件を満たすコンポーネントを作成してください：
+*/
+function UserProfile() {
+  // const [user, setUser] = useState({
+  //   name: "John",
+  //   age: 30,
+  //   address: {
+  //     city: "Tokyo",
+  //     country: "Japan",
+  //   },
+  //   hobbies: ["reading", "coding"],
+  // });
+
+  // 以下の関数を実装してください：
+  // 1. 名前を更新する関数
+  // 2. 年齢を1つ増やす関数
+  // 3. 都市を更新する関数
+  // 4. 新しい趣味を追加する関数
+  // 5. 趣味を削除する関数
+}
+
+/*
+演習7: 
+以下の要件を満たすタイマーコンポーネントを作成してください：
+*/
+function Timer() {
+  // 必要な状態を定義してください
+  // - seconds: 現在の秒数
+  // - isRunning: タイマーが動作中かどうか
+  // - isVisible: タイマーが表示されているかどうか
+
+  // 以下の関数を実装してください：
+  // 1. startTimer: タイマーを開始
+  // 2. stopTimer: タイマーを停止
+  // 3. resetTimer: タイマーをリセット
+  // 4. toggleVisibility: 表示/非表示を切り替え
+
+  return <div>{/* UIを実装してください */}</div>;
+}
+
+/*
+演習8: 
+複数の状態を管理するショッピングカートを作成してください：
+*/
+function ShoppingCart() {
+  // 必要な状態：
+  // - items: カート内のアイテム配列
+  // - total: 合計金額
+  // - isOpen: カートの開閉状態
+  // - itemCount: アイテム数
+
+  const products = [
+    { id: 1, name: "商品A", price: 1000 },
+    { id: 2, name: "商品B", price: 1500 },
+    { id: 3, name: "商品C", price: 800 },
+  ];
+
+  // 実装する関数：
+  // 1. addToCart(product): 商品をカートに追加
+  // 2. removeFromCart(productId): 商品をカートから削除
+  // 3. clearCart(): カートを空にする
+  // 4. toggleCart(): カートの開閉
+
+  return <div>{/* 商品リストとカートUIを実装 */}</div>;
+}
+
 export default App;

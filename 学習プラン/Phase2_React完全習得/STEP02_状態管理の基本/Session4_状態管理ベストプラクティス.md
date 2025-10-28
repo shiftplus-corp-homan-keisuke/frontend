@@ -760,7 +760,7 @@ function BlogPost() {
 
 以下のコードの問題点を見つけて修正してください：
 
-```javascript
+```jsx
 function ProblematicTodoApp() {
   const [todos, setTodos] = useState([]);
   const [completedCount, setCompletedCount] = useState(0);
@@ -820,7 +820,7 @@ function ProblematicTodoApp() {
 5. 検索機能
 6. 一括操作（全選択/全削除）
 
-```javascript
+```jsx
 function UserManagement() {
   // 必要な状態を設計してください
   
@@ -847,7 +847,7 @@ function UserManagement() {
 
 以下のコンポーネントのパフォーマンス問題を特定し、最適化してください：
 
-```javascript
+```jsx
 function ExpensiveComponent() {
   const [count, setCount] = useState(0);
   const [users, setUsers] = useState([]);
@@ -897,7 +897,7 @@ function ExpensiveComponent() {
 
 #### 演習1の解答
 
-```javascript
+```jsx
 function BlogPost() {
   // 状態として管理すべきもの：
   const [isLiked, setIsLiked] = useState(false);        // E: ユーザーの操作で変化

@@ -472,8 +472,8 @@ function Stats({ items }) {
   return (
     <footer className="stats">
       <em>
-        You have {numItems} items on your list, and you already packed{" "}
-        {numPacked} ({percentage}%)
+        リストに{numItems}個のアイテムがあり、すでに{numPacked}個({percentage}
+        %)を荷造り済みです
       </em>
     </footer>
   );
@@ -490,7 +490,7 @@ function Stats({ items }) {
   if (!items.length) {
     return (
       <footer className="stats">
-        <em>Start adding some items to your packing list! 🚀</em>
+        <em>荷造りリストにアイテムを追加しましょう 🚀</em>
       </footer>
     );
   }
@@ -505,8 +505,8 @@ function Stats({ items }) {
     <footer className="stats">
       <em>
         {percentage === 100
-          ? "You got everything! Ready to go ✈️"
-          : `You have ${numItems} items on your list, and you already packed ${numPacked} (${percentage}%)`}
+          ? "すべて揃いました！出発の準備完了 ✈️"
+          : `リストに${numItems}個のアイテムがあり、すでに${numPacked}個(${percentage}%)を荷造り済みです`}
       </em>
     </footer>
   );
@@ -558,7 +558,7 @@ function App() {
 
 **テストシナリオ**：
 
-1. **初期状態**: 「Start adding some items...」メッセージを表示
+1. **初期状態**: 「荷造りリストにアイテムを追加しましょう...」メッセージを表示
 2. **アイテム追加**: 統計情報の更新を確認
 3. **パッキング状態変更**: パーセンテージの動的更新
 4. **100%達成**: 特別なメッセージの表示
@@ -568,13 +568,13 @@ function App() {
 
 ```
 // 初期状態
-"Start adding some items to your packing list! 🚀"
+"荷造りリストにアイテムを追加しましょう 🚀"
 
 // 3個追加、1個パッキング
-"You have 3 items on your list, and you already packed 1 (33%)"
+"リストに3個のアイテムがあり、すでに1個(33%)を荷造り済みです"
 
 // 全てパッキング完了
-"You got everything! Ready to go ✈️"
+"すべて揃いました！出発の準備完了 ✈️"
 ```
 
 ### 派生ステートの適用場面

@@ -143,7 +143,7 @@ export default function App() {
 
 ```jsx
 function Logo() {
-  return <h1>🌴 Far Away 💼</h1>;
+  return <h1>�️ 旅行の準備 🧳</h1>;
 }
 ```
 
@@ -158,7 +158,7 @@ function Logo() {
 
 ```jsx
 function Form() {
-  return <div className="add-form">What do you need for your trip? 😍</div>;
+  return <div className="add-form">旅行に何が必要ですか？ 😍</div>;
 }
 ```
 
@@ -314,7 +314,7 @@ React でフォームを構築する際は、通常の HTML フォーム要素�
 function Form() {
   return (
     <form className="add-form">
-      <h3>What do you need for your trip? 😍</h3>
+      <h3>旅行に何が必要ですか？ 😍</h3>
 
       <select>
         {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
@@ -324,9 +324,9 @@ function Form() {
         ))}
       </select>
 
-      <input type="text" placeholder="Item..." />
+      <input type="text" placeholder="アイテム..." />
 
-      <button>Add</button>
+      <button>追加</button>
     </form>
   );
 }

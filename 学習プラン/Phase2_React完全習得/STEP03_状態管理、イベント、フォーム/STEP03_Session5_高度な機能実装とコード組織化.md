@@ -70,9 +70,9 @@ function PackingList({ items, onDeleteItem, onToggleItem }) {
 
       <div className="actions">
         <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-          <option value="input">Sort by input order</option>
-          <option value="description">Sort by description</option>
-          <option value="packed">Sort by packed status</option>
+          <option value="input">入力順で並び替え</option>
+          <option value="description">説明で並び替え</option>
+          <option value="packed">荷造り済みで並び替え</option>
         </select>
       </div>
     </div>
@@ -212,9 +212,7 @@ function App() {
   // 既存のハンドラー関数...
 
   function handleClearList() {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete all items?"
-    );
+    const confirmed = window.confirm("本当にすべてのアイテムを削除しますか？");
 
     if (confirmed) {
       setItems([]);
@@ -260,12 +258,12 @@ function PackingList({ items, onDeleteItem, onToggleItem, onClearList }) {
 
       <div className="actions">
         <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-          <option value="input">Sort by input order</option>
-          <option value="description">Sort by description</option>
-          <option value="packed">Sort by packed status</option>
+          <option value="input">入力順で並び替え</option>
+          <option value="description">説明で並び替え</option>
+          <option value="packed">荷造り済みで並び替え</option>
         </select>
 
-        <button onClick={onClearList}>Clear list</button>
+        <button onClick={onClearList}>リストをクリア</button>
       </div>
     </div>
   );
@@ -276,9 +274,7 @@ function PackingList({ items, onDeleteItem, onToggleItem, onClearList }) {
 
 ```jsx
 function handleClearList() {
-  const confirmed = window.confirm(
-    "Are you sure you want to delete all items?"
-  );
+  const confirmed = window.confirm("本当にすべてのアイテムを削除しますか？");
 
   if (confirmed) {
     setItems([]);
@@ -300,12 +296,12 @@ function handleClearList() {
 ```jsx
 <div className="actions">
   <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-    <option value="input">Sort by input order</option>
-    <option value="description">Sort by description</option>
-    <option value="packed">Sort by packed status</option>
+    <option value="input">入力順で並び替え</option>
+    <option value="description">説明で並び替え</option>
+    <option value="packed">荷造り済みで並び替え</option>
   </select>
 
-  {items.length > 0 && <button onClick={onClearList}>Clear list</button>}
+  {items.length > 0 && <button onClick={onClearList}>リストをクリア</button>}
 </div>
 ```
 
@@ -420,7 +416,7 @@ function Form({ onAddItems }) {
 
   return (
     <form className="add-form" onSubmit={handleSubmit}>
-      <h3>What do you need for your 😍 trip?</h3>
+      <h3>旅行に何が必要ですか？ 😍</h3>
       <select
         value={quantity}
         onChange={(e) => setQuantity(Number(e.target.value))}
@@ -433,11 +429,11 @@ function Form({ onAddItems }) {
       </select>
       <input
         type="text"
-        placeholder="Item..."
+        placeholder="アイテム..."
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
-      <button>Add</button>
+      <button>追加</button>
     </form>
   );
 }
@@ -485,12 +481,14 @@ function PackingList({ items, onDeleteItem, onToggleItem, onClearList }) {
 
       <div className="actions">
         <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-          <option value="input">Sort by input order</option>
-          <option value="description">Sort by description</option>
-          <option value="packed">Sort by packed status</option>
+          <option value="input">入力順で並び替え</option>
+          <option value="description">説明で並び替え</option>
+          <option value="packed">荷造り済みで並び替え</option>
         </select>
 
-        {items.length > 0 && <button onClick={onClearList}>Clear list</button>}
+        {items.length > 0 && (
+          <button onClick={onClearList}>リストをクリア</button>
+        )}
       </div>
     </div>
   );
@@ -586,9 +584,7 @@ function App() {
   }
 
   function handleClearList() {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete all items?"
-    );
+    const confirmed = window.confirm("本当にすべてのアイテムを削除しますか？");
 
     if (confirmed) {
       setItems([]);

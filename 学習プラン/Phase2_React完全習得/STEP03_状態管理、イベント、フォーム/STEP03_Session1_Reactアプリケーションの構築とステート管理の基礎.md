@@ -143,7 +143,7 @@ export default function App() {
 
 ```jsx
 function Logo() {
-  return <h1>🌴 Far Away 💼</h1>;
+  return <h1>�️ 旅行の準備 🧳</h1>;
 }
 ```
 
@@ -158,7 +158,7 @@ function Logo() {
 
 ```jsx
 function Form() {
-  return <div className="add-form">What do you need for your trip? 😍</div>;
+  return <div className="add-form">旅行に何が必要ですか？ 😍</div>;
 }
 ```
 
@@ -228,8 +228,8 @@ const initialItems = [
 ```jsx
 function PackingList() {
   return (
-    <div>
-      <ul className="list">
+    <div className="list">
+      <ul>
         {initialItems.map((item) => (
           <Item item={item} key={item.id} />
         ))}
@@ -268,28 +268,6 @@ function Item({ item }) {
 2. **条件付きスタイリング**: 三項演算子を使用してパッキング済みアイテムに打ち消し線を適用
 3. **セマンティック HTML**: `<li>`要素を使用（`<ul>`の直接の子要素として適切）
 
-### スタイリングの修正
-
-正しい CSS クラスを適用するために、HTML 構造を少し調整する必要があります：
-
-```jsx
-function PackingList() {
-  return (
-    <div>
-      <div className="list">
-        <ul>
-          {initialItems.map((item) => (
-            <Item item={item} key={item.id} />
-          ))}
-        </ul>
-      </div>
-    </div>
-  );
-}
-```
-
-この構造により、後でフィルタリング機能を追加する際のためのスペースも確保できます。
-
 ### 動作確認
 
 ブラウザでアプリケーションを確認すると、以下が表示されることを確認できます：
@@ -314,7 +292,7 @@ React でフォームを構築する際は、通常の HTML フォーム要素�
 function Form() {
   return (
     <form className="add-form">
-      <h3>What do you need for your trip? 😍</h3>
+      <h3>旅行に何が必要ですか？ 😍</h3>
 
       <select>
         {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
@@ -324,9 +302,9 @@ function Form() {
         ))}
       </select>
 
-      <input type="text" placeholder="Item..." />
+      <input type="text" placeholder="アイテム..." />
 
-      <button>Add</button>
+      <button>追加</button>
     </form>
   );
 }

@@ -38,11 +38,11 @@ export default function PackingList({
 
       <div className="actions">
         <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-          <option value="input">Sort by input order</option>
-          <option value="description">Sort by description</option>
-          <option value="packed">Sort by packed status</option>
+          <option value="input">入力順で並び替え</option>
+          <option value="description">説明で並び替え</option>
+          <option value="packed">荷造り済みで並び替え</option>
         </select>
-        <button onClick={onClearList}>Clear list</button>
+        <button onClick={onClearList}>リストをクリア</button>
       </div>
     </div>
   );

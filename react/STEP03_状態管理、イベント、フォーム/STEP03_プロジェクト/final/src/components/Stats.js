@@ -2,7 +2,7 @@ export default function Stats({ items }) {
   if (!items.length)
     return (
       <p className="stats">
-        <em>Start adding some items to your packing list 🚀</em>
+        <em>荷造りリストにアイテムを追加しましょう 🚀</em>
       </p>
     );
 
@@ -14,8 +14,8 @@ export default function Stats({ items }) {
     <footer className="stats">
       <em>
         {percentage === 100
-          ? "You got everything! Ready to go ✈️"
-          : ` 💼 You have ${numItems} items on your list, and you already packed ${numPacked} (${percentage}%)`}
+          ? "すべて揃いました！出発の準備完了 ✈️"
+          : ` 💼 リストに${numItems}個のアイテムがあり、すでに${numPacked}個(${percentage}%)を荷造り済みです`}
       </em>
     </footer>
   );

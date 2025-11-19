@@ -25,6 +25,8 @@ React 開発における最も重要な概念の一つである「State と Prop
 - **更新可能**: コンポーネント自身が値を変更可能
 - **再レンダリング**: 更新時にコンポーネントの再レンダリングを引き起こす
 
+https://codesandbox.io/p/devbox/react-exercise-flashcards-final-forked-w8hcxv?workspaceId=ws_TS4FyKKE5U3wBt5me7vkbT
+
 **実装例**：
 
 ```jsx
@@ -145,34 +147,33 @@ function App() {
 const questions = [
   {
     id: 3457,
-    question: "What language is React based on?",
+    question: "Reactはどの言語をベースにしていますか？",
     answer: "JavaScript",
   },
   {
     id: 7336,
-    question: "What are the building blocks of React apps?",
-    answer: "Components",
+    question: "Reactアプリの構成要素は何ですか？",
+    answer: "コンポーネント",
   },
   {
     id: 8832,
-    question: "What's the name of the syntax we use to describe a UI in React?",
+    question: "ReactでUIを記述するために使用する構文の名前は何ですか？",
     answer: "JSX",
   },
   {
     id: 1297,
-    question: "How to pass data from parent to child components?",
+    question: "親コンポーネントから子コンポーネントにデータを渡す方法は？",
     answer: "Props",
   },
   {
     id: 9103,
-    question: "How to give components memory?",
-    answer: "useState hook",
+    question: "コンポーネントにメモリ機能を持たせる方法は？",
+    answer: "useStateフック",
   },
   {
     id: 2002,
-    question:
-      "What do we call an input element that is completely synchronized with state?",
-    answer: "Controlled element",
+    question: "状態と完全に同期されている入力要素を何と呼びますか？",
+    answer: "制御されたコンポーネント（Controlled element）",
   },
 ];
 ```
@@ -369,34 +370,33 @@ import "./FlashCards.css";
 const questions = [
   {
     id: 3457,
-    question: "What language is React based on?",
+    question: "Reactはどの言語をベースにしていますか？",
     answer: "JavaScript",
   },
   {
     id: 7336,
-    question: "What are the building blocks of React apps?",
-    answer: "Components",
+    question: "Reactアプリの構成要素は何ですか？",
+    answer: "コンポーネント",
   },
   {
     id: 8832,
-    question: "What's the name of the syntax we use to describe a UI in React?",
+    question: "ReactでUIを記述するために使用する構文の名前は何ですか？",
     answer: "JSX",
   },
   {
     id: 1297,
-    question: "How to pass data from parent to child components?",
+    question: "親コンポーネントから子コンポーネントにデータを渡す方法は？",
     answer: "Props",
   },
   {
     id: 9103,
-    question: "How to give components memory?",
-    answer: "useState hook",
+    question: "コンポーネントにメモリ機能を持たせる方法は？",
+    answer: "useStateフック",
   },
   {
     id: 2002,
-    question:
-      "What do we call an input element that is completely synchronized with state?",
-    answer: "Controlled element",
+    question: "状態と完全に同期されている入力要素を何と呼びますか？",
+    answer: "制御されたコンポーネント（Controlled element）",
   },
 ];
 

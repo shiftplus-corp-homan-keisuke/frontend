@@ -14,7 +14,7 @@
 
 ## 新しい React プロジェクトの開始：「Far Away」旅行リストアプリ
 
-さあ、このセクションの第二部では、実際のインタラクティブ性を持つ初めてのプロジェクトを構築していきましょう。直接始めていきます。
+さあ、このセクションでは、実際のインタラクティブ性を持つ初めてのプロジェクトを構築していきましょう。直接始めていきます。
 
 プロジェクト作成の手順はもうお馴染みですね。Windows をお使いの場合はコマンドプロンプトを、Mac をお使いの場合はターミナルを開いてください。
 
@@ -166,7 +166,7 @@ function Form() {
 
 ```jsx
 function PackingList() {
-  return <div>Ready to pack some items!</div>;
+  return <div>ピックングリスト</div>;
 }
 ```
 
@@ -176,7 +176,7 @@ function PackingList() {
 function Stats() {
   return (
     <footer className="stats">
-      <em>You have X items on your list, and you already packed X (X%)</em>
+      <em>リストにX個のアイテムがあり、すでにX個(X%)を荷造り済みです</em>
       🧳
     </footer>
   );

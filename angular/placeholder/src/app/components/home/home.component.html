@@ -1,0 +1,36 @@
+<div class="home-container">
+  <div class="hero">
+    <h1>テンプレート穴埋めシステム</h1>
+    <p class="subtitle">プレースホルダーを含むテンプレートを作成・実行できます</p>
+  </div>
+
+  <div class="card-grid">
+    <a routerLink="/create" class="action-card">
+      <div class="card-icon">📝</div>
+      <h2>テンプレート作成</h2>
+      <p>新しいテンプレートを作成します</p>
+    </a>
+
+    <a routerLink="/templates" class="action-card">
+      <div class="card-icon">📋</div>
+      <h2>テンプレート一覧</h2>
+      <p>保存済みのテンプレートを確認・編集・実行します</p>
+    </a>
+  </div>
+
+  <div class="info-section">
+    <h3>プレースホルダーの構文</h3>
+    <div class="syntax-examples">
+      <div class="syntax-card">
+        <h4>テキスト入力型</h4>
+        <code>#&#123;プレースホルダー名&#125;</code>
+        <p class="example">例: #&#123;名前&#125;, #&#123;会社名&#125;</p>
+      </div>
+      <div class="syntax-card">
+        <h4>選択型</h4>
+        <code>#select&#123;選択肢1|選択肢2|選択肢3&#125;</code>
+        <p class="example">例: #select&#123;赤|青|緑&#125;</p>
+      </div>
+    </div>
+  </div>
+</div>

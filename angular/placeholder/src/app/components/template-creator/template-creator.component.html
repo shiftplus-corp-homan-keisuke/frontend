@@ -1,0 +1,47 @@
+<div class="creator-container">
+  <div class="header">
+    <h1>{{ isEditing() ? 'テンプレート編集' : 'テンプレート作成' }}</h1>
+  </div>
+
+  <div class="form-section">
+    <div class="form-group">
+      <label for="templateName" class="form-label">テンプレート名</label>
+      <input
+        id="templateName"
+        type="text"
+        class="form-input"
+        [ngModel]="templateName()"
+        (ngModelChange)="templateName.set($event)"
+        placeholder="例: 挨拶メッセージ"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="templateContent" class="form-label"
+        >テンプレート本文（リアルタイムプレビュー）</label
+      >
+
+      <div
+        #contentEditor
+        class="editable-input"
+        contenteditable="true"
+        (input)="onContentInput($event)"
+        (keydown)="onContentKeyDown($event)"
+        (paste)="onContentPaste($event)"
+        data-placeholder="例: こんにちは、#&#123;名前&#125;さん。好きな色は#select&#123;赤|青|緑&#125;ですね。"
+      ></div>
+
+      <div class="help-text">
+        テキスト入力型: <code>#&#123;プレースホルダー名&#125;</code><br />
+        選択型: <code>#select&#123;選択肢1|選択肢2|選択肢3&#125;</code>
+      </div>
+    </div>
+
+    <div class="button-group">
+      <button class="btn btn-primary" (click)="saveTemplate()">
+        {{ isEditing() ? '更新' : '保存' }}
+      </button>
+      <button class="btn btn-secondary" (click)="cancel()">キャンセル</button>
+    </div>
+  </div>
+</div>

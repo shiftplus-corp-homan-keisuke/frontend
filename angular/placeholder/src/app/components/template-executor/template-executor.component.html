@@ -1,0 +1,48 @@
+<div class="executor-container">
+  @if (template(); as tmpl) {
+  <div class="header">
+    <h1>{{ tmpl.name }}</h1>
+    <div class="header-actions">
+      <button class="btn btn-primary btn-sm" (click)="copyToClipboard()">📋 結果をコピー</button>
+      <button class="btn btn-secondary" (click)="back()">一覧に戻る</button>
+    </div>
+  </div>
+
+  <div class="inline-editor">
+    <div class="editor-content">
+      @for (part of templateParts(); track $index) { @if (part.type === 'text') {
+      <span class="text-part">{{ part.content }}</span>
+      } @else if (part.placeholder) { @if (part.placeholder.type === PlaceholderType.TEXT) {
+      <input
+        type="text"
+        class="inline-input"
+        [value]="getValue(part.placeholder.name)"
+        (input)="updateValue(part.placeholder.name, $any($event.target).value)"
+        [placeholder]="part.placeholder.name"
+        [size]="
+          Math.max(part.placeholder.name.length, getValue(part.placeholder.name).length || 10)
+        "
+      />
+      } @else if (part.placeholder.type === PlaceholderType.SELECT) {
+      <select
+        class="inline-select"
+        [value]="getValue(part.placeholder.originalText)"
+        (change)="updateValue(part.placeholder.originalText, $any($event.target).value)"
+      >
+        <option value="" disabled>選択</option>
+        @for (option of part.placeholder.options; track option) {
+        <option [value]="option">{{ option }}</option>
+        }
+      </select>
+      } } }
+    </div>
+  </div>
+
+  <div class="result-section">
+    <h2 class="section-title">結果</h2>
+    <div class="result-card">
+      <div class="result-text">{{ resultText() }}</div>
+    </div>
+  </div>
+  }
+</div>

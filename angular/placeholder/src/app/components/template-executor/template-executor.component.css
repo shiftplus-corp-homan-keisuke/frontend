@@ -1,0 +1,149 @@
+.executor-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  font-size: 2rem;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+/* インラインエディタ */
+.inline-editor {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.editor-content {
+  font-size: 1.125rem;
+  line-height: 2;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.text-part {
+  display: inline;
+}
+
+.inline-input,
+.inline-select {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  margin: 0 0.25rem;
+  border: 2px solid var(--primary);
+  border-radius: 0.25rem;
+  font-size: 1.125rem;
+  font-family: inherit;
+  background-color: #eff6ff;
+  color: var(--text-primary);
+  transition: all 0.2s;
+  min-width: 100px;
+}
+
+.inline-input:focus,
+.inline-select:focus {
+  outline: none;
+  border-color: var(--primary-dark);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  background-color: white;
+}
+
+.inline-input::placeholder {
+  color: #93c5fd;
+  font-style: italic;
+}
+
+.inline-select {
+  cursor: pointer;
+  background-color: #d1fae5;
+  border-color: var(--secondary);
+  padding-right: 1.5rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2310b981' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.inline-select:focus {
+  border-color: var(--secondary-dark);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+/* 結果セクション */
+.result-section {
+  margin-top: 2rem;
+}
+
+.result-card {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 2px dashed var(--border);
+}
+
+.result-text {
+  color: var(--text-primary);
+  line-height: 1.8;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-size: 1rem;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-dark);
+}
+
+.btn-secondary {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+  background-color: #e5e7eb;
+}

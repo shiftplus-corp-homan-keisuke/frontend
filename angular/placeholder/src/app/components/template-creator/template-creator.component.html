@@ -21,15 +21,7 @@
         >テンプレート本文（リアルタイムプレビュー）</label
       >
 
-      <div
-        #contentEditor
-        class="editable-input"
-        contenteditable="true"
-        (input)="onContentInput($event)"
-        (keydown)="onContentKeyDown($event)"
-        (paste)="onContentPaste($event)"
-        data-placeholder="例: こんにちは、#&#123;名前&#125;さん。好きな色は#select&#123;赤|青|緑&#125;ですね。"
-      ></div>
+      <tiptap-editor [editor]="editor" class="tiptap-editor"></tiptap-editor>
 
       <div class="help-text">
         テキスト入力型: <code>#&#123;プレースホルダー名&#125;</code><br />

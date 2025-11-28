@@ -1,0 +1,44 @@
+<div class="list-container">
+  <div class="header">
+    <h1>テンプレート一覧</h1>
+    <a routerLink="/create" class="btn btn-primary">新規作成</a>
+  </div>
+
+  @if (templates().length === 0) {
+  <div class="empty-state">
+    <p class="empty-icon">📋</p>
+    <p class="empty-text">テンプレートがまだありません</p>
+    <a routerLink="/create" class="btn btn-primary">最初のテンプレートを作成</a>
+  </div>
+  } @else {
+  <div class="template-grid">
+    @for (template of templates(); track template.id) {
+    <div class="template-card">
+      <div class="card-header">
+        <h3 class="template-name">{{ template.name }}</h3>
+        <div class="card-meta">
+          <span class="placeholder-count">
+            {{ template.placeholders.length }}個のプレースホルダー
+          </span>
+          <span class="date">
+            {{ template.updatedAt | date : 'yyyy/MM/dd HH:mm' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="card-content">
+        <p class="template-preview">{{ getPreview(template.content) }}</p>
+      </div>
+
+      <div class="card-actions">
+        <button class="btn btn-primary btn-sm" (click)="executeTemplate(template.id)">実行</button>
+        <button class="btn btn-secondary btn-sm" (click)="editTemplate(template.id)">編集</button>
+        <button class="btn btn-danger btn-sm" (click)="deleteTemplate(template.id, template.name)">
+          削除
+        </button>
+      </div>
+    </div>
+    }
+  </div>
+  }
+</div>

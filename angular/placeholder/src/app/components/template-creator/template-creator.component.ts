@@ -95,6 +95,35 @@ export class TemplateCreatorComponent implements OnInit, AfterViewInit, OnDestro
     this.editor.destroy();
   }
 
+  /**
+   * プレースホルダーをカーソル位置に挿入
+   * @param placeholderText 挿入するプレースホルダーテキスト（例: "#{sample}" または "#select{option1|option2}"）
+   */
+  insertPlaceholder(placeholderText: string): void {
+    if (!this.editor) return;
+    
+    // Tiptapのコマンドを使用してテキストを挿入
+    this.editor
+      .chain()
+      .focus() // エディタにフォーカス
+      .insertContent(placeholderText) // カーソル位置にテキスト挿入
+      .run();
+  }
+
+  /**
+   * テキスト型プレースホルダーを挿入
+   */
+  insertTextPlaceholder(): void {
+    this.insertPlaceholder('#{sample}');
+  }
+
+  /**
+   * 選択型プレースホルダーを挿入
+   */
+  insertSelectPlaceholder(): void {
+    this.insertPlaceholder('#select{option1|option2|option3}');
+  }
+
   saveTemplate() {
     const name = this.templateName().trim();
     const content = this.templateContent().trim();

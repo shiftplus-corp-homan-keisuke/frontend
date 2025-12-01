@@ -21,6 +21,26 @@
         >テンプレート本文（リアルタイムプレビュー）</label
       >
 
+      <!-- プレースホルダー挿入ボタン群 -->
+      <div class="placeholder-buttons">
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-primary"
+          (click)="insertTextPlaceholder()"
+          title="テキスト型プレースホルダーを挿入"
+        >
+          <span class="icon">📝</span> テキスト型を挿入
+        </button>
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-success"
+          (click)="insertSelectPlaceholder()"
+          title="選択型プレースホルダーを挿入"
+        >
+          <span class="icon">📋</span> 選択型を挿入
+        </button>
+      </div>
+
       <tiptap-editor [editor]="editor" class="tiptap-editor"></tiptap-editor>
 
       <div class="help-text">
@@ -35,5 +55,4 @@
       </button>
       <button class="btn btn-secondary" (click)="cancel()">キャンセル</button>
     </div>
-  </div>
 </div>

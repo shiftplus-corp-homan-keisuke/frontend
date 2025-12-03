@@ -8,40 +8,72 @@
     </div>
   </div>
 
-  <div class="inline-editor">
-    <div class="editor-content">
-      @for (part of templateParts(); track $index) { @if (part.type === 'text') {
-      <span class="text-part">{{ part.content }}</span>
-      } @else if (part.placeholder) { @if (part.placeholder.type === PlaceholderType.TEXT) {
-      <input
-        type="text"
-        class="inline-input"
-        [value]="getValue(part.placeholder.name)"
-        (input)="updateValue(part.placeholder.name, $any($event.target).value)"
-        [placeholder]="part.placeholder.name"
-        [size]="
-          Math.max(part.placeholder.name.length, getValue(part.placeholder.name).length || 10)
-        "
-      />
-      } @else if (part.placeholder.type === PlaceholderType.SELECT) {
-      <select
-        class="inline-select"
-        [value]="getValue(part.placeholder.originalText)"
-        (change)="updateValue(part.placeholder.originalText, $any($event.target).value)"
-      >
-        <option value="" disabled>選択</option>
-        @for (option of part.placeholder.options; track option) {
-        <option [value]="option">{{ option }}</option>
-        }
-      </select>
-      } } }
+  <!-- 2カラムレイアウト: 左に結果、右に入力フォーム -->
+  <div class="two-column-layout">
+    <!-- 左側: 結果表示 -->
+    <div class="result-panel">
+      <h2 class="panel-title">結果</h2>
+      <div class="result-card">
+        <div class="result-content">
+          @for (part of resultParts(); track $index) { @if (part.type === 'text') {
+          <span class="result-text-part">{{ part.content }}</span>
+          } @else if (part.placeholder) { @if (part.content) {
+          <!-- 値が入力されている場合 -->
+          <span class="result-placeholder filled">{{ part.content }}</span>
+          } @else {
+          <!-- 値が未入力の場合 -->
+          @if (part.placeholder.type === PlaceholderType.TEXT) {
+          <span
+            class="result-placeholder empty"
+            [attr.data-label]="'[' + part.placeholder.name + ']'"
+          >
+            [{{ part.placeholder.name }}]
+          </span>
+          } @else if (part.placeholder.type === PlaceholderType.SELECT) {
+          <span
+            class="result-placeholder empty"
+            [attr.data-label]="'[' + part.placeholder.name + ']'"
+          >
+            [{{ part.placeholder.name }}]
+          </span>
+          } } } }
+        </div>
+      </div>
     </div>
-  </div>
 
-  <div class="result-section">
-    <h2 class="section-title">結果</h2>
-    <div class="result-card">
-      <div class="result-text">{{ resultText() }}</div>
+    <!-- 右側: 入力フォーム -->
+    <div class="form-panel">
+      <h2 class="panel-title">プレースホルダー入力</h2>
+      <div class="form-card">
+        @for (placeholder of uniquePlaceholders(); track placeholder.name) {
+        <div class="form-group">
+          @if (placeholder.type === PlaceholderType.TEXT) {
+          <!-- テキスト入力 -->
+          <label class="form-label">{{ placeholder.name }}</label>
+          <input
+            type="text"
+            class="form-input"
+            [value]="getValue(placeholder.name)"
+            (input)="updateValue(placeholder.name, $any($event.target).value)"
+            [placeholder]="'「' + placeholder.name + '」を入力してください'"
+          />
+          } @else if (placeholder.type === PlaceholderType.SELECT) {
+          <!-- 選択入力 -->
+          <label class="form-label">{{ placeholder.name }}</label>
+          <select
+            class="form-select"
+            [value]="getValue(placeholder.name)"
+            (change)="updateValue(placeholder.name, $any($event.target).value)"
+          >
+            <option value="" disabled>選択してください</option>
+            @for (option of placeholder.options; track option) {
+            <option [value]="option">{{ option }}</option>
+            }
+          </select>
+          }
+        </div>
+        }
+      </div>
     </div>
   </div>
   }

@@ -64,12 +64,23 @@ export class TemplateCreatorComponent implements OnInit, AfterViewInit, OnDestro
           dropcursor: false,
           gapcursor: false,
         }),
-        PlaceholderInputHandler,
+        PlaceholderInputHandler.configure({
+          // プレースホルダーの変更を監視（オプション）
+          onPlaceholderChange: (event) => {
+            console.log('プレースホルダー変更:', event);
+            console.log('追加:', event.added);
+            console.log('削除:', event.removed);
+            console.log('現在:', event.current);
+          },
+        }),
       ],
       content: '',
       onUpdate: ({ editor }) => {
         // Update the template content when the editor changes
-        const text = editor.getText();
+        // getText()は段落間の改行を保持しないため、手動で改行を追加
+        const json = editor.getJSON();
+        const text = this.extractTextWithNewlines(json);
+        console.log(editor);
         this.templateContent.set(text);
       },
     });
@@ -82,7 +93,9 @@ export class TemplateCreatorComponent implements OnInit, AfterViewInit, OnDestro
         this.editingId.set(id);
         this.templateName.set(template.name);
         this.templateContent.set(template.content);
-        this.editor.commands.setContent(template.content);
+        // 改行をHTMLの段落に変換してエディタに設定
+        const htmlContent = this.convertTextToHtml(template.content);
+        this.editor.commands.setContent(htmlContent);
       }
     }
   }
@@ -101,7 +114,7 @@ export class TemplateCreatorComponent implements OnInit, AfterViewInit, OnDestro
    */
   insertPlaceholder(placeholderText: string): void {
     if (!this.editor) return;
-    
+
     // Tiptapのコマンドを使用してテキストを挿入
     this.editor
       .chain()
@@ -154,5 +167,45 @@ export class TemplateCreatorComponent implements OnInit, AfterViewInit, OnDestro
 
   cancel() {
     this.router.navigate(['/templates']);
+  }
+
+  /**
+   * TiptapのJSONから改行を保持したテキストを抽出
+   */
+  private extractTextWithNewlines(json: any): string {
+    if (!json || !json.content) {
+      return '';
+    }
+
+    const lines: string[] = [];
+
+    for (const node of json.content) {
+      if (node.type === 'paragraph') {
+        if (node.content && node.content.length > 0) {
+          // 段落内のテキストを結合
+          const text = node.content.map((child: any) => child.text || '').join('');
+          lines.push(text);
+        } else {
+          // 空の段落は空行として扱う
+          lines.push('');
+        }
+      }
+    }
+
+    // 段落を改行で結合
+    return lines.join('\n');
+  }
+
+  /**
+   * 改行を含むテキストをTiptap用のHTMLに変換
+   */
+  private convertTextToHtml(text: string): string {
+    // 改行で分割して各行を段落タグで囲む
+    const lines = text.split('\n');
+    const paragraphs = lines.map((line) => {
+      // 空行も段落として扱う
+      return `<p>${line || '<br>'}</p>`;
+    });
+    return paragraphs.join('');
   }
 }

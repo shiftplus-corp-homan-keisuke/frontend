@@ -6,7 +6,7 @@ import { TemplateParserService } from '../../services/template-parser.service';
 import { TemplateStorageService } from '../../services/template-storage.service';
 import { Template, Placeholder, PlaceholderType } from '../../models/template.model';
 
-interface TemplatePart {
+interface ResultPart {
   type: 'text' | 'placeholder';
   content: string;
   placeholder?: Placeholder;
@@ -27,53 +27,37 @@ export class TemplateExecutorComponent implements OnInit {
 
   template = signal<Template | null>(null);
   placeholderValues = signal<Map<string, string>>(new Map());
-  templateParts = signal<TemplatePart[]>([]);
 
-  // リアルタイムプレビュー用の結果テキスト
-  resultText = computed(() => {
+  // ユニークなプレースホルダーのリスト（フォーム表示用）
+  uniquePlaceholders = computed(() => {
     const template = this.template();
-    if (!template) return '';
+    if (!template) return [];
 
-    return this.parser.replacePlaceholders(template.content, this.placeholderValues());
-  });
-
-  // PlaceholderType を公開（テンプレートで使用）
-  PlaceholderType = PlaceholderType;
-  Math = Math;
-
-  ngOnInit() {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      const template = this.storage.getTemplateById(id);
-      if (template) {
-        this.template.set(template);
-        this.initializePlaceholderValues(template);
-        this.parseTemplateParts(template);
-      } else {
-        alert('テンプレートが見つかりません。');
-        this.router.navigate(['/templates']);
-      }
-    }
-  }
-
-  private initializePlaceholderValues(template: Template) {
-    const values = new Map<string, string>();
+    const seen = new Set<string>();
+    const unique: Placeholder[] = [];
 
     for (const placeholder of template.placeholders) {
-      if (placeholder.type === PlaceholderType.TEXT) {
-        values.set(placeholder.name, '');
-      } else if (placeholder.type === PlaceholderType.SELECT) {
-        values.set(placeholder.originalText, '');
+      const key =
+        placeholder.type === PlaceholderType.TEXT ? placeholder.name : placeholder.originalText;
+
+      if (!seen.has(key)) {
+        seen.add(key);
+        unique.push(placeholder);
       }
     }
 
-    this.placeholderValues.set(values);
-  }
+    return unique;
+  });
 
-  private parseTemplateParts(template: Template) {
-    const parts: TemplatePart[] = [];
+  // 結果を構造化されたパーツとして表示
+  resultParts = computed(() => {
+    const template = this.template();
+    if (!template) return [];
+
+    const parts: ResultPart[] = [];
     let lastIndex = 0;
     const content = template.content;
+    const values = this.placeholderValues();
 
     // プレースホルダーを位置順にソート
     const sortedPlaceholders = [...template.placeholders].sort((a, b) => a.position - b.position);
@@ -87,10 +71,12 @@ export class TemplateExecutorComponent implements OnInit {
         });
       }
 
-      // プレースホルダー
+      // プレースホルダーの値を取得（テキスト/選択共通でnameをキーとする）
+      const value = values.get(placeholder.name) || '';
+
       parts.push({
         type: 'placeholder',
-        content: placeholder.originalText,
+        content: value,
         placeholder,
       });
 
@@ -105,7 +91,35 @@ export class TemplateExecutorComponent implements OnInit {
       });
     }
 
-    this.templateParts.set(parts);
+    return parts;
+  });
+
+  // PlaceholderType を公開（テンプレートで使用）
+  PlaceholderType = PlaceholderType;
+
+  ngOnInit() {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      const template = this.storage.getTemplateById(id);
+      if (template) {
+        this.template.set(template);
+        this.initializePlaceholderValues(template);
+      } else {
+        alert('テンプレートが見つかりません。');
+        this.router.navigate(['/templates']);
+      }
+    }
+  }
+
+  private initializePlaceholderValues(template: Template) {
+    const values = new Map<string, string>();
+
+    // テキスト型と選択型の両方で、nameをキーとして使用
+    for (const placeholder of template.placeholders) {
+      values.set(placeholder.name, '');
+    }
+
+    this.placeholderValues.set(values);
   }
 
   updateValue(key: string, value: string) {
@@ -119,7 +133,11 @@ export class TemplateExecutorComponent implements OnInit {
   }
 
   copyToClipboard() {
-    const text = this.resultText();
+    // resultPartsから純粋なテキストを生成
+    const text = this.resultParts()
+      .map((part) => part.content)
+      .join('');
+
     navigator.clipboard
       .writeText(text)
       .then(() => {

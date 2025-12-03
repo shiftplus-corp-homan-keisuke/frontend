@@ -5,37 +5,65 @@ import { Placeholder, PlaceholderType } from '../models/template.model';
   providedIn: 'root',
 })
 export class TemplateParserService {
-  private readonly TEXT_PLACEHOLDER_REGEX = /#{([^}]+)}/g;
-  private readonly SELECT_PLACEHOLDER_REGEX = /#select{([^}]+)}/g;
+  private readonly PLACEHOLDER_REGEX = /#{([^}]+)}/g;
 
   /**
    * テンプレートからプレースホルダーを抽出
+   * 形式: #{type:name:options} または #{name}
    */
   extractPlaceholders(content: string): Placeholder[] {
     const placeholders: Placeholder[] = [];
     let idCounter = 0;
 
-    // 選択型プレースホルダーを抽出
-    const selectMatches = [...content.matchAll(this.SELECT_PLACEHOLDER_REGEX)];
-    for (const match of selectMatches) {
-      const options = match[1].split('|').map((opt) => opt.trim());
-      placeholders.push({
-        id: `placeholder-${idCounter++}`,
-        type: PlaceholderType.SELECT,
-        name: `選択肢-${idCounter}`,
-        options,
-        position: match.index!,
-        originalText: match[0],
-      });
-    }
+    // 全てのプレースホルダーを抽出
+    const matches = [...content.matchAll(this.PLACEHOLDER_REGEX)];
+    for (const match of matches) {
+      const contentStr = match[1];
+      const parts = contentStr.split(':').map((part) => part.trim());
 
-    // テキスト型プレースホルダーを抽出
-    const textMatches = [...content.matchAll(this.TEXT_PLACEHOLDER_REGEX)];
-    for (const match of textMatches) {
+      let type: PlaceholderType = PlaceholderType.TEXT;
+      let name = '';
+      let options: string[] | undefined = undefined;
+
+      if (parts.length === 1) {
+        // 省略形: #{name} → テキスト型
+        type = PlaceholderType.TEXT;
+        name = parts[0];
+      } else if (parts.length >= 2) {
+        // 完全形: #{type:name} または #{type:name:options}
+        const specifiedType = parts[0].toLowerCase();
+        name = parts[1];
+
+        if (specifiedType === 'text') {
+          type = PlaceholderType.TEXT;
+        } else if (specifiedType === 'select') {
+          type = PlaceholderType.SELECT;
+          // コロン以降をオプションとして取得し、パイプで分割
+          const optionsStr = parts.slice(2).join(':');
+          options = optionsStr
+            .split('|')
+            .map((opt) => opt.trim())
+            .filter((opt) => opt.length > 0);
+        } else if (specifiedType === 'checkbox') {
+          // チェックボックスは選択型として扱う
+          type = PlaceholderType.SELECT;
+          const optionsStr = parts.slice(2).join(':');
+          options = optionsStr
+            .split('|')
+            .map((opt) => opt.trim())
+            .filter((opt) => opt.length > 0);
+        } else {
+          // 未知のタイプはテキストとして扱う
+          type = PlaceholderType.TEXT;
+          name = contentStr;
+        }
+      }
+
       placeholders.push({
         id: `placeholder-${idCounter++}`,
-        type: PlaceholderType.TEXT,
-        name: match[1].trim(),
+        type,
+        name,
+        options,
         position: match.index!,
         originalText: match[0],
       });
@@ -51,15 +79,12 @@ export class TemplateParserService {
   replacePlaceholders(content: string, values: Map<string, string>): string {
     let result = content;
 
-    // 選択型プレースホルダーを置換
-    result = result.replace(this.SELECT_PLACEHOLDER_REGEX, (match, group) => {
-      const key = match;
-      return values.get(key) || '';
-    });
+    // 全てのプレースホルダーを置換
+    result = result.replace(this.PLACEHOLDER_REGEX, (match, group) => {
+      const parts = group.split(':').map((part: string) => part.trim());
 
-    // テキスト型プレースホルダーを置換
-    result = result.replace(this.TEXT_PLACEHOLDER_REGEX, (match, group) => {
-      const name = group.trim();
+      // 名前を取得（省略形は parts[0]、完全形は parts[1]）
+      const name = parts.length === 1 ? parts[0] : parts[1];
       return values.get(name) || '';
     });
 
@@ -72,18 +97,25 @@ export class TemplateParserService {
   generatePreviewHtml(content: string): string {
     let result = content;
 
-    // 選択型プレースホルダーをバッジ化
-    result = result.replace(this.SELECT_PLACEHOLDER_REGEX, (match, group) => {
-      const options = group
-        .split('|')
-        .map((opt: string) => opt.trim())
-        .join('|');
-      return `<span class="placeholder-badge-select">${options}</span>`;
-    });
+    // 全てのプレースホルダーをバッジ化
+    result = result.replace(this.PLACEHOLDER_REGEX, (match, group) => {
+      const parts = group.split(':').map((part: string) => part.trim());
 
-    // テキスト型プレースホルダーをバッジ化
-    result = result.replace(this.TEXT_PLACEHOLDER_REGEX, (match, group) => {
-      return `<span class="placeholder-badge-text">${group.trim()}</span>`;
+      if (parts.length === 1) {
+        // 省略形: #{name} → テキスト型
+        return `<span class="placeholder-badge-text">${parts[0]}</span>`;
+      } else {
+        // 完全形: #{type:name:...}
+        const type = parts[0].toLowerCase();
+        const name = parts[1];
+
+        if (type === 'text') {
+          return `<span class="placeholder-badge-text">${name}</span>`;
+        } else {
+          // select, checkbox など
+          return `<span class="placeholder-badge-select">${name}</span>`;
+        }
+      }
     });
 
     // 改行を<br>に変換

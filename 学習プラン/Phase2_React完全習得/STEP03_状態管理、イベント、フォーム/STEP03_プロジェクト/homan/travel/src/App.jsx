@@ -17,11 +17,10 @@ function Logo() {
 }
 
 function Form() {
-  const [description, setDescription] = useState("穂満");
+  const [description, setDescription] = useState("");
 
   function handleSubmit(event) {
     event.preventDefault();
-    setDescription("穂満");
     console.log("フォームが送信されました");
   }
 
@@ -53,11 +52,13 @@ function PackingList() {
     { id: 3, description: "Charger", quantity: 1, packed: false },
   ];
   return (
-    <ul className="list">
-      {initialItems.map((item) => (
-        <Item key={item.id} item={item} />
-      ))}
-    </ul>
+    <div className="list">
+      <ul>
+        {initialItems.map((item) => (
+          <Item key={item.id} item={item} />
+        ))}
+      </ul>
+    </div>
   );
 }
 

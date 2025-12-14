@@ -1,0 +1,22 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "*   **即戦力フロントエンドエンジニアの実現:**\r     *   どの企業でも通用する高度なフロントエンド開発スキルを習得する。\r     *   言語、フレームワーク、アーキテクチャ、デザインパターンに精通する。\r *   **社内での評価確立:**\r     *   シフトプラス社内で「フロントエンドといえば芦澤さん」と認知される存在になる。ヒュ～っ！\r *   **具体的目標:**\r     *   穂満の当時(2025年5月)の技術レベルを超える。(絶対いける！！)",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shiftplus-corp-homan-keisuke/frontend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shiftplus-corp-homan-keisuke/frontend/issues"
+  },
+  "homepage": "https://github.com/shiftplus-corp-homan-keisuke/frontend#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "@types/node": "^25.0.2"
+  }
+}

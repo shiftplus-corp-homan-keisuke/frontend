@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./App.css";
 
 const tempMovieData = [
   {
@@ -63,22 +64,10 @@ export default function App() {
 
   return (
     <>
-      <nav className="nav-bar">
-        <div className="logo">
-          <span role="img">🍿</span>
-          <h1>usePopcorn</h1>
-        </div>
-        <input
-          className="search"
-          type="text"
-          placeholder="映画を検索..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-        <p className="num-results">
-          <strong>{movies.length}</strong> 件の結果が見つかりました
-        </p>
-      </nav>
+      <NavBar>
+        <Search query={query} setQuery={setQuery} />
+        <NumResults movies={movies} />
+      </NavBar>
 
       <main className="main">
         <div className="box">
@@ -88,22 +77,7 @@ export default function App() {
           >
             {isOpen1 ? "–" : "+"}
           </button>
-          {isOpen1 && (
-            <ul className="list">
-              {movies?.map((movie) => (
-                <li key={movie.imdbID}>
-                  <img src={movie.Poster} alt={`${movie.Title} poster`} />
-                  <h3>{movie.Title}</h3>
-                  <div>
-                    <p>
-                      <span>🗓</span>
-                      <span>{movie.Year}</span>
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
+          {isOpen1 && <TempMovieList movies={movies} />}
         </div>
 
         <div className="box">
@@ -136,33 +110,107 @@ export default function App() {
                   </p>
                 </div>
               </div>
-
-              <ul className="list">
-                {watched.map((movie) => (
-                  <li key={movie.imdbID}>
-                    <img src={movie.Poster} alt={`${movie.Title} poster`} />
-                    <h3>{movie.Title}</h3>
-                    <div>
-                      <p>
-                        <span>⭐️</span>
-                        <span>{movie.imdbRating}</span>
-                      </p>
-                      <p>
-                        <span>🌟</span>
-                        <span>{movie.userRating}</span>
-                      </p>
-                      <p>
-                        <span>⏳</span>
-                        <span>{movie.runtime} 分</span>
-                      </p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+              <WatchedMovieList watched={watched} />
             </>
           )}
         </div>
       </main>
     </>
+  );
+}
+
+function WatchedMovieList({ watched }) {
+  return (
+    <ul className="list">
+      {watched.map((movie) => (
+        <WatchedMovieItem movie={movie} />
+      ))}
+    </ul>
+  );
+}
+
+function WatchedMovieItem({ movie }) {
+  return (
+    <li key={movie.imdbID}>
+      <img src={movie.Poster} alt={`${movie.Title} poster`} />
+      <h3>{movie.Title}</h3>
+      <div>
+        <p>
+          <span>⭐️</span>
+          <span>{movie.imdbRating}</span>
+        </p>
+        <p>
+          <span>🌟</span>
+          <span>{movie.userRating}</span>
+        </p>
+        <p>
+          <span>⏳</span>
+          <span>{movie.runtime} 分</span>
+        </p>
+      </div>
+    </li>
+  );
+}
+
+function TempMovieList({ movies }) {
+  return (
+    <ul className="list">
+      {movies?.map((movie) => (
+        <TempMovieItem movie={movie} />
+      ))}
+    </ul>
+  );
+}
+
+function TempMovieItem({ movie }) {
+  return (
+    <li key={movie.imdbID}>
+      <img src={movie.Poster} alt={`${movie.Title} poster`} />
+      <h3>{movie.Title}</h3>
+      <div>
+        <p>
+          <span>🗓</span>
+          <span>{movie.Year}</span>
+        </p>
+      </div>
+    </li>
+  );
+}
+
+function NavBar({ children }) {
+  return (
+    <nav className="nav-bar">
+      <Logo />
+      {children}
+    </nav>
+  );
+}
+
+function Logo() {
+  return (
+    <div className="logo">
+      <span role="img">🍿</span>
+      <h1>usePopcorn</h1>
+    </div>
+  );
+}
+
+function Search({ query, setQuery }) {
+  return (
+    <input
+      className="search"
+      type="text"
+      placeholder="映画を検索..."
+      value={query}
+      onChange={(e) => setQuery(e.target.value)}
+    />
+  );
+}
+
+function NumResults({ movies }) {
+  return (
+    <p className="num-results">
+      <strong>{movies.length}</strong> 件の結果が見つかりました
+    </p>
   );
 }

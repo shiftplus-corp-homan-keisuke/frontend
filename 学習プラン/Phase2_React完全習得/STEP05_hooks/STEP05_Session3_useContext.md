@@ -130,16 +130,7 @@ function ThemeProvider({ children }) {
   );
 }
 
-// 3. カスタムフックを作成（オプションだが推奨）
-function useTheme() {
-  const context = useContext(ThemeContext);
-  if (context === null) {
-    throw new Error('useTheme は ThemeProvider 内で使用してください');
-  }
-  return context;
-}
-
-// 使用例
+// 3. 使用例
 function App() {
   return (
     <ThemeProvider>
@@ -150,7 +141,8 @@ function App() {
 }
 
 function Header() {
-  const { theme, toggleTheme } = useTheme();
+  // 直接 useContext を使う
+  const { theme, toggleTheme } = useContext(ThemeContext);
   
   return (
     <header style={{ background: theme === 'light' ? '#fff' : '#333' }}>
@@ -162,7 +154,8 @@ function Header() {
 }
 
 function MainContent() {
-  const { theme } = useTheme();
+  // 直接 useContext を使う
+  const { theme } = useContext(ThemeContext);
   
   return (
     <main style={{ 
@@ -175,12 +168,6 @@ function MainContent() {
 }
 ```
 
-### なぜカスタムフックを作るのか？
-
-カスタムフック `useTheme` を作ることで:
-- エラーチェックを一か所にまとめられる
-- コードが読みやすくなる（`useContext(ThemeContext)` より `useTheme()` の方が直感的）
-- Context の実装詳細を隠蔽できる
 
 ---
 
@@ -212,14 +199,6 @@ function AuthProvider({ children }) {
   );
 }
 
-function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === null) {
-    throw new Error('useAuth は AuthProvider 内で使用してください');
-  }
-  return context;
-}
-
 // 使用例
 function App() {
   return (
@@ -231,7 +210,7 @@ function App() {
 }
 
 function NavBar() {
-  const { user, logout } = useAuth();
+  const { user, logout } = useContext(AuthContext);
   
   return (
     <nav>
@@ -248,7 +227,7 @@ function NavBar() {
 }
 
 function Dashboard() {
-  const { user } = useAuth();
+  const { user } = useContext(AuthContext);
   
   if (!user) {
     return <div>ログインしてください</div>;
@@ -258,7 +237,7 @@ function Dashboard() {
 }
 
 function LoginButton() {
-  const { login } = useAuth();
+  const { login } = useContext(AuthContext);
   
   return (
     <button onClick={() => login('太郎', 'password123')}>
@@ -279,18 +258,15 @@ function App() {
   return (
     <AuthProvider>
       <ThemeProvider>
-        <LanguageProvider>
-          <MainApp />
-        </LanguageProvider>
+        <MainApp />
       </ThemeProvider>
     </AuthProvider>
   );
 }
 
 function MainApp() {
-  const { user } = useAuth();
-  const { theme } = useTheme();
-  const { language } = useLanguage();
+  const { user } = useContext(AuthContext);
+  const { theme } = useContext(ThemeContext);
   
   return <div>アプリケーション</div>;
 }
@@ -303,9 +279,7 @@ function AppProviders({ children }) {
   return (
     <AuthProvider>
       <ThemeProvider>
-        <LanguageProvider>
-          {children}
-        </LanguageProvider>
+        {children}
       </ThemeProvider>
     </AuthProvider>
   );
@@ -388,21 +362,10 @@ function AppProvider({ children }) {
 
 ### ✅ すべきこと
 
-1. **カスタムフックを作成する**
-```jsx
-function useMyContext() {
-  const context = useContext(MyContext);
-  if (context === null) {
-    throw new Error('Provider 内で使用してください');
-  }
-  return context;
-}
-```
-
-2. **Context を機能ごとに分割する**
+1. **Context を機能ごとに分割する**
    - AuthContext、ThemeContext、LanguageContext など
 
-3. **Provider コンポーネントを分離する**
+2. **Provider コンポーネントを分離する**
 ```jsx
 function MyProvider({ children }) {
   // State とロジックをここにまとめる
@@ -442,39 +405,16 @@ function MyProvider({ children }) {
 
 ## 9. よくある間違い
 
-### ❌ 間違い1: デフォルト値に依存する
-
-```jsx
-const MyContext = createContext('default');
-
-// Provider を設定し忘れた
-function App() {
-  return <MyComponent />; // デフォルト値が使われる
-}
-```
-
-**解決策:** カスタムフックでエラーチェック:
-
-```jsx
-function useMyContext() {
-  const context = useContext(MyContext);
-  if (context === null) {
-    throw new Error('Provider がありません');
-  }
-  return context;
-}
-```
-
-### ❌ 間違い2: Provider の外で useContext を使用
+### ❌ 間違い: Provider の外で useContext を使用
 
 ```jsx
 function App() {
   return (
     <>
       <ComponentOutside /> {/* ❌ Provider の外 */}
-      <MyProvider>
+      <MyContext value={...}>
         <ComponentInside /> {/* ✅ Provider の中 */}
-      </MyProvider>
+      </MyContext>
     </>
   );
 }
@@ -494,7 +434,6 @@ function App() {
   3. `useContext` でデータを取得
 - **主な用途**: テーマ、認証、言語設定などグローバルなデータ
 - **ベストプラクティス**:
-  - カスタムフックを作成する
   - Context を機能ごとに分割する
   - パフォーマンスを考慮する（不要な再レンダリングを避ける）
 - **注意点**: すべてを Context にしない、Props で十分な場合は Props を使う

@@ -1,22 +1,44 @@
-# Session 4: useMemo フック
+# Session 4: useMemo と React Compiler
 
-## はじめに：パフォーマンス最適化の必要性
+## はじめに：React における最適化の進化
 
-これまで学んできた Hooks は、React アプリケーションの機能を実装するためのものでした。このセッションで学ぶ `useMemo` は、**パフォーマンスの最適化**を目的としたフックです。
+これまで学んできたフックは、React アプリケーションの機能を実装するためのものでした。このセッションで学ぶ `useMemo` は、**パフォーマンスの最適化**を目的としたフックです。
 
-しかし、重要な原則があります:
+しかし、React 19 からは大きな変化があります。**React Compiler**（コードネーム: React Forget）の導入により、これまで手動で行っていた多くの最適化が自動化されるようになりました。
 
-> **「まず動くものを作り、必要になってから最適化する」**
-
-`useMemo` は便利ですが、使いすぎると逆にコードが複雑になり、メンテナンスが困難になります。このセッションでは、「いつ使うべきか」「いつ使わないべきか」をしっかり理解しましょう。
+このセッションでは、`useMemo` の仕組みを理解しつつ、最新の React がどのようにパフォーマンスを管理しているかを学びましょう。
 
 ---
 
-## 1. メモ化とは？
+## 1. React 19 と React Compiler
+
+React 19 の最大の目玉の一つは、**React Compiler** です。
+
+### これまでの問題（React 18以前）:
+- 開発者は「どの値をメモ化すべきか」を常に考え、`useMemo` や `useCallback` を手動で記述する必要がありました。
+- 指定を忘れると不要な再レンダリングが発生し、指定しすぎるとコードが複雑になるというジレンマがありました。
+
+### React 19 の世界:
+- コンパイラがコードを解析し、**自動的に値をメモ化**します。
+- 開発者が `useMemo` を書かなくても、React が賢く「値が変わっていないなら再計算しない」という判断を下してくれます。
+
+---
+
+## 2. それでもなぜ `useMemo` を学ぶのか？
+
+「自動化されるなら学ばなくていいのでは？」と思うかもしれません。しかし、以下の理由で `useMemo` の概念を理解することは依然として重要です。
+
+1. **既存プロジェクトの保守**: 世の中の多くの React プロジェクトはまだ手動で `useMemo` を使っています。
+2. **コンパイラが未導入の環境**: すべてのプロジェクトがすぐにコンパイラを導入できるわけではありません。
+3. **最適化の仕組みを理解する**: React が内部でどのように「値の同一性」を判断しているかを知ることは、良いエンジニアになるために不可欠です。
+
+---
+
+## 3. メモ化とは？
 
 **メモ化（Memoization）** とは、計算結果をキャッシュして、同じ入力に対しては保存された結果を再利用する技術です。
 
-### 例: メモ化なし
+### 例: メモ化なしの状態
 
 ```jsx
 function expensiveCalculation(num) {
@@ -29,425 +51,132 @@ function expensiveCalculation(num) {
 }
 
 function MyComponent({ number }) {
-  // コンポーネントが再レンダリングされるたびに計算が実行される
+  // コンポーネントが再レンダリングされるたびに、この重い計算が走る
   const result = expensiveCalculation(number);
   
   return <div>結果: {result}</div>;
 }
 ```
 
-**問題点:** `number` が変わっていなくても、コンポーネントが再レンダリングされるたびに重い計算が実行されます。
+**問題点:** `number` が変わっていなくても、例えば別の State が更新されて再レンダリングが起こるたびに、10億回のループが再実行されてしまいます。
 
 ---
 
-## 2. useMemo の基本構文
+## 4. useMemo の基本構文（手動最適化）
 
-`useMemo` を使うと、計算結果をキャッシュできます。
+`useMemo` を使うと、特定の計算結果をロック（保持）できます。
 
 ```jsx
 import { useMemo } from 'react';
 
 function MyComponent({ number }) {
+  // number が変わったときだけ、第1引数の関数が実行される
   const result = useMemo(() => {
-    console.log('計算実行中...');
     return expensiveCalculation(number);
-  }, [number]); // number が変わったときのみ再計算
+  }, [number]); 
   
   return <div>結果: {result}</div>;
 }
 ```
 
-### 構文:
+### 構文のポイント:
+- **第1引数**: 計算を行う関数。
+- **第2引数（依存配列）**: 「この値が変わったら再計算してね」というトリガーのリスト。
 
-```jsx
-const cachedValue = useMemo(() => {
-  // 重い計算
-  return computedValue;
-}, [dependencies]);
-```
-
-- **第1引数**: 計算を行う関数（戻り値がキャッシュされる）
-- **第2引数**: 依存配列（これらの値が変わったときのみ再計算）
-- **戻り値**: 計算結果（キャッシュされた値）
+**★ React 19 Compiler が有効な場合、上記のコードは `useMemo` を書かなくても自動的にこれと同じ（あるいはそれ以上の）最適化が行われます。**
 
 ---
 
-## 3. useMemo と useEffect の違い
+## 5. 実践例：配列のフィルタリング
 
-初学者が混乱しやすいポイントなので、明確にしておきましょう。
-
-| | useMemo | useEffect |
-|---|---------|-----------|
-| **目的** | 値の計算とキャッシュ | 副作用の実行 |
-| **戻り値** | 計算結果を返す | 何も返さない（またはクリーンアップ関数） |
-| **実行タイミング** | レンダリング中 | レンダリング後 |
-| **使用例** | フィルタリング、ソート、計算 | データ取得、イベントリスナー登録 |
-
-```jsx
-// useMemo: 値を計算して返す
-const sortedList = useMemo(() => {
-  return items.sort((a, b) => a.price - b.price);
-}, [items]);
-
-// useEffect: 副作用を実行する
-useEffect(() => {
-  document.title = `${items.length} 個のアイテム`;
-}, [items]);
-```
-
----
-
-## 4. 実践例1: 配列のフィルタリング
-
-映画リストから検索結果をフィルタリングする例:
+React Compiler が「どこを自動で最適化してくれるのか」を、`useMemo` を使った例で見てみましょう。
 
 ```jsx
 import { useState, useMemo } from 'react';
 
-function MovieList({ movies }) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState('title');
+function UserList({ users }) {
+  const [query, setQuery] = useState('');
 
-  // メモ化: 検索クエリとソート条件が変わったときのみ再計算
-  const filteredAndSortedMovies = useMemo(() => {
-    console.log('フィルタリング＆ソート実行中...');
-    
-    let result = movies.filter(movie =>
-      movie.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    
-    result.sort((a, b) => {
-      if (sortBy === 'title') return a.title.localeCompare(b.title);
-      if (sortBy === 'year') return b.year - a.year;
-      return 0;
-    });
-    
-    return result;
-  }, [movies, searchQuery, sortBy]);
+  // 以前はこうして手動でメモ化していた
+  const filteredUsers = useMemo(() => {
+    console.log('フィルタリング実行中...');
+    return users.filter(user => user.name.includes(query));
+  }, [users, query]);
 
   return (
     <div>
-      <input
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        placeholder="映画を検索..."
-      />
-      <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-        <option value="title">タイトル順</option>
-        <option value="year">年代順</option>
-      </select>
-      
+      <input value={query} onChange={e => setQuery(e.target.value)} />
       <ul>
-        {filteredAndSortedMovies.map(movie => (
-          <li key={movie.id}>{movie.title} ({movie.year})</li>
-        ))}
+        {filteredUsers.map(user => <li key={user.id}>{user.name}</li>)}
       </ul>
     </div>
   );
 }
 ```
 
-### なぜ useMemo が必要か？
+### React 19 での変化:
+React Compiler を導入している環境では、上記の `useMemo` を取り除いて単純な変数にしても、`query` や `users` が変わらない限り、フィルタリング処理は再実行されません。
 
-- `movies` の配列が大きい（数千件）場合、フィルタリングとソートは重い処理
-- `useMemo` なしだと、親コンポーネントが再レンダリングされるたびに実行される
-- `useMemo` ありだと、`movies`、`searchQuery`、`sortBy` が変わったときだけ実行される
+```jsx
+// React 19 (Compiler 有効時) ならこれで十分！
+const filteredUsers = users.filter(user => user.name.includes(query));
+```
 
 ---
 
-## 5. 実践例2: オブジェクトの参照を安定させる
+## 6. オブジェクトの参照と再レンダリング
 
-子コンポーネントに渡すオブジェクトの参照を安定させることで、不要な再レンダリングを防げます。
+メモ化のもう一つの重要な役割は、**「オブジェクトの参照を同じに保つ」**ことです。
 
 ```jsx
-import { useMemo } from 'react';
-import { memo } from 'react';
-
 function Parent() {
   const [count, setCount] = useState(0);
-  const [name, setName] = useState('太郎');
 
-  // ❌ 毎回新しいオブジェクトが作られる
-  // const config = { theme: 'dark', name: name };
-  
-  // ✅ name が変わったときのみ新しいオブジェクトを作る
-  const config = useMemo(() => {
-    return { theme: 'dark', name: name };
-  }, [name]);
+  // コンパイラがない場合、Parent がレンダリングされるたびに 
+  // options は「新しいオブジェクト（別の住所）」として作られてしまう
+  const options = { color: 'blue' };
 
   return (
     <div>
-      <button onClick={() => setCount(count + 1)}>
-        カウント: {count}
-      </button>
-      <Child config={config} />
+      <button onClick={() => setCount(c => c + 1)}>再描画</button>
+      <Child options={options} />
     </div>
   );
 }
 
-// memo でラップすると、Props が変わらない限り再レンダリングされない
-const Child = memo(function Child({ config }) {
-  console.log('Child がレンダリングされました');
-  return <div>テーマ: {config.theme}, 名前: {config.name}</div>;
+const Child = memo(({ options }) => {
+  console.log('Child rendered');
+  return <div style={{ color: options.color }}>Hello</div>;
 });
 ```
 
-**動作:**
-- カウントボタンをクリックしても、`config` の参照は変わらない
-- `Child` コンポーネントは再レンダリングされない
-- `name` が変わったときだけ `Child` が再レンダリングされる
+### なぜこれが問題か？
+JavaScript では `{ color: 'blue' } === { color: 'blue' }` は **false** です。そのため、中身が同じでも毎回「新しい Props が来た！」と React が勘違いして、`Child` を再描画してしまいます。
+
+**React Compiler は、このような「見かけは同じだけど参照（住所）が違う」ために起こる無駄な再描画も、自動的に防いでくれます。**
 
 ---
 
-## 6. useCallback との違い
+## 7. まとめとこれからの向き合い方
 
-`useMemo` に似たフックとして `useCallback` があります。違いを理解しましょう。
-
-### useMemo: 値をメモ化
-
-```jsx
-const sortedItems = useMemo(() => {
-  return items.sort((a, b) => a - b);
-}, [items]);
-```
-
-### useCallback: 関数をメモ化
-
-```jsx
-const handleClick = useCallback(() => {
-  console.log('クリック');
-}, []);
-```
-
-**実は、useCallback は useMemo の特殊版:**
-
-```jsx
-// これらは同じ
-const handleClick = useCallback(() => { ... }, []);
-const handleClick = useMemo(() => () => { ... }, []);
-```
-
----
-
-## 7. いつ useMemo を使うべきか？
-
-### ✅ useMemo を使うべき場面
-
-1. **重い計算がある**
-   - 大量のデータのフィルタリング、ソート
-   - 複雑な数値計算
-
-2. **参照の安定性が必要**
-   - `memo` でラップされた子コンポーネントに渡すオブジェクトや配列
-   - `useEffect` の依存配列に含まれるオブジェクト
-
-3. **パフォーマンスのボトルネックを測定した後**
-   - React DevTools の Profiler で問題を特定してから使う
-
-### ❌ useMemo を使わないべき場面
-
-1. **簡単な計算**
-```jsx
-// ❌ 不要
-const total = useMemo(() => a + b, [a, b]);
-
-// ✅ これで十分
-const total = a + b;
-```
-
-2. **計算コストが小さい**
-```jsx
-// ❌ 不要（配列が小さい場合）
-const filtered = useMemo(() => 
-  [1, 2, 3].filter(x => x > 1),
-  []
-);
-
-// ✅ これで十分
-const filtered = [1, 2, 3].filter(x => x > 1);
-```
-
-3. **初回レンダリングのみの計算**
-```jsx
-// ❌ 不要
-const initialValue = useMemo(() => 
-  expensiveCalculation(),
-  []
-);
-
-// ✅ useState の初期化関数を使う
-const [value] = useState(() => expensiveCalculation());
-```
-
----
-
-## 8. パフォーマンス測定の重要性
-
-**「推測するな、計測せよ」**
-
-`useMemo` を使う前に、本当に必要か確認しましょう。
-
-### React DevTools Profiler の使い方
-
-1. React DevTools の Profiler タブを開く
-2. 記録を開始
-3. アプリを操作
-4. 記録を停止
-5. レンダリング時間を確認
-
-**ルール:**
-- 問題があることを確認してから最適化する
-- 早すぎる最適化は悪の根源
-
----
-
-## 9. よくある間違い
-
-### ❌ 間違い1: すべてを useMemo でラップ
-
-```jsx
-function MyComponent() {
-  const a = useMemo(() => 1 + 1, []);
-  const b = useMemo(() => 'hello', []);
-  const c = useMemo(() => true, []);
-  // ...
-}
-```
-
-**問題点:** `useMemo` 自体にもコスト（メモリとロジック）がかかる。簡単な計算には不要。
-
-### ❌ 間違い2: 依存配列の指定漏れ
-
-```jsx
-const filtered = useMemo(() => {
-  return items.filter(item => item.category === category);
-}, [items]); // category が依存配列にない！
-```
-
-**問題点:** `category` が変わっても再計算されず、古いデータが表示される。
-
-**解決策:**
-
-```jsx
-const filtered = useMemo(() => {
-  return items.filter(item => item.category === category);
-}, [items, category]); // category を追加
-```
-
-### ❌ 間違い3: 副作用を useMemo 内で実行
-
-```jsx
-// ❌ 間違い
-const data = useMemo(() => {
-  fetchData(); // 副作用！
-  return someValue;
-}, []);
-
-// ✅ 正しい
-useEffect(() => {
-  fetchData(); // useEffect で副作用を実行
-}, []);
-```
-
----
-
-## 10. useMemo の内部動作
-
-理解を深めるために、`useMemo` の擬似的な実装を見てみましょう:
-
-```jsx
-let memoizedValue;
-let prevDeps;
-
-function useMemo(computeFn, deps) {
-  // 依存配列が変わったかチェック
-  const hasChanged = !prevDeps || deps.some((dep, i) => dep !== prevDeps[i]);
-  
-  if (hasChanged) {
-    // 依存配列が変わった → 再計算
-    memoizedValue = computeFn();
-    prevDeps = deps;
-  }
-  
-  // キャッシュされた値を返す
-  return memoizedValue;
-}
-```
-
-**ポイント:**
-- 依存配列の各要素を `===` で比較
-- 1つでも変わっていれば再計算
-- すべて同じならキャッシュされた値を返す
-
----
-
-## 11. 実践的なパターン
-
-### パターン1: 複雑なデータ変換
-
-```jsx
-function DataTable({ rawData }) {
-  const processedData = useMemo(() => {
-    return rawData
-      .filter(item => item.active)
-      .map(item => ({
-        ...item,
-        formattedDate: new Date(item.date).toLocaleDateString(),
-        total: item.price * item.quantity
-      }))
-      .sort((a, b) => b.total - a.total);
-  }, [rawData]);
-
-  return <Table data={processedData} />;
-}
-```
-
-### パターン2: Context の値の安定化
-
-```jsx
-function MyProvider({ children }) {
-  const [state, setState] = useState(initialState);
-  
-  const value = useMemo(() => ({
-    state,
-    actions: {
-      increment: () => setState(s => s + 1),
-      decrement: () => setState(s => s - 1),
-    }
-  }), [state]);
-  
-  return <MyContext.Provider value={value}>{children}</MyContext.Provider>;
-}
-```
-
----
-
-## 12. まとめ
-
-`useMemo` は、パフォーマンス最適化のための強力なツールですが、慎重に使う必要があります。
+`useMemo` は、React というライブラリが「手動最適化」から「自動最適化」へと進化する過程を象徴するフックです。
 
 ### 覚えておくべきポイント:
-
-- **目的**: 重い計算結果のキャッシュ、参照の安定化
-- **使い方**: `useMemo(() => 計算, [依存配列])`
-- **いつ使うか**:
-  - 重い計算がある
-  - 参照の安定性が必要
-  - パフォーマンス問題を測定した後
-- **いつ使わないか**:
-  - 簡単な計算
-  - デフォルトで使わない（必要になってから）
-- **原則**: 「まず動くものを作り、必要になってから最適化する」
+- **useMemo の本質**: 計算結果を保存し、値が変わらない限り再計算を避けること。
+- **React 19 の理想**: 開発者は最適化を気にせず、プレーンな JavaScript を書けば React が勝手に速くしてくれる。
+- **現状のベストプラクティス**:
+    1. 新規プロジェクトであれば、まずは `useMemo` なしでシンプルに書く。
+    2. パフォーマンスに問題を感じた場合のみ、Profiler で計測し、必要なら `useMemo` を足す（またはコンパイラの設定を確認する）。
 
 ---
 
 ## おめでとうございます！
 
-STEP05 の学習を完了しました！これまで学んだ4つの Hooks:
+これで STEP05 の主要な Hooks 学習を完了しました！
 
-1. **useEffect**: 副作用の管理
-2. **useRef**: DOM アクセスと値の保持
-3. **useContext**: グローバルな State 管理
-4. **useMemo**: パフォーマンス最適化
+1. **useEffect**: コンポーネントの外の世界（API、DOM）との同期
+2. **useRef**: 画面を書き換えない値の保持や DOM 操作
+3. **useContext**: データのバケツリレー（Prop Drilling）の解消
+4. **useMemo / Compiler**: 無駄な計算と描画の排除
 
-これらを組み合わせることで、React アプリケーションのほとんどの要件を実装できます。次のステップでは、これらの知識を実践的なプロジェクトで活用していきましょう！
+これらの道具を使いこなせるようになると、どのような複雑な要件でも React で実装できるようになります。お疲れ様でした！

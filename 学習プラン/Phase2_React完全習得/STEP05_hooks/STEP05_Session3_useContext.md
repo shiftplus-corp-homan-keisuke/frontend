@@ -69,22 +69,22 @@ import { createContext } from 'react';
 const UserContext = createContext(null);
 ```
 
-### Step 2: Provider でデータを提供する
+### Step 2: Context でデータを提供する
 
 ```jsx
 function App() {
   const [user, setUser] = useState({ name: '太郎', theme: 'dark' });
   
   return (
-    <UserContext.Provider value={user}>
+    <UserContext value={user}>
       <Layout />
-    </UserContext.Provider>
+    </UserContext>
   );
 }
 ```
 
 **ポイント:**
-- `Provider` コンポーネントで子コンポーネントをラップ
+- Context コンポーネントそのもので子コンポーネントをラップ（React 19以降）
 - `value` プロパティに共有したいデータを渡す
 
 ### Step 3: useContext でデータを取得する
@@ -124,9 +124,9 @@ function ThemeProvider({ children }) {
   };
   
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext value={{ theme, toggleTheme }}>
       {children}
-    </ThemeContext.Provider>
+    </ThemeContext>
   );
 }
 
@@ -206,9 +206,9 @@ function AuthProvider({ children }) {
   };
   
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext value={{ user, login, logout }}>
       {children}
-    </AuthContext.Provider>
+    </AuthContext>
   );
 }
 
@@ -335,9 +335,9 @@ function AppProvider({ children }) {
   
   // テーマが変わるたびに新しいオブジェクトが作成される
   return (
-    <AppContext.Provider value={{ user, setUser, theme, setTheme }}>
+    <AppContext value={{ user, setUser, theme, setTheme }}>
       {children}
-    </AppContext.Provider>
+    </AppContext>
   );
 }
 
@@ -373,11 +373,11 @@ function AppProvider({ children }) {
   const themeValue = useMemo(() => ({ theme, setTheme }), [theme]);
   
   return (
-    <UserContext.Provider value={userValue}>
-      <ThemeContext.Provider value={themeValue}>
+    <UserContext value={userValue}>
+      <ThemeContext value={themeValue}>
         {children}
-      </ThemeContext.Provider>
-    </UserContext.Provider>
+      </ThemeContext>
+    </UserContext>
   );
 }
 ```
@@ -406,7 +406,7 @@ function useMyContext() {
 ```jsx
 function MyProvider({ children }) {
   // State とロジックをここにまとめる
-  return <MyContext.Provider value={...}>{children}</MyContext.Provider>;
+  return <MyContext value={...}>{children}</MyContext>;
 }
 ```
 
@@ -490,7 +490,7 @@ function App() {
 
 - **Context API の3ステップ**:
   1. `createContext` で Context を作成
-  2. `Provider` でデータを提供
+  2. `<Context>` コンポーネントでデータを提供 (React 19以降)
   3. `useContext` でデータを取得
 - **主な用途**: テーマ、認証、言語設定などグローバルなデータ
 - **ベストプラクティス**:

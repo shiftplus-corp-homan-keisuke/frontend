@@ -1,0 +1,24 @@
+{
+  "note": "これはデモ用のJSON設定ファイルです。実際の .eslintrc.json や angular.json に適用することを推奨します。",
+  "rules": {
+    // 【最重要】 any型の明示的な使用を禁止する
+    // これが「最初の割れ窓」を防ぐ最強の盾です。
+    "@typescript-eslint/no-explicit-any": "error",
+
+    // 関数の戻り値の型定義を強制する
+    // 推論に頼りすぎると、意図せずAPIが変わった時に気づけないため契約として書く。
+    "@typescript-eslint/explicit-function-return-type": "error",
+
+    // 未使用の変数を禁止する
+    // コードのゴミ（不要な知識）を残さない。
+    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+
+    // strictモード相当のチェック
+    // == ではなく === を使う（意図しない型変換バグの防止）
+    "eqeqeq": ["error", "always"],
+
+    // console.log の残存を禁止する
+    // デバッグコードを本番に残さない（割れ窓の一種）
+    "no-console": ["warn", { "allow": ["warn", "error"] }]
+  }
+}

@@ -1,0 +1,43 @@
+/* Global Styles */
+:root {
+  --primary-color: #00796b; /* Angular Green-ish */
+  --accent-color: #ff4081;
+  --bg-color: #f5f5f5;
+  --text-color: #333;
+  --border-color: #ddd;
+  --card-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+h1, h2, h3 {
+  margin-top: 0;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

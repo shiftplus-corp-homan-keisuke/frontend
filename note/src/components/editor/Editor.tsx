@@ -32,6 +32,13 @@ export default function Editor({ initialContent, onChange, editable = true }: Ed
 
     const editor = useCreateBlockNote({
         initialContent: parsedContent,
+        placeholders: {
+            default: '',
+            heading: '',
+            bulletListItem: '',
+            numberedListItem: '',
+            checkListItem: '',
+        },
     });
 
     const debouncedOnChange = useDebouncedCallback((json: string) => {

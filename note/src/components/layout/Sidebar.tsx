@@ -103,20 +103,28 @@ export default function Sidebar() {
 
     return (
         <TooltipProvider delayDuration={300}>
-            <div className="flex h-full w-64 flex-col border-r bg-sidebar text-sidebar-foreground">
+            <div className="flex h-full w-full flex-col border-r bg-sidebar text-sidebar-foreground">
                 {/* Header */}
                 <div className="p-4">
-                    <div className="flex items-center justify-between mb-4">
-                        <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                            Lumina
-                        </h1>
+                    {/* Search with trash button */}
+                    <div className="flex items-center gap-2 mb-4">
+                        <div className="relative flex-1">
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Input
+                                type="text"
+                                placeholder="ノートを検索..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="pl-8"
+                            />
+                        </div>
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button
                                     variant={isTrashView ? 'destructive' : 'ghost'}
                                     size="icon"
                                     onClick={() => setIsTrashView(!isTrashView)}
-                                    className="h-8 w-8"
+                                    className="h-9 w-9 shrink-0"
                                 >
                                     {isTrashView ? <Reply className="h-4 w-4" /> : <Trash2 className="h-4 w-4" />}
                                 </Button>
@@ -125,18 +133,6 @@ export default function Sidebar() {
                                 <p>{isTrashView ? 'ノートに戻る' : 'ゴミ箱'}</p>
                             </TooltipContent>
                         </Tooltip>
-                    </div>
-
-                    {/* Search */}
-                    <div className="relative mb-4">
-                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            type="text"
-                            placeholder="ノートを検索..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-8"
-                        />
                     </div>
 
                     {/* Add Button (only in normal view) */}

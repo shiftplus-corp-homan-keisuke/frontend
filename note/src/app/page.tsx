@@ -1,11 +1,11 @@
-import Sidebar from '@/components/layout/Sidebar';
-import EditorArea from '@/components/layout/EditorArea';
-import TitleBar from '@/components/layout/TitleBar';
+import Sidebar from "@/components/layout/Sidebar";
+import EditorArea from "@/components/layout/EditorArea";
+import TitleBar from "@/components/layout/TitleBar";
 import {
   ResizablePanelGroup,
   ResizablePanel,
   ResizableHandle,
-} from '@/components/ui/resizable';
+} from "@/components/ui/resizable";
 
 export default function Home() {
   return (

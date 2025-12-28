@@ -1,7 +1,6 @@
 const { app, BrowserWindow, globalShortcut, ipcMain, screen } = require('electron');
 const path = require('path');
 
-const isDev = process.env.NODE_ENV !== 'production';
 let mainWindow;
 let isManualMaximized = false;
 let previousBounds = null;
@@ -23,12 +22,13 @@ function createWindow() {
         show: false,
     });
 
-    // Load the app
-    if (isDev) {
-        const startUrl = 'http://localhost:3000';
-        mainWindow.loadURL(startUrl);
-    } else {
+    // Load the app - use app.isPackaged for reliable detection
+    if (app.isPackaged) {
+        // Production: load from static files
         mainWindow.loadFile(path.join(__dirname, '../out/index.html'));
+    } else {
+        // Development: load from dev server
+        mainWindow.loadURL('http://localhost:3000');
     }
 
     mainWindow.once('ready-to-show', () => {

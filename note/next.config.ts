@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
+  // For Electron: use relative paths
+  assetPrefix: './',
+  trailingSlash: true,
 };
 
 export default nextConfig;

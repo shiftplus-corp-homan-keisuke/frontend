@@ -1,100 +1,112 @@
-# Session 1: Zustand - シンプルで強力な状態管理
+# Session 1: Zustand - 商品カタログアプリを作ろう（カート機能編）
 
-## はじめに：なぜ Zustand が必要なのか？
+## はじめに：このセッションで作るもの
 
-前回のセッションで、カスタムフックを使ってロジックを再利用する方法を学びました。しかし、カスタムフックには 1 つの制限があります：
+このセッションでは、**商品カタログアプリ**のショッピングカート機能を Zustand で実装しながら、状態管理の基本を学びます。
 
-> **状態は共有されない**
+### 完成イメージ
 
-```jsx
-function ComponentA() {
-  const { count } = useCounter(0); // ComponentA 専用の count
-  return <p>A: {count}</p>;
-}
-
-function ComponentB() {
-  const { count } = useCounter(0); // ComponentB 専用の count（A とは別物！）
-  return <p>B: {count}</p>;
-}
+```
+┌─────────────────────────────────────┐
+│  🛒 カート (3)                       │
+├─────────────────────────────────────┤
+│  iPhone 15        $999  [-] 1 [+]   │
+│  MacBook Pro      $1999 [-] 2 [+]   │
+├─────────────────────────────────────┤
+│  合計: $4,997                       │
+│  [購入する]                          │
+└─────────────────────────────────────┘
 ```
 
-複数のコンポーネントで同じ状態を共有したい場合、React 標準では **Context** を使いますが、Context には以下の課題があります：
+### 実装する機能
 
-| 課題                 | 説明                                                                   |
-| -------------------- | ---------------------------------------------------------------------- |
-| **ボイラープレート** | Provider でラップする必要がある                                        |
-| **パフォーマンス**   | Context の値が変わると、すべての子コンポーネントが再レンダリングされる |
-| **複雑さ**           | 大規模アプリでは Provider のネストが深くなる                           |
+1. **カートに商品を追加**
+2. **数量を増減**
+3. **商品を削除**
+4. **合計金額を計算**
 
-**Zustand** は、これらの課題を解決するシンプルな状態管理ライブラリです。
+> **💡 次のセッション（Session 2）**では、React Query を使って DummyJSON API から商品データを取得し、このカートと連携させます。
 
 ---
 
-## 1. Zustand とは？
+## 1. プロジェクトのセットアップ
 
-### 特徴
+### Vite で React プロジェクトを作成
 
-| 特徴                     | 説明                                       |
-| ------------------------ | ------------------------------------------ |
-| **シンプル**             | 最小限のボイラープレートで状態管理ができる |
-| **軽量**                 | バンドルサイズが非常に小さい（約 1KB）     |
-| **Provider 不要**        | コンポーネントツリーをラップする必要がない |
-| **React 外でも使用可能** | どこからでも状態にアクセス・更新できる     |
-| **TypeScript 対応**      | 型推論が優れている                         |
-
-### Redux との比較
-
-```jsx
-// ❌ Redux: ボイラープレートが多い
-// - Action の定義
-// - Action Creator の定義
-// - Reducer の定義
-// - combineReducers
-// - configureStore
-// - Provider でラップ
-// - useSelector + useDispatch
-
-// ✅ Zustand: シンプル！
-import { create } from "zustand";
-
-const useStore = create((set) => ({
-  count: 0,
-  increment: () => set((state) => ({ count: state.count + 1 })),
-}));
+```bash
+npm create vite@latest shop-catalog -- --template react
+cd shop-catalog
+npm install
 ```
 
----
-
-## 2. 基本的な使い方
-
-### インストール
+### Zustand をインストール
 
 ```bash
 npm install zustand
 ```
 
-### Step 1: ストアを作成する
+### ディレクトリ構造
+
+```
+src/
+├── stores/
+│   └── useCartStore.js    ← Zustandストア
+├── components/
+│   ├── Cart.jsx           ← カート表示
+│   └── CartItem.jsx       ← カート内の商品
+├── App.jsx
+└── main.jsx
+```
+
+---
+
+## 2. Zustand の基本：カートストアを作成する
+
+### ストアとは？
+
+ストアは、アプリケーション全体で共有される状態の置き場所です。Zustand では `create` 関数でストアを作成します。
+
+### カートストアを作成
 
 ```jsx
-// stores/useCounterStore.js
+// src/stores/useCartStore.js
 import { create } from "zustand";
 
-// create() でストアを作成
-const useCounterStore = create((set) => ({
+const useCartStore = create((set) => ({
   // =====================================
-  // ① 状態（state）
+  // 状態（State）
   // =====================================
-  count: 0,
+  items: [], // カート内の商品リスト
 
   // =====================================
-  // ② アクション（状態を更新する関数）
+  // アクション（Actions）
   // =====================================
-  increment: () => set((state) => ({ count: state.count + 1 })),
-  decrement: () => set((state) => ({ count: state.count - 1 })),
-  reset: () => set({ count: 0 }),
+
+  // 商品をカートに追加
+  addItem: (product) =>
+    set((state) => {
+      // すでにカートにある商品かチェック
+      const existingItem = state.items.find((item) => item.id === product.id);
+
+      if (existingItem) {
+        // あれば数量を+1
+        return {
+          items: state.items.map((item) =>
+            item.id === product.id
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          ),
+        };
+      }
+
+      // なければ新規追加（数量1で）
+      return {
+        items: [...state.items, { ...product, quantity: 1 }],
+      };
+    }),
 }));
 
-export default useCounterStore;
+export default useCartStore;
 ```
 
 **コード解説:**
@@ -104,569 +116,449 @@ import { create } from "zustand";
 ```
 
 - `create` は Zustand のストアを作成する関数
-- この関数にコールバックを渡して、状態とアクションを定義する
 
 ```jsx
-const useCounterStore = create((set) => ({
+const useCartStore = create((set) => ({
 ```
 
 - `set` は状態を更新するための関数
-- コールバックの戻り値がストアの初期状態になる
-- 慣習として `use〇〇Store` という命名を使う（カスタムフックと同様）
+- 戻り値のオブジェクトが初期状態になる
 
 ```jsx
-increment: () => set((state) => ({ count: state.count + 1 })),
+items: [],
 ```
 
-- `set` には 2 つの使い方がある：
-  1. `set({ count: 0 })` - 直接オブジェクトを渡す（マージされる）
-  2. `set((state) => ({ count: state.count + 1 }))` - 現在の状態を使って更新
-
-### Step 2: コンポーネントで使用する
+- カート内の商品を配列で管理
+- 各商品は `{ id, title, price, quantity }` の形
 
 ```jsx
-// components/Counter.jsx
-import useCounterStore from "../stores/useCounterStore";
+addItem: (product) => set((state) => { ... })
+```
 
-function Counter() {
-  // ストアから必要な状態とアクションを取得
-  const count = useCounterStore((state) => state.count);
-  const increment = useCounterStore((state) => state.increment);
-  const decrement = useCounterStore((state) => state.decrement);
-  const reset = useCounterStore((state) => state.reset);
+- `addItem` はアクション（状態を変更する関数）
+- `set` に関数を渡すと、現在の `state` を受け取れる
+
+---
+
+## 3. セレクター：必要な状態だけを取得する
+
+### コンポーネントでストアを使う
+
+```jsx
+// src/components/Cart.jsx
+import useCartStore from "../stores/useCartStore";
+
+function Cart() {
+  // セレクターで items だけを取得
+  const items = useCartStore((state) => state.items);
 
   return (
-    <div>
-      <p>カウント: {count}</p>
-      <button onClick={increment}>+1</button>
-      <button onClick={decrement}>-1</button>
-      <button onClick={reset}>リセット</button>
+    <div className="cart">
+      <h2>🛒 カート ({items.length})</h2>
+
+      {items.length === 0 ? (
+        <p>カートは空です</p>
+      ) : (
+        <ul>
+          {items.map((item) => (
+            <li key={item.id}>
+              {item.title} - ${item.price} × {item.quantity}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
+
+export default Cart;
 ```
 
 **コード解説:**
 
 ```jsx
-const count = useCounterStore((state) => state.count);
+const items = useCartStore((state) => state.items);
 ```
 
-- ストアをフックとして呼び出す
-- 引数にセレクター関数を渡して、必要な部分だけを取得
-- **重要:** 必要な状態だけを選択することで、不要な再レンダリングを防げる
+- **セレクター**: `(state) => state.items` で必要な部分だけを選択
+- `items` が変わったときだけ、このコンポーネントが再レンダリングされる
 
-### セレクターの書き方（複数の値を取得する場合）
+### なぜセレクターを使うのか？
 
 ```jsx
-// 方法1: 個別に取得（推奨）
-const count = useCounterStore((state) => state.count);
-const increment = useCounterStore((state) => state.increment);
+// ❌ ストア全体を取得（すべての変更で再レンダリング）
+const store = useCartStore();
 
-// 方法2: オブジェクトで取得
-const { count, increment } = useCounterStore((state) => ({
-  count: state.count,
-  increment: state.increment,
-}));
-
-// 方法3: ストア全体を取得（非推奨：不要な再レンダリングが発生）
-const store = useCounterStore();
+// ✅ 必要な部分だけ取得（その部分が変わったときだけ再レンダリング）
+const items = useCartStore((state) => state.items);
 ```
 
 ---
 
-## 3. 状態の共有を確認しよう
+## 4. アクションを追加：数量変更と削除
 
-Zustand の最大の利点は、**複数のコンポーネントで同じ状態を共有できる**ことです。
-
-```jsx
-// ComponentA.jsx
-function ComponentA() {
-  const count = useCounterStore((state) => state.count);
-  const increment = useCounterStore((state) => state.increment);
-
-  return (
-    <div>
-      <p>Component A: {count}</p>
-      <button onClick={increment}>A から +1</button>
-    </div>
-  );
-}
-
-// ComponentB.jsx
-function ComponentB() {
-  const count = useCounterStore((state) => state.count);
-  const increment = useCounterStore((state) => state.increment);
-
-  return (
-    <div>
-      <p>Component B: {count}</p>
-      <button onClick={increment}>B から +1</button>
-    </div>
-  );
-}
-
-// App.jsx
-function App() {
-  return (
-    <div>
-      <ComponentA />
-      <ComponentB />
-      {/* どちらのボタンを押しても、両方のカウントが更新される！ */}
-    </div>
-  );
-}
-```
-
-**ポイント:**
-
-- Provider でラップする必要がない
-- どちらのコンポーネントからでも同じ `count` にアクセスできる
-- 一方で更新すると、もう一方も自動的に更新される
-
----
-
-## 4. 実践例: Todo リスト
-
-より実践的な例として、Todo リストを作成してみましょう。
-
-### ストアの作成
+カートストアにさらにアクションを追加します。
 
 ```jsx
-// stores/useTodoStore.js
+// src/stores/useCartStore.js
 import { create } from "zustand";
 
-const useTodoStore = create((set) => ({
-  // =====================================
-  // 状態
-  // =====================================
-  todos: [],
+const useCartStore = create((set) => ({
+  items: [],
 
-  // =====================================
-  // アクション
-  // =====================================
+  // 商品をカートに追加
+  addItem: (product) =>
+    set((state) => {
+      const existingItem = state.items.find((item) => item.id === product.id);
 
-  // Todo を追加
-  addTodo: (text) =>
-    set((state) => ({
-      todos: [
-        ...state.todos,
-        {
-          id: Date.now(), // 簡易的なID生成
-          text,
-          completed: false,
-        },
-      ],
-    })),
+      if (existingItem) {
+        return {
+          items: state.items.map((item) =>
+            item.id === product.id
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          ),
+        };
+      }
 
-  // Todo を削除
-  removeTodo: (id) =>
-    set((state) => ({
-      todos: state.todos.filter((todo) => todo.id !== id),
-    })),
-
-  // 完了状態を切り替え
-  toggleTodo: (id) =>
-    set((state) => ({
-      todos: state.todos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      ),
-    })),
-
-  // すべて削除
-  clearAll: () => set({ todos: [] }),
-}));
-
-export default useTodoStore;
-```
-
-### コンポーネントの作成
-
-```jsx
-// components/TodoApp.jsx
-import { useState } from "react";
-import useTodoStore from "../stores/useTodoStore";
-
-// =====================================
-// Todo 入力フォーム
-// =====================================
-function TodoForm() {
-  const [text, setText] = useState("");
-  const addTodo = useTodoStore((state) => state.addTodo);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (text.trim()) {
-      addTodo(text.trim());
-      setText("");
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        placeholder="新しいTodoを入力..."
-      />
-      <button type="submit">追加</button>
-    </form>
-  );
-}
-
-// =====================================
-// Todo アイテム
-// =====================================
-function TodoItem({ todo }) {
-  const toggleTodo = useTodoStore((state) => state.toggleTodo);
-  const removeTodo = useTodoStore((state) => state.removeTodo);
-
-  return (
-    <li>
-      <input
-        type="checkbox"
-        checked={todo.completed}
-        onChange={() => toggleTodo(todo.id)}
-      />
-      <span
-        style={{ textDecoration: todo.completed ? "line-through" : "none" }}
-      >
-        {todo.text}
-      </span>
-      <button onClick={() => removeTodo(todo.id)}>削除</button>
-    </li>
-  );
-}
-
-// =====================================
-// Todo リスト
-// =====================================
-function TodoList() {
-  const todos = useTodoStore((state) => state.todos);
-
-  if (todos.length === 0) {
-    return <p>Todoがありません</p>;
-  }
-
-  return (
-    <ul>
-      {todos.map((todo) => (
-        <TodoItem key={todo.id} todo={todo} />
-      ))}
-    </ul>
-  );
-}
-
-// =====================================
-// メインコンポーネント
-// =====================================
-function TodoApp() {
-  const clearAll = useTodoStore((state) => state.clearAll);
-  const todos = useTodoStore((state) => state.todos);
-
-  return (
-    <div>
-      <h1>Todo リスト</h1>
-      <TodoForm />
-      <TodoList />
-      {todos.length > 0 && <button onClick={clearAll}>すべて削除</button>}
-    </div>
-  );
-}
-
-export default TodoApp;
-```
-
----
-
-## 5. 派生状態（Computed Values）
-
-状態から計算される値（派生状態）は、セレクター内で計算できます。
-
-```jsx
-// stores/useTodoStore.js
-const useTodoStore = create((set, get) => ({
-  todos: [],
-
-  // ... 他のアクション
-
-  // get() を使って現在の状態を取得
-  getCompletedCount: () => {
-    return get().todos.filter((todo) => todo.completed).length;
-  },
-}));
-
-// コンポーネントで使用
-function TodoStats() {
-  // セレクター内で計算
-  const totalCount = useTodoStore((state) => state.todos.length);
-  const completedCount = useTodoStore(
-    (state) => state.todos.filter((todo) => todo.completed).length
-  );
-  const pendingCount = totalCount - completedCount;
-
-  return (
-    <div>
-      <p>全体: {totalCount}</p>
-      <p>完了: {completedCount}</p>
-      <p>未完了: {pendingCount}</p>
-    </div>
-  );
-}
-```
-
----
-
-## 6. ミドルウェア: persist（永続化）
-
-Zustand には便利なミドルウェアがあります。`persist` を使うと、状態を localStorage に自動保存できます。
-
-```jsx
-// stores/useTodoStore.js
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-
-const useTodoStore = create(
-  persist(
-    (set) => ({
-      todos: [],
-      addTodo: (text) =>
-        set((state) => ({
-          todos: [...state.todos, { id: Date.now(), text, completed: false }],
-        })),
-      // ... 他のアクション
+      return {
+        items: [...state.items, { ...product, quantity: 1 }],
+      };
     }),
-    {
-      name: "todo-storage", // localStorage のキー名
-    }
-  )
-);
 
-export default useTodoStore;
+  // 数量を減らす（1になったら削除）
+  decreaseQuantity: (productId) =>
+    set((state) => ({
+      items: state.items
+        .map((item) =>
+          item.id === productId
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        )
+        .filter((item) => item.quantity > 0), // 0以下は削除
+    })),
+
+  // 商品を削除
+  removeItem: (productId) =>
+    set((state) => ({
+      items: state.items.filter((item) => item.id !== productId),
+    })),
+
+  // カートを空にする
+  clearCart: () => set({ items: [] }),
+}));
+
+export default useCartStore;
 ```
 
 **コード解説:**
 
 ```jsx
-import { persist } from "zustand/middleware";
+decreaseQuantity: (productId) => set((state) => ({
+  items: state.items
+    .map(...)    // 数量を-1
+    .filter(...) // 0以下を削除
+})),
 ```
 
-- `persist` は状態を永続化するミドルウェア
-- デフォルトでは localStorage を使用
+- `map` で数量を減らし、`filter` で 0 以下を削除
+- メソッドチェーンで読みやすく
 
 ```jsx
-persist(
-  (set) => ({ ... }),
-  { name: 'todo-storage' }
-)
+clearCart: () => set({ items: [] }),
 ```
 
-- 第 1 引数：通常のストア定義
-- 第 2 引数：設定オブジェクト（`name` は必須）
-
-これだけで、ページをリロードしても Todo が保持されます！
+- シンプルな更新は、オブジェクトを直接渡せる
+- 既存の状態とマージされる
 
 ---
 
-## 7. React 外からのアクセス
+## 5. カートアイテムコンポーネント
 
-Zustand の強力な機能の 1 つは、React コンポーネント外からでも状態にアクセスできることです。
-
-```jsx
-// stores/useCounterStore.js
-import { create } from "zustand";
-
-const useCounterStore = create((set) => ({
-  count: 0,
-  increment: () => set((state) => ({ count: state.count + 1 })),
-}));
-
-export default useCounterStore;
-
-// =====================================
-// React 外からアクセス
-// =====================================
-
-// 現在の状態を取得
-const currentCount = useCounterStore.getState().count;
-
-// 状態を更新
-useCounterStore.getState().increment();
-
-// または直接 setState を呼ぶ
-useCounterStore.setState({ count: 100 });
-
-// 状態の変化を購読
-const unsubscribe = useCounterStore.subscribe((state) => {
-  console.log("状態が変わりました:", state);
-});
-```
-
-**使用例:**
+個別の商品表示コンポーネントを作成します。
 
 ```jsx
-// utils/analytics.js（React コンポーネントではない）
-import useCounterStore from "../stores/useCounterStore";
+// src/components/CartItem.jsx
+import useCartStore from "../stores/useCartStore";
 
-export function trackButtonClick() {
-  const count = useCounterStore.getState().count;
-  console.log(`ボタンがクリックされました。現在のカウント: ${count}`);
-}
-```
+function CartItem({ item }) {
+  // アクションを取得
+  const addItem = useCartStore((state) => state.addItem);
+  const decreaseQuantity = useCartStore((state) => state.decreaseQuantity);
+  const removeItem = useCartStore((state) => state.removeItem);
 
----
+  return (
+    <div className="cart-item">
+      <div className="cart-item-info">
+        <span className="cart-item-title">{item.title}</span>
+        <span className="cart-item-price">${item.price}</span>
+      </div>
 
-## 8. TypeScript での使用
-
-TypeScript を使う場合、型を明示的に定義することで、より安全なコードが書けます。
-
-```tsx
-// stores/useCounterStore.ts
-import { create } from "zustand";
-
-// =====================================
-// 型定義
-// =====================================
-interface CounterState {
-  count: number;
-  increment: () => void;
-  decrement: () => void;
-  reset: () => void;
+      <div className="cart-item-actions">
+        <button onClick={() => decreaseQuantity(item.id)}>−</button>
+        <span className="cart-item-quantity">{item.quantity}</span>
+        <button onClick={() => addItem(item)}>+</button>
+        <button onClick={() => removeItem(item.id)}>🗑️</button>
+      </div>
+    </div>
+  );
 }
 
-// =====================================
-// ストア作成
-// =====================================
-const useCounterStore = create<CounterState>((set) => ({
-  count: 0,
-  increment: () => set((state) => ({ count: state.count + 1 })),
-  decrement: () => set((state) => ({ count: state.count - 1 })),
-  reset: () => set({ count: 0 }),
-}));
-
-export default useCounterStore;
+export default CartItem;
 ```
-
-**ポイント:**
-
-- `create<CounterState>` で型を指定
-- これにより、`state.count` や `increment()` の型が自動的に推論される
 
 ---
 
-## 9. ベストプラクティス
+## 6. 派生状態：合計金額を計算する
 
-### 1. ストアを分割する
+カート内の商品から合計金額を計算します。
 
-1 つのストアにすべてを詰め込まず、機能ごとに分割しましょう。
+### 方法 1: セレクター内で計算（推奨）
 
 ```jsx
-// ❌ 1つの巨大なストア
-const useStore = create((set) => ({
-  // ユーザー関連
-  user: null,
-  login: () => {},
-  logout: () => {},
+// src/components/Cart.jsx
+import useCartStore from "../stores/useCartStore";
+import CartItem from "./CartItem";
 
-  // Todo関連
-  todos: [],
-  addTodo: () => {},
+function Cart() {
+  const items = useCartStore((state) => state.items);
+  const clearCart = useCartStore((state) => state.clearCart);
 
-  // 設定関連
-  theme: 'light',
-  language: 'ja',
-  // ... 大量の状態とアクション
-}));
+  // セレクター内で合計金額を計算
+  const totalPrice = useCartStore((state) =>
+    state.items.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  );
 
-// ✅ 機能ごとに分割
-const useUserStore = create((set) => ({ ... }));
-const useTodoStore = create((set) => ({ ... }));
-const useSettingsStore = create((set) => ({ ... }));
+  // 合計個数も同様に計算
+  const totalItems = useCartStore((state) =>
+    state.items.reduce((sum, item) => sum + item.quantity, 0)
+  );
+
+  return (
+    <div className="cart">
+      <h2>🛒 カート ({totalItems})</h2>
+
+      {items.length === 0 ? (
+        <p>カートは空です</p>
+      ) : (
+        <>
+          <div className="cart-items">
+            {items.map((item) => (
+              <CartItem key={item.id} item={item} />
+            ))}
+          </div>
+
+          <div className="cart-summary">
+            <p className="cart-total">合計: ${totalPrice.toFixed(2)}</p>
+            <button onClick={clearCart}>カートを空にする</button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+export default Cart;
 ```
 
-### 2. セレクターで必要な部分だけ取得する
+**コード解説:**
 
 ```jsx
-// ❌ ストア全体を取得（todos が変わるとすべて再レンダリング）
-const store = useTodoStore();
-
-// ✅ 必要な部分だけ取得
-const todos = useTodoStore((state) => state.todos);
-const addTodo = useTodoStore((state) => state.addTodo);
+const totalPrice = useCartStore((state) =>
+  state.items.reduce((sum, item) => sum + item.price * item.quantity, 0)
+);
 ```
 
-### 3. アクション名は動詞で始める
+- `reduce` で合計を計算
+- `items` が変わると自動的に再計算される
+
+---
+
+## 7. アプリを組み立てる
+
+### App.jsx
+
+まずは仮の商品データでテストします（次のセッションで API から取得）。
 
 ```jsx
-// ❌ 曖昧な名前
-const useStore = create((set) => ({
-  user: null,
-  userData: (user) => set({ user }), // 何をする関数？
-}));
+// src/App.jsx
+import Cart from "./components/Cart";
+import useCartStore from "./stores/useCartStore";
 
-// ✅ 動詞で始める
-const useStore = create((set) => ({
-  user: null,
-  setUser: (user) => set({ user }),
-  clearUser: () => set({ user: null }),
-  updateUserName: (name) =>
-    set((state) => ({
-      user: { ...state.user, name },
-    })),
-}));
+// 仮の商品データ（次のセッションでAPIから取得）
+const sampleProducts = [
+  { id: 1, title: "iPhone 15", price: 999 },
+  { id: 2, title: "MacBook Pro", price: 1999 },
+  { id: 3, title: "AirPods Pro", price: 249 },
+];
+
+function App() {
+  const addItem = useCartStore((state) => state.addItem);
+
+  return (
+    <div className="app">
+      <h1>🛍️ Shop Catalog</h1>
+
+      {/* 商品一覧（仮） */}
+      <section className="products">
+        <h2>商品一覧</h2>
+        <div className="product-grid">
+          {sampleProducts.map((product) => (
+            <div key={product.id} className="product-card">
+              <h3>{product.title}</h3>
+              <p>${product.price}</p>
+              <button onClick={() => addItem(product)}>カートに追加</button>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* カート */}
+      <Cart />
+    </div>
+  );
+}
+
+export default App;
+```
+
+---
+
+## 8. スタイルを追加（オプション）
+
+```css
+/* src/index.css */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  background: #f5f5f5;
+  padding: 20px;
+}
+
+.app {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+h1 {
+  margin-bottom: 20px;
+}
+
+/* 商品一覧 */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+.product-card {
+  background: white;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.product-card h3 {
+  margin-bottom: 8px;
+}
+
+.product-card p {
+  color: #666;
+  margin-bottom: 12px;
+}
+
+.product-card button {
+  width: 100%;
+  padding: 8px;
+  background: #0066ff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.product-card button:hover {
+  background: #0052cc;
+}
+
+/* カート */
+.cart {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.cart h2 {
+  margin-bottom: 16px;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.cart-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cart-item-actions button {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cart-item-quantity {
+  min-width: 24px;
+  text-align: center;
+}
+
+.cart-summary {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 2px solid #eee;
+}
+
+.cart-total {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
 ```
 
 ---
 
 ## まとめ
 
-| 概念       | 説明                                         |
-| ---------- | -------------------------------------------- |
-| `create`   | ストアを作成する関数                         |
-| `set`      | 状態を更新する関数                           |
-| `get`      | 現在の状態を取得する関数                     |
-| セレクター | 必要な状態だけを選択する関数                 |
-| `persist`  | 状態を localStorage に永続化するミドルウェア |
+| 概念       | 説明                                               |
+| ---------- | -------------------------------------------------- |
+| `create`   | ストアを作成する関数                               |
+| `set`      | 状態を更新する関数                                 |
+| セレクター | 必要な状態だけを取得する関数                       |
+| アクション | 状態を変更する関数（`addItem`, `removeItem` など） |
+| 派生状態   | 既存の状態から計算される値（`totalPrice` など）    |
 
-### Zustand を使うべき場面
+### 作成したもの
 
-- 複数のコンポーネントで状態を共有したい
-- Context の Provider ネストを避けたい
-- シンプルで軽量な状態管理が必要
-- Redux のボイラープレートを避けたい
+- ✅ カートストア（`useCartStore`）
+- ✅ 商品の追加・削除・数量変更
+- ✅ 合計金額の計算
+- ✅ カート表示コンポーネント
 
-### 次のステップ
+### 次のセッション
 
-- 非同期処理（API 呼び出し）との組み合わせ
-- `immer` ミドルウェアを使ったイミュータブルな更新
-- `devtools` ミドルウェアを使ったデバッグ
-
----
-
-## 練習問題
-
-### 問題 1: ショッピングカート
-
-以下の機能を持つショッピングカートのストアを作成してください：
-
-- 商品の追加（`addItem`）
-- 商品の削除（`removeItem`）
-- 数量の変更（`updateQuantity`）
-- 合計金額の計算
-
-### 問題 2: テーマ切り替え
-
-`persist` ミドルウェアを使って、ダークモード/ライトモードの設定を保存するストアを作成してください。
-
-### 問題 3: 認証状態管理
-
-以下の状態を管理する認証ストアを作成してください：
-
-- ログイン状態（`isLoggedIn`）
-- ユーザー情報（`user`）
-- ログイン/ログアウト処理
-
----
-
-次のセッションでは、**React Query（TanStack Query）** を使ったサーバー状態管理を学びます。Zustand と組み合わせることで、クライアント状態とサーバー状態を効率的に管理できるようになります。
+**Session 2: React Query** では、DummyJSON API から商品データを取得して、このカートと連携させます！

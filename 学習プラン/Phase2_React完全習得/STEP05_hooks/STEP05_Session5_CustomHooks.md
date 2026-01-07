@@ -379,17 +379,16 @@ const [isDark, setIsDark] = useState(false);
 
 ```jsx
 // hooks/useToggle.js
-import { useState, useCallback } from "react";
+import { useState } from "react";
 
 function useToggle(initialValue = false) {
   // ① 真偽値の状態
   const [value, setValue] = useState(initialValue);
 
   // ② 切り替え関数たち
-  // useCallback でメモ化（毎回新しい関数を作らない）
-  const toggle = useCallback(() => setValue((prev) => !prev), []);
-  const setTrue = useCallback(() => setValue(true), []);
-  const setFalse = useCallback(() => setValue(false), []);
+  const toggle = () => setValue((prev) => !prev);
+  const setTrue = () => setValue(true);
+  const setFalse = () => setValue(false);
 
   // ③ 状態と関数をまとめて返す
   return { value, toggle, setTrue, setFalse };
@@ -401,17 +400,17 @@ export default useToggle;
 **コード解説:**
 
 ```jsx
-const toggle = useCallback(() => setValue((prev) => !prev), []);
+const toggle = () => setValue((prev) => !prev);
 ```
 
-- `useCallback` は関数をメモ化するフック
 - `prev => !prev` で現在の値を反転（`true` → `false`、`false` → `true`）
-- `[]` は依存配列が空 = この関数は一度作ったら変わらない
+- シンプルなアロー関数として定義
 
-なぜ `useCallback` を使うのか？
-
-- 毎回新しい関数を作ると、子コンポーネントに渡したときに不要な再レンダリングが起きる可能性がある
-- メモ化することで、同じ関数オブジェクトを使い回せる
+> **💡 React Compiler について**
+>
+> React 19 と同時期に登場した **React Compiler**（コードネーム: React Forget）を使用する場合、手動での `useCallback` によるメモ化は不要になります。コンパイラがビルド時にコードを解析し、必要な箇所を自動的にメモ化してくれるためです。
+>
+> React Compiler を使わない環境では、関数を子コンポーネント（`React.memo` でラップされたもの）に渡す場合、`useCallback` を使ってメモ化することでパフォーマンスを最適化できます。ただし、この最適化が必要になるケースは限られており、**まずはシンプルに書いて、パフォーマンス問題が発生してから最適化する**というアプローチが推奨されます。
 
 ### 使用例
 
@@ -456,7 +455,7 @@ function Modal() {
 
 ```jsx
 function ThemeSelector() {
-  // 初期値をローカルストレージから取得
+  // 初期値をローカルストレージから取得（遅延初期化）
   const [theme, setTheme] = useState(() => {
     const saved = localStorage.getItem("theme");
     return saved ? JSON.parse(saved) : "light";
@@ -477,6 +476,22 @@ function ThemeSelector() {
 
 これを毎回書くのは大変です。カスタムフックにしましょう。
 
+> **💡 遅延初期化（Lazy Initialization）とは？**
+>
+> `useState` に**関数**を渡すと、その関数は**初回レンダリング時にのみ実行**されます。これを「遅延初期化」と呼びます。
+>
+> ```jsx
+> // ❌ 毎回のレンダリングで localStorage.getItem() が実行される（無駄）
+> const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+>
+> // ✅ 初回レンダリング時だけ関数が実行される（効率的）
+> const [theme, setTheme] = useState(
+>   () => localStorage.getItem("theme") || "light"
+> );
+> ```
+>
+> `localStorage` へのアクセスや `JSON.parse` のような「重い処理」は、関数として渡すことでパフォーマンスを最適化できます。
+
 ### カスタムフック: useLocalStorage
 
 ```jsx
@@ -488,14 +503,9 @@ function useLocalStorage(key, initialValue) {
   // ① 初期値の取得（遅延初期化）
   // =====================================
   const [storedValue, setStoredValue] = useState(() => {
-    // サーバーサイドレンダリング対応: window が存在しない場合
-    if (typeof window === "undefined") {
-      return initialValue;
-    }
-
     try {
       // ローカルストレージから値を取得
-      const item = window.localStorage.getItem(key);
+      const item = localStorage.getItem(key);
       // 値があればパース、なければ初期値を使用
       return item ? JSON.parse(item) : initialValue;
     } catch (error) {
@@ -510,7 +520,7 @@ function useLocalStorage(key, initialValue) {
   // =====================================
   useEffect(() => {
     try {
-      window.localStorage.setItem(key, JSON.stringify(storedValue));
+      localStorage.setItem(key, JSON.stringify(storedValue));
     } catch (error) {
       console.error("localStorage への保存に失敗:", error);
     }
@@ -534,15 +544,6 @@ const [storedValue, setStoredValue] = useState(() => {
 - `useState(() => ...)` の形は**遅延初期化**
 - 関数を渡すと、初回レンダリング時だけその関数が実行される
 - ローカルストレージからの読み込みは「重い処理」なので、初回だけ実行したい
-
-```jsx
-if (typeof window === "undefined") {
-  return initialValue;
-}
-```
-
-- Next.js などのサーバーサイドレンダリング環境では、サーバー側で `window` が存在しない
-- その場合は初期値をそのまま返す
 
 ```jsx
 return item ? JSON.parse(item) : initialValue;

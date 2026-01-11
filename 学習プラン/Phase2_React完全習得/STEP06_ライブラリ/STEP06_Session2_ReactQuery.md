@@ -51,8 +51,8 @@ npm install @tanstack/react-query
 
 ### QueryClientProvider を設定
 
-```jsx
-// src/main.jsx
+```tsx
+// src/main.tsx
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -73,13 +73,13 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 
 **コード解説:**
 
-```jsx
+```tsx
 const queryClient = new QueryClient();
 ```
 
 - キャッシュやクエリの設定を管理するオブジェクト
 
-```jsx
+```tsx
 <QueryClientProvider client={queryClient}>
 ```
 
@@ -91,11 +91,18 @@ const queryClient = new QueryClient();
 
 ### API 関数を作成
 
-```jsx
-// src/api/products.js
+```tsx
+// src/api/products.ts
 const API_URL = "https://dummyjson.com/products";
 
-export async function fetchProducts() {
+export type Product = {
+  id: number;
+  title: string;
+  price: number;
+  thumbnail: string;
+};
+
+export async function fetchProducts(): Promise<Product[]> {
   const response = await fetch(API_URL);
 
   if (!response.ok) {
@@ -109,10 +116,10 @@ export async function fetchProducts() {
 
 ### 商品一覧コンポーネント
 
-```jsx
-// src/components/ProductList.jsx
+```tsx
+// src/components/ProductList.tsx
 import { useQuery } from "@tanstack/react-query";
-import { fetchProducts } from "../api/products";
+import { fetchProducts, Product } from "../api/products";
 import useCartStore from "../stores/useCartStore";
 
 function ProductList() {
@@ -121,7 +128,7 @@ function ProductList() {
     data: products,
     isLoading,
     error,
-  } = useQuery({
+  } = useQuery<Product[], Error>({
     queryKey: ["products"],
     queryFn: fetchProducts,
   });
@@ -142,7 +149,7 @@ function ProductList() {
   // 商品一覧を表示
   return (
     <div className="product-grid">
-      {products.map((product) => (
+      {products?.map((product) => (
         <div key={product.id} className="product-card">
           <img src={product.thumbnail} alt={product.title} />
           <h3>{product.title}</h3>
@@ -159,7 +166,7 @@ export default ProductList;
 
 **コード解説:**
 
-```jsx
+```tsx
 const {
   data: products,
   isLoading,
@@ -184,8 +191,8 @@ const {
 
 ### ローディングスピナーコンポーネント
 
-```jsx
-// src/components/Loading.jsx
+```tsx
+// src/components/Loading.tsx
 function Loading() {
   return (
     <div className="loading">
@@ -200,9 +207,13 @@ export default Loading;
 
 ### エラーコンポーネント
 
-```jsx
-// src/components/Error.jsx
-function Error({ message }) {
+```tsx
+// src/components/Error.tsx
+type ErrorProps = {
+  message: string;
+};
+
+function Error({ message }: ErrorProps) {
   return (
     <div className="error">
       <p>⚠️ エラーが発生しました</p>
@@ -216,20 +227,20 @@ export default Error;
 
 ### ProductList を更新
 
-```jsx
-// src/components/ProductList.jsx
+```tsx
+// src/components/ProductList.tsx
 import { useQuery } from "@tanstack/react-query";
-import { fetchProducts } from "../api/products";
+import { fetchProducts, Product } from "../api/products";
 import useCartStore from "../stores/useCartStore";
 import Loading from "./Loading";
-import Error from "./Error";
+import ErrorComponent from "./Error";
 
 function ProductList() {
   const {
     data: products,
     isLoading,
     error,
-  } = useQuery({
+  } = useQuery<Product[], Error>({
     queryKey: ["products"],
     queryFn: fetchProducts,
   });
@@ -237,11 +248,11 @@ function ProductList() {
   const addItem = useCartStore((state) => state.addItem);
 
   if (isLoading) return <Loading />;
-  if (error) return <Error message={error.message} />;
+  if (error) return <ErrorComponent message={error.message} />;
 
   return (
     <div className="product-grid">
-      {products.map((product) => (
+      {products?.map((product) => (
         <div key={product.id} className="product-card">
           <img src={product.thumbnail} alt={product.title} />
           <h3>{product.title}</h3>
@@ -264,11 +275,13 @@ export default ProductList;
 
 ### API 関数を拡張
 
-```jsx
+```tsx
 // src/api/products.js
 const API_URL = "https://dummyjson.com/products";
 
-export async function fetchProducts(category = null) {
+export async function fetchProducts(
+  category: string | null = null
+): Promise<Product[]> {
   let url = API_URL;
 
   // カテゴリが指定されていれば、カテゴリ別のURLを使う
@@ -287,7 +300,13 @@ export async function fetchProducts(category = null) {
 }
 
 // カテゴリ一覧を取得
-export async function fetchCategories() {
+export type Category = {
+  slug: string,
+  name: string,
+  url: string,
+};
+
+export async function fetchCategories(): Promise<Category[]> {
   const response = await fetch(`${API_URL}/categories`);
 
   if (!response.ok) {
@@ -300,20 +319,25 @@ export async function fetchCategories() {
 
 ### カテゴリフィルター付き商品一覧
 
-```jsx
-// src/components/ProductList.jsx
+```tsx
+// src/components/ProductList.tsx
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchProducts, fetchCategories } from "../api/products";
+import {
+  fetchProducts,
+  fetchCategories,
+  Product,
+  Category,
+} from "../api/products";
 import useCartStore from "../stores/useCartStore";
 import Loading from "./Loading";
-import Error from "./Error";
+import ErrorComponent from "./Error";
 
 function ProductList() {
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   // カテゴリ一覧を取得
-  const { data: categories } = useQuery({
+  const { data: categories } = useQuery<Category[], Error>({
     queryKey: ["categories"],
     queryFn: fetchCategories,
   });
@@ -323,7 +347,7 @@ function ProductList() {
     data: products,
     isLoading,
     error,
-  } = useQuery({
+  } = useQuery<Product[], Error>({
     queryKey: ["products", selectedCategory], // ← カテゴリをキーに含める
     queryFn: () => fetchProducts(selectedCategory),
   });
@@ -331,7 +355,7 @@ function ProductList() {
   const addItem = useCartStore((state) => state.addItem);
 
   if (isLoading) return <Loading />;
-  if (error) return <Error message={error.message} />;
+  if (error) return <ErrorComponent message={error.message} />;
 
   return (
     <div>
@@ -353,7 +377,7 @@ function ProductList() {
 
       {/* 商品一覧 */}
       <div className="product-grid">
-        {products.map((product) => (
+        {products?.map((product) => (
           <div key={product.id} className="product-card">
             <img src={product.thumbnail} alt={product.title} />
             <h3>{product.title}</h3>
@@ -371,14 +395,14 @@ export default ProductList;
 
 **コード解説:**
 
-```jsx
+```tsx
 queryKey: ['products', selectedCategory],
 ```
 
 - `selectedCategory` が変わると、**自動的に新しいデータを取得**
 - 例: `['products', null]` → `['products', 'smartphones']`
 
-```jsx
+```tsx
 queryFn: () => fetchProducts(selectedCategory),
 ```
 
@@ -390,8 +414,8 @@ queryFn: () => fetchProducts(selectedCategory),
 
 Session 1 で作った仮データを削除し、API から取得した商品を表示します。
 
-```jsx
-// src/App.jsx
+```tsx
+// src/App.tsx
 import ProductList from "./components/ProductList";
 import Cart from "./components/Cart";
 
@@ -513,17 +537,17 @@ export default App;
 ```
 src/
 ├── api/
-│   └── products.js         ← API関数
+│   └── products.ts         ← API関数
 ├── stores/
-│   └── useCartStore.js     ← カート状態（Zustand）
+│   └── useCartStore.ts     ← カート状態（Zustand）
 ├── components/
-│   ├── ProductList.jsx     ← 商品一覧（React Query）
-│   ├── Cart.jsx            ← カート表示
-│   ├── CartItem.jsx
-│   ├── Loading.jsx
-│   └── Error.jsx
-├── App.jsx
-├── main.jsx
+│   ├── ProductList.tsx     ← 商品一覧（React Query）
+│   ├── Cart.tsx            ← カート表示
+│   ├── CartItem.tsx
+│   ├── Loading.tsx
+│   └── Error.tsx
+├── App.tsx
+├── main.tsx
 └── index.css
 ```
 

@@ -1,11 +1,6 @@
 import { useCartStore } from "../store/useCartStore";
 import CartItem from "./CartItem";
 
-// 仮のデータ（あとで Zustand ストアに置き換えます）
-const dummyItems = [
-  { id: 1, title: "iPhone 15", price: 999, quantity: 1 },
-  { id: 2, title: "MacBook Pro", price: 1999, quantity: 2 },
-];
 
 function Cart() {
   const { items, clearCart } = useCartStore();

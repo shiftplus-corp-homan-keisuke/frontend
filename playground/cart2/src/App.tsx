@@ -1,4 +1,5 @@
 import Cart from "./components/Cart";
+import ProductList from "./components/ProductList";
 import { useCartStore, type Product } from "./store/useCartStore";
 
 // 仮の商品データ
@@ -13,6 +14,7 @@ function App() {
   return (
     <div className="app">
       <h1>🛍️ Shop Catalog</h1>
+      <ProductList />
 
       {/* 商品一覧 */}
       <section className="products">

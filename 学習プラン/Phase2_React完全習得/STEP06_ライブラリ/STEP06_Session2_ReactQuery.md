@@ -1,4 +1,4 @@
-# Session 2: React Query - 商品カタログアプリを作ろう（商品一覧編）
+# Session 2: Tanstack Query - 商品カタログアプリを作ろう（商品一覧編）
 
 ## はじめに：このセッションで作るもの
 

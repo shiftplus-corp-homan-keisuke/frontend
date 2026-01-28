@@ -72,6 +72,131 @@ npx shadcn@latest init
 
 ---
 
+## 2.3 cn関数の使い方
+
+`src/lib/utils.ts` には、Tailwind CSS のクラス名をスマートに結合する `cn` 関数が含まれています。これは `clsx` と `tailwind-merge` を組み合わせたユーティリティです。
+
+### cn関数とは？
+
+```tsx
+import { cn } from "@/lib/utils";
+```
+
+`cn` 関数は、複数のクラス名を引数として受け取り、それらを1つの文字列に結合します。
+
+### 基本的な使い方
+
+```tsx
+// 条件付きのクラス指定
+const className = cn(
+  "base-class",
+  isActive && "active-class",
+  isError && "error-class"
+);
+
+// 例: isActive=true, isError=false の場合
+// 結果: "base-class active-class"
+```
+
+### Tailwindクラスのマージ
+
+`cn` 関数の最大の特徴は、**Tailwind CSSのクラスの競合を解決**してくれることです。
+
+```tsx
+// クラスが競合する場合
+cn(
+  "p-4 bg-blue-500", // 基本のスタイル
+  isError && "bg-red-500" // エラー時は赤に上書き
+);
+
+// isError=true の場合: "p-4 bg-red-500"（青は赤に上書きされます）
+// isError=false の場合: "p-4 bg-blue-500"
+```
+
+### 実践的な使用例
+
+```tsx
+// ボタンコンポーネントでの使用
+interface ButtonProps {
+  variant?: "primary" | "secondary";
+  size?: "sm" | "md" | "lg";
+  className?: string;
+}
+
+function Button({ 
+  variant = "primary", 
+  size = "md", 
+  className 
+}: ButtonProps) {
+  return (
+    <button
+      className={cn(
+        // 基本スタイル
+        "rounded-lg font-medium transition-colors",
+        // バリアントごとのスタイル
+        variant === "primary" && "bg-blue-500 text-white hover:bg-blue-600",
+        variant === "secondary" && "bg-gray-200 text-gray-800 hover:bg-gray-300",
+        // サイズごとのスタイル
+        size === "sm" && "px-3 py-1.5 text-sm",
+        size === "md" && "px-4 py-2",
+        size === "lg" && "px-6 py-3 text-lg",
+        // 追加のクラス（外部から渡されたもの）
+        className
+      )}
+    >
+      ボタン
+    </button>
+  );
+}
+```
+
+### propsのクラスとデフォルトクラスのマージ
+
+```tsx
+// 親コンポーネントから渡されたクラスと、コンポーネントのデフォルトクラスをマージ
+function Card({ children, className }: { children: React.ReactNode; className?: string }) {
+  return (
+    <div className={cn(
+      "p-6 bg-white rounded-lg shadow-md", // デフォルトのスタイル
+      className // 外部から渡された追加スタイル（デフォルトより優先）
+    )}>
+      {children}
+    </div>
+  );
+}
+
+// 使用例
+<Card className="max-w-md">
+  このカードは max-w-md という追加スタイルが適用されます
+</Card>
+```
+
+### よく使うパターン
+
+```tsx
+// 1. 条件付きでスタイルを切り替え
+cn(
+  "flex items-center gap-2",
+  disabled && "opacity-50 cursor-not-allowed"
+)
+
+// 2. 動的なスタイル適用
+cn(
+  "text-sm font-medium",
+  isSuccess && "text-green-600",
+  isError && "text-red-600"
+)
+
+// 3. 複数のスタイルソースを結合
+cn(
+  props.className, // 親からのクラス
+  "default-styles", // デフォルトスタイル
+  isActive && "active-styles" // 条件付きスタイル
+)
+```
+
+---
+
 ## 3. 基本的なコンポーネントを使ってみる
 
 まずは、最も基本的な `Button` コンポーネントを追加して使ってみましょう。

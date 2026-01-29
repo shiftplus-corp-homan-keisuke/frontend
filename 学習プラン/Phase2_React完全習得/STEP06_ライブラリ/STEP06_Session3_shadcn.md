@@ -55,10 +55,19 @@ npm install
 
 ### 2.2 shadcn/ui の初期化
 
+```
+https://ui.shadcn.com/docs/installation/vite
+```
+
 shadcn/ui を使うには、簡単なセットアップコマンドを実行するだけです。これにより、Tailwind CSS の設定なども自動的に行われます。
 
 ```bash
-npx shadcn@latest init
+npm install tailwindcss @tailwindcss/vite
+```
+
+src/index.cssにtailwind.cssをインポートする
+```
+@import "tailwindcss";
 ```
 
 実行すると、いくつか質問されます。基本的には以下のように回答して進めてください。

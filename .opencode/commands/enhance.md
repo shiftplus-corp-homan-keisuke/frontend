@@ -1,0 +1,108 @@
+---
+description: 既存アプリの機能追加/更新
+agent: general
+subtask: true
+---
+
+既存アプリを更新する ENHANCE モード。
+
+## Task
+$ARGUMENTS
+
+## Process
+
+### Phase 1: 現状把握
+
+1. **既存プロジェクトの分析**
+   - `Glob` で構造確認
+   - `Read` で主要ファイル確認 (package.json, README, config)
+   - 技術スタック/パターンを特定
+
+2. **既存機能の確認**
+   - 類似実装の有無
+   - アーキテクチャを把握
+   - コーディング規約を確認
+
+### Phase 2: 変更計画
+
+1. **追加/変更の決定**
+   - 新規ファイル
+   - 更新ファイル
+   - 追加依存
+
+2. **競合確認**
+   - 新規ファイルの衝突確認
+   - 技術スタックとの整合性
+   - 破壊的変更の可能性
+
+3. **重要変更の計画提示**
+   - 新規/更新ファイル数
+   - 予想時間
+   - 事前承認
+
+### Phase 3: 変更適用
+
+1. **新規ファイル作成** (`Write`)
+   - 既存パターンに従う
+   - 命名規則統一
+   - スタイル統一
+
+2. **既存ファイル更新** (`Edit`)
+   - 先に `Read`
+   - 最小限の変更
+   - 既存機能を維持
+
+3. **依存関係更新**
+   - package.json 等を更新
+   - 必要に応じてバージョン調整
+
+### Phase 4: テストとプレビュー
+
+1. **変更検証**
+   - 文法/インポート
+   - 破壊的変更の確認
+   - 新機能テスト
+
+2. **プレビュー更新**
+   - 起動中なら hot-reload
+   - 起動していなければ起動提案
+
+## Key Principles
+
+- **Understand before changing**: 既存コードを読む
+- **Follow conventions**: 既存ルールに合わせる
+- **Minimal changes**: 必要最小限
+- **Backward compatible**: 既存機能を壊さない
+- **Get approval**: 重要変更は承認を得る
+
+## Usage Examples
+
+- `/enhance add dark mode` → ダークモード追加
+- `/enhance build admin panel` → 管理画面
+- `/enhance integrate payment system` → 決済追加
+- `/enhance add search feature` → 検索
+- `/enhance make responsive` → レスポンシブ改善
+
+## Output
+
+完了時に以下を提示:
+
+```
+✅ Enhancement complete!
+
+📝 Changes:
+- Created: [X] new files
+- Modified: [Y] files
+- Features added: [list]
+
+🔍 What was changed:
+- [summary of changes]
+
+📦 Next Steps:
+- Test the new features
+- Run: /preview check (if server running)
+
+Any adjustments needed?
+```
+
+品質と一貫性を保ちながら更新する。

@@ -1,0 +1,233 @@
+# OpenCode ワークスペース設定
+
+## 概要
+
+このワークスペースは OpenCode のネイティブ エージェント、スキル、およびコマンド システムを使用します。
+
+---
+
+## 📁 ディレクトリ構造
+
+```
+.opencode/
+├── agents/              # 20の専門エージェント
+│   ├── orchestrator.md (プライマリ)
+│   ├── project-planner.md (プライマリ)
+│   └── [18のサブエージェント]
+├── skills/              # 47のドメイン特化スキル
+│   ├── nextjs-react-expert/
+│   ├── clean-code/
+│   └── [45のその他]
+├── commands/            # 11のカスタム コマンド
+│   ├── create.md
+│   ├── debug.md
+│   └── [9のその他]
+├── scripts/             # ユーティリティ スクリプト
+│   ├── auto_preview.py
+│   ├── checklist.py
+│   ├── verify_all.py
+│   └── session_manager.py
+└── README.md            # コマンド ドキュメント
+```
+
+---
+
+## 🤖 エージェントとスキルのプロトコル
+
+### スキル読み込み (OpenCode ネイティブ)
+
+OpenCode は `.opencode/skills/*/SKILL.md` からスキルを自動検出します。エージェントは `skill` ツールを使って必要に応じて関連スキルを読み込みます。
+
+**スキルの読み込み**:
+```
+skill ツールを使って nextjs-react-expert を読み込みます
+```
+
+**自動検出**: スキルは `skill` ツールの説明にリストされています。エージェントは利用可能なスキルを確認し、関連する時に読み込むことができます。
+
+### エージェントの選択
+
+**プライマリ エージェント** ( **Tab** キーでサイクル):
+- `@orchestrator` - 複雑なタスクのためのマルチエージェント調整
+- `@project-planner` - タスクの分解と計画
+
+**サブエージェント** (`@` でメンション):
+- `@frontend-specialist` - React/Next.js/UI 開発
+- `@backend-specialist` - Node.js/Python/API 開発
+- `@database-architect` - データベース スキーマ設計
+- `@security-auditor` - セキュリティ レビュー
+- `@test-engineer` - テスト戦略
+- `@devops-engineer` - デプロイ/CI/CD
+- `@debugger` - 体系的デバッグ
+- `@performance-optimizer` - パフォーマンス最適化
+- [完整列表在 `.opencode/agents/`]
+
+**注**: OpenCode は明示的なエージェント選択に `@mentions` を使用します。システムはリクエスト コンテキストに基づいてエージェントを自動提案します。
+
+---
+
+## 📥 リクエスト分類
+
+| タイプ | トリガー | アクション |
+|------|----------|--------|
+| **質問** | "what is", "how does", "explain" | 直接回答 |
+| **調査** | "analyze", "list files", "overview" | `@explore` または `@explorer-agent` を使用 |
+| **単純なコード** | "fix", "add" (単一ファイル) | 直接編集 |
+| **複雑なコード** | "build", "create", "implement" | `/orchestrate` コマンドまたは `@project-planner` を使用 |
+| **デザイン** | "design", "UI", "dashboard" | `/ui-ux-pro-max` コマンドを使用 |
+| **デバッグ** | "bug", "error", "not working" | `/debug` コマンドを使用 |
+| **テスト** | "test", "coverage" | `/test` コマンドを使用 |
+| **デプロイ** | "deploy", "production" | `/deploy` コマンドを使用 |
+
+---
+
+## 🎯 ユニバーサル ルール (常時有効)
+
+### 言語 handling
+
+ユーザーのプロンプトが英語でない場合:
+1. 内部で翻訳して理解を深める
+2. ユーザーの言語で応答 - コミュニケーションに合わせる
+3. コード コメント/変数は英語のまま
+
+**日本語設定**:
+ユーザーのプロンプトが日本語の場合:
+- **応答**: 日本語で出力
+- **思考プロセス**: 日本語で思考と推論
+- **計画とタスク**: すべての成果物(計画、ToDo リスト、ドキュメント)を日本語で作成
+- **コード コメント/変数**: 英語のまま
+
+### クリーン コード (グローバル必須)
+
+**すべてのコードは `clean-code` スキル ルールに従う必要があります。** 次のように読み込みます:
+```
+skill({ name: "clean-code" })
+```
+
+**コア原則**:
+- **コード**: 簡潔、直接的、過度なエンジニアリングなし。自己文書化。
+- **テスト**: 必須。ピラミッド (単体 > 結合 > E2E) + AAA パターン。
+- **パフォーマンス**: 最初に測定。2025年標準 (Core Web Vitals) に準拠。
+- **セキュリティ**: デプロイ前にシークレット セキュリティを検証。
+
+### 読む → 理解する → 適用
+
+```
+❌ 間違い: エージェント ファイルを読む → コーディング開始
+✅ 正解: 読む → WHY を理解 → 原則を適用 → コード
+```
+
+**コーディング前に答える**:
+1. このエージェント/スキルの**目標**は何か？
+2. どの**原則**を適用すべきか？
+3. これは汎用出力とどう**異なる**か？
+
+---
+
+## 🔧 利用可能なコマンド
+
+OpenCode TUI で `/` とタイプしてカスタム コマンドにアクセス:
+
+| コマンド | 説明 |
+|---------|-------------|
+| `/status` | プロジェクトとエージェントの状態を表示 |
+| `/preview [start|stop|restart]` | プレビュー サーバーを管理 |
+| `/brainstorm [topic]` | 構造化されたアイデア探索 |
+| `/plan [task]` | プロジェクト計画を作成 |
+| `/create [app]` | 新しいアプリケーションを構築 |
+| `/enhance [feature]` | 既存のアプリに機能を追加 |
+| `/debug [issue]` | 問題をデバッグ |
+| `/test [file|coverage]` | テストを生成/実行 |
+| `/deploy [check|preview|prod]` | 本番環境にデプロイ |
+| `/orchestrate [task]` | 複数のエージェントを調整 |
+| `/ui-ux-pro-max [query]` | デザイン システム推奨 |
+
+---
+
+## 🎨 利用可能なスキル (主要スキル)
+
+### フロントエンド
+- `nextjs-react-expert` - React/Next.js 最適化 (57ルール)
+- `tailwind-patterns` - Tailwind CSS ユーティリティ
+- `web-design-guidelines` - UI/UX 監査 (100+ルール)
+- `frontend-design` - デザイン システムとコンポーネント
+
+### バックエンド
+- `api-patterns` - REST/GraphQL/tRPC パターン
+- `database-design` - スキーマ最適化
+- `python-patterns` - Python 標準
+- `nodejs-best-practices` - Node.js ベスト プラクティス
+
+### テストと品質
+- `testing-patterns` - Jest/Vitest/pytest 戦略
+- `systematic-debugging` - 4フェーズ デバッグ手法
+- `vulnerability-scanner` - セキュリティ 監査
+- `clean-code` - 実用的コーディング標準
+
+### 開発ワークフロー
+- `brainstorming` - ソクラテス式質問 プロトコル
+- `plan-writing` - タスク計画と分解
+- `tdd-workflow` - テスト駆動開発
+
+**完整列表**: `.opencode/skills/` ディレクトリ参照 (48スキル)
+
+---
+
+## 🚀 クイック スタート例
+
+### 新しいプロジェクトを開始
+```
+/plan e-commerce site with cart
+# 計画をレビューしてから:
+/create todo app
+```
+
+### 問題をデバッグ
+```
+/debug API returns 500 error
+```
+
+### 機能を追加
+```
+/enhance add dark mode
+```
+
+### UI をデザイン
+```
+/ui-ux-pro-max fintech dashboard modern
+```
+
+### マルチエージェント調整
+```
+/orchestrate build full-stack app with authentication, database, and testing
+```
+
+---
+
+## 🛠️ ユーティリティ スクリプト
+
+場所: `.opencode/scripts/`:
+
+- **auto_preview.py** - プレビュー サーバー管理
+- **checklist.py** - コア検証チェック
+- **verify_all.py** - 包括的検証
+- **session_manager.py** - セッション管理
+
+**コマンドからの使用方法**:
+```bash
+python3 .opencode/scripts/auto_preview.py start
+python3 .opencode/scripts/checklist.py .
+```
+
+---
+
+## 🔗 参考文献
+
+- **OpenCode Docs**: https://opencode.ai/docs/
+- **Commands Reference**: `.opencode/README.md`
+- **Agent Files**: `.opencode/agents/*.md`
+- **Skill Files**: `.opencode/skills/*/SKILL.md`
+
+---
+
+**AGENTS.md 終了**

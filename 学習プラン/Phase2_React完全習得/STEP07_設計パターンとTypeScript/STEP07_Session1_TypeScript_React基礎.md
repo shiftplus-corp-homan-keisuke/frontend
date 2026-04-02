@@ -334,7 +334,7 @@ type SearchBarProps = {
 
 function SearchBar({ onSearch }: SearchBarProps) {
   const [query, setQuery] = useState("");
-
+   
   return (
     <form onSubmit={(e) => {
       e.preventDefault();
@@ -377,7 +377,7 @@ function LoginForm() {
   };
 
   // onSubmit イベント
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("送信されました");
   };

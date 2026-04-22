@@ -146,6 +146,12 @@ cell: (info) => info.getValue(),
 
 ### 2.3 テーブルコンポーネント
 
+テーブルコンポーネントを **3ステップで段階的に** 組み立てていきます。
+
+#### ステップ① テーブルインスタンスを作る
+
+まず、`useReactTable` フックでテーブルの「頭脳」を作ります。
+
 ```tsx
 import {
   useReactTable,
@@ -155,11 +161,19 @@ import {
 
 function UserTable() {
   const table = useReactTable({
-    data: users,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
+    data: users,       // 表示するデータ（2.1 で定義）
+    columns,           // カラム定義（2.2 で定義）
+    getCoreRowModel: getCoreRowModel(), // 行モデル（必須）
   });
+```
 
+`useReactTable` が返す `table` オブジェクトが **テーブルインスタンス** です。このインスタンスが「どの行を表示すべきか」「ヘッダーは何か」を全て知っています。この時点ではまだ何も描画していません。
+
+#### ステップ② ヘッダーを描画する
+
+`table` インスタンスからヘッダー情報を取り出して `<thead>` を組み立てます。
+
+```tsx
   return (
     <table>
       <thead>
@@ -176,6 +190,18 @@ function UserTable() {
           </tr>
         ))}
       </thead>
+```
+
+ここで2つの新しいAPIが登場します。
+
+- **`table.getHeaderGroups()`** — ヘッダー行の配列を返します。通常は1行ですが、グループヘッダーがある場合は複数行になります。
+- **`flexRender(何を描画するか, コンテキスト)`** — カラム定義の `header`（例: `"名前"`）をそのまま描画するヘルパーです。文字列でも関数でも JSX でも、何でもレンダリングできます。
+
+#### ステップ③ データ行を描画する
+
+同じ要領で `<tbody>` を組み立てます。
+
+```tsx
       <tbody>
         {table.getRowModel().rows.map((row) => (
           <tr key={row.id}>
@@ -192,31 +218,24 @@ function UserTable() {
 }
 ```
 
-**コード解説:**
+- **`table.getRowModel().rows`** — 表示すべきデータ行の配列を返します。
+- **`row.getVisibleCells()`** — その行のセルを返します。カラム定義の `cell`（例: `info => info.getValue()`）が `flexRender` を通じて描画されます。
 
-```tsx
-const table = useReactTable({
-  data: users, // 表示するデータ
-  columns, // カラム定義
-  getCoreRowModel: getCoreRowModel(), // 行モデル（必須）
-});
+#### まとめ：全体像
+
+3つのステップを合わせると、以下の構造になります。
+
 ```
+テーブルインスタンス作成 → ヘッダー描画 → データ行描画
 
-`useReactTable` が返す `table` オブジェクトが **テーブルインスタンス** です。このインスタンスから全ての情報を取得します。
-
-```tsx
-table.getHeaderGroups(); // ヘッダー行の配列を取得
-table.getRowModel().rows; // データ行の配列を取得
-row.getVisibleCells(); // 各行のセルを取得
+table = useReactTable({ data, columns, getCoreRowModel })
+  │
+  ├── table.getHeaderGroups()     → <thead> のレンダリング
+  │     └── header ごとに flexRender で描画
+  │
+  └── table.getRowModel().rows    → <tbody> のレンダリング
+        └── cell ごとに flexRender で描画
 ```
-
-```tsx
-flexRender(header.column.columnDef.header, header.getContext());
-//         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^
-//         レンダリングする内容                コンテキスト情報
-```
-
-`flexRender` は「文字列でも関数でも JSX でも、何でもレンダリングできる」ヘルパーです。カラム定義の `header` や `cell` に書いた内容をそのまま描画してくれます。
 
 ### 2.4 Headless であることの確認
 
@@ -238,40 +257,21 @@ TanStack Table が提供するのは `table.getHeaderGroups()` や `table.getRow
 
 ### 3.1 ソートの有効化
 
-TanStack Table では、機能を追加するときに対応する **Row Model** をインポートして渡します。
+TanStack Table では、機能を追加するときに対応する **Row Model** をインポートして渡します。セクション 2.3 のコードに **3つの変更** を加えるだけでソートが動きます。
+
+#### 変更① インポートを追加する
 
 ```tsx
 import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel, // ← ソート用の Row Model を追加
-  flexRender,
-  createColumnHelper,
-  type SortingState, // ← ソート状態の型
+  // ... 既存のインポートに加えて:
+  getSortedRowModel, // ソート用の Row Model
+  type SortingState, // ソート状態の型
 } from "@tanstack/react-table";
 ```
 
-```tsx
-function UserTable() {
-  // ソート状態を React state として管理
-  const [sorting, setSorting] = useState<SortingState>([]);
+#### 変更② ソート状態の state を追加する
 
-  const table = useReactTable({
-    data: users,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(), // ← 追加
-    state: {
-      sorting, // ← テーブルに現在のソート状態を渡す
-    },
-    onSortingChange: setSorting, // ← ソート状態が変わったら更新
-  });
-
-  // ... return は同じ
-}
-```
-
-**コード解説:**
+コンポーネントの先頭に、ソート状態を管理する `useState` を追加します。
 
 ```tsx
 const [sorting, setSorting] = useState<SortingState>([]);
@@ -279,45 +279,62 @@ const [sorting, setSorting] = useState<SortingState>([]);
 
 `SortingState` は `{ id: string; desc: boolean }[]` 型です。例えば名前の昇順ソートなら `[{ id: "name", desc: false }]` になります。空の配列はソートなしの状態です。
 
+#### 変更③ useReactTable にソート設定を追加する
+
+`useReactTable` のオプションに3行を追加します。
+
 ```tsx
-state: { sorting },
-onSortingChange: setSorting,
+const table = useReactTable({
+  data: users,
+  columns,
+  getCoreRowModel: getCoreRowModel(),
+  getSortedRowModel: getSortedRowModel(), // ★ ソートのロジックを有効化
+  state: {
+    sorting, // ★ 現在のソート状態を渡す
+  },
+  onSortingChange: setSorting, // ★ ソートが変わったら state を更新
+});
 ```
 
-TanStack Table は **状態を外部（React state）で管理する** 設計です。これにより、URL パラメータとの同期や、状態の永続化が容易にできます。
+★の3行がそれぞれ担う役割:
+
+- **`getSortedRowModel`** — ソートの計算ロジックを組み込む
+- **`state: { sorting }`** — 「今どの列がどの方向でソート中か」をテーブルに伝える
+- **`onSortingChange`** — ユーザーがソート操作をしたとき、React state を更新する
+
+> **設計ポイント**: TanStack Table は **状態を外部（React state）で管理する** 設計です。これにより、URL パラメータとの同期や、状態の永続化が容易にできます。
 
 ### 3.2 ヘッダーにソートUIを追加
 
-```tsx
-<thead>
-  {table.getHeaderGroups().map((headerGroup) => (
-    <tr key={headerGroup.id}>
-      {headerGroup.headers.map((header) => (
-        <th
-          key={header.id}
-          onClick={header.column.getToggleSortingHandler()}
-          style={{ cursor: "pointer" }}
-        >
-          {flexRender(header.column.columnDef.header, header.getContext())}
-          {/* ソート方向のインジケーター */}
-          {{ asc: " 🔼", desc: " 🔽" }[header.column.getIsSorted() as string] ??
-            ""}
-        </th>
-      ))}
-    </tr>
-  ))}
-</thead>
-```
+ロジックは有効になりましたが、まだ UI がありません。ステップ②のヘッダー描画で書いた `<th>` に **2つの変更** を加えます。
 
-**コード解説:**
+#### 変更① クリックでソートを切り替える
 
 ```tsx
-header.column.getToggleSortingHandler();
-// クリックするたびに: なし → 昇順 → 降順 → なし とサイクル
-
-header.column.getIsSorted();
-// 現在のソート状態を返す: false | "asc" | "desc"
+<th
+  key={header.id}
+  onClick={header.column.getToggleSortingHandler()} // ★ 追加
+  style={{ cursor: "pointer" }}                      // ★ 追加
+>
 ```
+
+`getToggleSortingHandler()` はクリックイベントハンドラーを返します。クリックするたびに **なし → 昇順 → 降順 → なし** とサイクルします。
+
+#### 変更② ソート方向のインジケーターを表示する
+
+`<th>` の中に、現在のソート方向を示すアイコンを追加します。
+
+```tsx
+{flexRender(header.column.columnDef.header, header.getContext())}
+{/* ↓ この1行を追加 */}
+{{ asc: " 🔼", desc: " 🔽" }[header.column.getIsSorted() as string] ?? ""}
+```
+
+`header.column.getIsSorted()` は現在のソート状態を返します:
+
+- `false` — ソートなし → 何も表示しない
+- `"asc"` — 昇順 → 🔼 を表示
+- `"desc"` — 降順 → 🔽 を表示
 
 ---
 
@@ -325,102 +342,95 @@ header.column.getIsSorted();
 
 ### 4.1 グローバルフィルター（全列検索）
 
-テーブル全体を横断して検索するフィルターを追加します。
+テーブル全体を横断して検索するフィルターを追加します。ソートと同じパターンで **3つの変更** を加えます。
+
+#### 変更① インポートを追加する
 
 ```tsx
 import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
-  getFilteredRowModel, // ← フィルター用の Row Model
-  flexRender,
-  createColumnHelper,
-  type SortingState,
+  // ... 既存のインポートに加えて:
+  getFilteredRowModel, // フィルター用の Row Model
 } from "@tanstack/react-table";
 ```
 
+#### 変更② フィルター状態の state を追加する
+
 ```tsx
-function UserTable() {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [globalFilter, setGlobalFilter] = useState(""); // ← 追加
-
-  const table = useReactTable({
-    data: users,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(), // ← 追加
-    state: {
-      sorting,
-      globalFilter, // ← 追加
-    },
-    onSortingChange: setSorting,
-    onGlobalFilterChange: setGlobalFilter, // ← 追加
-  });
-
-  return (
-    <div>
-      {/* 検索ボックス */}
-      <input
-        value={globalFilter}
-        onChange={(e) => setGlobalFilter(e.target.value)}
-        placeholder="検索..."
-      />
-      <table>{/* ... thead, tbody は同じ */}</table>
-    </div>
-  );
-}
+const [globalFilter, setGlobalFilter] = useState("");
 ```
+
+#### 変更③ useReactTable にフィルター設定を追加する
+
+```tsx
+const table = useReactTable({
+  // ... 既存の設定に加えて:
+  getFilteredRowModel: getFilteredRowModel(), // ★ フィルターのロジックを有効化
+  state: {
+    sorting,
+    globalFilter, // ★ 現在のフィルター値を渡す
+  },
+  onGlobalFilterChange: setGlobalFilter, // ★ フィルターが変わったら state を更新
+});
+```
+
+ソートのときと全く同じパターンです: **Row Model 追加 → state に渡す → onChange で更新**。
+
+#### UI: 検索ボックスを配置する
+
+テーブルの上に検索用の `<input>` を追加します。
+
+```tsx
+<input
+  value={globalFilter}
+  onChange={(e) => setGlobalFilter(e.target.value)}
+  placeholder="検索..."
+/>
+```
+
+入力するだけでテーブルがリアルタイムにフィルタリングされます。全列の値が検索対象です。
 
 ### 4.2 カラムごとのフィルター
 
-特定の列だけをフィルターすることもできます。
+特定の列だけをフィルターすることもできます。パターンは同じです。
+
+#### state と useReactTable の設定
 
 ```tsx
-function UserTable() {
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
-  const table = useReactTable({
-    data: users,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    state: {
-      columnFilters,
-    },
-    onColumnFiltersChange: setColumnFilters,
-  });
-
-  return (
-    <div>
-      {/* role 列のフィルター */}
-      <select
-        value={(table.getColumn("role")?.getFilterValue() as string) ?? ""}
-        onChange={(e) =>
-          table.getColumn("role")?.setFilterValue(e.target.value || undefined)
-        }
-      >
-        <option value="">全ての権限</option>
-        <option value="admin">管理者</option>
-        <option value="editor">編集者</option>
-        <option value="viewer">閲覧者</option>
-      </select>
-
-      <table>{/* ... */}</table>
-    </div>
-  );
-}
+const table = useReactTable({
+  // ... 既存の設定に加えて:
+  getFilteredRowModel: getFilteredRowModel(),
+  state: {
+    columnFilters, // ★ カラムフィルターの状態を渡す
+  },
+  onColumnFiltersChange: setColumnFilters, // ★ フィルター変更時に state を更新
+});
 ```
 
-**コード解説:**
+#### UI: フィルター用のセレクトボックス
+
+例として `role` 列のフィルターを作ります。
 
 ```tsx
-table.getColumn("role")?.setFilterValue(e.target.value || undefined);
-//    ^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^
-//    列オブジェクトを取得  その列にフィルター値をセット
+<select
+  value={(table.getColumn("role")?.getFilterValue() as string) ?? ""}
+  onChange={(e) =>
+    table.getColumn("role")?.setFilterValue(e.target.value || undefined)
+  }
+>
+  <option value="">全ての権限</option>
+  <option value="admin">管理者</option>
+  <option value="editor">編集者</option>
+  <option value="viewer">閲覧者</option>
+</select>
 ```
 
-`undefined` を渡すとフィルターが解除されます。
+ここで使っているAPIを整理します:
+
+- **`table.getColumn("role")`** — 列名で列オブジェクトを取得
+- **`.setFilterValue(value)`** — その列にフィルター値をセット
+- **`.setFilterValue(undefined)`** — `undefined` を渡すとフィルターが解除される
 
 ---
 
@@ -428,93 +438,71 @@ table.getColumn("role")?.setFilterValue(e.target.value || undefined);
 
 ### 5.1 ページネーションの有効化
 
+パターンはもうおなじみです。**Row Model 追加 → 設定 → UI** の3ステップで進めます。
+
+#### ステップ① インポートと設定を追加する
+
 ```tsx
 import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel, // ← ページネーション用の Row Model
-  flexRender,
-  createColumnHelper,
+  // ... 既存のインポートに加えて:
+  getPaginationRowModel, // ページネーション用の Row Model
 } from "@tanstack/react-table";
 ```
 
 ```tsx
-function UserTable() {
-  const table = useReactTable({
-    data: users,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(), // ← 追加
-    initialState: {
-      pagination: {
-        pageSize: 10, // 1ページあたりの行数
-      },
+const table = useReactTable({
+  // ... 既存の設定に加えて:
+  getPaginationRowModel: getPaginationRowModel(), // ★ 追加
+  initialState: {
+    pagination: {
+      pageSize: 10, // 1ページあたりの行数
     },
-  });
-
-  return (
-    <div>
-      <table>{/* ... thead, tbody は同じ */}</table>
-
-      {/* ページネーション UI */}
-      <div>
-        <button
-          onClick={() => table.firstPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          {"<<"}
-        </button>
-        <button
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          {"<"}
-        </button>
-        <span>
-          {table.getState().pagination.pageIndex + 1} / {table.getPageCount()}
-        </span>
-        <button
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          {">"}
-        </button>
-        <button
-          onClick={() => table.lastPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          {">>"}
-        </button>
-      </div>
-    </div>
-  );
-}
+  },
+});
 ```
 
-**コード解説:**
+ソートやフィルターと違い、ページネーションは `initialState` で初期値を指定するだけで動きます。`useState` で外部管理する必要はありません（必要ならできますが）。
+
+#### ステップ② ページネーション UI を配置する
+
+テーブルの下にページ操作ボタンを配置します。まず「前へ」「次へ」ボタン:
 
 ```tsx
-table.firstPage(); // 最初のページへ
-table.previousPage(); // 前のページへ
-table.nextPage(); // 次のページへ
-table.lastPage(); // 最後のページへ
-table.getCanPreviousPage(); // 前のページがあるか（boolean）
-table.getCanNextPage(); // 次のページがあるか（boolean）
-table.getPageCount(); // 総ページ数
-table.getState().pagination.pageIndex; // 現在のページ（0始まり）
+<button
+  onClick={() => table.previousPage()}
+  disabled={!table.getCanPreviousPage()}
+>
+  {"<"}
+</button>
 ```
 
-TanStack Table が全てのページネーション **ロジック** を処理します。ボタンの `disabled` 制御、ページ数の計算、表示するデータの切り出し — 全て自動です。あなたは UI を配置するだけ。
+- `table.previousPage()` — 前のページへ移動
+- `table.getCanPreviousPage()` — 前のページがあるか（boolean）。なければボタンを `disabled` に
+
+同様に `table.nextPage()` と `table.getCanNextPage()` で「次へ」ボタンも作れます。
+
+次に、現在のページ情報を表示します:
+
+```tsx
+<span>
+  ページ {table.getState().pagination.pageIndex + 1} / {table.getPageCount()}
+</span>
+```
+
+- `table.getState().pagination.pageIndex` — 現在のページ（0始まりなので +1）
+- `table.getPageCount()` — 総ページ数
+
+さらに `table.firstPage()` / `table.lastPage()` で最初・最後のページへのジャンプもできます。
+
+> **ポイント**: TanStack Table が全てのページネーション **ロジック** を処理します。ボタンの `disabled` 制御、ページ数の計算、表示するデータの切り出し — 全て自動です。あなたは UI を配置するだけ。
 
 ---
 
 ## 6. 全体を組み合わせた完成形
 
 ここまで学んだ全ての機能を1つのコンポーネントにまとめます。
+
+> **読み方**: これは **リファレンス用の完成コード** です。上から下まで読む必要はありません。セクション 2〜5 で学んだ各機能がどう組み合わさるか、練習問題の参考として使ってください。コメントで各ブロックの役割を示しています。
 
 ```tsx
 import { useState } from "react";

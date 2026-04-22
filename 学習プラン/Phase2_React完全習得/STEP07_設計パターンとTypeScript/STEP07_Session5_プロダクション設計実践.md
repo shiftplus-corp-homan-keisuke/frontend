@@ -2,7 +2,7 @@
 
 ## はじめに：「動くコード」と「保守できるコード」の違い
 
-Session 1〜4 で、TypeScript の型定義、コンポーネント設計パターン、Generics を学びました。個々のコンポーネントの書き方は分かったはずです。
+Session 1〜4 で、TypeScript の型定義、コンポーネント設計パターン、Headless UI（TanStack Table）を学びました。個々のコンポーネントの書き方は分かったはずです。
 
 しかし、実務のプロジェクトは 1 ファイルでは完結しません。数十〜数百のファイルを **どう整理するか** で、プロジェクトの保守性は大きく変わります。
 
@@ -35,6 +35,7 @@ src/
 ```
 
 **問題点:**
+
 - `components/` フォルダを開くと50ファイル以上が一覧される
 - `UserList` と `UserCard` が「ユーザー機能」として関連していることが分からない
 - 新しい開発者が「認証関連のコードはどこ？」と探すのに時間がかかる
@@ -65,6 +66,7 @@ src/
 **なぜ機能で分けるのか？**
 
 「ユーザー一覧の表示を修正したい」と言われたとき：
+
 - **技術で分けた場合**: `components/UserList.tsx` → `hooks/useUsers.ts` → `types/index.ts` と3か所を行き来
 - **機能で分けた場合**: `features/users/` フォルダの中を見るだけ
 
@@ -111,8 +113,8 @@ src/
 │   ├── components/          # 汎用UIコンポーネント
 │   │   ├── Button.tsx
 │   │   ├── Modal.tsx
-│   │   ├── Select.tsx       # Session4で作った汎用Select
-│   │   ├── List.tsx         # Session4で作った汎用List
+│   │   ├── Select.tsx       # 汎用Select
+│   │   ├── List.tsx         # 汎用List
 │   │   └── index.ts
 │   ├── hooks/               # 汎用カスタムフック
 │   │   ├── useToggle.ts     # Session3で作ったuseToggle
@@ -127,14 +129,14 @@ src/
 
 ### 1.3 分類の判断基準
 
-| ファイル | 置く場所 | 判断基準 |
-|---------|---------|---------|
-| `UserList.tsx` | `features/users/components/` | ユーザー機能専用 |
-| `Button.tsx` | `shared/components/` | 複数の機能で使う |
-| `useUsers.ts` | `features/users/hooks/` | ユーザーデータ専用 |
-| `useToggle.ts` | `shared/hooks/` | どの機能でも使える汎用フック |
-| `User` 型 | `features/users/types.ts` | ユーザー機能専用の型 |
-| `ApiState<T>` 型 | `shared/types/index.ts` | 汎用的な型 |
+| ファイル         | 置く場所                     | 判断基準                     |
+| ---------------- | ---------------------------- | ---------------------------- |
+| `UserList.tsx`   | `features/users/components/` | ユーザー機能専用             |
+| `Button.tsx`     | `shared/components/`         | 複数の機能で使う             |
+| `useUsers.ts`    | `features/users/hooks/`      | ユーザーデータ専用           |
+| `useToggle.ts`   | `shared/hooks/`              | どの機能でも使える汎用フック |
+| `User` 型        | `features/users/types.ts`    | ユーザー機能専用の型         |
+| `ApiState<T>` 型 | `shared/types/index.ts`      | 汎用的な型                   |
 
 > **迷ったら**: 「このファイルは1つの機能でしか使わないか？」→ Yes なら `features/`、No なら `shared/`
 
@@ -262,7 +264,7 @@ export type CreateUserInput = Omit<User, "id" | "createdAt">;
 ```tsx
 // shared/types/index.ts
 
-// API 状態（Session4 で学んだ Discriminated Union）
+// API 状態（Discriminated Union）
 export type ApiState<T> =
   | { status: "loading" }
   | { status: "error"; error: string }
@@ -368,8 +370,8 @@ function useTasks(initialTasks: Task[] = []) {
       prev.map((task) =>
         task.id === id
           ? { ...task, status: task.status === "done" ? "todo" : "done" }
-          : task
-      )
+          : task,
+      ),
     );
   };
 
@@ -417,7 +419,7 @@ function useTaskFilter(tasks: Task[]) {
 
   const updateFilter = <K extends keyof TaskFilter>(
     key: K,
-    value: TaskFilter[K]
+    value: TaskFilter[K],
   ) => {
     setFilter((prev) => ({ ...prev, [key]: value }));
   };
@@ -437,7 +439,8 @@ const updateFilter = <K extends keyof TaskFilter>(
 ) => {
 ```
 
-これは Session 4 で学んだ Generics の応用です:
+これは Generics の応用です:
+
 - `K extends keyof TaskFilter` → K は `"search" | "status" | "priority"` のどれか
 - `value: TaskFilter[K]` → K が `"status"` なら value は `TaskStatus | "all"`
 - **キーと値の型が連動する**ので、型安全にフィルターを更新できる
@@ -566,14 +569,14 @@ export { TaskPage };
 
 **この設計のポイントを整理:**
 
-| レイヤー | ファイル | 責務 | パターン |
-|---------|---------|------|---------|
-| 型定義 | `types.ts` | データの構造を定義 | TypeScript, Discriminated Union |
-| ロジック | `useTasks.ts` | CRUD 操作 | Headless (カスタムフック) |
-| ロジック | `useTaskFilter.ts` | フィルタリング | Headless + Generics |
-| 見た目 | `TaskItem.tsx` | 個々のタスク表示 | Presentational |
-| 見た目 | `TaskList.tsx` | タスク一覧表示 | Presentational |
-| 組立 | `TaskPage.tsx` | 全体の接続 | Container |
+| レイヤー | ファイル           | 責務               | パターン                        |
+| -------- | ------------------ | ------------------ | ------------------------------- |
+| 型定義   | `types.ts`         | データの構造を定義 | TypeScript, Discriminated Union |
+| ロジック | `useTasks.ts`      | CRUD 操作          | Headless (カスタムフック)       |
+| ロジック | `useTaskFilter.ts` | フィルタリング     | Headless + Generics             |
+| 見た目   | `TaskItem.tsx`     | 個々のタスク表示   | Presentational                  |
+| 見た目   | `TaskList.tsx`     | タスク一覧表示     | Presentational                  |
+| 組立     | `TaskPage.tsx`     | 全体の接続         | Container                       |
 
 ### 4.7 ステップ6: バレルエクスポート
 
@@ -637,13 +640,13 @@ function App() {
 
 5セッションを通じて学んだことを振り返ります。
 
-| Session | 学んだこと | 核心 |
-|---------|-----------|------|
-| Session 1 | TypeScript × React 基礎 | Props, State, Event に型を付ける |
-| Session 2 | 設計パターン基本 | 「考える部分」と「見せる部分」を分ける |
-| Session 3 | 高度なパターン | カスタムフック（Headless）で機能を再利用する |
-| Session 4 | Generics | 「使う時に型が決まる」汎用コンポーネント |
-| Session 5 | プロダクション設計 | 機能で分ける、バレルエクスポート、型ファーストで設計 |
+| Session   | 学んだこと              | 核心                                                 |
+| --------- | ----------------------- | ---------------------------------------------------- |
+| Session 1 | TypeScript × React 基礎 | Props, State, Event に型を付ける                     |
+| Session 2 | 設計パターン基本        | 「考える部分」と「見せる部分」を分ける               |
+| Session 3 | 高度なパターン          | カスタムフック（Headless）で機能を再利用する         |
+| Session 4 | TanStack Table          | Headless UI の実践 ― 型安全なテーブル                |
+| Session 5 | プロダクション設計      | 機能で分ける、バレルエクスポート、型ファーストで設計 |
 
 ### 実務で特に重要な3原則
 
@@ -660,12 +663,14 @@ function App() {
 以下の要件で、`features/bookmarks/` フォルダ一式を設計してください。
 
 **要件:**
+
 - ブックマークの追加（URL, タイトル, タグ）
 - ブックマーク一覧の表示
 - タグでフィルター
 - ブックマークの削除
 
 **やること:**
+
 1. `types.ts` を設計する（型ファースト！）
 2. `useBookmarks.ts`（CRUD フック）を実装する
 3. `BookmarkItem.tsx`（Presentational）を実装する
@@ -673,7 +678,8 @@ function App() {
 5. `index.ts`（バレルエクスポート）を書く
 
 **追加チャレンジ:**
-- 汎用 `List<T>` コンポーネント（Session 4）を使って一覧を表示する
+
+- 汎用 `List<T>` コンポーネントを使って一覧を表示する
 - `useForm<T>` フック（Session 3）を使って入力フォームを作る
 
 ---

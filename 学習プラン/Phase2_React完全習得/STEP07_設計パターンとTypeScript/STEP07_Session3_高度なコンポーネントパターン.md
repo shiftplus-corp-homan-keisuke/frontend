@@ -16,10 +16,10 @@ Session 2 では、**Container/Presentational**（ロジックとUIの分離）�
 
 これらは「1つのコンポーネントの内部ロジック」ではなく、**複数の異なるコンポーネントに共通して追加したい機能**です。
 
-| パターン | 解決方法 | 現在の推奨度 |
-|---------|---------|------------|
-| **HOC** | コンポーネントを包んで機能を追加 | ⭐⭐ 理解は必要だが新規では非推奨 |
-| **Render Props** | 関数を通じてレンダリングを委譲 | ⭐⭐⭐ 特定の場面で有効 |
+| パターン               | 解決方法                         | 現在の推奨度                        |
+| ---------------------- | -------------------------------- | ----------------------------------- |
+| **HOC**                | コンポーネントを包んで機能を追加 | ⭐⭐ 理解は必要だが新規では非推奨   |
+| **Render Props**       | 関数を通じてレンダリングを委譲   | ⭐⭐⭐ 特定の場面で有効             |
 | **Headless Component** | ロジックだけ提供、UIは完全に自由 | ⭐⭐⭐⭐⭐ 現代のベストプラクティス |
 
 > **重要**: HOC と Render Props は「歴史的に重要」なパターンです。多くの既存コードで使われているため理解は必須ですが、新しいコードでは Headless パターン（カスタムフックベース）が推奨されています。
@@ -54,7 +54,7 @@ type WithLoadingProps = {
 
 // T は「元のコンポーネントの Props」を表す
 function withLoading<T extends object>(
-  WrappedComponent: React.ComponentType<T>
+  WrappedComponent: React.ComponentType<T>,
 ) {
   // 新しいコンポーネントを返す
   return function WithLoadingComponent(props: T & WithLoadingProps) {
@@ -78,12 +78,12 @@ function withLoading<T extends object>(
 
 ```tsx
 function withLoading<T extends object>(
-  WrappedComponent: React.ComponentType<T>
-)
+  WrappedComponent: React.ComponentType<T>,
+);
 ```
 
 - `withLoading` は「関数を返す関数」（高階関数）
-- `<T extends object>` は Generics（Session 4 で詳しく学びます）。今は「元のコンポーネントの Props の型」と理解してください
+- `<T extends object>` は Generics（TypeScript の汎用型パラメータ）。今は「元のコンポーネントの Props の型」と理解してください
 - `React.ComponentType<T>` は「Props が T のコンポーネント」を表す型
 
 ```tsx
@@ -120,12 +120,7 @@ function App() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
-  return (
-    <UserListWithLoading
-      isLoading={loading}
-      users={users}
-    />
-  );
+  return <UserListWithLoading isLoading={loading} users={users} />;
 }
 ```
 
@@ -228,7 +223,7 @@ function MouseTracker({ children }: MouseTrackerProps) {
 **コード解説:**
 
 ```tsx
-children: (position: MousePosition) => React.ReactNode
+children: (position: MousePosition) => React.ReactNode;
 ```
 
 通常の `children` は `React.ReactNode`（JSX要素）ですが、Render Props パターンでは **関数** です。この関数は `position` を受け取り、JSXを返します。
@@ -247,7 +242,9 @@ function CoordinateDisplay() {
   return (
     <MouseTracker>
       {({ x, y }) => (
-        <p>マウス位置: ({x}, {y})</p>
+        <p>
+          マウス位置: ({x}, {y})
+        </p>
       )}
     </MouseTracker>
   );
@@ -307,9 +304,7 @@ function GradientBackground() {
     <WindowSize>
       {(size) => (
         <ThemeProvider>
-          {(theme) => (
-            <MyComponent mouse={mouse} size={size} theme={theme} />
-          )}
+          {(theme) => <MyComponent mouse={mouse} size={size} theme={theme} />}
         </ThemeProvider>
       )}
     </WindowSize>
@@ -327,10 +322,10 @@ function GradientBackground() {
 
 HOC と Render Props の問題点を整理すると:
 
-| パターン | 問題 |
-|---------|------|
-| HOC | ラッパー地獄、Props衝突、型が複雑 |
-| Render Props | ネストが深くなる、読みにくい |
+| パターン     | 問題                              |
+| ------------ | --------------------------------- |
+| HOC          | ラッパー地獄、Props衝突、型が複雑 |
+| Render Props | ネストが深くなる、読みにくい      |
 
 **Headless Component** はこれらを全て解決します。考え方はシンプルで「**ロジックだけをカスタムフックとして提供し、UIは一切持たない**」です。
 
@@ -369,7 +364,11 @@ function useMousePosition() {
 // 使い方1: 座標表示
 function CoordinateDisplay() {
   const { x, y } = useMousePosition();
-  return <p>マウス位置: ({x}, {y})</p>;
+  return (
+    <p>
+      マウス位置: ({x}, {y})
+    </p>
+  );
 }
 
 // 使い方2: 猫追跡
@@ -390,13 +389,21 @@ Render Props 版と比較してみてください:
 ```tsx
 // Render Props - ネストが必要
 <MouseTracker>
-  {({ x, y }) => <p>({x}, {y})</p>}
-</MouseTracker>
+  {({ x, y }) => (
+    <p>
+      ({x}, {y})
+    </p>
+  )}
+</MouseTracker>;
 
 // Headless - フラットで読みやすい
 function Display() {
   const { x, y } = useMousePosition();
-  return <p>({x}, {y})</p>;
+  return (
+    <p>
+      ({x}, {y})
+    </p>
+  );
 }
 ```
 
@@ -466,9 +473,7 @@ function PasswordInput() {
   return (
     <div className="password-field">
       <input type={showPassword ? "text" : "password"} />
-      <button onClick={toggle}>
-        {showPassword ? "🙈" : "👁️"}
-      </button>
+      <button onClick={toggle}>{showPassword ? "🙈" : "👁️"}</button>
     </div>
   );
 }
@@ -494,7 +499,7 @@ type UseFormReturn<T> = {
 
 function useForm<T extends Record<string, unknown>>(
   initialValues: T,
-  validate?: (values: T) => FormErrors<T>
+  validate?: (values: T) => FormErrors<T>,
 ): UseFormReturn<T> {
   const [values, setValues] = useState<T>(initialValues);
   const [errors, setErrors] = useState<FormErrors<T>>({});
@@ -550,9 +555,10 @@ function LoginForm() {
       const errors: FormErrors<LoginValues> = {};
       if (!values.email) errors.email = "メールアドレスは必須です";
       if (!values.password) errors.password = "パスワードは必須です";
-      if (values.password.length < 8) errors.password = "8文字以上で入力してください";
+      if (values.password.length < 8)
+        errors.password = "8文字以上で入力してください";
       return errors;
-    }
+    },
   );
 
   const onLogin = (values: LoginValues) => {
@@ -598,24 +604,33 @@ type ProfileValues = {
 };
 
 function ProfileForm() {
-  const { values, errors, handleChange, handleSubmit, reset } = useForm<ProfileValues>(
-    { name: "", bio: "", website: "" },
-    (values) => {
+  const { values, errors, handleChange, handleSubmit, reset } =
+    useForm<ProfileValues>({ name: "", bio: "", website: "" }, (values) => {
       const errors: FormErrors<ProfileValues> = {};
       if (!values.name) errors.name = "名前は必須です";
       if (values.bio.length > 200) errors.bio = "200文字以内で入力してください";
       return errors;
-    }
-  );
+    });
 
   return (
     <form onSubmit={handleSubmit((v) => console.log("保存:", v))}>
       {/* フォームのUIは自由に設計できる */}
-      <input value={values.name} onChange={(e) => handleChange("name", e.target.value)} />
-      <textarea value={values.bio} onChange={(e) => handleChange("bio", e.target.value)} />
-      <input value={values.website} onChange={(e) => handleChange("website", e.target.value)} />
+      <input
+        value={values.name}
+        onChange={(e) => handleChange("name", e.target.value)}
+      />
+      <textarea
+        value={values.bio}
+        onChange={(e) => handleChange("bio", e.target.value)}
+      />
+      <input
+        value={values.website}
+        onChange={(e) => handleChange("website", e.target.value)}
+      />
       <button type="submit">保存</button>
-      <button type="button" onClick={reset}>リセット</button>
+      <button type="button" onClick={reset}>
+        リセット
+      </button>
     </form>
   );
 }
@@ -637,24 +652,24 @@ function ProfileForm() {
 
 ### 4.2 実務での判断基準
 
-| 状況 | 使うべきパターン | 理由 |
-|------|---------------|------|
-| 新しいコードを書く | **Headless (カスタムフック)** | 最もシンプルで型安全 |
-| 既存のクラスコンポーネント | **HOC** | クラスコンポーネントではフックが使えない |
-| ライブラリを作る | **Compound + Headless** | 使う側に最大限の柔軟性を提供 |
-| 既存コードを読む | **全パターン理解が必要** | 過去のコードは様々なパターンで書かれている |
+| 状況                       | 使うべきパターン              | 理由                                       |
+| -------------------------- | ----------------------------- | ------------------------------------------ |
+| 新しいコードを書く         | **Headless (カスタムフック)** | 最もシンプルで型安全                       |
+| 既存のクラスコンポーネント | **HOC**                       | クラスコンポーネントではフックが使えない   |
+| ライブラリを作る           | **Compound + Headless**       | 使う側に最大限の柔軟性を提供               |
+| 既存コードを読む           | **全パターン理解が必要**      | 過去のコードは様々なパターンで書かれている |
 
 ### 4.3 有名ライブラリでの使用例
 
-| ライブラリ | パターン | 例 |
-|-----------|---------|-----|
-| React Router v5 | HOC | `withRouter(Component)` |
-| React Router v6 | Headless | `useNavigate()`, `useParams()` |
-| Redux (旧) | HOC | `connect(mapState, mapDispatch)(Component)` |
-| Redux (新) | Headless | `useSelector()`, `useDispatch()` |
-| Headless UI | Compound + Headless | `<Menu>`, `<Listbox>` |
-| React Hook Form | Headless | `useForm()` |
-| TanStack Table | Headless | `useReactTable()` |
+| ライブラリ      | パターン            | 例                                          |
+| --------------- | ------------------- | ------------------------------------------- |
+| React Router v5 | HOC                 | `withRouter(Component)`                     |
+| React Router v6 | Headless            | `useNavigate()`, `useParams()`              |
+| Redux (旧)      | HOC                 | `connect(mapState, mapDispatch)(Component)` |
+| Redux (新)      | Headless            | `useSelector()`, `useDispatch()`            |
+| Headless UI     | Compound + Headless | `<Menu>`, `<Listbox>`                       |
+| React Hook Form | Headless            | `useForm()`                                 |
+| TanStack Table  | Headless            | `useReactTable()`                           |
 
 > **注目**: 多くのライブラリが HOC から Headless に移行していることが分かります。
 
@@ -667,6 +682,7 @@ function ProfileForm() {
 「テキストをクリップボードにコピーする」機能を Headless パターンで実装してください。
 
 **要件:**
+
 - `copy(text)` でクリップボードにコピーできる
 - コピー成功後、一定時間（例: 2秒）`isCopied` が `true` になる
 - エラーハンドリングがある
@@ -690,6 +706,7 @@ function ShareLink({ url }: { url: string }) {
 ```
 
 **ヒント:**
+
 - `navigator.clipboard.writeText()` でクリップボードに書き込めます
 - `setTimeout` でコピー状態をリセットします
 - `useEffect` のクリーンアップでタイマーを解除するのを忘れずに
@@ -704,4 +721,4 @@ function ShareLink({ url }: { url: string }) {
 4. Headless パターンが HOC/Render Props より優れている点は何か？
 5. 既存コードで `connect(mapState, mapDispatch)(Component)` を見たら、これは何パターンか？
 
-> **次のセッション**: TypeScript の Generics を使って、型安全な汎用コンポーネントを設計する方法を学びます。
+> **次のセッション**: TanStack Table を使って、Headless UI パターンの実践的な活用方法を学びます。

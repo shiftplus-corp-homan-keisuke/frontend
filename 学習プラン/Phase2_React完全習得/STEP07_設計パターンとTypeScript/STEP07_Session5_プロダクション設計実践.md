@@ -159,7 +159,7 @@ export { UserCard } from "./components/UserCard";
 export { useUsers } from "./hooks/useUsers";
 
 // 公開する型
-export type { User, UserFilter } from "./types";
+export type { User, UserFilterConfig } from "./types";
 
 // UserFilter.tsx は外部に公開しない（内部実装の詳細）
 ```
@@ -187,19 +187,6 @@ import type { User } from "../features/users";
 
 1. **インポートがシンプル**: 内部のフォルダ構成を知らなくていい
 2. **リファクタリングが容易**: 内部でファイルを移動しても、`index.ts` を更新するだけで外部への影響なし
-3. **カプセル化**: 公開しないものは外部からアクセスできない
-
-### 2.3 注意点：循環参照を避ける
-
-```tsx
-// ❌ features 同士が直接参照し合うと循環参照のリスク
-// features/cart/components/CartItem.tsx
-import { ProductCard } from "../../products/components/ProductCard";
-
-// ✅ shared を経由するか、バレルエクスポートを使う
-// features/cart/components/CartItem.tsx
-import { ProductCard } from "../../products";
-```
 
 ---
 
@@ -229,7 +216,7 @@ export type UsersResponse = {
 };
 
 // --- フィルター ---
-export type UserFilter = {
+export type UserFilterConfig = {
   search: string;
   role: UserRole | "all";
   sortBy: keyof Pick<User, "name" | "email" | "createdAt">;
@@ -238,13 +225,13 @@ export type UserFilter = {
 
 // --- フォーム用（新規作成時は id 不要） ---
 export type CreateUserInput = Omit<User, "id" | "createdAt">;
-export type UpdateUserInput = Partial<Omit<User, "id" | "createdAt">>;
+export type UpdateUserInput = Partial<Omit<User, "createdAt">>;
 ```
 
 **コード解説:**
 
 ```tsx
-export type UserFilter = {
+export type UserFilterConfig = {
   sortBy: keyof Pick<User, "name" | "email" | "createdAt">;
   //      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   // 「User の name, email, createdAt のどれか」
@@ -323,7 +310,7 @@ src/features/tasks/
 // features/tasks/types.ts
 
 export type TaskPriority = "low" | "medium" | "high";
-export type TaskStatus = "todo" | "in_progress" | "done";
+export type TaskStatus = "todo" | "done";
 
 export type Task = {
   id: string;

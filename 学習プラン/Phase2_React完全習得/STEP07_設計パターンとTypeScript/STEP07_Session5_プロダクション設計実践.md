@@ -82,6 +82,7 @@ src/
 ├── features/                # 機能（Feature）ごとのモジュール
 │   ├── users/
 │   │   ├── components/      # この機能専用のコンポーネント
+│   │   │   ├── UsersPage.tsx    # /users 画面全体（Container）
 │   │   │   ├── UserList.tsx
 │   │   │   ├── UserCard.tsx
 │   │   │   └── UserFilter.tsx
@@ -92,6 +93,7 @@ src/
 │   │
 │   ├── cart/
 │   │   ├── components/
+│   │   │   ├── CartPage.tsx      # /cart 画面全体（Container）
 │   │   │   ├── CartSummary.tsx
 │   │   │   └── CartItem.tsx
 │   │   ├── hooks/
@@ -102,6 +104,8 @@ src/
 │   │
 │   └── auth/
 │       ├── components/
+│       │   ├── LoginPage.tsx     # /login 画面全体（Container）
+│       │   ├── SignupPage.tsx    # /signup 画面全体（Container）
 │       │   ├── LoginForm.tsx
 │       │   └── SignupForm.tsx
 │       ├── hooks/
@@ -131,6 +135,10 @@ src/
 
 | ファイル         | 置く場所                     | 判断基準                     |
 | ---------------- | ---------------------------- | ---------------------------- |
+| `UsersPage.tsx`  | `features/users/components/` | `/users` 画面を組み立てる    |
+| `CartPage.tsx`   | `features/cart/components/`  | `/cart` 画面を組み立てる     |
+| `LoginPage.tsx`  | `features/auth/components/`  | `/login` 画面を組み立てる    |
+| `SignupPage.tsx` | `features/auth/components/`  | `/signup` 画面を組み立てる   |
 | `UserList.tsx`   | `features/users/components/` | ユーザー機能専用             |
 | `Button.tsx`     | `shared/components/`         | 複数の機能で使う             |
 | `useUsers.ts`    | `features/users/hooks/`      | ユーザーデータ専用           |
@@ -152,6 +160,7 @@ src/
 // features/users/index.ts（バレルエクスポート）
 
 // 公開するコンポーネント
+export { UsersPage } from "./components/UsersPage";
 export { UserList } from "./components/UserList";
 export { UserCard } from "./components/UserCard";
 
@@ -163,6 +172,36 @@ export type { User, UserFilterConfig } from "./types";
 
 // UserFilter.tsx は外部に公開しない（内部実装の詳細）
 ```
+
+`UsersPage.tsx` は `useUsers` と `UserList` などを組み合わせて、`/users` に対応する画面全体を組み立てる Container です。`CartPage.tsx` や `LoginPage.tsx` / `SignupPage.tsx` も同じ役割で、ルーティングにはこのような「ページ単位のコンポーネント」を指定します。
+
+```tsx
+// app/routes.tsx
+import { UsersPage } from "../features/users";
+import { CartPage } from "../features/cart";
+import { LoginPage, SignupPage } from "../features/auth";
+
+export const routes = [
+  {
+    path: "/users",
+    element: <UsersPage />,
+  },
+  {
+    path: "/cart",
+    element: <CartPage />,
+  },
+  {
+    path: "/login",
+    element: <LoginPage />,
+  },
+  {
+    path: "/signup",
+    element: <SignupPage />,
+  },
+];
+```
+
+つまり `CartSummary.tsx` や `LoginForm.tsx` のような部品を直接ルーティングするのではなく、それらを組み立てる Page を1枚用意して、その Page をルートに指定するのが基本です。
 
 ### 2.2 なぜバレルエクスポートが重要なのか
 
@@ -604,22 +643,22 @@ function App() {
 
 ### コンポーネント設計
 
-- [ ] **型を先に定義したか？** → コードの前に型を考える
-- [ ] **ロジックとUIは分離されているか？** → Container/Presentational or カスタムフック
-- [ ] **Props は適切か？** → 多すぎたら Compound Components を検討
-- [ ] **Generics が使えるか？** → 複数のデータ型で再利用できるなら Generics
+- [x] **型を先に定義したか？** → コードの前に型を考える
+- [x] **ロジックとUIは分離されているか？** → Container/Presentational or カスタムフック
+- [x] **Props は適切か？** → 多すぎたら Compound Components を検討
+- [x] **Generics が使えるか？** → 複数のデータ型で再利用できるなら Generics
 
 ### ファイル配置
 
-- [ ] **feature 固有か、共有か？** → 1機能でしか使わないなら `features/`
-- [ ] **バレルエクスポートを更新したか？** → 公開するものだけを export
-- [ ] **循環参照はないか？** → feature 間は直接参照しない
+- [x] **feature 固有か、共有か？** → 1機能でしか使わないなら `features/`
+- [x] **バレルエクスポートを更新したか？** → 公開するものだけを export
+- [x] **循環参照はないか？** → feature 間は直接参照しない
 
 ### 型設計
 
-- [ ] **`any` を使っていないか？** → Generics や unknown を検討
-- [ ] **矛盾した状態が表現できてしまわないか？** → Discriminated Union を検討
-- [ ] **ユーティリティ型で簡潔に書けないか？** → `Partial`, `Pick`, `Omit` を活用
+- [x] **`any` を使っていないか？** → Generics や unknown を検討
+- [x] **矛盾した状態が表現できてしまわないか？** → Discriminated Union を検討
+- [x] **ユーティリティ型で簡潔に書けないか？** → `Partial`, `Pick`, `Omit` を活用
 
 ---
 

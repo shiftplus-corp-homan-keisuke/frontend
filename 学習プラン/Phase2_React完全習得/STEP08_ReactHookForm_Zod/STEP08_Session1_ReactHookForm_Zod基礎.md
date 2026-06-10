@@ -183,9 +183,9 @@ import { z } from "zod";
 
 // スキーマ定義
 const userSchema = z.object({
-  name: z.string().min(1, "名前は必須です"),
-  email: z.string().email("正しいメールアドレスを入力してください"),
-  age: z.number().min(0, "年齢は0以上です").max(150, "正しい年齢を入力してください"),
+  name: z.string().min(1, { error: "名前は必須です" }),
+  email: z.string().email({ error: "正しいメールアドレスを入力してください" }),
+  age: z.number().min(0, { error: "年齢は0以上です" }).max(150, { error: "正しい年齢を入力してください" }),
   website: z.string().url().optional(), // オプショナル
 });
 
@@ -198,16 +198,16 @@ type User = z.infer<typeof userSchema>;
 
 ```ts
 z.string()                    // 文字列
-  .min(5, "5文字以上")         // 最小長
-  .max(100, "100文字以下")     // 最大長
-  .email("メール形式")         // メール形式
-  .url("URL形式")              // URL形式
-  .regex(/^[a-z]+$/, "英小文字のみ"); // 正規表現
+  .min(5, { error: "5文字以上" })         // 最小長
+  .max(100, { error: "100文字以下" })     // 最大長
+  .email({ error: "メール形式" })         // メール形式
+  .url({ error: "URL形式" })              // URL形式
+  .regex(/^[a-z]+$/, { error: "英小文字のみ" }); // 正規表現
 
 z.number()                    // 数値
   .min(0)                      // 最小値
   .max(100)                    // 最大値
-  .int("整数のみ");             // 整数
+  .int({ error: "整数のみ" });             // 整数
 
 z.boolean();                  // 真偽値
 z.date();                     // 日付
@@ -231,12 +231,12 @@ import { z } from "zod";
 const schema = z.object({
   email: z
     .string()
-    .min(1, "メールアドレスは必須です")
-    .email("正しいメールアドレスを入力してください"),
+    .min(1, { error: "メールアドレスは必須です" })
+    .email({ error: "正しいメールアドレスを入力してください" }),
   password: z
     .string()
-    .min(8, "パスワードは8文字以上必要です")
-    .max(100, "パスワードは100文字以下にしてください"),
+    .min(8, { error: "パスワードは8文字以上必要です" })
+    .max(100, { error: "パスワードは100文字以下にしてください" }),
 });
 
 // 2. 型の抽出
@@ -331,10 +331,10 @@ function FormWithErrors() {
 
 ```ts
 const schema = z.object({
-  password: z.string().min(8, "8文字以上"),
+  password: z.string().min(8, { error: "8文字以上" }),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "パスワードが一致しません",
+  error: "パスワードが一致しません",
   path: ["confirmPassword"], // エラーをどのフィールドに表示するか
 });
 ```
@@ -367,7 +367,7 @@ const schema = z.object({
     return true;
   },
   {
-    message: "管理者コードが正しくありません",
+    error: "管理者コードが正しくありません",
     path: ["adminCode"],
   }
 );
@@ -483,23 +483,21 @@ import { z } from "zod";
 
 const schema = z
   .object({
-    name: z.string().min(2, "2文字以上").max(50, "50文字以下"),
-    email: z.string().min(1, "必須").email("正しい形式"),
+    name: z.string().min(2, { error: "2文字以上" }).max(50, { error: "50文字以下" }),
+    email: z.string().min(1, { error: "必須" }).email({ error: "正しい形式" }),
     password: z
       .string()
-      .min(8, "8文字以上")
-      .regex(/[A-Z]/, "大文字を含む")
-      .regex(/[a-z]/, "小文字を含む")
-      .regex(/[0-9]/, "数字を含む"),
+      .min(8, { error: "8文字以上" })
+      .regex(/[A-Z]/, { error: "大文字を含む" })
+      .regex(/[a-z]/, { error: "小文字を含む" })
+      .regex(/[0-9]/, { error: "数字を含む" }),
     confirmPassword: z.string(),
-    age: z.number().min(18, "18歳以上").max(120, "正しい年齢"),
-    website: z.string().url("正しいURL").optional().or(z.literal("")),
-    agreeTerms: z.literal(true, {
-      errorMap: () => ({ message: "同意が必要です" }),
-    }),
+    age: z.number().min(18, { error: "18歳以上" }).max(120, { error: "正しい年齢" }),
+    website: z.string().url({ error: "正しいURL" }).optional().or(z.literal("")),
+    agreeTerms: z.literal(true, { error: "同意が必要です" }),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "パスワードが一致しません",
+    error: "パスワードが一致しません",
     path: ["confirmPassword"],
   });
 

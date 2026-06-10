@@ -139,17 +139,23 @@ function SimpleForm() {
 
 ### `useForm` の戻り値を理解する
 
-```tsx
 const {
-  register,        // 入力フィールドを登録
+  register,        // ネイティブの非制御コンポーネント（input/select/textarea）を登録
   handleSubmit,    // 送信ハンドラーをラップ
   formState,       // フォームの状態（エラー、送信状態など）
   watch,           // 値の監視
   setValue,        // 値の手動設定
   reset,           // フォームをリセット
-  control,         // 制御されたコンポーネント用
+  control,         // 制御コンポーネント（外部UIライブラリ、カスタムコンポーネント）を管理
 } = useForm();
-```
+
+// register と control の違い:
+// register: 標準HTML要素を直接登録する。ref を使って非制御（Uncontrolled）アプローチで動作し、
+//           入力のたびに再レンダリングが発生しないためパフォーマンスが高い。
+// control:  制御コンポーネント（Controlled）を扱うためのオブジェクト。MUI や Chakra UI などの
+//           外部ライブラリ、または独自のカスタムコンポーネントを使用する場合に必要。
+//           内部的な value と onChange を React Hook Form と連携させるため、
+//           Controller コンポーネントとセットで使用する。
 
 ### `register` の仕組み
 
@@ -167,6 +173,65 @@ const {
   ref={...}           // React Hook Formが管理
 />
 ```
+
+### `control` と `Controller` の使い方
+
+外部ライブラリ（Material UI、Chakra UI など）や独自のカスタムコンポーネントを使う場合、`register` の代わりに `Controller` コンポーネントを使います。
+
+```tsx
+import { useForm, Controller } from "react-hook-form";
+
+function ControlledForm() {
+  const { control, handleSubmit } = useForm();
+
+  const onSubmit = (data: any) => {
+    console.log(data);
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Controller
+        name="country"
+        control={control}
+        render={({ field }) => (
+          <select {...field}>
+            <option value="jp">日本</option>
+            <option value="us">アメリカ</option>
+            <option value="uk">イギリス</option>
+          </select>
+        )}
+      />
+      <button type="submit">送信</button>
+    </form>
+  );
+}
+```
+
+`Controller` の `render` 関数には `field` オブジェクトが渡されます。これには `value`、`onChange`、`onBlur`、`name`、`ref` が含まれており、外部コンポーネントと React Hook Form を橋渡しします。
+
+```tsx
+// カスタムコンポーネントとの連携例
+<<Controller
+  name="username"
+  control={control}
+  render={({ field, fieldState }) => (
+    <CustomInput
+      value={field.value}
+      onChange={field.onChange}
+      onBlur={field.onBlur}
+      error={fieldState.error?.message}
+    />
+  )}
+/>
+```
+
+| `render` 引数 | 内容 |
+|------|------|
+| `field.value` | 現在の値 |
+| `field.onChange` | 値変更時に呼ぶ関数 |
+| `field.onBlur` | フォーカス解除時に呼ぶ関数 |
+| `field.ref` | 要素への参照 |
+| `fieldState.error` | そのフィールドのエラー情報 |
 
 **重要**: `register`は**アンコントロールド**アプローチを基本としつつ、バリデーションやイベントを管理します。
 

@@ -16,10 +16,9 @@ Session 1で、React Hook Form + Zod の**基礎的な使い方**を学びまし
 | 複数の電話番号を登録したい | 入力欄を動的に増減させる必要がある |
 | プロフィール画像をアップロード | ファイル入力は通常のテキスト入力と扱いが異なる |
 | ユーザー名の重複チェック | サーバーに問い合わせてから判定したい |
-| 会員登録を3ステップで入力 | 同じフォームの状態を複数画面で共有したい |
 | 商品のリアルタイム検索 | 入力するたびにAPIを叩きたいが、毎回叩くと重い |
 
-このセッションでは、**実務で頻出する5つのパターン**を、基礎から丁寧に解説します。
+このセッションでは、**実務で頻出する4つのパターン**を、基礎から丁寧に解説します。
 
 ---
 
@@ -747,12 +746,41 @@ function AsyncValidationForm() {
 
 ### 💻 完成コード（方法B: 手動での管理）
 
-方法A（Zodのasync refine）では、エラーメッセージの出し分けや「使用可能です」という青文字の表示が難しいです。
-方法Bでは、自分で状態管理することで柔軟なUIが作れます。
+### 🧐 なぜ方法A（Zodの `refine`）では柔軟なUIが難しいのか
+
+方法AのZod `refine` は「失敗」の情報しか返せません。つまり「このユーザー名は使用可能です」という**成功時の青文字を返す仕組みがありません**。
+
+さらに、同じフィールドに対して `errors.username` は1つしか存在しないため、文字数エラーと重複エラーを同時に出し分けるのも煩雑になります。`formState.errors` は「バリデーション失敗時にのみ存在」するため、確認中・成功・失敗の3状態を表現するには不向きです。
+
+| 観点 | 方法A (Zod refine) | 方法B (手動管理) |
+|------|-------------------|----------------|
+| 成功メッセージ | 出せない | 出せる |
+| 状態の種類 | エラー有無のみ | 自由に定義できる |
+| UI出し分け | 制限あり | 完全に自由 |
+
+方法Bでは、自分で `idle / checking / available / taken` といった状態を管理することで、確認中・使用可能・既に使用済み、といった自由なUIが作れます。
+
+### 💻 完成コード（方法B: 手動での管理）
 
 ```tsx
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { useState } from "react";
+
+// ============================================================
+// ステップ1: Zodスキーマ（同期バリデーションのみ）
+// ============================================================
+// 非同期チェックは手動管理するため、Zodスキーマには含めない
+const schema = z.object({
+  username: z
+    .string()
+    .min(3, "3文字以上で入力してください")
+    .max(20, "20文字以下で入力してください")
+    .regex(/^[a-zA-Z0-9_]+$/, "英数字とアンダースコア(_)のみ使用可能です"),
+});
+
+type FormData = z.infer<typeof schema>;
 
 function SignupForm() {
   // "idle" = 未入力/未確認, "checking" = 確認中, "available" = OK, "taken" = NG
@@ -763,13 +791,14 @@ function SignupForm() {
   const {
     register,
     handleSubmit,
-    trigger, // 手動でバリデーションを発火させる関数
     formState: { errors },
-  } = useForm();
+  } = useForm<FormData>({
+    resolver: zodResolver(schema), // Zodスキーマで同期バリデーション（文字数・形式）
+  });
 
   // 手動で非同期チェックを行う関数
   const checkUsername = async (username: string) => {
-    // 空文字や短すぎる場合はチェックしない
+    // 空文字や短すぎる場合はZodでエラーになるので、ここではチェックしない
     if (!username || username.length < 3) return;
 
     setUsernameStatus("checking");
@@ -781,7 +810,7 @@ function SignupForm() {
     setUsernameStatus(isAvailable ? "available" : "taken");
   };
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: FormData) => {
     if (usernameStatus !== "available") {
       alert("ユーザー名の確認が完了していません");
       return;
@@ -795,11 +824,9 @@ function SignupForm() {
         <label htmlFor="username">ユーザー名</label>
         <input
           id="username"
-          {...register("username", {
-            required: "必須項目です",
-            minLength: { value: 3, message: "3文字以上必要です" },
-          })}
+          {...register("username")}
           // onBlur: フォーカスが外れた時に手動チェック
+          // このタイミングでサーバー通信を行う
           onBlur={(e) => checkUsername(e.target.value)}
         />
 
@@ -814,7 +841,7 @@ function SignupForm() {
           <span style={{ color: "red" }}>❌ 既に使用されています</span>
         )}
 
-        {/* RHFの同期バリデーションエラー（required, minLengthなど） */}
+        {/* Zodの同期バリデーションエラー（文字数不足・形式不正など） */}
         {errors.username && (
           <span style={{ color: "red", display: "block" }}>
             {errors.username.message}
@@ -869,320 +896,21 @@ function SignupForm() {
 
 ---
 
-## 4. ステップフォーム（Wizard）
-
-### 💡 このパターンとは何か
-
-1つの長いフォームを、**複数の画面（ステップ）に分割**して入力するUIです。
-
-```
-[ステップ1: 基本情報] → [ステップ2: 連絡先] → [ステップ3: 住所] → [確認]
-   姓・名              メール・電話           住所・市区町村
-```
-
-**なぜ分割するのか？**
-- 入力項目が多いと、ユーザーが圧倒されて「後で入力しよう」と放棄する（離脱率上昇）
-- ステップごとに区切ることで「あと少し」の達成感を与え、最後まで入力させやすい
-- ステップ1で必須情報を先に取得し、途中離脱しても最小限の価値を得られる（リード獲得）
-
-**技術的な課題**:
-- ステップ1で入力した値を、ステップ2の画面でも保持したい
-- 戻るボタンで前の画面に戻った時、入力値が残っているべき
-- 最後にまとめて送信したい
-
-React Hook Form の `FormProvider` を使うと、**Propsを逐次渡さなくても**子コンポーネントで同じフォーム状態にアクセスできます。
-
-### 🎯 どんな時に使うか
-
-- 会員登録（基本情報 → 詳細情報 → 確認）
-- 商品注文（カート → 配送先 → 支払い → 確認）
-- アンケート（複数のセクションに分かれた長い設問）
-- 設定ウィザード（初期設定のガイド）
-
-### 📝 実装のステップ
-
-1. ステップごとにZodスキーマを分けて定義する
-2. `FormProvider` でフォームの状態を共有できるようにする
-3. 各ステップを別コンポーネント（`Step1`, `Step2`, ...）に分ける
-4. 現在のステップに応じたスキーマで `trigger()` を使い、次へ進む前に検証する
-5. 最後のステップで `handleSubmit` を実行
-
-### 💻 完成コード
-
-```tsx
-import { useForm, FormProvider, useFormContext } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useState } from "react";
-
-// ============================================================
-// ステップ1: 各ステップのスキーマを定義
-// ============================================================
-const step1Schema = z.object({
-  firstName: z.string().min(1, { error: "姓を入力してください" }),
-  lastName: z.string().min(1, { error: "名を入力してください" }),
-});
-
-const step2Schema = z.object({
-  email: z.string().email({ error: "正しいメールアドレスを入力してください" }),
-  phone: z.string().min(10, { error: "正しい電話番号を入力してください" }),
-});
-
-const step3Schema = z.object({
-  address: z.string().min(1, { error: "住所を入力してください" }),
-  city: z.string().min(1, { error: "市区町村を入力してください" }),
-});
-
-// ステップごとのスキーマを配列にまとめる
-const schemas = [step1Schema, step2Schema, step3Schema];
-
-// ============================================================
-// ステップ2: 全ステップを統合した型
-// ============================================================
-// &（Intersection Type）: 全てのスキーマのプロパティを合成した型
-// FormData = { firstName, lastName, email, phone, address, city }
-type FormData = z.infer<typeof step1Schema> &
-  z.infer<typeof step2Schema> &
-  z.infer<typeof step3Schema>;
-
-// ============================================================
-// ステップ3: 親コンポーネント（ステップ管理）
-// ============================================================
-function StepForm() {
-  const [currentStep, setCurrentStep] = useState(0); // 0, 1, 2
-
-  // FormProvider に渡す methods
-  // resolver は現在のステップのスキーマを使う
-  // 注意: resolverを動的に切り替える実装は複雑なため、
-  // ここでは全フィールドを含む統合スキーマを作る方が実務では推奨されます
-  // （以下は教育用のシンプルな実装です）
-  const methods = useForm<FormData>({
-    // 実務ではここに全ステップを統合したスキーマを1つ入れるのが確実です
-    // 例: resolver: zodResolver(step1Schema.merge(step2Schema).merge(step3Schema))
-    mode: "onChange",
-  });
-
-  const { handleSubmit, trigger } = methods;
-
-  // 「次へ」ボタンの処理
-  const nextStep = async () => {
-    // trigger(): 手動でバリデーションを実行。結果は boolean で返る
-    // どのフィールドを検証するか？ → 現在のステップに含まれるフィールド名を指定
-    const fieldsToValidate = getFieldsForStep(currentStep);
-    const isValid = await trigger(fieldsToValidate as any);
-
-    if (isValid && currentStep < schemas.length - 1) {
-      setCurrentStep((prev) => prev + 1);
-    }
-  };
-
-  // 「戻る」ボタンの処理
-  const prevStep = () => {
-    if (currentStep > 0) {
-      setCurrentStep((prev) => prev - 1);
-    }
-  };
-
-  const onSubmit = (data: FormData) => {
-    console.log("最終データ:", data);
-    alert("登録が完了しました！");
-  };
-
-  // ステップに応じたフィールド名を返す補助関数
-  function getFieldsForStep(step: number): string[] {
-    switch (step) {
-      case 0: return ["firstName", "lastName"];
-      case 1: return ["email", "phone"];
-      case 2: return ["address", "city"];
-      default: return [];
-    }
-  }
-
-  return (
-    // FormProvider: 配下のコンポーネントで useFormContext() を使えるようにする
-    <FormProvider {...methods}>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        {/* プログレス表示 */}
-        <div style={{ marginBottom: 16, fontWeight: "bold" }}>
-          ステップ {currentStep + 1} / {schemas.length}
-        </div>
-
-        {/* 現在のステップに応じたコンポーネントを表示 */}
-        {currentStep === 0 && <Step1 />}
-        {currentStep === 1 && <Step2 />}
-        {currentStep === 2 && <Step3 />}
-
-        {/* ナビゲーションボタン */}
-        <div style={{ marginTop: 24 }}>
-          {currentStep > 0 && (
-            <button type="button" onClick={prevStep} style={{ marginRight: 8 }}>
-              ← 戻る
-            </button>
-          )}
-
-          {currentStep < schemas.length - 1 ? (
-            <button type="button" onClick={nextStep}>
-              次へ →
-            </button>
-          ) : (
-            <button type="submit">送信</button>
-          )}
-        </div>
-      </form>
-    </FormProvider>
-  );
-}
-
-// ============================================================
-// ステップ4: 各ステップコンポーネント
-// ============================================================
-// useFormContext: FormProvider から提供されたフォーム状態にアクセス
-// register, errors などを props で渡さずに使えるのがメリット
-
-function Step1() {
-  const { register, formState: { errors } } = useFormContext();
-
-  return (
-    <div>
-      <h2>基本情報</h2>
-      <div>
-        <label>姓</label>
-        <input {...register("firstName")} placeholder="山田" />
-        {errors.firstName && (
-          <span style={{ color: "red" }}>{errors.firstName.message}</span>
-        )}
-      </div>
-      <div style={{ marginTop: 8 }}>
-        <label>名</label>
-        <input {...register("lastName")} placeholder="太郎" />
-        {errors.lastName && (
-          <span style={{ color: "red" }}>{errors.lastName.message}</span>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function Step2() {
-  const { register, formState: { errors } } = useFormContext();
-
-  return (
-    <div>
-      <h2>連絡先</h2>
-      <div>
-        <label>メールアドレス</label>
-        <input {...register("email")} placeholder="example@mail.com" type="email" />
-        {errors.email && (
-          <span style={{ color: "red" }}>{errors.email.message}</span>
-        )}
-      </div>
-      <div style={{ marginTop: 8 }}>
-        <label>電話番号</label>
-        <input {...register("phone")} placeholder="09012345678" />
-        {errors.phone && (
-          <span style={{ color: "red" }}>{errors.phone.message}</span>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function Step3() {
-  const { register, formState: { errors } } = useFormContext();
-
-  return (
-    <div>
-      <h2>住所</h2>
-      <div>
-        <label>住所</label>
-        <input {...register("address")} placeholder="◯◯町1-2-3" />
-        {errors.address && (
-          <span style={{ color: "red" }}>{errors.address.message}</span>
-        )}
-      </div>
-      <div style={{ marginTop: 8 }}>
-        <label>市区町村</label>
-        <input {...register("city")} placeholder="東京都新宿区" />
-        {errors.city && (
-          <span style={{ color: "red" }}>{errors.city.message}</span>
-        )}
-      </div>
-    </div>
-  );
-}
-```
-
-### 🔍 コード解説
-
-#### `FormProvider` と `useFormContext` の関係
-
-通常のReactでは、子コンポーネントにstateを渡すために **Props** を使います（Props drilling）。
-ステップフォームのように深くネストすると、同じ `register` を何層も渡すのが面倒です。
-
-```
-従来の方法:  StepForm → register → Step1 → register → input
-            StepForm → register → Step2 → register → input
-
-FormProvider: StepForm ── FormProvider ──→ Step1 が useFormContext() で直接取得
-                                    └──→ Step2 が useFormContext() で直接取得
-```
-
-`FormProvider` は React の **Context API** を内部で使っており、配下のどのコンポーネントからでも `useFormContext()` で同じフォーム状態にアクセスできます。
-
-#### `trigger()` の役割
-
-```ts
-const isValid = await trigger();           // 全フィールドを検証
-const isValid = await trigger("email");      // 特定フィールドのみ
-const isValid = await trigger(["email", "phone"]); // 複数フィールド
-```
-
-「次へ」ボタンを押した時に、**現在のステップの入力だけを検証**して、OKなら画面を進めます。
-
-#### スキーマの管理について
-
-実務では、ステップごとにスキーマを分けるより、**1つの大きなスキーマ**を作り、`trigger([...])` で部分検証する方が推奨されます。
-
-```ts
-const fullSchema = z.object({
-  firstName: z.string().min(1),
-  lastName: z.string().min(1),
-  email: z.string().email(),
-  phone: z.string().min(10),
-  address: z.string().min(1),
-  city: z.string().min(1),
-});
-```
-
-### ⚠️ よくあるミスと対処法
-
-| ミス | 症状 | 対処法 |
-|------|------|--------|
-| `FormProvider` の外で `useFormContext()` を呼ぶ | エラー | `FormProvider` の子要素内でしか使えない |
-| ステップ間の値がリセットされる | 戻ると入力が消える | `useForm` の `defaultValues` で初期値を設定 |
-| 「次へ」ボタンを `type="submit"` にする | 最後のステップ以外でも送信される | ナビゲーションボタンは全て `type="button"` |
-| `trigger()` の戻り値を await しない | バリデーション結果が反映される前に進む | `const isValid = await trigger();` と必ず await |
-
-### ✅ 理解度チェック
-
-- [ ] `FormProvider` を使うことで解決できる問題（Props drilling）を説明できる
-- [ ] `trigger()` は何をする関数か、どういう戻り値を返すか説明できる
-- [ ] なぜ「次へ」ボタンは `type="button"` にすべきか説明できる
-- [ ] `FormProvider` を使わずに実装する場合、どのようなコードになるか想像できる
-
 ---
 
-## 5. 検索・フィルタフォーム
+## 4. 検索・フィルタフォーム
 
 ### 💡 このパターンとは何か
 
-ECサイトの「絞り込み検索」のような、**入力するたびに結果が変わる**フォームです。
+**入力するたびに検索結果が変わる**フォームです。
+
+管理画面の「ユーザー一覧」や、検索窓の「サジェスト（入力補完）」などが該当します。
 
 ```
-[検索ワード: コーヒー___]  [カテゴリ: 飲料▼]  [在庫ありのみ ☑]
+[ユーザー名で検索: 山田___]
           ↓ 入力するたびに API 呼び出し
-[☕ コーヒー豆 A  ¥1,200]
-[🥤 コーヒーゼリー ¥800]
+[👤 山田太郎 (営業部)]
+[👤 山田花子 (開発部)]
 ```
 
 **問題点**: 文字を1つ打つたびにAPIを叩くと、サーバーに負荷がかかりすぎます。
@@ -1245,8 +973,11 @@ function SearchFilterForm() {
   // ==========================================================
   // ステップ2: 入力値の監視
   // ==========================================================
-  // useWatch: 指定したフィールドの変化を監視する
-  // 配下の全値を一度に取得する場合は control だけ渡す
+  // useWatch: 指定したフィールドの変化を監視し、その値を返す
+  // { control } は { control: control } の省略形（オブジェクトのショートハンド構文）
+  // この control は上の useForm() から取得したもの
+  // { control } だけ渡すと、フォームの全フィールド値が返る
+  // { control, name: "query" } とすると、特定フィールドのみ監視できる
   const filters = useWatch({ control });
 
   const [results, setResults] = useState<any[]>([]);

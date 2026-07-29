@@ -689,36 +689,70 @@ it("コールバックが正しく呼ばれる", () => {
 >
 > `vi.fn()` は「何もしない空の関数」ですが、**呼ばれた回数や引数を記録する**能力があります。これにより、「本物のコールバック」を用意しなくても「コールバックが正しく呼ばれたか」を確認できます。
 
-### モックの戻り値を指定する
+### 依存先の戻り値を制御して、テスト対象の分岐を検証する
+
+`mockReturnValue` は、**テスト対象が依存している関数の結果を固定する**ために使います。
+
+たとえば、商品価格を取得する処理は本番では API やデータベースを呼び出すかもしれません。テストではその処理をモックに置き換え、「価格が取得できた場合」と「取得できなかった場合」を自由に作れます。
 
 ```ts
-it("決まった値を返すモック", () => {
-  // mockReturnValue = 常に42を返す偽の関数
-  const mockFn = vi.fn().mockReturnValue(42);
+// テスト対象: 価格の取得結果に応じて表示を変える
+function formatPrice(
+  productId: string,
+  getPrice: (id: string) => number | null,
+) {
+  const price = getPrice(productId);
 
-  expect(mockFn()).toBe(42); // ✅ 1回目
-  expect(mockFn()).toBe(42); // ✅ 2回目（毎回同じ値）
+  if (price === null) {
+    return "在庫なし";
+  }
+
+  return `¥${price}`;
+}
+
+it("取得した価格を表示する", () => {
+  // getPrice は外部 API や DB に相当する依存先
+  // 常に 1200 を返す偽物に差し替える
+  const getPrice = vi.fn().mockReturnValue(1200);
+
+  expect(formatPrice("p1", getPrice)).toBe("¥1200");
+  expect(getPrice).toHaveBeenCalledWith("p1");
 });
 
-it("連続して違う値を返すモック", () => {
-  // mockReturnValueOnce = 次に呼ばれた時だけ、指定した値を返す
-  const mockFn = vi.fn()
-    .mockReturnValueOnce(1)  // 1回目 → 1
-    .mockReturnValueOnce(2)  // 2回目 → 2
-    .mockReturnValue(3);     // 3回目以降 → 3
+it("価格を取得できない場合は在庫なしと表示する", () => {
+  // 戻り値を変えるだけで、別の分岐をテストできる
+  const getPrice = vi.fn().mockReturnValue(null);
 
-  expect(mockFn()).toBe(1); // ✅ 1回目
-  expect(mockFn()).toBe(2); // ✅ 2回目
-  expect(mockFn()).toBe(3); // ✅ 3回目
-  expect(mockFn()).toBe(3); // ✅ 4回目（mockReturnValueが使われる）
+  expect(formatPrice("p1", getPrice)).toBe("在庫なし");
+});
+```
+
+このように、モックの戻り値を指定すると、ネットワークやデータベースに接続せずに、テスト対象のロジックだけを速く・安定して検証できます。
+
+### 戻り値の設定パターン
+
+```ts
+it("連続した呼び出しで異なる値を返す", () => {
+  // mockReturnValueOnce = 次に呼ばれた時だけ指定した値を返す
+  // 例: 最初の 2 回だけ特別な応答を返したい場合
+  const getPrice = vi.fn()
+    .mockReturnValueOnce(1000) // 1回目 → 1000
+    .mockReturnValueOnce(1200) // 2回目 → 1200
+    .mockReturnValue(1500);    // 3回目以降 → 1500
+
+  expect(getPrice()).toBe(1000);
+  expect(getPrice()).toBe(1200);
+  expect(getPrice()).toBe(1500);
+  expect(getPrice()).toBe(1500);
 });
 
-it("非同期のモック", async () => {
-  // mockResolvedValue = Promise として解決される値
-  // await で待てる偽の非同期関数を作れる
-  const mockFn = vi.fn().mockResolvedValue({ data: [] });
+it("非同期の依存先をモックする", async () => {
+  // mockResolvedValue = 指定した値で解決する Promise を返す
+  // 例: API 呼び出しの成功結果を再現する
+  const fetchProducts = vi.fn().mockResolvedValue({ data: [] });
 
-  const result = await mockFn(); // Promise が解決される
+  const result = await fetchProducts();
+
   expect(result).toEqual({ data: [] });
 });
 ```

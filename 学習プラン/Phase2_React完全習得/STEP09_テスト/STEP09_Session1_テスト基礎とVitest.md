@@ -729,33 +729,39 @@ it("価格を取得できない場合は在庫なしと表示する", () => {
 
 このように、モックの戻り値を指定すると、ネットワークやデータベースに接続せずに、テスト対象のロジックだけを速く・安定して検証できます。
 
-### 戻り値の設定パターン
+### 連続した結果を使って再試行処理をテストする
+
+`mockReturnValueOnce` や `mockResolvedValueOnce` は、依存先を複数回呼び出す処理をテストするときに使います。代表例は、通信に失敗したときの再試行です。
 
 ```ts
-it("連続した呼び出しで異なる値を返す", () => {
-  // mockReturnValueOnce = 次に呼ばれた時だけ指定した値を返す
-  // 例: 最初の 2 回だけ特別な応答を返したい場合
-  const getPrice = vi.fn()
-    .mockReturnValueOnce(1000) // 1回目 → 1000
-    .mockReturnValueOnce(1200) // 2回目 → 1200
-    .mockReturnValue(1500);    // 3回目以降 → 1500
+// テスト対象: 最初の通信に失敗したら 1 回だけ再試行する
+async function loadProducts(
+  fetchProducts: () => Promise<string[]>,
+): Promise<string[]> {
+  try {
+    return await fetchProducts();
+  } catch {
+    return await fetchProducts();
+  }
+}
 
-  expect(getPrice()).toBe(1000);
-  expect(getPrice()).toBe(1200);
-  expect(getPrice()).toBe(1500);
-  expect(getPrice()).toBe(1500);
-});
+it("最初の取得に失敗した場合、再試行して商品を返す", async () => {
+  const fetchProducts = vi.fn()
+    // 1回目の API 呼び出しは失敗したことにする
+    .mockRejectedValueOnce(new Error("通信エラー"))
+    // 2回目の API 呼び出しは成功したことにする
+    .mockResolvedValueOnce(["ペン", "ノート"]);
 
-it("非同期の依存先をモックする", async () => {
-  // mockResolvedValue = 指定した値で解決する Promise を返す
-  // 例: API 呼び出しの成功結果を再現する
-  const fetchProducts = vi.fn().mockResolvedValue({ data: [] });
-
-  const result = await fetchProducts();
-
-  expect(result).toEqual({ data: [] });
+  // 検証したいのは、loadProducts が再試行して結果を返せること
+  await expect(loadProducts(fetchProducts)).resolves.toEqual([
+    "ペン",
+    "ノート",
+  ]);
+  expect(fetchProducts).toHaveBeenCalledTimes(2);
 });
 ```
+
+この例では、モックは「1回目は通信エラー、2回目は成功」という状況を作るための道具です。テストしているのはモックの動作ではなく、`loadProducts` が失敗後に再試行するというアプリケーションのロジックです。
 
 ### vi.mock() — モジュール全体のモック
 

@@ -1034,94 +1034,8 @@ describe("isValidPassword", () => {
 ```
 </details>
 
-### 演習3: カスタムフックのテスト
-
-カスタムフックのテストは特別な道具を使います。`renderHook` と `act` です。
-
-```ts
-// hooks/useCounter.ts
-import { useState } from "react";
-
-export function useCounter(initialValue = 0) {
-  const [count, setCount] = useState(initialValue);
-
-  const increment = () => setCount((c) => c + 1);
-  const decrement = () => setCount((c) => c - 1);
-  const reset = () => setCount(initialValue);
-  const set = (value: number) => setCount(value);
-
-  return { count, increment, decrement, reset, set };
-}
-```
-
-カスタムフックは関数ですが、中で `useState` を使うため**Reactのコンポーネント内でないと動きません**。そこで `renderHook` という道具を使います。
-
-```ts
-// tests/useCounter.test.ts
-import { renderHook, act } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
-import { useCounter } from "../hooks/useCounter";
-
-describe("useCounter", () => {
-  it("初期値が0", () => {
-    // renderHook = フックを「仮想的なコンポーネント内」で実行する
-    // result.current = フックが返す現在の値
-    const { result } = renderHook(() => useCounter());
-
-    expect(result.current.count).toBe(0);
-  });
-
-  it("初期値を設定できる", () => {
-    const { result } = renderHook(() => useCounter(10));
-
-    expect(result.current.count).toBe(10);
-  });
-
-  it("incrementで1増える", () => {
-    const { result } = renderHook(() => useCounter());
-
-    // act = 状態更新（useStateのset関数）を実行するためのラッパー
-    // React の状態更新は act で囲まないと警告が出る
-    act(() => {
-      result.current.increment();
-    });
-
-    // act の外で最新の値を検証する
-    expect(result.current.count).toBe(1);
-  });
-
-  it("decrementで1減る", () => {
-    const { result } = renderHook(() => useCounter(5));
-
-    act(() => {
-      result.current.decrement();
-    });
-
-    expect(result.current.count).toBe(4);
-  });
-
-  it("resetで初期値に戻る", () => {
-    const { result } = renderHook(() => useCounter(10));
-
-    act(() => {
-      result.current.increment();
-      result.current.reset();
-    });
-
-    expect(result.current.count).toBe(10);
-  });
-});
-```
-
-> **初心者のここを理解する**:
->
-> - `renderHook(() => useCounter())` = フックを仮想的なコンポーネントの中で呼び出す
-> - `result.current` = フックが返す最新の値（オブジェクト）
-> - `act(() => { ... })` = 状態更新（set関数）を安全に実行するラッパー
->
-> `increment()` を呼ぶと `setCount` が実行され、状態が変わります。`act` で囲むことで「状態更新が完了してから」次に進み、`result.current.count` に最新値が反映されます。
-
 ---
+
 
 ## まとめ
 
@@ -1137,12 +1051,12 @@ describe("useCounter", () => {
 | **非同期テスト** | `async/await`, `resolves/rejects` | 非同期処理の完了を待つ |
 | **ライフサイクル** | `beforeEach`, `afterAll` など | テスト前後の準備と片付け |
 | **モック** | `vi.fn()`, `vi.mock()` | 外部依存を偽物に置き換える |
-| **カスタムフックのテスト** | `renderHook` + `act` | フック専用の道具 |
+
 
 ### 初心者が次に進む前に確認すること
 
 - [ ] `npm run test:run` でテストが緑で通る
-- [ ] 演習1〜3のテストを自分で書いてみた
+- [ ] 演習1〜2のテストを自分で書いてみた
 - [ ] Matcherの `toBe` と `toEqual` の違いを理解した
 - [ ] `async/await` で非同期テストを書けるようになった
 - [ ] `vi.fn()` でモックが作れることを理解した

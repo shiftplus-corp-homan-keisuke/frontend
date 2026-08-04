@@ -2,7 +2,7 @@
 
 ## はじめに：コンポーネントをテストする
 
-Session 1でVitestの基礎を学びました。純粋関数やカスタムフックのテストはできるようになりました。しかし、React開発の大部分は**コンポーネント**です。
+Session 1でVitestを使った純粋関数のテストとモックの基礎を学びました。このSessionでは、React Testing Libraryを使って**コンポーネント**と**カスタムフック**をテストする方法を学びます。
 
 ボタンをクリックしたらカウントが増える、入力した文字が表示される、条件によって表示が変わる……。こうした「**ユーザーから見た振る舞い**」をどうテストするか。そのための道具が **React Testing Library** です。
 
@@ -617,7 +617,69 @@ describe("LoginForm", () => {
 
 ---
 
-## 5. アクセシビリティのテスト — すべての人が使えるか
+## 5. カスタムフックのテスト — `renderHook` と `act`
+
+カスタムフックは関数ですが、内部で `useState` や `useEffect` を呼ぶため、通常の関数のように直接実行できません。`renderHook` を使うと、フックをテスト用の React コンポーネント内で実行できます。
+
+コンポーネントをテストするときの `render` と同じく、React の実行環境を用意するための道具です。ただし、画面を検証するのではなく、フックが返す値や関数を検証します。
+
+```tsx
+// hooks/useCounter.ts
+import { useState } from "react";
+
+export function useCounter(initialValue = 0) {
+  const [count, setCount] = useState(initialValue);
+
+  const increment = () => setCount((currentCount) => currentCount + 1);
+  const reset = () => setCount(initialValue);
+
+  return { count, increment, reset };
+}
+```
+
+```tsx
+// hooks/useCounter.test.ts
+import { act, renderHook } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import { useCounter } from "./useCounter";
+
+describe("useCounter", () => {
+  it("初期値を返す", () => {
+    // フックをテスト用の React コンポーネント内で実行する
+    const { result } = renderHook(() => useCounter(10));
+
+    // result.current は、フックが現在返している値
+    expect(result.current.count).toBe(10);
+  });
+
+  it("increment で 1 増え、reset で初期値に戻る", () => {
+    const { result } = renderHook(() => useCounter(10));
+
+    // フックの関数が状態を更新するため、act で囲んで実行する
+    act(() => {
+      result.current.increment();
+    });
+    expect(result.current.count).toBe(11);
+
+    act(() => {
+      result.current.reset();
+    });
+    expect(result.current.count).toBe(10);
+  });
+});
+```
+
+> **ここで何をテストしているの？**
+>
+> - `renderHook(() => useCounter(10))` は、`useCounter` を React が実行できる場所で呼び出します。
+> - `result.current` は、その時点でフックが返しているオブジェクトです。状態が更新されると最新の値に変わります。
+> - `act` は React の状態更新が完了するまで待つためのラッパーです。`increment` のように直接状態を更新する関数を呼ぶときに使います。
+>
+> カスタムフックの中にある「状態をどう更新するか」という再利用可能なロジックをテストしています。画面上のボタン操作や表示は、これまでどおり `render` と `userEvent` でコンポーネントをテストします。
+
+---
+
+## 6. アクセシビリティのテスト — すべての人が使えるか
 
 テストの中には「スクリーンリーダーを使う人にもアクセシブルか」を確認することもできます。これは初学者向けというより発展ですが、知っておくと品質が上がります：
 
@@ -642,7 +704,7 @@ it("アクセシビリティ違反がない", async () => {
 
 ---
 
-## 6. 実践演習 — 自分で書いてみよう
+## 7. 実践演習 — 自分で書いてみよう
 
 ### 演習1: Counterコンポーネント
 
@@ -745,6 +807,40 @@ function TodoList() {
 3. 「削除」をクリックするとその Todo が消える
 4. 複数の Todo を追加できる
 
+### 演習4: useCounterカスタムフック
+
+```tsx
+// hooks/useCounter.ts
+import { useState } from "react";
+
+export function useCounter(initialValue = 0) {
+  const [count, setCount] = useState(initialValue);
+
+  const increment = () => setCount((currentCount) => currentCount + 1);
+  const decrement = () => setCount((currentCount) => currentCount - 1);
+  const reset = () => setCount(initialValue);
+  const set = (value: number) => setCount(value);
+
+  return { count, increment, decrement, reset, set };
+}
+```
+
+**書くべきテストケース**:
+1. 引数なしの場合、初期値が `0` になる
+2. `useCounter(10)` の初期値が `10` になる
+3. `decrement` を呼ぶと値が `1` 減る
+4. `set(25)` を呼ぶと値が `25` になる
+5. 値を変更したあと、`reset` を呼ぶと初期値に戻る
+
+<details>
+<summary>ヒント</summary>
+
+- `renderHook` と `act` は `@testing-library/react` から import する
+- 状態を変えない初期値のテストでは `act` は不要
+- `increment`、`decrement`、`set`、`reset` を呼ぶときは `act(() => { ... })` で囲む
+- 状態更新後の値は `result.current.count` で確認する
+</details>
+
 <details>
 <summary>回答例（演習1のみ）</summary>
 
@@ -803,6 +899,8 @@ describe("Counter", () => {
 | `getByRole` | 役割で探す（最推奨） | ユーザー目線で探す |
 | `userEvent` | ユーザー操作をシミュレート | 本物のクリック・入力を再現 |
 | `toBeInTheDocument` | 画面に存在するか検証 | 「表示されているか」の確認 |
+| `renderHook` | カスタムフックを React 内で実行 | フックの値やロジックを確認する |
+| `act` | React の状態更新を完了させる | 状態が変わった後に検証する |
 
 ### 初心者が次に進む前に確認すること
 
@@ -811,7 +909,8 @@ describe("Counter", () => {
 - [ ] `getBy` と `queryBy` の違いを説明できる
 - [ ] `userEvent.click` / `user.type` が使える
 - [ ] `toBeInTheDocument` で存在確認ができる
-- [ ] 演習1のCounterのテストを自分で書けた
+- [ ] `renderHook` と `act` でカスタムフックをテストできる
+- [ ] 演習1のCounterと演習4のuseCounterのテストを自分で書けた
 
 ### 次のセッション
 

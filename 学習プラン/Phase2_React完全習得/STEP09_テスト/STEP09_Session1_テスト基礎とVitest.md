@@ -702,7 +702,7 @@ function formatPrice(
   getPrice: (id: string) => number | null,
 ) {
   const price = getPrice(productId);
-
+  
   if (price === null) {
     return "在庫なし";
   }
@@ -826,13 +826,13 @@ it("1秒後にコールバックが呼ばれる", () => {
   vi.useFakeTimers();
 
   const callback = vi.fn();
-  setTimeout(callback, 1000); // 本来なら1秒待つ必要がある
+  setTimeout(callback, 100000); // 本来なら1秒待つ必要がある
 
   // まだ1秒経っていないので、呼ばれていない
-  expect(callback).not.toHaveBeenCalled();
+  await expect(callback).not.toHaveBeenCalled();
 
   // 時間を1秒進める（実際の1秒は経過しない！瞬時に進む）
-  vi.advanceTimersByTime(1000);
+  vi.advanceTimersByTime(100000);
 
   // 1秒経過したことになり、コールバックが呼ばれる
   expect(callback).toHaveBeenCalled();

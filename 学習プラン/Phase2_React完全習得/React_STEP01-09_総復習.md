@@ -167,13 +167,17 @@ function Profile({ name, isOnline }: { name: string; isOnline: boolean }) {
 - `class` ではなく `className`、`for` ではなく `htmlFor` を使う
 - コンポーネントは `<Greeting />` のように大文字で呼び出す
 - イベントは `onClick`、`onChange` のように React の形式で指定する
-- 通常はイベントハンドラーの関数そのものを渡し、レンダリング中に実行しない
+- 通常は `onClick={handleClick}` のように、イベントハンドラーの関数そのものを渡す
 
 ```tsx
+// ✅ クリックされたときに handleClick が実行される
 <button onClick={handleClick}>保存</button>
-// ❌ その場で handleClick が実行される
+
+// ❌ クリックを待たず、コンポーネントを表示する処理中に handleClick が実行される
 <button onClick={handleClick()}>保存</button>
 ```
+
+`onClick={handleClick()}` では、`handleClick` の戻り値が `onClick` に渡されます。通常のクリック処理には `onClick={handleClick}` を使います。
 
 ### Props
 

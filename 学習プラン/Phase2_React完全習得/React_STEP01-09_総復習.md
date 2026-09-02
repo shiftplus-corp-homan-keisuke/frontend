@@ -1,6 +1,6 @@
-# React 完全習得 STEP01-09 総復習
+# React 完全習得 STEP0-09 総復習
 
-> 🎯 **対象**: Phase2 React 完全習得 STEP01-09 の学習を終えた人
+> 🎯 **対象**: Phase2 React 完全習得 STEP0-09 の学習を終えた人
 > 📚 **形式**: 重要概念の整理・使い分けの確認
 > ⏰ **推奨時間**: 90-120 分
 > 🧭 **進め方**: 全体像を読む → 各 STEP の要点を確認する → 最後のチェックリストで理解度を確認する
@@ -39,17 +39,24 @@ STEP01-09 で学んだ内容を一つの開発フローとしてつなげ、
 | **STEP08** | React Hook Form・Zod | フォーム入力と検証をどう安全に扱うか |
 | **STEP09** | テスト | ユーザー価値のある動作をどう保証するか |
 
-### React の基本式
+### UI が決まる仕組み
 
-React の UI は、概念的には次の式で表せます。
+React コンポーネントは、`props` と `state` をもとに、表示する UI を決めます。
 
 ```text
-UI = f(props, state)
+親コンポーネント
+  ↓ props
+子コンポーネント
+  ├─ props（親から受け取る値）
+  └─ state（コンポーネント内で管理する値）
+  ↓
+表示する UI（JSX）
 ```
 
-- `props`: 親から渡される入力。コンポーネント自身では変更しない
-- `state`: コンポーネントが管理する変化するデータ
-- `f`: 入力から UI を宣言的に計算するコンポーネント関数
+- `props`: 親コンポーネントから受け取る読み取り専用の値。子コンポーネントは直接変更しない
+- `state`: コンポーネント内で管理する、表示の変化に関わる値
+
+State の更新が反映されると、React は必要に応じてコンポーネントを再レンダリングし、新しい値に応じた UI を表示します。
 
 React では DOM を直接操作して画面を変更するのではなく、
 「現在のデータなら UI はどう見えるべきか」を記述します。
@@ -66,19 +73,19 @@ JSX から UI の結果が計算される
   ↓
 DOM に反映される（commit）
   ↓
-必要なら useEffect が実行される
+`useEffect` を定義している場合、画面への反映後に実行される
 
-ユーザー操作
+State を更新するユーザー操作
   ↓
 イベントハンドラー
   ↓
-setState
+State の setter（例: `setCount`）
   ↓
-再レンダリング
+必要に応じて再レンダリング
 ```
 
-レンダリング中のコンポーネントは、現在の Props と State から UI を計算する純粋な関数として考えます。
-API 通信、タイマー、DOM 操作など、レンダリング以外の処理は適切な場所に分離します。
+レンダリング中、コンポーネントは現在の Props と State をもとに UI を計算します。同じ入力に対して同じ UI を返し、レンダリング中に外部の値を変更しないようにします。
+API 通信、タイマー、DOM 操作などの処理は、イベントハンドラーや `useEffect` など、レンダリング以外の場所に分離します。
 
 ---
 
@@ -114,8 +121,8 @@ React を使うときは、DOM 操作を直接書く前に、
 
 ### コンポーネント
 
-コンポーネントは、UI・データ・表示ロジックをまとめた再利用可能な関数です。
-関数名は大文字で始めます。
+コンポーネントは、UI を表す JavaScript 関数です。必要に応じて Props や State を使い、UI と表示ロジックをまとめます。再利用できる形に設計することもできます。
+関数名は大文字で始めます。JSX では小文字のタグを HTML 要素として扱い、大文字のタグをコンポーネントとして扱うためです。
 
 ```tsx
 type GreetingProps = {
@@ -134,11 +141,11 @@ function Greeting({ name }: GreetingProps) {
 - State やイベントの責任を分離したいか
 - 1 つのコンポーネントが大きくなりすぎていないか
 
-分割しすぎて Props の受け渡しだけになる場合は、Composition を検討します。
+Props の受け渡しが何層にも続き、途中のコンポーネントが Props を中継するだけになった場合は、Composition を検討します。
 
 ### JSX の基本
 
-JSX は HTML 風に UI を記述する JavaScript の構文です。
+JSX は、JavaScript の中で HTML に似た記法で UI を記述するための構文です。JSX は変換されてからブラウザで実行されます。
 
 ```tsx
 function Profile({ name, isOnline }: { name: string; isOnline: boolean }) {
@@ -155,16 +162,17 @@ function Profile({ name, isOnline }: { name: string; isOnline: boolean }) {
 
 覚えておく JSX のルール:
 
-- 返す JSX は 1 つのルート要素にまとめる。不要な DOM は Fragment (`<>...</>`) を使う
+- 複数の JSX 要素を返すときは、1 つの親要素または Fragment (`<>...</>`) でまとめる
 - JavaScript の式は `{}` の中に書く
 - `class` ではなく `className`、`for` ではなく `htmlFor` を使う
 - コンポーネントは `<Greeting />` のように大文字で呼び出す
 - イベントは `onClick`、`onChange` のように React の形式で指定する
-- イベントハンドラーは関数を渡し、レンダリング中に呼び出さない
+- 通常はイベントハンドラーの関数そのものを渡し、レンダリング中に実行しない
 
 ```tsx
 <button onClick={handleClick}>保存</button>
-// ❌ <button onClick={handleClick()}>保存</button>
+// ❌ その場で handleClick が実行される
+<button onClick={handleClick()}>保存</button>
 ```
 
 ### Props
@@ -197,11 +205,10 @@ function Button({ label, variant = "primary", onClick }: ButtonProps) {
 ))}
 ```
 
-`key` は React が同じ要素を識別するための安定した ID です。
+`key` は、同じ親の子要素どうしを React が対応付けるための、安定して一意な値です。
 
 - データ固有の ID を使う
-- 並び替え・追加・削除があるリストで配列の index を使わない
-- 画面に表示するだけの固定リスト以外では、index を安易に使わない
+- 項目の追加・削除・並び替えがあるリストでは、配列の index を使わない
 - `key` は子コンポーネントの Props として自動的には渡らない
 
 ### 条件付きレンダリング
@@ -240,8 +247,8 @@ function Counter() {
 }
 ```
 
-State の更新には必ず setter を使います。
-通常の変数を変更しても React は再レンダリングを知りません。
+`useState` で管理する値は setter で更新します。
+通常の変数を変更しても React は再レンダリングを予約せず、次のレンダリング時にはその値も初期化されます。
 
 ### State はスナップショット
 
@@ -252,7 +259,7 @@ setter を呼んだ直後に、同じ関数内の変数が書き換わるわけ�
 function handleClick() {
   setCount(count + 1);
   setCount(count + 1);
-  // 同じスナップショットを基準にするため、通常は 1 増える
+  // どちらも同じレンダリング時の count を基準にするため、1 増える
 }
 ```
 
@@ -266,7 +273,7 @@ function handleClick() {
 }
 ```
 
-React はイベント中の更新をまとめて処理するため、
+React は関連する State 更新をまとめて処理するため、
 State 更新を「即時の代入」と考えないことが重要です。
 
 ### イベントハンドリング
@@ -287,7 +294,7 @@ function SearchBox() {
 
 - `onClick={handleClick}` は関数を渡す
 - `onClick={() => handleDelete(id)}` は引数を渡したいときに使う
-- State を変更する関数は `handle` + 動詞で命名する
+- イベントハンドラーは `handle` + 動詞（例: `handleChange`）で命名することが多い
 - イベントから値を読み取り、State 更新を行う
 
 ### イミュータブルな更新
@@ -313,16 +320,16 @@ setTodos((current) =>
 ```
 
 直接 `push`、`splice`、プロパティへの代入をすると、
-参照が変わらず React の比較・デバッグ・再利用に問題が起きます。
+React が変更を検知できず再レンダリングを省略したり、過去の State まで書き換わって予期しない表示になったりします。
 
-### State を作るかどうか
+### State を作るか・置き場所を決める
 
 次の順番で判断します。
 
 1. その値は時間とともに変化するか
 2. Props や既存の State から計算できないか
 3. 変更時に UI の再レンダリングが必要か
-4. 複数コンポーネントで共有する必要があるか
+4. 複数コンポーネントで共有する必要があるなら、どのコンポーネントに置くか
 
 既存の値から計算できるものは、重複した State にしません。
 
@@ -334,7 +341,7 @@ const isEmpty = todos.length === 0;
 ### State の独立性と DevTools
 
 同じコンポーネントを複数回表示しても、それぞれのインスタンスが独立した State を持ちます。
-React Developer Tools では、コンポーネントツリー・Props・State・再レンダリングの状況を確認できます。
+React Developer Tools の Components タブでは、コンポーネントツリー・Props・State を確認できます。再レンダリングの記録や分析には Profiler タブを使います。
 動作が想定と違うときは、まず State の所有者と現在値を確認します。
 
 ---
@@ -352,8 +359,8 @@ React Developer Tools では、コンポーネントツリー・Props・State・
 
 ### 一方向データフロー
 
-React のデータは基本的に親から子へ流れます。
-子から親へ直接 State を渡し戻すのではなく、親がコールバックを Props として渡します。
+React のデータは基本的に親から子へ Props として流れます。
+子が親に変更を伝えたい場合は、親から渡されたコールバック Props を呼び出して親に通知します。
 
 ```tsx
 function Parent() {
@@ -371,12 +378,24 @@ type ListProps = {
   selectedId: number | null;
   onSelect: (id: number) => void;
 };
+
+function List({ selectedId, onSelect }: ListProps) {
+  return (
+    <button
+      type="button"
+      aria-pressed={selectedId === 1}
+      onClick={() => onSelect(1)}
+    >
+      項目を選択
+    </button>
+  );
+}
 ```
 
 ### State のリフトアップ
 
 兄弟コンポーネントが同じデータを読む・更新する場合、
-共通の親まで State を持ち上げます。
+それらの最も近い共通の親に State を持ち上げます。
 
 ```text
 App
@@ -384,8 +403,7 @@ App
 └─ ItemList   ← items を表示する
 ```
 
-`Form` と `ItemList` の両方が必要とする `items` は `App` が所有し、
-`onAddItem`、`onDeleteItem`、`onToggleItem` などの操作を Props で渡します。
+この例では `App` が `items` を所有し、`Form` には `onAddItem`、`ItemList` には `items` と `onDeleteItem`、`onToggleItem` などを Props として渡します。
 
 ### Thinking in React の手順
 
@@ -393,12 +411,12 @@ App
 2. まず静的な UI を作る
 3. UI の違いを生む最小限の State を洗い出す
 4. State を使うコンポーネントの共通の親を探す
-5. 親から子へデータ、子から親へイベントを流す
+5. 親から子へデータとコールバック Props を渡し、子はユーザー操作時にコールバックを呼び出して親に通知する
 6. Props や State から計算できる値を派生値として作る
 
 ### 制御されたフォーム
 
-入力値を React State で管理するフォームを制御されたコンポーネントと呼びます。
+入力要素の `value` または `checked` を React から渡される値で制御し、`onChange` でその値を更新する入力要素を、制御されたコンポーネントと呼びます。
 
 ```tsx
 function NameForm() {
@@ -425,10 +443,10 @@ function NameForm() {
 
 ポイント:
 
-- `value` と `onChange` をセットにする
-- `submit` 時には `preventDefault()` でブラウザの再読み込みを防ぐ
+- ユーザーが編集する制御入力では、`value` と `onChange` をセットにする
+- クライアント側で送信を処理する場合は、`preventDefault()` でブラウザ標準の送信によるページ遷移や再読み込みを防ぐ
 - 入力の検証・送信・リセットの責任を整理する
-- 送信データを親で管理するなら、フォームは `onSubmit` を呼ぶ役割にする
+- フォームコンポーネントが親に送信を通知する場合は、`onSubmit` などのコールバック Props を呼び出す役割にする
 
 ### 派生 State とデータ操作
 
@@ -444,7 +462,7 @@ const filteredItems = items.filter((item) => {
 ```
 
 アイテムの追加・削除・更新は、配列を直接変更せず `...`、`filter`、`map` を使います。
-これが Far Away、Flashcards、Tip Calculator で共通していた基本パターンです。
+これは、これまでの演習（Far Away、Flashcards、Tip Calculator）で共通して使った基本パターンです。
 
 ---
 
@@ -452,8 +470,7 @@ const filteredItems = items.filter((item) => {
 
 ### Composition とは
 
-Composition は、コンポーネントの内部を固定せず、
-`children` や要素 Props を受け取って外側から組み合わせる設計です。
+Composition は、複数のコンポーネントを組み合わせて UI を作る設計です。`children` や JSX 要素を Props として受け取ると、親コンポーネントが中身の一部を指定できます。
 
 ```tsx
 type CardProps = {
@@ -493,7 +510,7 @@ Props が数階層にわたって中継され、途中のコンポーネント�
 
 1. その値を実際に使うコンポーネントの近くに State を置く
 2. 親子間なら通常の Props を使う
-3. 深いツリーで広く共有するなら Composition または Context を使う
+3. 深いツリーで値を渡す必要がある場合は、Composition で Props の中継を減らせないか検討し、複数の深い子孫で共有する必要があれば Context を使う
 4. アプリ全体の更新可能な Client State なら外部ストアを検討する
 
 ### 再利用可能なコンポーネントの設計
@@ -536,7 +553,7 @@ type StarRatingProps = {
 
 ### Hooks の共通ルール
 
-1. Hooks はコンポーネントまたはカスタムフックのトップレベルで呼ぶ
+1. `useState`、`useEffect`、`useContext` などの Hooks は、コンポーネントまたはカスタムフックのトップレベルで呼ぶ
 2. 条件分岐・ループ・イベントハンドラーの中で呼ばない
 3. 呼び出し順をレンダリングごとに変えない
 4. カスタムフック名は `use` で始める
@@ -552,7 +569,7 @@ if (isEnabled) {
 
 `useEffect` は、React のレンダリング以外のシステムと同期するときに使います。
 
-- API 通信
+- 表示するデータを取得する API 通信
 - タイマー
 - DOM API
 - ブラウザイベント
@@ -581,10 +598,10 @@ useEffect(() => {
 | 書き方 | 実行タイミング |
 | --- | --- |
 | 依存配列なし | すべてのレンダリング後 |
-| `[]` | マウント後。開発時の StrictMode では確認のため複数回に見えることがある |
-| `[value]` | `value` が変化した後 |
+| `[]` | 初回の画面への反映後に実行する。cleanup はアンマウント時に実行する。開発時に StrictMode が有効な場合は、動作確認のため setup → cleanup → setup が追加で行われる |
+| `[value]` | 初回の画面への反映後と、`value` が変化した画面への反映後 |
 
-Effect 内で使う Props・State・関数などは、基本的に依存配列へ含めます。
+Effect 内で参照する Props・State・コンポーネント内で定義した値のうち、レンダリングごとに変わり得る値は依存配列に含めます。`eslint-plugin-react-hooks` の警告も確認します。
 タイマーやイベントリスナーを登録したら、必ず cleanup で解除します。
 
 #### `useEffect` を使わない方がよい処理
@@ -619,7 +636,9 @@ return <input ref={inputRef} />;
 
 ### `useContext`: 深いツリーへの共有
 
-Context は、テーマ・認証ユーザー・言語設定など、ツリー全体で読む値を共有する仕組みです。
+Context は、テーマ・認証ユーザー・言語設定など、`Provider` 配下の複数コンポーネントで読む値を共有する仕組みです。
+
+以下は React 19 の書き方です。React 18 以前では `<ThemeContext.Provider value={{ theme, toggleTheme }}>` を使います。
 
 ```tsx
 type Theme = "light" | "dark";
@@ -644,10 +663,8 @@ function ThemeProvider({ children }: { children: React.ReactNode }) {
 ```
 
 利用側は `useContext(ThemeContext)` で値を取得します。
-React 19 より前の書き方では `ThemeContext.Provider` を使います。
 
-Context を使いすぎると、値の変更で広い範囲が再レンダリングされ、
-依存関係も見えにくくなります。局所的なデータは Props、広い共有が必要なデータだけ Context にします。
+`value` の参照が変わると、その Context を読むコンポーネントは再レンダリングされます。頻繁に変わる値を 1 つの Context にまとめすぎると、更新範囲が広くなり、依存関係も見えにくくなります。局所的なデータは Props、広い共有が必要なデータだけ Context にします。
 
 ### `useMemo`: 計算結果のメモ化
 
@@ -665,12 +682,12 @@ const filteredItems = useMemo(
 - 依存配列を正しく設定する
 - 参照の安定化だけを目的に乱用しない
 
-React 19 と React Compiler の環境では、自動最適化される場面もあります。
+React Compiler を有効にした環境では、`useMemo` と同様の最適化が自動で行われる場面もあります。React 19 を使っているだけで自動的に有効になるわけではありません。
 `useMemo` は必須の設計要素ではなく、計測結果に基づく最適化として扱います。
 
 ### カスタムフック
 
-カスタムフックは、State や Effect を含むロジックを再利用する関数です。
+カスタムフックは、State、Effect、Context などの Hooks を組み合わせたロジックを再利用するための関数です。
 
 ```tsx
 function useToggle(initialValue = false) {
@@ -683,8 +700,8 @@ function useToggle(initialValue = false) {
 
 重要な点:
 
-- カスタムフックを使ったコンポーネントごとに State は独立する
-- State 自体を共有する仕組みではない
+- カスタムフックの内部で `useState` により作る State は、フックを呼ぶコンポーネントごとに独立する
+- カスタムフック自体は State を共有する仕組みではない
 - 共有が必要なら親の State、Context、外部ストアを使う
 - 1 つのフックは 1 つの責任にする
 - Effect を使うフックは cleanup と依存配列を設計する
@@ -701,7 +718,7 @@ function useToggle(initialValue = false) {
 | 種類 | 例 | 主な管理方法 |
 | --- | --- | --- |
 | Local UI State | モーダルの開閉、入力途中の値 | `useState` |
-| Shared Client State | カート、認証、テーマ | Context、Zustand |
+| Shared Client State | カート、ログイン後の表示状態、テーマ | Context、Zustand |
 | Server State | API の商品一覧、ユーザー情報 | TanStack Query |
 | Form State | 入力値、エラー、送信状態 | React Hook Form |
 | URL State | 検索条件、ページ番号 | Router / URL |
@@ -770,8 +787,8 @@ if (isError) return <ErrorMessage message={error.message} />;
 return <ProductList products={data} />;
 ```
 
-`category` のように取得結果を変える値は `queryKey` に含めます。
-QueryClientProvider の設定、キーの設計、mutation 後のキャッシュ更新が重要です。
+`useQuery` を使うコンポーネントは、あらかじめ `QueryClientProvider` で囲みます。`category` のように取得結果を変える値は `queryKey` に含めます。
+キーの設計と mutation 後のキャッシュ更新も重要です。
 
 #### Zustand と TanStack Query
 
@@ -790,7 +807,7 @@ shadcn/ui は、完成済みの巨大 UI ライブラリを import するので�
 - アクセシブルな基本部品を利用できる
 - 自分のプロジェクトに合わせてコードを変更できる
 - Button、Dialog、Table などの土台を統一できる
-- `cn` で条件付き className と外部 className を結合できる
+- `cn` を使うと、条件に応じた className と Props から渡された className を結合できる
 
 ライブラリの見た目をそのまま増やすのではなく、
 プロジェクトのデザイン・アクセシビリティ・責任範囲を確認して使います。
@@ -884,8 +901,7 @@ Union 型を使うと、利用できる値を限定できます。
 | Headless | ロジックと見た目を分離する | Hooks・Composition と相性がよく、現代的 |
 
 再利用ロジックを作るときは、まずカスタムフック、Composition、通常の Props を検討します。
-Headless コンポーネントは、キーボード操作や状態管理を提供し、
-利用側が見た目を自由に描画できる設計です。
+Headless コンポーネントの中には、キーボード操作や状態管理を提供し、利用側が見た目を自由に描画できるものがあります。
 
 ### TanStack Table
 
@@ -907,7 +923,7 @@ Headless の利点:
 
 - デザインシステムに合わせられる
 - 機能と表示を分離できる
-- TypeScript で列とデータの不整合を検出できる
+- データ型と列定義を適切に指定すれば、TypeScript で列とデータの不整合を検出できる
 - ソート・フィルター・ページングを段階的に追加できる
 
 ### プロダクション向けの構成
@@ -949,15 +965,17 @@ src/
 
 - 各フィールドの値
 - エラー
-- touched / dirty 状態
+- touched（入力欄を一度フォーカスして離れたか）/ dirty（初期値から入力値が変わったか）の状態
 - 送信中・送信成功・送信失敗
 - 動的フィールド
 - 非同期バリデーション
 
 入力数が増えると、すべてを `useState` で管理するコードは複雑になります。
-React Hook Form はフォーム状態を効率よく扱い、Zod は入力データの契約と検証を担当します。
+React Hook Form はフォームの値や送信状態を効率よく扱い、Zod は送信される入力データが満たすべき形と検証ルールを定義します。
 
 ### 基本の連携
+
+以下の例では、`useForm`、`zodResolver`、`z` をそれぞれ必要なパッケージから import 済みとします。`saveUser` はフォームデータを API などへ保存する非同期関数です。
 
 ```tsx
 const schema = z.object({
@@ -991,6 +1009,10 @@ function UserForm() {
       <input id="email" type="email" {...register("email")} />
       {errors.email && <p>{errors.email.message}</p>}
 
+      <label htmlFor="age">年齢</label>
+      <input id="age" type="number" {...register("age")} />
+      {errors.age && <p>{errors.age.message}</p>}
+
       <button disabled={isSubmitting} type="submit">
         {isSubmitting ? "送信中..." : "保存"}
       </button>
@@ -999,22 +1021,20 @@ function UserForm() {
 }
 ```
 
-ブラウザの `<input>` の値は文字列として届くため、数値項目では `z.coerce.number()`、
-`valueAsNumber`、または明示的な変換を検討します。
+テキスト入力と `type="number"` の `<input>` の値は文字列として取得されます。数値項目では `z.coerce.number()`、`valueAsNumber`、または明示的な変換を使います。空欄を必須にする場合は、空欄をどの値として扱うかとエラーメッセージも設計します。
 
 ### `register` と `Controller`
 
 | API | 用途 |
 | --- | --- |
 | `register` | input、select、textarea など標準 HTML 要素 |
-| `Controller` | UI ライブラリや独自の Controlled コンポーネント |
+| `Controller` | `value` を Props で受け取り、`onChange` で変更を通知する UI ライブラリ製または自作のコンポーネント |
 | `watch` | 入力値を監視して表示を変える |
 | `setValue` | 値をプログラムから設定する |
 | `reset` | 初期値や編集後の値に戻す |
 | `useFieldArray` | 行の追加・削除がある配列フィールド |
 
-外部 UI コンポーネントは `value`、`onChange`、`onBlur`、`ref` の接続方法を確認します。
-その橋渡しをするのが `Controller` です。
+外部 UI コンポーネントが要求する Props 名を確認し、`Controller` の `render` 内で `field` の `value`、`onChange`、`onBlur`、必要に応じて `ref` を対応付けます。
 
 ### Zod の役割
 
@@ -1035,17 +1055,17 @@ const registrationSchema = z
 ```
 
 `refine` でフィールド間の検証、`transform` や `coerce` で変換を行えます。
-クライアント側で検証しても、API 側での検証は必ず必要です。
+クライアント側の検証はユーザー体験のためであり、入力値を信頼する根拠にはなりません。外部入力を受け取るサーバーや API 側でも必ず検証します。
 
 ### フォーム設計の注意点
 
 - label と input を正しく関連付ける
 - エラーを該当フィールドの近くに表示する
 - 送信中は二重送信を防ぐ
-- 動的リストでは安定した ID を使う
+- 動的リストでは、React の `key` にデータ固有の ID を使う。`useFieldArray` では `fields` の `field.id` を `key` に使う
 - ファイルは `FileList` とサイズ・形式を検証する
-- 非同期検証は通信中の状態と競合を扱う
-- 検索フォームでは入力値・送信タイミング・URL の責任を分ける
+- 非同期検証では、古い通信結果が新しい入力値の検証結果を上書きしないよう、入力変更・通信中・応答順の競合を扱う
+- 検索フォームでは、編集中の入力値、検索を実行するタイミング、検索条件を URL に反映・復元する責任を分ける
 
 ---
 
@@ -1061,10 +1081,10 @@ const registrationSchema = z
 
 React アプリでは、次のバランスを意識します。
 
-- 純粋な計算・バリデーションは Unit Test
-- コンポーネントの表示と操作は React Testing Library
-- API 通信を含む流れは MSW を使った統合テスト
-- 本当に重要な利用シナリオだけ E2E
+- 純粋な計算・バリデーションは Unit Test で確認する
+- コンポーネントの表示と操作は React Testing Library を使い、ユーザー視点で確認する
+- API 通信を含むコンポーネントの振る舞いは、MSW で HTTP 応答を再現して確認する
+- 本当に重要な利用シナリオだけ E2E で確認する
 
 ### Vitest と AAA
 
@@ -1085,7 +1105,7 @@ describe("addTodo", () => {
 ```
 
 AAA は、準備・実行・検証を分けるパターンです。
-1 テスト 1 目的にすると失敗原因が分かりやすくなります。
+1 テストでは確認したい振る舞いを 1 つに絞ると、失敗原因が分かりやすくなります。その振る舞いを確認するための複数の `expect` は書いて構いません。
 
 よく使う機能:
 
@@ -1132,7 +1152,7 @@ it("入力して送信できる", async () => {
 | クエリ | 用途 |
 | --- | --- |
 | `getBy...` | すぐ存在する要素 |
-| `queryBy...` | 存在しないことの確認 |
+| `queryBy...` | 同期的に要素が存在しないことを確認する。要素がなくても例外を投げないため、`expect(...).not.toBeInTheDocument()` と組み合わせる |
 | `findBy...` | 非同期で現れる要素 |
 | `getAllBy...` | 同期的な複数要素 |
 | `findAllBy...` | 非同期で現れる複数要素 |
@@ -1153,7 +1173,7 @@ const handlers = [
 ];
 ```
 
-`vi.mock` は関数・モジュールを差し替える仕組み、MSW は HTTP 通信を差し替える仕組みです。
+`vi.fn()` は関数をモックする仕組み、`vi.mock()` はモジュールをモックする仕組みです。MSW は HTTP 通信を差し替える仕組みです。
 API との境界をテストしたい場合は MSW が適しています。
 
 ### 壊れにくいテスト
@@ -1181,12 +1201,12 @@ API との境界をテストしたい場合は MSW が適しています。
 4. State の所有者を決める
    ├─ 1 コンポーネントだけ       → useState
    ├─ 兄弟で共有                  → 親へリフトアップ
-   ├─ 深いツリーで共有            → Composition / Context
-   ├─ 複数画面の Client State      → Zustand
-   ├─ サーバー由来のデータ         → TanStack Query
-   └─ フォームの値・検証           → React Hook Form + Zod
+   ├─ 深いツリーで共有            → まず Composition を検討し、必要なら Context
+   ├─ 複数画面の Client State      → 要件に応じて Zustand を候補にする
+   ├─ サーバー由来のデータ         → TanStack Query などを検討する
+   └─ 項目数や検証が複雑なフォーム → React Hook Form + Zod を検討する
         ↓
-5. 親からデータ、子からイベントを流す
+5. 親からデータとコールバック Props を渡し、子は操作時にコールバックを呼び出す
         ↓
 6. 派生値は計算し、Effect を増やさない
         ↓
@@ -1217,7 +1237,7 @@ function TaskList({ tasks, onToggle }: TaskListProps) {
       {tasks.map((task) => (
         <li key={task.id}>
           <button onClick={() => onToggle(task.id)}>
-            {task.status === "done" ? "完了" : "未完了"}
+            {task.status === "done" ? "未完了に戻す" : "完了にする"}
           </button>
           {task.title}
         </li>
@@ -1231,10 +1251,10 @@ function TaskList({ tasks, onToggle }: TaskListProps) {
 
 - TypeScript の Union 型で状態を限定する
 - Props でデータとイベントの契約を定義する
-- 親が State を所有し、子は表示とイベント通知を担当する
+- `TaskList` は Props でデータとイベントを受け取り、表示とイベント通知を担当する
+- 親コンポーネント（このコード例の外）が State を所有し、`onToggle` の中でイミュータブルに更新する
 - `map` と安定した `key` でリストを表示する
 - UI は `task.status` から宣言的に決まる
-- State の更新は親でイミュータブルに行う
 
 ---
 
@@ -1245,13 +1265,13 @@ function TaskList({ tasks, onToggle }: TaskListProps) {
 | ボタンの開閉を管理する | `useState` | State を最も近い所有者に置く |
 | 兄弟で同じ値を使う | State のリフトアップ | 共通の親に置く |
 | 深い子でテーマを読む | `useContext` | 広い更新範囲に注意 |
-| カートをどこからでも更新する | Zustand | 局所 State まで入れない |
+| 複数の離れたコンポーネントからカートを読む・更新する | Zustand を候補にする | 局所的な UI State はローカルに置く |
 | API データを取得する | TanStack Query | query key とキャッシュを設計する |
 | 入力フォームを管理する | React Hook Form | `register` と `Controller` を使い分ける |
 | 入力値を検証する | Zod | クライアントとサーバーの両方で検証する |
-| DOM にフォーカスする | `useRef` | UI の値には State を使う |
-| 外部 API と同期する | `useEffect` | cleanup と依存配列を忘れない |
-| 重い計算を再利用する | `useMemo` | まず計測し、必要な箇所だけ使う |
+| DOM にフォーカスする | `useRef` | レンダリング結果を変える値は State に置く |
+| 外部システムと同期する | `useEffect` | API 通信、購読、タイマー、命令的な DOM 操作などに使う。cleanup と依存配列を忘れない |
+| 重い計算を必要な場合だけメモ化する | `useMemo` | 依存値が変わらない間の再計算を避ける。まず計測し、必要な箇所だけ使う |
 | ロジックを複数部品で再利用する | カスタムフック | State は呼び出し元ごとに独立する |
 | UI の枠と中身を分離する | Composition | `children`、要素 Props を使う |
 | テーブル機能を組み込む | TanStack Table | Headless なので表示は自分で作る |
@@ -1278,7 +1298,7 @@ setUser((current) => ({ ...current, name: "Alice" }));
 ### 2. 派生値を State に重複して保存する
 
 `items` と `completedCount` を別々に管理すると同期漏れが起きます。
-`items.filter(...).length` のように計算できる値は計算します。
+`items.filter((item) => item.done).length` のように計算できる値は、State に保存せずレンダリング時に計算します。
 
 ### 3. すべてを `useEffect` に入れる
 
@@ -1341,7 +1361,7 @@ Union 型、`React.ReactNode`、コールバック型、ジェネリクスを適
 ### TypeScript と設計
 
 - [ ] Props、children、コールバック、イベントを型定義できる
-- [ ] `useState<User | null>`、`useState<Item[]>([])` の型を適切に書ける
+- [ ] `useState<User | null>(null)`、`useState<Item[]>([])` の型を適切に書ける
 - [ ] Union 型と `Record` で選択肢を安全に表現できる
 - [ ] Composition、Headless、HOC、Render Props の違いを説明できる
 - [ ] 機能単位のフォルダ構成と公開 API を設計できる
@@ -1383,7 +1403,7 @@ Props とイベントで一方向に流す
 迷ったときは、次の原則に戻ります。
 
 1. State は最初はローカルに置く
-2. Props はデータ、コールバックはイベントとして渡す
+2. Props でデータを渡し、イベントを親へ通知する関数（コールバック）も Props として渡す
 3. 計算できる値を State にしない
 4. Effect は外部システムとの同期に限定する
 5. 直接変更せず、新しい配列・オブジェクトを作る
